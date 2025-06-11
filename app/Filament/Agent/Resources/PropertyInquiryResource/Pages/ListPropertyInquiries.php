@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Filament\Agent\Resources\PropertyInquiryResource\Pages;
+
+use App\Filament\Agent\Resources\PropertyInquiryResource;
+use Filament\Actions;
+use Filament\Resources\Pages\ListRecords;
+
+class ListPropertyInquiries extends ListRecords
+{
+    protected static string $resource = PropertyInquiryResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            // Agents don't create inquiries - these come from customers
+        ];
+    }
+}

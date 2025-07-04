@@ -1,201 +1,303 @@
-<!-- Premium Navigation with Glass Morphism -->
-<nav class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="main-navigation">
-    <div class="bg-black/20 backdrop-blur-2xl border-b border-white/10">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-20">
-                <!-- Premium Logo -->
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="/" class="group flex items-center space-x-3">
-                        <!-- Logo Icon -->
-                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                            </svg>
-                        </div>
-                        <!-- Brand Text -->
-                        <div class="text-2xl font-bold">
-                            <span class="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">Home</span><span class="text-white">Baze</span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Desktop Navigation with Premium Styling -->
-                <div class="hidden md:block">
-                    <div class="flex items-center space-x-2">
-                        <a href="#" class="nav-link group px-6 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium backdrop-blur-sm border border-transparent hover:border-white/20">
-                            <span class="relative">
-                                Browse
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                            </span>
-                        </a>
-                        <a href="#" class="nav-link group px-6 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium backdrop-blur-sm border border-transparent hover:border-white/20">
-                            <span class="relative">
-                                About
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                            </span>
-                        </a>
-                        <a href="#" class="nav-link group px-6 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium backdrop-blur-sm border border-transparent hover:border-white/20">
-                            <span class="relative">
-                                Contact
-                                <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300"></span>
-                            </span>
-                        </a>
+<!-- Premium Navigation Component -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out" x-data="navigationComponent()">
+    <!-- Glass Morphism Background -->
+    <div class="absolute inset-0 backdrop-blur-2xl bg-white/10 border-b border-white/20 transition-all duration-700"></div>
+    
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-20">
+            <!-- Mobile-Optimized Premium Logo -->
+            <div class="flex items-center space-x-2 md:space-x-3 group">
+                <div class="relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-xl md:rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative w-8 h-8 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500">
+                        <svg class="w-5 h-5 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                        </svg>
                     </div>
                 </div>
-
-                <!-- Premium Auth Links -->
-                <div class="hidden md:flex items-center space-x-4">
-                    @guest
-                        <a href="{{ route('login') }}" class="px-6 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium backdrop-blur-sm border border-white/20 hover:border-white/40">
-                            Login
-                        </a>
-                        <div class="relative" id="register-dropdown">
-                            <button class="group relative overflow-hidden bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 flex items-center shadow-lg hover:shadow-xl" onclick="toggleRegisterDropdown()">
-                                <!-- Animated Background -->
-                                <div class="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                                
-                                <!-- Button Content -->
-                                <span class="relative mr-2">Register</span>
-                                <svg class="relative w-4 h-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                                
-                                <!-- Shine Effect -->
-                                <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-transform duration-1000"></div>
-                            </button>
-                            <div class="absolute right-0 mt-3 w-64 bg-black/80 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/20 hidden transform opacity-0 scale-95 transition-all duration-300" id="register-menu">
-                                <div class="p-2">
-                                    <a href="/tenant/register" class="group flex items-center px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300">
-                                        <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">Find Home</div>
-                                            <div class="text-xs text-white/60">Join as Tenant</div>
-                                        </div>
-                                    </a>
-                                    <a href="/landlord/register" class="group flex items-center px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300">
-                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">List Property</div>
-                                            <div class="text-xs text-white/60">Join as Landlord</div>
-                                        </div>
-                                    </a>
-                                    <a href="/agent/register" class="group flex items-center px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300">
-                                        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 6V8a2 2 0 00-2-2H10a2 2 0 00-2 2v8a2 2 0 002 2h4a2 2 0 002-2z"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">Join as Agent</div>
-                                            <div class="text-xs text-white/60">Professional Agent</div>
-                                        </div>
-                                    </a>
-                                    <a href="/agency/register" class="group flex items-center px-4 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded-xl transition-all duration-300">
-                                        <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-300">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                            </svg>
-                                        </div>
-                                        <div>
-                                            <div class="font-medium">Register Agency</div>
-                                            <div class="text-xs text-white/60">Business Account</div>
-                                        </div>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    @else
-                        <a href="/dashboard" class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-2xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                            Dashboard
-                        </a>
-                    @endguest
+                <div class="flex flex-col">
+                    <span class="text-lg md:text-2xl font-black text-white tracking-tight">HomeBaze</span>
+                    <span class="text-xs md:text-xs text-white/60 font-medium tracking-widest hidden md:block">PREMIUM</span>
                 </div>
+            </div>
 
-                <!-- Premium Mobile menu button -->
-                <div class="md:hidden">
-                    <button class="p-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 backdrop-blur-sm border border-white/20" onclick="toggleMobileMenu()">
-                        <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                            <path class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            <!-- Desktop Navigation -->
+            <div class="hidden lg:flex items-center space-x-1">
+                <a href="#properties" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                    <span class="relative z-10">Properties</span>
+                    <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
+                </a>
+                <a href="#agents" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                    <span class="relative z-10">Agents</span>
+                    <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
+                </a>
+                <a href="#agencies" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                    <span class="relative z-10">Agencies</span>
+                    <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
+                </a>
+                <a href="#about" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                    <span class="relative z-10">About</span>
+                    <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
+                </a>
+                <a href="#contact" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                    <span class="relative z-10">Contact</span>
+                    <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
+                </a>
+            </div>
+
+            <!-- Mobile-Optimized Premium CTA Buttons -->
+            <div class="hidden lg:flex items-center space-x-3">
+                <button class="group relative px-4 py-2 md:px-6 md:py-2.5 text-white/90 hover:text-white font-semibold transition-all duration-300 overflow-hidden text-sm md:text-base">
+                    <span class="relative z-10">Sign In</span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 rounded-lg scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                </button>
+                <button class="nav-cta group relative px-4 py-2 md:px-8 md:py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg md:rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 text-sm md:text-base">
+                    <span class="relative z-10 flex items-center">
+                        Get Started
+                        <svg class="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                         </svg>
-                    </button>
+                    </span>
+                    <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
+                    <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </button>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="lg:hidden">
+                <button @click="toggleMobileMenu" class="group relative p-2 text-white hover:bg-white/10 rounded-lg transition-colors duration-300">
+                    <svg x-show="!mobileMenuOpen" class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                    <svg x-show="mobileMenuOpen" class="w-6 h-6 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- Premium Mobile menu -->
-        <div class="md:hidden hidden" id="mobile-menu">
-            <div class="bg-black/90 backdrop-blur-2xl border-t border-white/10">
-                <div class="px-4 py-6 space-y-3">
-                    <a href="#" class="block px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium">Browse</a>
-                    <a href="#" class="block px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium">About</a>
-                    <a href="#" class="block px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium">Contact</a>
-                    
-                    @guest
-                        <div class="pt-4 border-t border-white/10">
-                            <a href="{{ route('login') }}" class="block px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300 font-medium mb-3">Login</a>
-                            
-                            <div class="space-y-2">
-                                <p class="px-4 py-2 text-sm font-semibold text-white/60">Join as:</p>
-                                <a href="/tenant/register" class="flex items-center px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium">Tenant</div>
-                                        <div class="text-xs text-white/60">Find your home</div>
-                                    </div>
-                                </a>
-                                <a href="/landlord/register" class="flex items-center px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium">Landlord</div>
-                                        <div class="text-xs text-white/60">List properties</div>
-                                    </div>
-                                </a>
-                                <a href="/agent/register" class="flex items-center px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m8 6V8a2 2 0 00-2-2H10a2 2 0 00-2 2v8a2 2 0 002 2h4a2 2 0 002-2z"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium">Agent</div>
-                                        <div class="text-xs text-white/60">Join our team</div>
-                                    </div>
-                                </a>
-                                <a href="/agency/register" class="flex items-center px-4 py-3 rounded-2xl text-white/80 hover:text-white hover:bg-white/10 transition-all duration-300">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center mr-3">
-                                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <div class="font-medium">Agency</div>
-                                        <div class="text-xs text-white/60">Business account</div>
-                                    </div>
-                                </a>
-                            </div>
-                        </div>
-                    @else
-                        <div class="pt-4 border-t border-white/10">
-                            <a href="/dashboard" class="block px-4 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-2xl font-semibold transition-all duration-300">Dashboard</a>
-                        </div>
-                    @endguest
-                </div>
+    <!-- Premium Mobile Menu -->
+    <div x-show="mobileMenuOpen" 
+         x-transition:enter="transition ease-out duration-500"
+         x-transition:enter-start="opacity-0 transform -translate-y-full scale-95"
+         x-transition:enter-end="opacity-1 transform translate-y-0 scale-100" 
+         x-transition:leave="transition ease-in duration-300"
+         x-transition:leave-start="opacity-1 transform translate-y-0 scale-100"
+         x-transition:leave-end="opacity-0 transform -translate-y-full scale-95"
+         class="lg:hidden absolute top-full left-0 right-0 backdrop-blur-2xl bg-slate-900/95 border-t border-white/10 shadow-2xl">
+        <div class="px-6 py-8 space-y-6">
+            <!-- Mobile Navigation Links -->
+            <div class="space-y-2">
+                <a href="#properties" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                    <span class="flex-1">Properties</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                <a href="#agents" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                    <span class="flex-1">Agents</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                <a href="#agencies" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                    <span class="flex-1">Agencies</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                <a href="#about" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                    <span class="flex-1">About</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+                <a href="#contact" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                    <span class="flex-1">Contact</span>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </a>
+            </div>
+
+            <!-- Mobile CTA Buttons -->
+            <div class="pt-4 border-t border-white/10 space-y-3">
+                <button class="w-full py-3 text-center text-white font-semibold border-2 border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-sm">
+                    Sign In
+                </button>
+                <button class="w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
+                    Get Started
+                </button>
             </div>
         </div>
     </div>
 </nav>
+
+<style>
+    .glass-nav {
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(24px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Enhanced navigation animations */
+    .nav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(90deg, #10b981, #3b82f6);
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+    }
+    
+    .nav-link:hover::after {
+        width: 100%;
+    }
+    
+    /* Premium glow effects */
+    @keyframes premium-glow {
+        0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+        50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.5), 0 0 40px rgba(59, 130, 246, 0.3); }
+    }
+    
+    .nav-cta:hover {
+        animation: premium-glow 2s ease-in-out infinite;
+    }
+    
+    /* Mobile nav stagger animation */
+    .mobile-nav-link {
+        opacity: 0;
+        transform: translateX(-20px);
+        animation: slideInLeft 0.3s ease-out forwards;
+    }
+    
+    .mobile-nav-link:nth-child(1) { animation-delay: 0.1s; }
+    .mobile-nav-link:nth-child(2) { animation-delay: 0.15s; }
+    .mobile-nav-link:nth-child(3) { animation-delay: 0.2s; }
+    .mobile-nav-link:nth-child(4) { animation-delay: 0.25s; }
+    .mobile-nav-link:nth-child(5) { animation-delay: 0.3s; }
+    
+    @keyframes slideInLeft {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+</style>
+
+<script>
+    function navigationComponent() {
+        return {
+            mobileMenuOpen: false,
+
+            toggleMobileMenu() {
+                this.mobileMenuOpen = !this.mobileMenuOpen;
+            },
+
+            init() {
+                // Enhanced navbar scroll effect
+                let lastScrollY = window.scrollY;
+                const navbar = document.getElementById('navbar');
+                const navBackground = navbar.querySelector('.absolute.inset-0');
+                
+                window.addEventListener('scroll', () => {
+                    const currentScrollY = window.scrollY;
+                    
+                    if (currentScrollY > 100) {
+                        navBackground.classList.add('bg-slate-900/95', 'border-white/30');
+                        navBackground.classList.remove('bg-white/10', 'border-white/20');
+                        navbar.style.transform = 'translateY(0)';
+                    } else {
+                        navBackground.classList.remove('bg-slate-900/95', 'border-white/30');
+                        navBackground.classList.add('bg-white/10', 'border-white/20');
+                    }
+                    
+                    // Hide/show navbar on scroll direction
+                    if (currentScrollY > lastScrollY && currentScrollY > 200) {
+                        navbar.style.transform = 'translateY(-100%)';
+                    } else {
+                        navbar.style.transform = 'translateY(0)';
+                    }
+                    
+                    lastScrollY = currentScrollY;
+                });
+
+                // Enhanced navigation animations
+                this.$nextTick(() => {
+                    // Smooth reveal animation on load
+                    gsap.fromTo(navbar, 
+                        { y: -100, opacity: 0 },
+                        { y: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.2 }
+                    );
+                    
+                    // Logo hover animation
+                    const logo = document.querySelector('.group');
+                    if (logo) {
+                        logo.addEventListener('mouseenter', function() {
+                            gsap.to(this.querySelector('.relative > .relative'), {
+                                rotation: 5,
+                                scale: 1.05,
+                                duration: 0.3,
+                                ease: "back.out(1.7)"
+                            });
+                        });
+                        logo.addEventListener('mouseleave', function() {
+                            gsap.to(this.querySelector('.relative > .relative'), {
+                                rotation: 0,
+                                scale: 1,
+                                duration: 0.3,
+                                ease: "power2.out"
+                            });
+                        });
+                    }
+
+                    // Enhanced CTA button animations
+                    document.querySelectorAll('.nav-cta').forEach(button => {
+                        button.addEventListener('mouseenter', function() {
+                            gsap.to(this, {
+                                scale: 1.05,
+                                duration: 0.3,
+                                ease: "back.out(1.7)"
+                            });
+                        });
+                        button.addEventListener('mouseleave', function() {
+                            gsap.to(this, {
+                                scale: 1,
+                                duration: 0.3,
+                                ease: "power2.out"
+                            });
+                        });
+                    });
+                    
+                    // Mobile menu animation
+                    const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+                    if (mobileLinks.length > 0) {
+                        mobileLinks.forEach((link, index) => {
+                            link.addEventListener('click', () => {
+                                this.mobileMenuOpen = false;
+                            });
+                        });
+                    }
+                });
+                
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!navbar.contains(e.target) && this.mobileMenuOpen) {
+                        this.mobileMenuOpen = false;
+                    }
+                });
+                
+                // Close mobile menu on escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && this.mobileMenuOpen) {
+                        this.mobileMenuOpen = false;
+                    }
+                });
+            }
+        }
+    }
+</script>

@@ -94,9 +94,9 @@
                             </div>
 
                             <!-- Action Button -->
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
+                            <a href="{{ route('property.show', $property->slug) }}" class="w-full inline-block text-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition duration-200">
                                 View Details
-                            </button>
+                            </a>
                         </div>
                     </div>
                 @empty

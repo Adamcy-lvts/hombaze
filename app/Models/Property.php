@@ -2,16 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
+use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Property extends Model implements HasMedia
 {
@@ -89,17 +90,17 @@ class Property extends Model implements HasMedia
         static::creating(function ($property) {
             if (empty($property->slug)) {
                 $property->slug = Str::slug($property->title);
-                
+
                 // Ensure slug uniqueness
                 $originalSlug = $property->slug;
                 $counter = 1;
-                
+
                 while (static::where('slug', $property->slug)->exists()) {
                     $property->slug = $originalSlug . '-' . $counter;
                     $counter++;
                 }
             }
-            
+
             if (empty($property->published_at) && $property->is_published) {
                 $property->published_at = now();
             }
@@ -228,7 +229,7 @@ class Property extends Model implements HasMedia
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-                    ->whereNotNull('published_at');
+            ->whereNotNull('published_at');
     }
 
     /**
@@ -245,10 +246,10 @@ class Property extends Model implements HasMedia
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true)
-                    ->where(function ($q) {
-                        $q->whereNull('featured_until')
-                          ->orWhere('featured_until', '>', now());
-                    });
+            ->where(function ($q) {
+                $q->whereNull('featured_until')
+                    ->orWhere('featured_until', '>', now());
+            });
     }
 
     /**
@@ -299,7 +300,7 @@ class Property extends Model implements HasMedia
     public function getPriceWithPeriodAttribute(): string
     {
         $formatted = $this->formatted_price;
-        
+
         if ($this->price_period) {
             $periods = [
                 'per_month' => '/month',
@@ -307,10 +308,10 @@ class Property extends Model implements HasMedia
                 'per_night' => '/night',
                 'total' => ''
             ];
-            
+
             $formatted .= $periods[$this->price_period] ?? '';
         }
-        
+
         return $formatted;
     }
 
@@ -325,7 +326,7 @@ class Property extends Model implements HasMedia
             $this->city?->name,
             $this->state?->name,
         ]);
-        
+
         return implode(', ', $parts);
     }
 
@@ -335,19 +336,19 @@ class Property extends Model implements HasMedia
     public function getSummaryAttribute(): string
     {
         $parts = [];
-        
+
         if ($this->bedrooms > 0) {
             $parts[] = $this->bedrooms . ' bed' . ($this->bedrooms > 1 ? 's' : '');
         }
-        
+
         if ($this->bathrooms > 0) {
             $parts[] = $this->bathrooms . ' bath' . ($this->bathrooms > 1 ? 's' : '');
         }
-        
+
         if ($this->size_sqm) {
             $parts[] = number_format($this->size_sqm) . ' sqm';
         }
-        
+
         return implode(' • ', $parts);
     }
 
@@ -402,11 +403,11 @@ class Property extends Model implements HasMedia
         if (!$this->is_featured) {
             return false;
         }
-        
+
         if ($this->featured_until) {
             return $this->featured_until->isFuture();
         }
-        
+
         return true;
     }
 
@@ -448,25 +449,12 @@ class Property extends Model implements HasMedia
     /**
      * Define media conversions for property images
      */
-    public function registerMediaConversions(Media $media = null): void
+    public function registerMediaConversions(?Media $media = null): void
     {
-        $this->addMediaConversion('thumb')
-            ->width(300)
-            ->height(300)
-            ->sharpen(10)
-            ->performOnCollections('gallery', 'featured');
-
-        $this->addMediaConversion('preview')
-            ->width(800)
-            ->height(600)
-            ->sharpen(10)
-            ->performOnCollections('gallery', 'featured');
-
-        $this->addMediaConversion('large')
-            ->width(1200)
-            ->height(900)
-            ->sharpen(10)
-            ->performOnCollections('gallery', 'featured');
+        $this
+            ->addMediaConversion('preview')
+            ->fit(Fit::Contain, 300, 300)
+            ->nonQueued();
     }
 
     /**
@@ -475,9 +463,9 @@ class Property extends Model implements HasMedia
     public function getFeaturedImageUrl(string $conversion = ''): string
     {
         $media = $this->getFirstMedia('featured');
-        
+
         if (!$media) {
-            return asset('images/property-placeholder.jpg');
+            return asset('images/property-placeholder.svg');
         }
 
         return $conversion ? $media->getUrl($conversion) : $media->getUrl();

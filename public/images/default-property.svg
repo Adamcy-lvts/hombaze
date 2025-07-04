@@ -1,0 +1,15 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#F8FAFC"/>
+  <g transform="translate(200, 150)">
+    <!-- House outline -->
+    <path d="M-80 20 L-80 -20 L-40 -60 L40 -60 L80 -20 L80 20 L40 20 L40 -10 L-40 -10 L-40 20 Z" fill="#E2E8F0" stroke="#CBD5E1" stroke-width="2"/>
+    <!-- Roof -->
+    <path d="M-90 -20 L0 -80 L90 -20 Z" fill="#94A3B8" stroke="#64748B" stroke-width="2"/>
+    <!-- Door -->
+    <rect x="-10" y="-10" width="20" height="30" fill="#64748B"/>
+    <!-- Windows -->
+    <rect x="-60" y="-35" width="20" height="15" fill="#94A3B8"/>
+    <rect x="40" y="-35" width="20" height="15" fill="#94A3B8"/>
+  </g>
+  <text x="200" y="250" text-anchor="middle" fill="#64748B" font-family="system-ui, sans-serif" font-size="16" font-weight="500">No Image Available</text>
+</svg>

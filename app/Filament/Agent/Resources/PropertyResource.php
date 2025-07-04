@@ -281,6 +281,7 @@ class PropertyResource extends Resource
                                                 '4:3', 
                                                 '1:1',
                                             ])
+                                            ->responsiveImages()
                                             ->maxSize(5120) // 5MB
                                             ->helperText('Upload a high-quality featured image for this property')
                                             ->columnSpanFull(),
@@ -292,6 +293,7 @@ class PropertyResource extends Resource
                                             ->multiple()
                                             ->reorderable()
                                             ->imageEditor()
+                                            ->responsiveImages()
                                             ->maxFiles(20)
                                             ->maxSize(5120) // 5MB per file
                                             ->helperText('Upload up to 20 high-quality images showcasing the property')
@@ -551,9 +553,8 @@ class PropertyResource extends Resource
                 Tables\Columns\SpatieMediaLibraryImageColumn::make('featured_image')
                     ->label('Image')
                     ->collection('featured')
-                    ->conversion('thumb')
                     ->circular()
-                    ->defaultImageUrl('/images/property-placeholder.jpg'),
+                    ->defaultImageUrl('/images/property-placeholder.svg'),
                     
                 Tables\Columns\TextColumn::make('title')
                     ->searchable()

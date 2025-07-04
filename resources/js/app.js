@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Redirect to search results
-            window.location.href = `/search?${params.toString()}`;
+            window.location.href = `/properties?${params.toString()}`;
         });
     }
     
@@ -188,23 +188,304 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Property card hover effects (for featured properties)
-    gsap.utils.toArray('.property-card').forEach(card => {
-        const image = card.querySelector('.property-image');
-        const overlay = card.querySelector('.property-overlay');
+    // Featured Properties Section Animations
+    if (document.querySelector('#featured-properties')) {
+        // Immediately ensure all property cards are visible
+        gsap.set('.property-card', { opacity: 1, clearProps: 'transform' });
+        // Header animation
+        if (document.querySelector('[data-animate="header"]')) {
+            gsap.from('[data-animate="header"]', {
+                duration: 1,
+                y: 50,
+                opacity: 0,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '#featured-properties',
+                    start: 'top 80%'
+                }
+            });
+        }
+
+        // Property cards grid animation
+        if (document.querySelector('[data-animate="grid"]')) {
+            gsap.from('.property-card', {
+                duration: 0.8,
+                y: 60,
+                opacity: 0,
+                stagger: 0.15,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '[data-animate="grid"]',
+                    start: 'top 85%'
+                },
+                onComplete: function() {
+                    // Ensure all cards are fully visible after animation
+                    gsap.set('.property-card', { opacity: 1 });
+                }
+            });
+        } else {
+            // Fallback: ensure cards are visible if no animation trigger
+            gsap.set('.property-card', { opacity: 1 });
+        }
+
+        // CTA animation
+        if (document.querySelector('[data-animate="cta"]')) {
+            gsap.from('[data-animate="cta"]', {
+                duration: 0.8,
+                y: 30,
+                opacity: 0,
+                ease: 'power3.out',
+                scrollTrigger: {
+                    trigger: '[data-animate="cta"]',
+                    start: 'top 90%'
+                }
+            });
+        }
+
+        // 3D Perspective Carousel with Direct Transforms
+        const carousel = document.getElementById('properties-carousel');
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+        const dotsContainer = document.getElementById('carousel-dots');
         
-        if (image && overlay) {
+        if (carousel && prevBtn && nextBtn && dotsContainer) {
+            const cards = carousel.querySelectorAll('.property-card');
+            const totalCards = cards.length;
+            let currentIndex = 0;
+            
+            // Track zoom state for center card
+            let isZoomed = false;
+            
+            // 3D Transform positions - direct inline style approach (larger scale)
+            const getTransform = (position, centerZoom = false) => {
+                switch(position) {
+                    case 0: // Center - main card
+                        const scale = centerZoom ? '1.35' : '1.2';
+                        return {
+                            transform: `translate(-50%, -50%) translateZ(0px) scale(${scale})`,
+                            opacity: '1',
+                            zIndex: '20'
+                        };
+                    case 1: // Right side
+                        return {
+                            transform: 'translate(-50%, -50%) translateZ(-150px) translateX(250px) rotateY(-25deg) scale(0.9)',
+                            opacity: '0.8',
+                            zIndex: '15'
+                        };
+                    case -1: // Left side
+                        return {
+                            transform: 'translate(-50%, -50%) translateZ(-150px) translateX(-250px) rotateY(25deg) scale(0.9)',
+                            opacity: '0.8',
+                            zIndex: '15'
+                        };
+                    case 2: // Far right
+                        return {
+                            transform: 'translate(-50%, -50%) translateZ(-300px) translateX(400px) rotateY(-35deg) scale(0.75)',
+                            opacity: '0.6',
+                            zIndex: '10'
+                        };
+                    case -2: // Far left
+                        return {
+                            transform: 'translate(-50%, -50%) translateZ(-300px) translateX(-400px) rotateY(35deg) scale(0.75)',
+                            opacity: '0.6',
+                            zIndex: '10'
+                        };
+                    default: // Hidden
+                        return {
+                            transform: 'translate(-50%, -50%) translateZ(-500px) translateX(550px) rotateY(45deg) scale(0.5)',
+                            opacity: '0.3',
+                            zIndex: '5'
+                        };
+                }
+            };
+            
+            // Create pagination dots
+            const createDots = () => {
+                dotsContainer.innerHTML = '';
+                
+                for (let i = 0; i < totalCards; i++) {
+                    const dot = document.createElement('button');
+                    dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === 0 ? 'bg-blue-600' : 'bg-gray-300'}`;
+                    dot.addEventListener('click', () => goToSlide(i));
+                    dotsContainer.appendChild(dot);
+                }
+            };
+            
+            // Update 3D carousel positions with direct transforms
+            const updateCarousel = () => {
+                cards.forEach((card, index) => {
+                    // Calculate relative position to current center
+                    let position = index - currentIndex;
+                    
+                    // Wrap positions for circular effect
+                    if (position > 2) position -= totalCards;
+                    if (position < -2) position += totalCards;
+                    
+                    // Get transform styles for this position (with zoom state for center)
+                    const styles = getTransform(position, position === 0 && isZoomed);
+                    
+                    // Apply styles directly - CSS transition handles the animation
+                    card.style.setProperty('transform', styles.transform, 'important');
+                    card.style.setProperty('opacity', styles.opacity, 'important');
+                    card.style.setProperty('z-index', styles.zIndex, 'important');
+                    
+                    // Add pointer cursor for all cards
+                    card.style.cursor = 'pointer';
+                });
+                
+                // Update dots
+                const dots = dotsContainer.querySelectorAll('button');
+                dots.forEach((dot, index) => {
+                    dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'}`;
+                });
+            };
+            
+            // Toggle zoom for center card
+            const toggleZoom = () => {
+                isZoomed = !isZoomed;
+                updateCarousel();
+            };
+            
+            // Reset zoom when navigating
+            const resetZoom = () => {
+                if (isZoomed) {
+                    isZoomed = false;
+                }
+            };
+            
+            // Go to specific slide
+            const goToSlide = (index) => {
+                resetZoom();
+                currentIndex = index;
+                updateCarousel();
+            };
+            
+            // Next slide
+            const nextSlide = () => {
+                resetZoom();
+                currentIndex = (currentIndex + 1) % totalCards;
+                updateCarousel();
+            };
+            
+            // Previous slide
+            const prevSlide = () => {
+                resetZoom();
+                currentIndex = (currentIndex - 1 + totalCards) % totalCards;
+                updateCarousel();
+            };
+            
+            // Event listeners
+            nextBtn.addEventListener('click', nextSlide);
+            prevBtn.addEventListener('click', prevSlide);
+            
+            // Touch support
+            let startX = 0;
+            let startY = 0;
+            let isDragging = false;
+            
+            carousel.addEventListener('touchstart', (e) => {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                isDragging = true;
+            });
+            
+            carousel.addEventListener('touchmove', (e) => {
+                if (!isDragging) return;
+                
+                const deltaX = Math.abs(e.touches[0].clientX - startX);
+                const deltaY = Math.abs(e.touches[0].clientY - startY);
+                
+                if (deltaX > deltaY && deltaX > 10) {
+                    e.preventDefault();
+                }
+            });
+            
+            carousel.addEventListener('touchend', (e) => {
+                if (!isDragging) return;
+                isDragging = false;
+                
+                const endX = e.changedTouches[0].clientX;
+                const diffX = startX - endX;
+                
+                if (Math.abs(diffX) > 50) {
+                    if (diffX > 0) {
+                        nextSlide();
+                    } else {
+                        prevSlide();
+                    }
+                }
+            });
+            
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft') prevSlide();
+                if (e.key === 'ArrowRight') nextSlide();
+            });
+            
+            // Click on cards - center card zooms, side cards navigate
+            cards.forEach((card, index) => {
+                card.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    
+                    // Check if this card is currently in the center position
+                    if (index === currentIndex) {
+                        // Center card - toggle zoom
+                        toggleZoom();
+                    } else {
+                        // Side card - navigate to center
+                        goToSlide(index);
+                    }
+                });
+            });
+            
+            // Simple initialization - CSS provides good default, JS enhances
+            const initializeCarousel = () => {
+                // Reset state
+                currentIndex = 0;
+                isZoomed = false;
+                
+                // Initialize UI
+                createDots();
+                
+                // Immediate update to activate JavaScript control
+                updateCarousel();
+            };
+            
+            // Initialize when ready
+            setTimeout(initializeCarousel, 50);
+            
+            // Auto-rotate every 5 seconds (optional)
+            // setInterval(() => {
+            //     nextSlide();
+            // }, 5000);
+        }
+
+        // Property card hover effects - but NOT for carousel cards
+        gsap.utils.toArray('.property-card').forEach(card => {
+            // Skip hover effects for carousel cards to prevent transform conflicts
+            if (card.closest('#properties-carousel')) {
+                return; // Skip carousel cards
+            }
+            
             card.addEventListener('mouseenter', () => {
-                gsap.to(image, {duration: 0.3, scale: 1.05, ease: 'power2.out'});
-                gsap.to(overlay, {duration: 0.3, opacity: 0.8, ease: 'power2.out'});
+                gsap.to(card, {
+                    duration: 0.3,
+                    y: -5,
+                    scale: 1.01,
+                    ease: 'power2.out'
+                });
             });
             
             card.addEventListener('mouseleave', () => {
-                gsap.to(image, {duration: 0.3, scale: 1, ease: 'power2.out'});
-                gsap.to(overlay, {duration: 0.3, opacity: 0.5, ease: 'power2.out'});
+                gsap.to(card, {
+                    duration: 0.3,
+                    y: 0,
+                    scale: 1,
+                    ease: 'power2.out'
+                });
             });
-        }
-    });
+        });
+    }
     
     // Search input focus animations
     const searchInputs = document.querySelectorAll('.search-input');
@@ -248,23 +529,31 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Navbar scroll effect
+    // Navbar scroll effect - query fresh each time
     let lastScrollTop = 0;
-    const navbar = document.querySelector('.navbar');
     
-    if (navbar) {
-        window.addEventListener('scroll', () => {
-            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
+    window.addEventListener('scroll', () => {
+        // Query navbar fresh on each scroll to avoid stale references
+        const navbar = document.querySelector('#navbar') || document.querySelector('#main-navigation') || document.querySelector('nav');
+        
+        if (!navbar) {
+            return; // Silently return if no navbar found
+        }
+        
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        try {
             if (scrollTop > lastScrollTop) {
                 // Scrolling down
-                gsap.to(navbar, {duration: 0.3, y: -navbar.offsetHeight, ease: 'power2.out'});
+                if (typeof gsap !== 'undefined' && navbar.offsetHeight) {
+                    gsap.to(navbar, {duration: 0.3, y: -navbar.offsetHeight, ease: 'power2.out'});
+                }
             } else {
                 // Scrolling up
-                gsap.to(navbar, {duration: 0.3, y: 0, ease: 'power2.out'});
+                if (typeof gsap !== 'undefined') {
+                    gsap.to(navbar, {duration: 0.3, y: 0, ease: 'power2.out'});
+                }
             }
-            
-            lastScrollTop = scrollTop;
             
             // Add shadow on scroll
             if (scrollTop > 50) {
@@ -272,6 +561,10 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 navbar.classList.remove('shadow-lg');
             }
-        });
-    }
+        } catch (error) {
+            // Silently catch any errors to prevent console spam
+        }
+        
+        lastScrollTop = scrollTop;
+    });
 });

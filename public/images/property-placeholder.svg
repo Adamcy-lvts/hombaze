@@ -1,0 +1,9 @@
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#F3F4F6"/>
+  <rect x="50" y="80" width="300" height="140" fill="#E5E7EB"/>
+  <rect x="170" y="160" width="60" height="80" fill="#D1D5DB"/>
+  <rect x="80" y="120" width="40" height="40" fill="#9CA3AF"/>
+  <rect x="280" y="120" width="40" height="40" fill="#9CA3AF"/>
+  <polygon points="50,80 200,40 350,80" fill="#6B7280"/>
+  <text x="200" y="260" text-anchor="middle" fill="#6B7280" font-family="Arial, sans-serif" font-size="14">Property Image</text>
+</svg>

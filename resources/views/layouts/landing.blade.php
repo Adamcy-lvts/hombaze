@@ -81,25 +81,8 @@
     <!-- Navigation Component -->
     @include('components.landing.navigation')
 
-    <!-- Hero Component -->
-    @include('components.landing.hero', [
-        'stats' => $stats ?? [
-            'properties' => 10000,
-            'clients' => 5000,
-            'agents' => 500,
-        ],
-        'featuredProperties' => $featuredProperties ?? [],
-        'popularLocations' => $popularLocations ?? [],
-    ])
-
-    <!-- Additional sections can be added here -->
+    <!-- Main Content -->
     @yield('content')
-    
-    <!-- Features Section -->
-    @include('components.landing.features')
-    
-    <!-- Testimonials Section -->
-    @include('components.landing.testimonials')
     
     <!-- Footer Section -->
     @include('components.landing.footer')

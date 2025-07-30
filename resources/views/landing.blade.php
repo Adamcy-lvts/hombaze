@@ -1,11 +1,32 @@
 @extends('layouts.landing')
 
 @section('content')
-    <!-- Featured Properties Section -->
-    @include('components.landing.featured-properties-section')
-    <!-- Additional sections that aren't in the layout -->
-    <!-- CTA Section -->
-    @include('components.landing.cta-section')
+    <!-- Hero Component -->
+    @include('components.landing.hero', [
+        'stats' => $stats ?? [
+            'properties' => 10000,
+            'clients' => 5000,
+            'agents' => 500,
+        ],
+        'featuredProperties' => $featuredProperties ?? [],
+        'popularLocations' => $popularLocations ?? [],
+    ])
+
+    <!-- Featured Properties Section (Desktop) -->
+    @include('components.landing.featured-properties-section', [
+        'featuredProperties' => $featuredProperties ?? []
+    ])
+
+    <!-- Featured Properties Section (Mobile) -->
+    @include('components.landing.featured-properties-mobile')
+
+    <!-- Popular Locations Section -->
+    @include('components.landing.popular-locations', [
+        'popularLocations' => $popularLocations ?? null
+    ])
+
+    <!-- How It Works Section (Premium) -->
+    @include('components.landing.how-it-works-premium')
 @endsection
 
 @push('scripts')

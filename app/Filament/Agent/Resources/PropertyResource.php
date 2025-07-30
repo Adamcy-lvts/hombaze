@@ -252,19 +252,141 @@ class PropertyResource extends Resource
                                                     ])
                                                     ->required()
                                                     ->columnSpan(1),
+                                                    
+                                                Forms\Components\Select::make('compound_type')
+                                                    ->label('Compound/Estate Type')
+                                                    ->options(\App\Models\Property::getCompoundTypeOptions())
+                                                    ->searchable()
+                                                    ->placeholder('Select compound type...')
+                                                    ->helperText('Specify if the property is in a compound, estate, or standalone')
+                                                    ->columnSpan(1),
                                             ]),
                                     ])->collapsible(),
 
                                 // Property Features & Amenities
-                                Forms\Components\Section::make('Property Features & Amenities')
-                                    ->description('Select features and amenities available with this property')
+                                Forms\Components\Section::make('Features & Amenities')
+                                    ->description('Select property features and amenities to highlight')
                                     ->schema([
                                         Forms\Components\CheckboxList::make('features')
+                                            ->label('Property Features')
                                             ->relationship('features', 'name')
-                                            ->options(PropertyFeature::pluck('name', 'id'))
+                                            ->options(function () {
+                                                return PropertyFeature::active()
+                                                    ->ordered()
+                                                    ->pluck('name', 'id')
+                                                    ->toArray();
+                                            })
+                                            ->descriptions(function () {
+                                                return PropertyFeature::active()
+                                                    ->ordered()
+                                                    ->pluck('description', 'id')
+                                                    ->toArray();
+                                            })
                                             ->columns(3)
-                                            ->columnSpanFull()
-                                            ->searchable(),
+                                            ->gridDirection('row')
+                                            ->bulkToggleable()
+                                            ->searchable()
+                                            ->noSearchResultsMessage('No features found matching your search.')
+                                            ->helperText('Select all features and amenities that apply to this property. Features are grouped by category for easy selection.')
+                                            ->columnSpanFull(),
+                                    ])->collapsible(),
+
+                                // Additional Fees & Charges
+                                Forms\Components\Section::make('Additional Fees & Charges')
+                                    ->description('Optional additional costs associated with this property')
+                                    ->schema([
+                                        Forms\Components\Grid::make([
+                                            'default' => 1,
+                                            'sm' => 2,
+                                        ])
+                                            ->schema([
+                                                Forms\Components\TextInput::make('service_charge')
+                                                    ->label('Service Charge')
+                                                    ->numeric()
+                                                    ->prefix('₦')
+                                                    ->helperText('Monthly or annual service charge')
+                                                    ->columnSpan(1),
+                                                    
+                                                Forms\Components\TextInput::make('agency_fee')
+                                                    ->label('Agency Fee')
+                                                    ->numeric()
+                                                    ->prefix('₦')
+                                                    ->helperText('One-time agency commission fee')
+                                                    ->columnSpan(1),
+                                                    
+                                                Forms\Components\TextInput::make('legal_fee')
+                                                    ->label('Legal Fee')
+                                                    ->numeric()
+                                                    ->prefix('₦')
+                                                    ->helperText('Legal documentation fees')
+                                                    ->columnSpan(1),
+                                                    
+                                                Forms\Components\TextInput::make('caution_deposit')
+                                                    ->label('Caution Deposit')
+                                                    ->numeric()
+                                                    ->prefix('₦')
+                                                    ->helperText('Refundable security deposit')
+                                                    ->columnSpan(1),
+                                            ]),
+                                    ])->collapsible(),
+
+                                // Additional Property Details
+                                Forms\Components\Section::make('Additional Details')
+                                    ->description('Optional additional property information')
+                                    ->schema([
+                                        Forms\Components\Grid::make([
+                                            'default' => 1,
+                                            'sm' => 2,
+                                        ])
+                                            ->schema([
+                                                Forms\Components\TextInput::make('year_built')
+                                                    ->label('Year Built')
+                                                    ->numeric()
+                                                    ->minValue(1800)
+                                                    ->maxValue(date('Y') + 5)
+                                                    ->placeholder('e.g., 2020')
+                                                    ->columnSpan(1),
+                                                    
+                                                Forms\Components\TextInput::make('landmark')
+                                                    ->label('Nearby Landmark')
+                                                    ->maxLength(255)
+                                                    ->placeholder('e.g., Near Shopping Mall, Close to School')
+                                                    ->columnSpan(1),
+                                            ]),
+                                        Forms\Components\Grid::make([
+                                            'default' => 1,
+                                            'sm' => 2,
+                                        ])
+                                            ->schema([
+                                                Forms\Components\TextInput::make('latitude')
+                                                    ->label('Latitude')
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->placeholder('e.g., 6.524379')
+                                                    ->helperText('GPS coordinates for map display')
+                                                    ->columnSpan(1),
+                                                    
+                                                Forms\Components\TextInput::make('longitude')
+                                                    ->label('Longitude')
+                                                    ->numeric()
+                                                    ->step(0.000001)
+                                                    ->placeholder('e.g., 3.379206')
+                                                    ->helperText('GPS coordinates for map display')
+                                                    ->columnSpan(1),
+                                            ]),
+                                        Forms\Components\TextInput::make('video_url')
+                                            ->label('Property Video URL')
+                                            ->url()
+                                            ->placeholder('https://youtube.com/watch?v=...')
+                                            ->helperText('YouTube or Vimeo video link for property tour')
+                                            ->columnSpanFull(),
+                                            
+                                        Forms\Components\TextInput::make('virtual_tour_url')
+                                            ->label('Virtual Tour URL')
+                                            ->url()
+                                            ->placeholder('https://...')
+                                            ->helperText('Link to 360° virtual tour or 3D walkthrough')
+                                            ->columnSpanFull(),
                                     ])->collapsible(),
 
                                 // Media Files
@@ -281,6 +403,10 @@ class PropertyResource extends Resource
                                                 '4:3', 
                                                 '1:1',
                                             ])
+                                            ->customProperties([
+                                                'caption' => null,
+                                                'alt_text' => null,
+                                            ])
                                             ->responsiveImages()
                                             ->maxSize(5120) // 5MB
                                             ->helperText('Upload a high-quality featured image for this property')
@@ -293,10 +419,14 @@ class PropertyResource extends Resource
                                             ->multiple()
                                             ->reorderable()
                                             ->imageEditor()
+                                            ->customProperties([
+                                                'caption' => null,
+                                                'alt_text' => null,
+                                            ])
                                             ->responsiveImages()
                                             ->maxFiles(20)
                                             ->maxSize(5120) // 5MB per file
-                                            ->helperText('Upload up to 20 high-quality images showcasing the property')
+                                            ->helperText('Upload up to 20 high-quality images showcasing the property. You can add captions to each image after upload.')
                                             ->columnSpanFull(),
                                             
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('floor_plans')

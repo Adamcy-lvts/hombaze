@@ -37,6 +37,7 @@ class Property extends Model implements HasMedia
         'parking_spaces',
         'year_built',
         'furnishing_status',
+        'compound_type',
         'address',
         'landmark',
         'latitude',
@@ -453,7 +454,16 @@ class Property extends Model implements HasMedia
     {
         $this
             ->addMediaConversion('preview')
-            ->fit(Fit::Contain, 300, 300)
+            ->width(300)
+            ->height(300)
+            ->sharpen(10)
+            ->nonQueued();
+
+        $this
+            ->addMediaConversion('thumb')
+            ->width(150)
+            ->height(150)
+            ->sharpen(10)
             ->nonQueued();
     }
 
@@ -468,7 +478,17 @@ class Property extends Model implements HasMedia
             return asset('images/property-placeholder.svg');
         }
 
-        return $conversion ? $media->getUrl($conversion) : $media->getUrl();
+        // If conversion is requested, check if it exists
+        if ($conversion) {
+            try {
+                return $media->getUrl($conversion);
+            } catch (\Exception $e) {
+                // If conversion doesn't exist, return original
+                return $media->getUrl();
+            }
+        }
+
+        return $media->getUrl();
     }
 
     /**
@@ -477,10 +497,22 @@ class Property extends Model implements HasMedia
     public function getGalleryImages(string $conversion = '')
     {
         return $this->getMedia('gallery')->map(function (Media $media) use ($conversion) {
+            $url = $media->getUrl();
+            
+            // If conversion is requested, try to get it
+            if ($conversion) {
+                try {
+                    $url = $media->getUrl($conversion);
+                } catch (\Exception $e) {
+                    // If conversion doesn't exist, use original
+                    $url = $media->getUrl();
+                }
+            }
+            
             return [
                 'id' => $media->id,
                 'name' => $media->name,
-                'url' => $conversion ? $media->getUrl($conversion) : $media->getUrl(),
+                'url' => $url,
                 'alt' => $media->getCustomProperty('alt', $this->title),
             ];
         });
@@ -564,5 +596,45 @@ class Property extends Model implements HasMedia
     public function getTotalMediaCount(): int
     {
         return $this->getMedia()->count();
+    }
+
+    /**
+     * Get compound type options
+     */
+    public static function getCompoundTypeOptions(): array
+    {
+        return [
+            'single_house' => 'Single House/Standalone',
+            'duplex_compound' => '2 Units in Compound',
+            'triplex_compound' => '3 Units in Compound',
+            'quad_compound' => '4 Units in Compound',
+            'small_estate' => 'Small Estate (5-10 units)',
+            'medium_estate' => 'Medium Estate (11-20 units)',
+            'large_estate' => 'Large Estate (21+ units)',
+            'apartment_complex' => 'Apartment Complex',
+            'mini_estate' => 'Mini Estate (2-4 blocks)',
+            'gated_community' => 'Gated Community/Estate',
+        ];
+    }
+
+    /**
+     * Get compound type label
+     */
+    public function getCompoundTypeLabel(): string
+    {
+        if (!$this->compound_type) {
+            return 'Not specified';
+        }
+
+        $options = self::getCompoundTypeOptions();
+        return $options[$this->compound_type] ?? ucfirst(str_replace('_', ' ', $this->compound_type));
+    }
+
+    /**
+     * Get compound type attribute (accessor)
+     */
+    public function getCompoundTypeLabelAttribute(): string
+    {
+        return $this->getCompoundTypeLabel();
     }
 }

@@ -1,9 +1,7 @@
 <!-- Clean Featured Properties Section -->
-<section class="relative py-32 overflow-hidden" id="featured-properties">
-    <!-- Enhanced Sophisticated Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-slate-50 via-white to-indigo-50/40"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,119,198,0.05),transparent_50%)] opacity-60"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_80%,rgba(16,185,129,0.05),transparent_50%)] opacity-40"></div>
+<section class="hidden md:block relative py-32 overflow-hidden" id="featured-properties">
+    <!-- Sophisticated Background -->
+    <div class="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50/30"></div>
 
     <!-- Floating Elements -->
     <div
@@ -62,6 +60,19 @@
 
         <!-- 3D Perspective Carousel Container with Side Navigation -->
         <div class="relative h-[900px] flex items-center justify-between max-w-7xl mx-auto px-4" data-animate="grid">
+            <!-- Dark Cloudy Background Behind Carousel Center -->
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div class="relative w-[600px] h-[700px]">
+                    <!-- Main dark cloud effect -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/15 via-slate-800/10 to-gray-900/15 rounded-[50%] blur-[120px] opacity-70"></div>
+                    <!-- Secondary cloud layers for depth -->
+                    <div class="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-gray-800/12 to-slate-900/8 rounded-full blur-[100px] opacity-60"></div>
+                    <div class="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tl from-slate-700/10 to-gray-800/12 rounded-full blur-[90px] opacity-50"></div>
+                    <!-- Center focus cloud -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-gray-900/8 via-slate-800/12 to-gray-900/8 rounded-full blur-[80px] opacity-40"></div>
+                </div>
+            </div>
+
             <!-- Left Navigation Button -->
             <button id="carousel-prev"
                 class="group relative p-4 bg-white/90 backdrop-blur-sm border border-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex-shrink-0">
@@ -83,8 +94,12 @@
                     <div class="property-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden w-96 h-[580px] transition-all duration-700 ease-out group"
                         data-index="0">
                         <!-- Enhanced Glassmorphism Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                        </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
@@ -126,26 +141,33 @@
 
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
-                            <div class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                                 <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
-                                         alt="Agent" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"
+                                        alt="Agent"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
                                     <!-- Verified Badge -->
-                                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center">
                                         <h4 class="text-sm font-semibold text-gray-800">Sarah Johnson</h4>
-                                        <span class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified Agent</span>
+                                        <span
+                                            class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified
+                                            Agent</span>
                                     </div>
                                     <p class="text-xs text-gray-600 mt-0.5">Premium Properties Ltd • 4.9★</p>
                                 </div>
                             </div>
-                            
+
                             <h3
                                 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
                                 Modern 2BR Apartment in Victoria Island
@@ -215,8 +237,12 @@
                     <div class="property-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden w-96 h-[580px] transition-all duration-700 ease-out group"
                         data-index="1">
                         <!-- Enhanced Glassmorphism Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                        </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
@@ -259,26 +285,33 @@
 
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
-                            <div class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                                 <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
-                                         alt="Agent" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
+                                        alt="Agent"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
                                     <!-- Verified Badge -->
-                                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center">
                                         <h4 class="text-sm font-semibold text-gray-800">Michael Chen</h4>
-                                        <span class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified Agent</span>
+                                        <span
+                                            class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified
+                                            Agent</span>
                                     </div>
                                     <p class="text-xs text-gray-600 mt-0.5">Elite Realty Group • 4.8★</p>
                                 </div>
                             </div>
-                            
+
                             <h3
                                 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
                                 Luxury 3BR House in Maitama
@@ -348,8 +381,12 @@
                     <div class="property-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden w-96 h-[580px] transition-all duration-700 ease-out group"
                         data-index="2">
                         <!-- Enhanced Glassmorphism Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                        </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
@@ -392,26 +429,33 @@
 
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
-                            <div class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                                 <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=40&h=40&fit=crop&crop=face" 
-                                         alt="Agent" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=40&h=40&fit=crop&crop=face"
+                                        alt="Agent"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
                                     <!-- Verified Badge -->
-                                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center">
                                         <h4 class="text-sm font-semibold text-gray-800">Diana Martinez</h4>
-                                        <span class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified Agent</span>
+                                        <span
+                                            class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified
+                                            Agent</span>
                                     </div>
                                     <p class="text-xs text-gray-600 mt-0.5">Luxury Homes Agency • 4.9★</p>
                                 </div>
                             </div>
-                            
+
                             <h3
                                 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
                                 Executive 4BR Duplex in GRA
@@ -481,8 +525,12 @@
                     <div class="property-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden w-96 h-[580px] transition-all duration-700 ease-out group"
                         data-index="3">
                         <!-- Enhanced Glassmorphism Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                        </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
@@ -525,26 +573,33 @@
 
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
-                            <div class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                                 <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=40&h=40&fit=crop&crop=face" 
-                                         alt="Agent" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                                    <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=40&h=40&fit=crop&crop=face"
+                                        alt="Agent"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
                                     <!-- Verified Badge -->
-                                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center">
                                         <h4 class="text-sm font-semibold text-gray-800">James Wilson</h4>
-                                        <span class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified Agent</span>
+                                        <span
+                                            class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified
+                                            Agent</span>
                                     </div>
                                     <p class="text-xs text-gray-600 mt-0.5">Metropolitan Properties • 4.7★</p>
                                 </div>
                             </div>
-                            
+
                             <h3
                                 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
                                 Luxury Penthouse in Ikoyi
@@ -614,8 +669,12 @@
                     <div class="property-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden w-96 h-[580px] transition-all duration-700 ease-out group"
                         data-index="4">
                         <!-- Enhanced Glassmorphism Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                        </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
@@ -658,26 +717,33 @@
 
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
-                            <div class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                                 <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face" 
-                                         alt="Agent" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face"
+                                        alt="Agent"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
                                     <!-- Verified Badge -->
-                                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center">
                                         <h4 class="text-sm font-semibold text-gray-800">Lisa Thompson</h4>
-                                        <span class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified Agent</span>
+                                        <span
+                                            class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified
+                                            Agent</span>
                                     </div>
                                     <p class="text-xs text-gray-600 mt-0.5">Urban Living Experts • 4.8★</p>
                                 </div>
                             </div>
-                            
+
                             <h3
                                 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
                                 Modern Studio in Surulere
@@ -747,8 +813,12 @@
                     <div class="property-card absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-xl border border-white/40 rounded-3xl shadow-2xl overflow-hidden w-96 h-[580px] transition-all duration-700 ease-out group"
                         data-index="5">
                         <!-- Enhanced Glassmorphism Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none"></div>
-                        <div class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none"></div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                        </div>
+                        <div
+                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                        </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
@@ -791,26 +861,33 @@
 
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
-                            <div class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                            <div
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                                 <div class="relative">
-                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face" 
-                                         alt="Agent" class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
+                                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face"
+                                        alt="Agent"
+                                        class="w-10 h-10 rounded-full object-cover border-2 border-white/30">
                                     <!-- Verified Badge -->
-                                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <div
+                                        class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full flex items-center justify-center">
                                         <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                                            <path fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd" />
                                         </svg>
                                     </div>
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center">
                                         <h4 class="text-sm font-semibold text-gray-800">David Brown</h4>
-                                        <span class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified Agent</span>
+                                        <span
+                                            class="ml-2 text-xs px-2 py-0.5 bg-blue-100/80 text-blue-700 rounded-full font-medium">Verified
+                                            Agent</span>
                                     </div>
                                     <p class="text-xs text-gray-600 mt-0.5">Coastal Properties Inc • 4.9★</p>
                                 </div>
                             </div>
-                            
+
                             <h3
                                 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-700 transition-colors duration-300">
                                 Family Townhouse in Lekki
@@ -934,13 +1011,18 @@
         transform-style: preserve-3d !important;
     }
 
+    /* Glassmorphism card effects */
     .property-card {
-        position: absolute !important;
-        top: 50% !important;
-        left: 50% !important;
-        transform-origin: center center !important;
-        backface-visibility: visible !important;
-        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+        backdrop-filter: blur(25px) saturate(1.5) !important;
+        -webkit-backdrop-filter: blur(25px) saturate(1.5) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.25),
+            0 0 0 1px rgba(255, 255, 255, 0.2) inset !important;
+        background: rgba(255, 255, 255, 0.4) !important;
+        transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+            background 0.5s ease,
+            backdrop-filter 0.5s ease,
+            -webkit-backdrop-filter 0.5s ease !important;
     }
 
     /* Default 3D positioning - cards start in proper 3D arrangement (larger scale) */
@@ -985,21 +1067,53 @@
         filter: brightness(1.05) saturate(1.1) !important;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
     }
-    
-    /* Glassmorphism card effects */
-    .property-card {
-        backdrop-filter: blur(20px) !important;
-        -webkit-backdrop-filter: blur(20px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+
+    /* Enhanced glassmorphism for center card (any card in center position) */
+    .property-card.center-card {
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(50px) saturate(2) !important;
+        -webkit-backdrop-filter: blur(50px) saturate(2) !important;
+        border: 1px solid rgba(255, 255, 255, 0.8) !important;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35),
+            0 0 0 1px rgba(255, 255, 255, 0.5) inset,
+            0 0 80px rgba(255, 255, 255, 0.5) inset,
+            0 0 120px rgba(100, 200, 255, 0.3) !important;
+        overflow: hidden !important;
     }
-    
-    /* Enhanced agent profile section */
-    .property-card .agent-profile {
-        background: rgba(255, 255, 255, 0.1) !important;
-        backdrop-filter: blur(10px) !important;
-        -webkit-backdrop-filter: blur(10px) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+
+   /* Enhanced text readability for center card */
+    .property-card.center-card h3,
+    .property-card.center-card h4,
+    .property-card.center-card p,
+    .property-card.center-card span {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+    /* Additional backdrop blur for center card content area */
+    .property-card.center-card .p-6 {
+        background: rgba(255, 255, 255, 0.25) !important;
+        backdrop-filter: blur(30px) !important;
+        -webkit-backdrop-filter: blur(30px) !important;
+        border-radius: 0 0 24px 24px !important;
+    }
+
+    /* Opaque background overlay for center card to prevent text bleed-through */
+    .property-card.center-card::before {
+        content: '' !important;
+        position: absolute !important;
+        inset: 0 !important;
+        background: linear-gradient(to bottom,
+                rgba(255, 255, 255, 0.9) 0%,
+                rgba(248, 250, 252, 0.95) 100%) !important;
+        border-radius: 24px !important;
+        z-index: 1 !important;
+    }
+
+    /* Ensure all content is above the background overlay */
+    .property-card.center-card>* {
+        position: relative !important;
+        z-index: 2 !important;
     }
 
     /* Floating Elements Animation */
@@ -1043,12 +1157,12 @@
         backdrop-filter: blur(25px) !important;
         -webkit-backdrop-filter: blur(25px) !important;
     }
-    
+
     /* Agent verification badge animation */
     .property-card .agent-profile img {
         transition: all 0.3s ease;
     }
-    
+
     .property-card:hover .agent-profile img {
         transform: scale(1.05);
     }
@@ -1063,6 +1177,32 @@
     @media (max-width: 768px) {
         .property-card:hover {
             transform: none;
+        }
+    }
+
+    /* Shimmer effect for center card */
+    .property-card.center-card::after {
+        content: '' !important;
+        position: absolute !important;
+        top: -50% !important;
+        left: -50% !important;
+        width: 200% !important;
+        height: 200% !important;
+        background: linear-gradient(45deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 70%) !important;
+        animation: shimmer 3s infinite !important;
+        pointer-events: none !important;
+    }
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%) translateY(-100%) !important;
+        }
+
+        100% {
+            transform: translateX(100%) translateY(100%) !important;
         }
     }
 </style>

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Str;
 
 class Area extends Model
@@ -25,7 +26,23 @@ class Area extends Model
         'longitude',
         'is_active',
         'sort_order',
-        'amenities'
+        'amenities',
+        // Neighborhood data
+        'education_facilities',
+        'healthcare_facilities',
+        'shopping_facilities', 
+        'transport_facilities',
+        'security_rating',
+        'security_features',
+        'crime_rate',
+        'population',
+        'average_rent',
+        'walkability_score',
+        'lifestyle_tags',
+        'utilities',
+        'road_condition',
+        'electricity_supply',
+        'water_supply'
     ];
 
     /**
@@ -38,7 +55,23 @@ class Area extends Model
         'longitude' => 'decimal:8',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
-        'amenities' => 'array'
+        'amenities' => 'array',
+        // Neighborhood data
+        'education_facilities' => 'array',
+        'healthcare_facilities' => 'array',
+        'shopping_facilities' => 'array',
+        'transport_facilities' => 'array',
+        'security_rating' => 'decimal:1',
+        'security_features' => 'array',
+        'crime_rate' => 'decimal:2',
+        'population' => 'integer',
+        'average_rent' => 'decimal:2',
+        'walkability_score' => 'decimal:1',
+        'lifestyle_tags' => 'array',
+        'utilities' => 'array',
+        'road_condition' => 'array',
+        'electricity_supply' => 'array',
+        'water_supply' => 'array'
     ];
 
     /**
@@ -72,9 +105,9 @@ class Area extends Model
     /**
      * Relationship: State through city
      */
-    public function state(): BelongsTo
+    public function state()
     {
-        return $this->city()->state();
+        return $this->hasOneThrough(State::class, City::class, 'id', 'id', 'city_id', 'state_id');
     }
 
     /**
@@ -191,6 +224,111 @@ class Area extends Model
             'cinema' => 'Cinema/Entertainment',
             'pharmacy' => 'Pharmacy'
         ];
+    }
+
+    /**
+     * Get security rating display
+     */
+    public function getSecurityRatingDisplayAttribute(): string
+    {
+        if (!$this->security_rating) return 'Not Rated';
+        
+        $rating = $this->security_rating;
+        
+        if ($rating >= 9.0) return 'Excellent';
+        if ($rating >= 8.0) return 'Very Good';
+        if ($rating >= 7.0) return 'Good';
+        if ($rating >= 6.0) return 'Fair';
+        if ($rating >= 5.0) return 'Average';
+        return 'Below Average';
+    }
+    
+    /**
+     * Get security rating stars (out of 5)
+     */
+    public function getSecurityStarsAttribute(): int
+    {
+        if (!$this->security_rating) return 0;
+        return (int) round(($this->security_rating / 10) * 5);
+    }
+    
+    /**
+     * Get formatted average rent
+     */
+    public function getFormattedAverageRentAttribute(): string
+    {
+        if (!$this->average_rent) return 'N/A';
+        return '₦' . number_format($this->average_rent, 0);
+    }
+    
+    /**
+     * Get walkability score display
+     */
+    public function getWalkabilityDisplayAttribute(): string
+    {
+        if (!$this->walkability_score) return 'Not Rated';
+        
+        $score = $this->walkability_score;
+        if ($score >= 9.0) return 'Very Walkable';
+        if ($score >= 7.0) return 'Walkable';
+        if ($score >= 5.0) return 'Somewhat Walkable';
+        return 'Car Dependent';
+    }
+    
+    /**
+     * Get education facilities with distances
+     */
+    public function getEducationFacilitiesAttribute($value)
+    {
+        if (!$value) {
+            return [
+                ['name' => 'Green Valley Primary', 'distance' => '0.8km', 'type' => 'primary'],
+                ['name' => 'Excellence Secondary', 'distance' => '1.2km', 'type' => 'secondary']
+            ];
+        }
+        return json_decode($value, true);
+    }
+    
+    /**
+     * Get healthcare facilities with distances
+     */
+    public function getHealthcareFacilitiesAttribute($value)
+    {
+        if (!$value) {
+            return [
+                ['name' => 'General Hospital', 'distance' => '1.5km', 'type' => 'hospital'],
+                ['name' => 'MediCare Clinic', 'distance' => '0.4km', 'type' => 'clinic']
+            ];
+        }
+        return json_decode($value, true);
+    }
+    
+    /**
+     * Get shopping facilities with distances
+     */
+    public function getShoppingFacilitiesAttribute($value)
+    {
+        if (!$value) {
+            return [
+                ['name' => 'City Mall', 'distance' => '2.1km', 'type' => 'mall'],
+                ['name' => 'Central Market', 'distance' => '0.5km', 'type' => 'market']
+            ];
+        }
+        return json_decode($value, true);
+    }
+    
+    /**
+     * Get transport facilities with distances
+     */
+    public function getTransportFacilitiesAttribute($value)
+    {
+        if (!$value) {
+            return [
+                ['name' => 'Express Road', 'distance' => '0.3km', 'type' => 'road'],
+                ['name' => 'BRT Station', 'distance' => '0.7km', 'type' => 'brt']
+            ];
+        }
+        return json_decode($value, true);
     }
 
     /**

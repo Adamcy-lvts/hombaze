@@ -199,6 +199,17 @@ class PropertyResource extends Resource
                                                         'sm' => 2,
                                                         'lg' => 1,
                                                     ]),
+                                                Forms\Components\Select::make('compound_type')
+                                                    ->label('Compound/Estate Type')
+                                                    ->options(\App\Models\Property::getCompoundTypeOptions())
+                                                    ->searchable()
+                                                    ->placeholder('Select compound type...')
+                                                    ->helperText('Specify if the property is in a compound, estate, or standalone')
+                                                    ->columnSpan([
+                                                        'default' => 1,
+                                                        'sm' => 2,
+                                                        'lg' => 1,
+                                                    ]),
                                             ]),
                                     ])->collapsible(),
 

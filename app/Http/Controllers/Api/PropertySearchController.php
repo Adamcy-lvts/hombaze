@@ -272,11 +272,14 @@ class PropertySearchController extends Controller
             ->take($limit)
             ->get()
             ->map(function ($property) {
+                $cityName = $property->city ? $property->city->name : 'Unknown City';
+                $stateName = $property->state ? $property->state->name : 'Unknown State';
+                
                 return [
                     'type' => 'property',
                     'id' => $property->id,
                     'label' => $property->title,
-                    'subtitle' => $property->city->name . ', ' . $property->state->name,
+                    'subtitle' => $cityName . ', ' . $stateName,
                     'price' => $property->formatted_price,
                     'image' => $property->getFeaturedImageUrl('thumb'),
                     'value' => $property->title,

@@ -23,23 +23,23 @@
 
             <!-- Desktop Navigation -->
             <div class="hidden lg:flex items-center space-x-1">
-                <a href="#properties" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                <a href="{{ route('properties.search') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">Properties</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
-                <a href="#agents" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                <a href="{{ route('agents') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">Agents</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
-                <a href="#agencies" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                <a href="{{ route('agencies') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">Agencies</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
-                <a href="#about" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                <a href="{{ route('about') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">About</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
-                <a href="#contact" class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                <a href="{{ route('contact') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">Contact</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
@@ -79,41 +79,42 @@
 
     <!-- Premium Mobile Menu -->
     <div x-show="mobileMenuOpen" 
+         x-cloak
          x-transition:enter="transition ease-out duration-500"
          x-transition:enter-start="opacity-0 transform -translate-y-full scale-95"
          x-transition:enter-end="opacity-1 transform translate-y-0 scale-100" 
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="opacity-1 transform translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 transform -translate-y-full scale-95"
-         class="lg:hidden absolute top-full left-0 right-0 backdrop-blur-2xl bg-slate-900/95 border-t border-white/10 shadow-2xl">
+         class="lg:hidden fixed top-20 left-0 right-0 z-[9999999] backdrop-blur-2xl bg-slate-900/95 border-t border-white/10 shadow-2xl">
         <div class="px-6 py-8 space-y-6">
             <!-- Mobile Navigation Links -->
             <div class="space-y-2">
-                <a href="#properties" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                <a href="{{ route('properties.search') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
                     <span class="flex-1">Properties</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
-                <a href="#agents" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                <a href="{{ route('agents') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
                     <span class="flex-1">Agents</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
-                <a href="#agencies" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                <a href="{{ route('agencies') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
                     <span class="flex-1">Agencies</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
-                <a href="#about" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                <a href="{{ route('about') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
                     <span class="flex-1">About</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
-                <a href="#contact" class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                <a href="{{ route('contact') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
                     <span class="flex-1">Contact</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -134,7 +135,14 @@
     </div>
 </nav>
 
+<!-- Navigation Spacer to prevent content overlap -->
+<div class="h-20"></div>
+
 <style>
+    [x-cloak] {
+        display: none !important;
+    }
+    
     .glass-nav {
         background: rgba(15, 23, 42, 0.95);
         backdrop-filter: blur(24px);

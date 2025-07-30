@@ -1,44 +1,44 @@
 import './bootstrap';
 
 // GSAP Landing Page Animations and Interactions
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Check if GSAP is loaded
     if (typeof gsap !== 'undefined') {
         // Register GSAP plugins
         gsap.registerPlugin(ScrollTrigger);
-        
+
         // Hero Section Animations
         const heroTimeline = gsap.timeline();
-        
+
         // Only animate if elements exist
         if (document.querySelector('.hero-title')) {
             heroTimeline
                 .from('.hero-title', {
-                    duration: 1, 
-                    y: 50, 
-                    opacity: 0, 
+                    duration: 1,
+                    y: 50,
+                    opacity: 0,
                     ease: 'power2.out'
                 })
                 .from('.hero-subtitle', {
-                    duration: 0.8, 
-                    y: 30, 
-                    opacity: 0, 
+                    duration: 0.8,
+                    y: 30,
+                    opacity: 0,
                     ease: 'power2.out'
                 }, '-=0.5')
                 .from('.hero-search', {
-                    duration: 0.8, 
-                    y: 30, 
-                    opacity: 0, 
+                    duration: 0.8,
+                    y: 30,
+                    opacity: 0,
                     ease: 'power2.out'
                 }, '-=0.3')
                 .from('.hero-stats', {
-                    duration: 0.8, 
-                    y: 20, 
-                    opacity: 0, 
+                    duration: 0.8,
+                    y: 20,
+                    opacity: 0,
                     ease: 'power2.out'
                 }, '-=0.2');
         }
-        
+
         // Scroll-triggered animations
         gsap.utils.toArray('.animate-on-scroll').forEach(element => {
             gsap.from(element, {
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-        
+
         // CTA Cards hover animations
         gsap.utils.toArray('.cta-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ease: 'power2.out'
                 });
             });
-            
+
             card.addEventListener('mouseleave', () => {
                 gsap.to(card, {
                     duration: 0.3,
@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
         });
-        
+
         // Feature cards stagger animation
         if (document.querySelector('.feature-card')) {
             gsap.from('.feature-card', {
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         }
-        
+
         // Statistics counter animation
         gsap.utils.toArray('.stat-number').forEach(stat => {
             ScrollTrigger.create({
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 onEnter: () => {
                     const endValue = parseInt(stat.textContent.replace(/,/g, ''));
                     const duration = 2;
-                    
+
                     gsap.fromTo(stat, {
                         textContent: 0
                     }, {
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         ease: 'power2.out',
                         snap: { textContent: 1 },
                         stagger: 0.1,
-                        onUpdate: function() {
+                        onUpdate: function () {
                             stat.textContent = Math.ceil(this.targets()[0].textContent).toLocaleString();
                         }
                     });
@@ -116,25 +116,25 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     // Mobile Menu Toggle (vanilla JS)
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
-    
+
     if (mobileMenuButton && mobileMenu) {
         mobileMenuButton.addEventListener('click', toggleMobileMenu);
     }
-    
+
     function toggleMobileMenu() {
         const isOpen = !mobileMenu.classList.contains('hidden');
-        
+
         if (isOpen) {
             // Close menu
             if (typeof gsap !== 'undefined') {
                 gsap.to(mobileMenu, {
-                    duration: 0.3, 
-                    opacity: 0, 
-                    y: -10, 
+                    duration: 0.3,
+                    opacity: 0,
+                    y: -10,
                     ease: 'power2.out',
                     onComplete: () => mobileMenu.classList.add('hidden')
                 });
@@ -145,35 +145,35 @@ document.addEventListener('DOMContentLoaded', function() {
             // Open menu
             mobileMenu.classList.remove('hidden');
             if (typeof gsap !== 'undefined') {
-                gsap.fromTo(mobileMenu, 
-                    {opacity: 0, y: -10}, 
-                    {duration: 0.3, opacity: 1, y: 0, ease: 'power2.out'}
+                gsap.fromTo(mobileMenu,
+                    { opacity: 0, y: -10 },
+                    { duration: 0.3, opacity: 1, y: 0, ease: 'power2.out' }
                 );
             }
         }
     }
-    
+
     // Property Search Form Handling
     const searchForm = document.getElementById('property-search-form');
     if (searchForm) {
-        searchForm.addEventListener('submit', function(e) {
+        searchForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             const formData = new FormData(this);
             const params = new URLSearchParams();
-            
+
             // Only add non-empty values to URL params
             for (let [key, value] of formData.entries()) {
                 if (value && value.trim() !== '') {
                     params.append(key, value);
                 }
             }
-            
+
             // Redirect to search results
             window.location.href = `/properties?${params.toString()}`;
         });
     }
-    
+
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -187,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Featured Properties Section Animations
     if (document.querySelector('#featured-properties')) {
         // Immediately ensure all property cards are visible
@@ -218,7 +218,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     trigger: '[data-animate="grid"]',
                     start: 'top 85%'
                 },
-                onComplete: function() {
+                onComplete: function () {
                     // Ensure all cards are fully visible after animation
                     gsap.set('.property-card', { opacity: 1 });
                 }
@@ -247,18 +247,18 @@ document.addEventListener('DOMContentLoaded', function() {
         const prevBtn = document.getElementById('carousel-prev');
         const nextBtn = document.getElementById('carousel-next');
         const dotsContainer = document.getElementById('carousel-dots');
-        
+
         if (carousel && prevBtn && nextBtn && dotsContainer) {
             const cards = carousel.querySelectorAll('.property-card');
             const totalCards = cards.length;
             let currentIndex = 0;
-            
+
             // Track zoom state for center card
             let isZoomed = false;
-            
+
             // 3D Transform positions - direct inline style approach (larger scale)
             const getTransform = (position, centerZoom = false) => {
-                switch(position) {
+                switch (position) {
                     case 0: // Center - main card
                         const scale = centerZoom ? '1.35' : '1.2';
                         return {
@@ -298,11 +298,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         };
                 }
             };
-            
+
             // Create pagination dots
             const createDots = () => {
                 dotsContainer.innerHTML = '';
-                
+
                 for (let i = 0; i < totalCards; i++) {
                     const dot = document.createElement('button');
                     dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === 0 ? 'bg-blue-600' : 'bg-gray-300'}`;
@@ -310,103 +310,110 @@ document.addEventListener('DOMContentLoaded', function() {
                     dotsContainer.appendChild(dot);
                 }
             };
-            
+
             // Update 3D carousel positions with direct transforms
             const updateCarousel = () => {
                 cards.forEach((card, index) => {
                     // Calculate relative position to current center
                     let position = index - currentIndex;
-                    
+
                     // Wrap positions for circular effect
                     if (position > 2) position -= totalCards;
                     if (position < -2) position += totalCards;
-                    
+
                     // Get transform styles for this position (with zoom state for center)
                     const styles = getTransform(position, position === 0 && isZoomed);
-                    
+
                     // Apply styles directly - CSS transition handles the animation
                     card.style.setProperty('transform', styles.transform, 'important');
                     card.style.setProperty('opacity', styles.opacity, 'important');
                     card.style.setProperty('z-index', styles.zIndex, 'important');
-                    
+
                     // Add pointer cursor for all cards
                     card.style.cursor = 'pointer';
+
+                    // Toggle center-card class for enhanced glassmorphism
+                    if (position === 0) {
+                        card.classList.add('center-card');
+                    } else {
+                        card.classList.remove('center-card');
+                    }
                 });
-                
+
                 // Update dots
                 const dots = dotsContainer.querySelectorAll('button');
                 dots.forEach((dot, index) => {
                     dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-blue-600' : 'bg-gray-300'}`;
                 });
             };
-            
+
             // Toggle zoom for center card
             const toggleZoom = () => {
                 isZoomed = !isZoomed;
                 updateCarousel();
             };
-            
+
             // Reset zoom when navigating
             const resetZoom = () => {
                 if (isZoomed) {
                     isZoomed = false;
                 }
             };
-            
+
             // Go to specific slide
             const goToSlide = (index) => {
                 resetZoom();
                 currentIndex = index;
                 updateCarousel();
             };
-            
+
             // Next slide
             const nextSlide = () => {
                 resetZoom();
                 currentIndex = (currentIndex + 1) % totalCards;
                 updateCarousel();
             };
-            
+
             // Previous slide
             const prevSlide = () => {
                 resetZoom();
                 currentIndex = (currentIndex - 1 + totalCards) % totalCards;
                 updateCarousel();
             };
-            
+
             // Event listeners
             nextBtn.addEventListener('click', nextSlide);
             prevBtn.addEventListener('click', prevSlide);
-            
+
             // Touch support
             let startX = 0;
             let startY = 0;
             let isDragging = false;
-            
+
             carousel.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
                 startY = e.touches[0].clientY;
                 isDragging = true;
             });
-            
+
             carousel.addEventListener('touchmove', (e) => {
                 if (!isDragging) return;
-                
+
                 const deltaX = Math.abs(e.touches[0].clientX - startX);
                 const deltaY = Math.abs(e.touches[0].clientY - startY);
-                
+
                 if (deltaX > deltaY && deltaX > 10) {
                     e.preventDefault();
                 }
             });
-            
+
             carousel.addEventListener('touchend', (e) => {
                 if (!isDragging) return;
                 isDragging = false;
-                
+
                 const endX = e.changedTouches[0].clientX;
                 const diffX = startX - endX;
-                
+
                 if (Math.abs(diffX) > 50) {
                     if (diffX > 0) {
                         nextSlide();
@@ -415,18 +422,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
-            
+
             // Keyboard navigation
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowLeft') prevSlide();
                 if (e.key === 'ArrowRight') nextSlide();
             });
-            
+
             // Click on cards - center card zooms, side cards navigate
             cards.forEach((card, index) => {
                 card.addEventListener('click', (e) => {
                     e.preventDefault();
-                    
+
                     // Check if this card is currently in the center position
                     if (index === currentIndex) {
                         // Center card - toggle zoom
@@ -437,23 +444,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             });
-            
+
             // Simple initialization - CSS provides good default, JS enhances
             const initializeCarousel = () => {
                 // Reset state
                 currentIndex = 0;
                 isZoomed = false;
-                
+
                 // Initialize UI
                 createDots();
-                
+
                 // Immediate update to activate JavaScript control
                 updateCarousel();
             };
-            
+
             // Initialize when ready
             setTimeout(initializeCarousel, 50);
-            
+
             // Auto-rotate every 5 seconds (optional)
             // setInterval(() => {
             //     nextSlide();
@@ -466,7 +473,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (card.closest('#properties-carousel')) {
                 return; // Skip carousel cards
             }
-            
+
             card.addEventListener('mouseenter', () => {
                 gsap.to(card, {
                     duration: 0.3,
@@ -475,7 +482,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ease: 'power2.out'
                 });
             });
-            
+
             card.addEventListener('mouseleave', () => {
                 gsap.to(card, {
                     duration: 0.3,
@@ -486,7 +493,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
+
     // Search input focus animations
     const searchInputs = document.querySelectorAll('.search-input');
     searchInputs.forEach(input => {
@@ -499,7 +506,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             }
         });
-        
+
         input.addEventListener('blur', () => {
             if (typeof gsap !== 'undefined') {
                 gsap.to(input.parentElement, {
@@ -510,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    
+
     // Lazy loading for images
     if ('IntersectionObserver' in window) {
         const imageObserver = new IntersectionObserver((entries, observer) => {
@@ -523,38 +530,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-        
+
         document.querySelectorAll('img[data-src]').forEach(img => {
             imageObserver.observe(img);
         });
     }
-    
+
     // Navbar scroll effect - query fresh each time
     let lastScrollTop = 0;
-    
+
     window.addEventListener('scroll', () => {
         // Query navbar fresh on each scroll to avoid stale references
         const navbar = document.querySelector('#navbar') || document.querySelector('#main-navigation') || document.querySelector('nav');
-        
+
         if (!navbar) {
             return; // Silently return if no navbar found
         }
-        
+
         const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-        
+
         try {
             if (scrollTop > lastScrollTop) {
                 // Scrolling down
                 if (typeof gsap !== 'undefined' && navbar.offsetHeight) {
-                    gsap.to(navbar, {duration: 0.3, y: -navbar.offsetHeight, ease: 'power2.out'});
+                    gsap.to(navbar, { duration: 0.3, y: -navbar.offsetHeight, ease: 'power2.out' });
                 }
             } else {
                 // Scrolling up
                 if (typeof gsap !== 'undefined') {
-                    gsap.to(navbar, {duration: 0.3, y: 0, ease: 'power2.out'});
+                    gsap.to(navbar, { duration: 0.3, y: 0, ease: 'power2.out' });
                 }
             }
-            
+
             // Add shadow on scroll
             if (scrollTop > 50) {
                 navbar.classList.add('shadow-lg');
@@ -564,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (error) {
             // Silently catch any errors to prevent console spam
         }
-        
+
         lastScrollTop = scrollTop;
     });
 });

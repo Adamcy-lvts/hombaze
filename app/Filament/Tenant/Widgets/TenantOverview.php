@@ -42,7 +42,7 @@ class TenantOverview extends BaseWidget
                     $leaseTimeRemaining = $daysRemaining . ' days remaining';
                     $leaseEndingSoon = true;
                 } elseif ($daysRemaining <= 365) {
-                    $leaseTimeRemaining = ceil($daysRemaining / 30) . ' months remaining';
+                    $leaseTimeRemaining = floor($daysRemaining / 30) . ' months remaining';
                 } else {
                     $leaseTimeRemaining = floor($daysRemaining / 365) . ' years remaining';
                 }

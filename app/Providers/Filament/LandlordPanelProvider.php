@@ -28,9 +28,11 @@ class LandlordPanelProvider extends PanelProvider
             ->login()
             ->registration(\App\Filament\Landlord\Pages\Auth\Register::class)
             ->colors([
-                'primary' => Color::Orange,
+                'primary' => Color::Green,
             ])
+            ->viteTheme('resources/css/filament/landlord/theme.css')
             ->discoverResources(in: app_path('Filament/Landlord/Resources'), for: 'App\\Filament\\Landlord\\Resources')
+            ->discoverPages(in: app_path('Filament/Landlord/Pages'), for: 'App\\Filament\\Landlord\\Pages')
             ->pages([
                 \App\Filament\Landlord\Pages\Dashboard::class,
             ])
@@ -52,6 +54,7 @@ class LandlordPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\RequireProfileCompletion::class,
             ]);
     }
 }

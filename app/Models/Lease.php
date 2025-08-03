@@ -37,6 +37,7 @@ class Lease extends Model
         'move_in_date',
         'move_out_date',
         'notes',
+        'template_id',
     ];
 
     protected $casts = [
@@ -161,5 +162,13 @@ class Lease extends Model
     public function isExpiringSoon(): bool
     {
         return $this->end_date && $this->end_date->diffInDays(now()) <= 30 && $this->end_date > now();
+    }
+
+    /**
+     * Lease template used to create this lease
+     */
+    public function template(): BelongsTo
+    {
+        return $this->belongsTo(LeaseTemplate::class, 'template_id');
     }
 }

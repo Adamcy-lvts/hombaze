@@ -88,4 +88,24 @@ class Tenant extends Model
     {
         return $this->belongsTo(User::class, 'landlord_id');
     }
+
+    /**
+     * Get the current active lease for this tenant
+     */
+    public function currentLease()
+    {
+        return $this->leases()
+            ->where('status', 'active')
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
+    }
+
+    /**
+     * Check if tenant has an active lease
+     */
+    public function hasActiveLease(): bool
+    {
+        return $this->currentLease() !== null;
+    }
 }

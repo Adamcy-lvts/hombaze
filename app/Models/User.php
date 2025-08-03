@@ -41,6 +41,10 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
         'is_active',
         'preferences',
         'last_login_at',
+        'profile_completed',
+        'profile_completed_at',
+        'profile_completion_steps',
+        'profile_completion_percentage',
     ];
 
     /**
@@ -64,10 +68,13 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
             'email_verified_at' => 'datetime',
             'phone_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
+            'profile_completed_at' => 'datetime',
             'password' => 'hashed',
             'is_verified' => 'boolean',
             'is_active' => 'boolean',
+            'profile_completed' => 'boolean',
             'preferences' => 'array',
+            'profile_completion_steps' => 'array',
         ];
     }
 
@@ -101,6 +108,14 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     public function tenant(): HasOne
     {
         return $this->hasOne(Tenant::class);
+    }
+
+    /**
+     * Relationship: User's property owner profile
+     */
+    public function propertyOwnerProfile(): HasOne
+    {
+        return $this->hasOne(PropertyOwner::class);
     }
 
     /**
@@ -377,5 +392,126 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar;
+    }
+
+    // =================================================================
+    // PROFILE COMPLETION TRACKING
+    // =================================================================
+
+    /**
+     * Get profile completion steps for the user's type
+     */
+    public function getRequiredProfileSteps(): array
+    {
+        return match($this->user_type) {
+            'agent' => [
+                'basic_info' => 'Complete basic information',
+                'professional_details' => 'Add professional details',
+                'certifications' => 'Upload certifications',
+                'service_areas' => 'Define service areas',
+                'profile_photo' => 'Upload profile photo',
+            ],
+            'property_owner' => [
+                'basic_info' => 'Complete basic information', 
+                'contact_details' => 'Verify contact details',
+                'address' => 'Add address information',
+                'id_verification' => 'Upload ID verification',
+                'profile_photo' => 'Upload profile photo',
+            ],
+            'agency_owner' => [
+                'basic_info' => 'Complete basic information',
+                'agency_details' => 'Add agency information',
+                'business_registration' => 'Upload business documents',
+                'team_setup' => 'Set up team members',
+                'profile_photo' => 'Upload profile photo',
+            ],
+            'tenant' => [
+                'basic_info' => 'Complete basic information',
+                'preferences' => 'Set property preferences',
+                'employment_info' => 'Add employment details',
+                'references' => 'Provide references',
+                'profile_photo' => 'Upload profile photo',
+            ],
+            default => ['basic_info' => 'Complete basic information'],
+        };
+    }
+
+    /**
+     * Calculate profile completion percentage
+     */
+    public function calculateProfileCompletion(): int
+    {
+        $requiredSteps = $this->getRequiredProfileSteps();
+        $completedSteps = $this->profile_completion_steps ?? [];
+        
+        if (empty($requiredSteps)) {
+            return 100;
+        }
+
+        $completedCount = count(array_intersect(array_keys($requiredSteps), $completedSteps));
+        return (int) round(($completedCount / count($requiredSteps)) * 100);
+    }
+
+    /**
+     * Mark a profile completion step as completed
+     */
+    public function markStepCompleted(string $step): void
+    {
+        $completedSteps = $this->profile_completion_steps ?? [];
+        
+        if (!in_array($step, $completedSteps)) {
+            $completedSteps[] = $step;
+            $this->profile_completion_steps = $completedSteps;
+        }
+
+        $this->profile_completion_percentage = $this->calculateProfileCompletion();
+        
+        // Check if profile is fully completed
+        if ($this->profile_completion_percentage >= 100) {
+            $this->profile_completed = true;
+            $this->profile_completed_at = now();
+        }
+
+        $this->save();
+    }
+
+    /**
+     * Check if a specific step is completed
+     */
+    public function isStepCompleted(string $step): bool
+    {
+        $completedSteps = $this->profile_completion_steps ?? [];
+        return in_array($step, $completedSteps);
+    }
+
+    /**
+     * Get remaining profile steps
+     */
+    public function getRemainingSteps(): array
+    {
+        $requiredSteps = $this->getRequiredProfileSteps();
+        $completedSteps = $this->profile_completion_steps ?? [];
+        
+        return array_diff_key($requiredSteps, array_flip($completedSteps));
+    }
+
+    /**
+     * Check if profile completion is required for panel access
+     */
+    public function requiresProfileCompletion(): bool
+    {
+        return !$this->profile_completed && in_array($this->user_type, [
+            'agent', 'property_owner', 'agency_owner', 'tenant'
+        ]);
+    }
+
+    /**
+     * Initialize basic profile completion steps after registration
+     */
+    public function initializeProfileCompletion(): void
+    {
+        $this->profile_completion_steps = ['basic_info']; // Mark basic registration as completed
+        $this->profile_completion_percentage = $this->calculateProfileCompletion();
+        $this->save();
     }
 }

@@ -2,24 +2,25 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\AuthenticateSession;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages;
 use Filament\Panel;
+use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Routing\Middleware\SubstituteBindings;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\Authenticate;
 use App\Filament\Tenant\Widgets\TenantOverview;
+use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Cookie\Middleware\EncryptCookies;
+use Filament\Http\Middleware\AuthenticateSession;
+use App\Filament\Tenant\Widgets\LeaseStatusWidget;
 use App\Filament\Tenant\Widgets\LeaseRenewalWidget;
-use App\Filament\Tenant\Pages\Auth\Register;
+use App\Filament\Tenant\Widgets\TenantStatusInfoWidget;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
 class TenantPanelProvider extends PanelProvider
 {
@@ -29,6 +30,7 @@ class TenantPanelProvider extends PanelProvider
             ->id('tenant')
             ->path('/tenant')
             ->authGuard('web')
+            ->viteTheme('resources/css/filament/tenant/theme.css')
             ->colors([
                 'primary' => Color::Blue,
                 'warning' => Color::Amber,
@@ -42,9 +44,10 @@ class TenantPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets'), for: 'App\\Filament\\Tenant\\Widgets')
             ->widgets([
+                TenantStatusInfoWidget::class,
                 TenantOverview::class,
-                LeaseRenewalWidget::class,
                 Widgets\AccountWidget::class,
+             
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -59,9 +62,9 @@ class TenantPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                \App\Http\Middleware\RequireLandlordAssociation::class,
             ])
             ->login()
-            ->registration(Register::class)
             ->passwordReset()
             ->emailVerification()
             ->profile()

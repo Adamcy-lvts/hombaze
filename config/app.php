@@ -56,6 +56,31 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Chrome Path for PDF Generation
+    |--------------------------------------------------------------------------
+    |
+    | This path is used by Browsershot/Puppeteer for PDF generation.
+    |
+    */
+
+    'chrome_path' => env('CHROME_PATH', '/usr/bin/google-chrome'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Browsershot Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Node and NPM binary paths for Browsershot/Puppeteer.
+    |
+    */
+
+    'browsershot' => [
+        'node_binary' => env('BROWSERSHOT_NODE_BINARY', '/usr/bin/node'),
+        'npm_binary' => env('BROWSERSHOT_NPM_BINARY', '/usr/bin/npm'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Application Timezone
     |--------------------------------------------------------------------------
     |

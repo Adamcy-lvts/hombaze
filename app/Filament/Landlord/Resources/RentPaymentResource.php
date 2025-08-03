@@ -8,6 +8,7 @@ use App\Models\RentPayment;
 use App\Models\Lease;
 use App\Models\Tenant;
 use App\Models\Property;
+use Illuminate\Support\Str;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -23,9 +24,11 @@ class RentPaymentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
 
+    protected static ?string $navigationGroup = 'Financial Management';
+
     protected static ?string $navigationLabel = 'Rent Payments';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -53,10 +56,18 @@ class RentPaymentResource extends Resource
                                             if ($lease) {
                                                 $set('tenant_id', $lease->tenant_id);
                                                 $set('property_id', $lease->property_id);
+                                                $set('landlord_id', Auth::id());
                                                 $set('amount', $lease->monthly_rent);
                                             }
                                         }
                                     }),
+
+                                Forms\Components\Hidden::make('landlord_id')
+                                    ->default(Auth::id())
+                                    ->required(),
+
+                                Forms\Components\Hidden::make('processed_by')
+                                    ->default(Auth::id()),
 
                                 Forms\Components\Select::make('tenant_id')
                                     ->label('Tenant')
@@ -82,10 +93,66 @@ class RentPaymentResource extends Resource
                                     ->searchable()
                                     ->preload(),
 
+                                Forms\Components\TextInput::make('receipt_number')
+                                    ->label('Receipt Number')
+                                    ->default(fn () => 'RCP-' . strtoupper(Str::random(8)))
+                                    ->required()
+                                    ->unique(ignoreRecord: true),
+                            ]),
+
+                        Forms\Components\Grid::make(3)
+                            ->schema([
                                 Forms\Components\TextInput::make('amount')
+                                    ->label('Payment Amount')
                                     ->required()
                                     ->numeric()
-                                    ->prefix('₦'),
+                                    ->prefix('₦')
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $get, $set) {
+                                        $amount = (float) $state;
+                                        $lateFee = (float) ($get('late_fee') ?? 0);
+                                        $discount = (float) ($get('discount') ?? 0);
+                                        $netAmount = $amount + $lateFee - $discount;
+                                        $set('net_amount', $netAmount);
+                                    }),
+
+                                Forms\Components\TextInput::make('late_fee')
+                                    ->label('Late Fee')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->default(0)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $get, $set) {
+                                        $amount = (float) ($get('amount') ?? 0);
+                                        $lateFee = (float) $state;
+                                        $discount = (float) ($get('discount') ?? 0);
+                                        $netAmount = $amount + $lateFee - $discount;
+                                        $set('net_amount', $netAmount);
+                                    }),
+
+                                Forms\Components\TextInput::make('discount')
+                                    ->label('Discount')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->default(0)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $get, $set) {
+                                        $amount = (float) ($get('amount') ?? 0);
+                                        $lateFee = (float) ($get('late_fee') ?? 0);
+                                        $discount = (float) $state;
+                                        $netAmount = $amount + $lateFee - $discount;
+                                        $set('net_amount', $netAmount);
+                                    }),
+                            ]),
+
+                        Forms\Components\Grid::make(1)
+                            ->schema([
+                                Forms\Components\TextInput::make('net_amount')
+                                    ->label('Net Amount')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->readonly()
+                                    ->dehydrated(),
                             ]),
                     ]),
 
@@ -100,22 +167,9 @@ class RentPaymentResource extends Resource
                                 Forms\Components\DatePicker::make('due_date')
                                     ->required(),
 
-                                Forms\Components\Select::make('payment_period')
-                                    ->options([
-                                        'january' => 'January',
-                                        'february' => 'February',
-                                        'march' => 'March',
-                                        'april' => 'April',
-                                        'may' => 'May',
-                                        'june' => 'June',
-                                        'july' => 'July',
-                                        'august' => 'August',
-                                        'september' => 'September',
-                                        'october' => 'October',
-                                        'november' => 'November',
-                                        'december' => 'December',
-                                    ])
-                                    ->required(),
+                                Forms\Components\TextInput::make('payment_for_period')
+                                    ->label('Payment For Period')
+                                    ->placeholder('e.g., January 2024, Q1 2024'),
                             ]),
 
                         Forms\Components\Grid::make(3)
@@ -129,9 +183,6 @@ class RentPaymentResource extends Resource
                                     ->required()
                                     ->default('pending'),
 
-                                Forms\Components\TextInput::make('late_fee')
-                                    ->numeric()
-                                    ->prefix('₦'),
                             ]),
                     ]),
 
@@ -175,6 +226,12 @@ class RentPaymentResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('receipt_number')
+                    ->label('Receipt #')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+
                 Tables\Columns\TextColumn::make('lease.property.title')
                     ->label('Property')
                     ->searchable()
@@ -269,6 +326,13 @@ class RentPaymentResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('downloadReceipt')
+                    ->label('Download Receipt')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->color('success')
+                    ->url(fn (RentPayment $record) => route('landlord.payment.download-receipt', $record))
+                    ->openUrlInNewTab(false)
+                    ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

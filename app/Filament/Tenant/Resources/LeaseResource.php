@@ -53,11 +53,13 @@ class LeaseResource extends Resource
                                     
                                 Forms\Components\DatePicker::make('start_date')
                                     ->label('Lease Start Date')
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->native(false),
                                     
                                 Forms\Components\DatePicker::make('end_date')
                                     ->label('Lease End Date')
-                                    ->disabled(),
+                                    ->disabled()
+                                    ->native(false),
                                     
                                 Forms\Components\TextInput::make('monthly_rent')
                                     ->label('Monthly Rent')

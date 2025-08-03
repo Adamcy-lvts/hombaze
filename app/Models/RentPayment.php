@@ -28,6 +28,7 @@ class RentPayment extends Model
         'notes',
         'receipt_number',
         'processed_by',
+        'landlord_id',
     ];
 
     protected $casts = [

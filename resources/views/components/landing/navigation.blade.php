@@ -47,11 +47,11 @@
 
             <!-- Mobile-Optimized Premium CTA Buttons -->
             <div class="hidden lg:flex items-center space-x-3">
-                <button class="group relative px-4 py-2 md:px-6 md:py-2.5 text-white/90 hover:text-white font-semibold transition-all duration-300 overflow-hidden text-sm md:text-base">
+                <a href="{{ route('login') }}" class="group relative px-4 py-2 md:px-6 md:py-2.5 text-white/90 hover:text-white font-semibold transition-all duration-300 overflow-hidden text-sm md:text-base">
                     <span class="relative z-10">Sign In</span>
                     <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 rounded-lg scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
-                </button>
-                <button class="nav-cta group relative px-4 py-2 md:px-8 md:py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg md:rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 text-sm md:text-base">
+                </a>
+                <a href="{{ route('register') }}" class="nav-cta group relative px-4 py-2 md:px-8 md:py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg md:rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 text-sm md:text-base">
                     <span class="relative z-10 flex items-center">
                         Get Started
                         <svg class="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,7 +60,7 @@
                     </span>
                     <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
                     <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </button>
+                </a>
             </div>
 
             <!-- Mobile Menu Button -->
@@ -124,12 +124,12 @@
 
             <!-- Mobile CTA Buttons -->
             <div class="pt-4 border-t border-white/10 space-y-3">
-                <button class="w-full py-3 text-center text-white font-semibold border-2 border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-sm">
+                <a href="{{ route('login') }}" class="block w-full py-3 text-center text-white font-semibold border-2 border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-sm">
                     Sign In
-                </button>
-                <button class="w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
+                </a>
+                <a href="{{ route('register') }}" class="block w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
                     Get Started
-                </button>
+                </a>
             </div>
         </div>
     </div>

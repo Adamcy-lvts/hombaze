@@ -724,19 +724,26 @@
             </div>
         </div>
 
-        <!-- Second Row: Property & Lease Information -->
-        <div class="grid grid-cols-4 gap-3 mb-3">
-            <!-- Property Information -->
-            @if($receipt->lease && $receipt->lease->property)
-            <div class="bg-blue-50 p-2 rounded border-l-4 border-blue-500 shadow-sm">
-                <p class="font-semibold text-blue-700 mb-1 text-xs">Property Details</p>
-                <p class="text-gray-800 font-medium text-sm">{{ $receipt->lease->property->title }}</p>
-                @if($receipt->lease->property->address)
-                    <p class="text-xs text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
-                @endif
-            </div>
+        <!-- Second Row: Property Information (Full Width) -->
+        @if($receipt->lease && $receipt->lease->property)
+        <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-500 shadow-sm mb-3">
+            <p class="font-semibold text-blue-700 mb-1 text-xs">Property Details</p>
+            <p class="text-gray-800 font-medium text-sm">{{ $receipt->lease->property->title }}</p>
+            @if($receipt->lease->property->address)
+                <p class="text-xs text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
             @endif
+            @if($receipt->lease->property->city || $receipt->lease->property->state)
+                <p class="text-xs text-gray-600">
+                    @if($receipt->lease->property->city){{ $receipt->lease->property->city->name }}@endif
+                    @if($receipt->lease->property->city && $receipt->lease->property->state), @endif
+                    @if($receipt->lease->property->state){{ $receipt->lease->property->state->name }}@endif
+                </p>
+            @endif
+        </div>
+        @endif
 
+        <!-- Third Row: Lease Dates & Payment Information -->
+        <div class="grid grid-cols-3 gap-3 mb-3">
             <!-- Lease Start Date -->
             @if($receipt->lease)
             <div class="bg-green-50 p-2 rounded border-l-4 border-green-500 shadow-sm">
@@ -792,7 +799,7 @@
             </div>
         </div>
 
-        <!-- Third Row: Amount in Words & Payment Method -->
+        <!-- Fourth Row: Amount in Words & Payment Method -->
         <div class="grid grid-cols-4 gap-3 mb-3">
             <!-- Amount in Words (spans 2 columns) -->
             <div class="col-span-2 bg-gray-50 p-2 rounded shadow-sm border border-gray-200">

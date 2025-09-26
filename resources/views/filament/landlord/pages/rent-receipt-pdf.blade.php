@@ -581,10 +581,10 @@
             </svg>
         </div>
 
-        <!-- Header Row - Horizontal Layout -->
-        <div class="grid grid-cols-3 gap-4 items-center mb-3 relative z-10">
-            <!-- Company Info -->
-            <div class="flex items-center space-x-3">
+        <!-- Header Row - Improved Layout -->
+        <div class="flex justify-between items-start mb-4 relative z-10">
+            <!-- Left: Company Info -->
+            <div class="flex items-center space-x-3 flex-1">
                 @php
                     $businessInfo = null;
                     $businessLogo = null;
@@ -652,6 +652,10 @@
                             'tagline' => 'Property Management System'
                         ];
                     }
+
+                    $isPropertyOwnerCompany = $receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
+                                              $receipt->lease->property->owner->type === 'company' &&
+                                              $receipt->lease->property->owner->company_name;
                 @endphp
 
                 @if ($businessLogo)
@@ -666,11 +670,6 @@
                     @if($businessInfo['tagline'])
                         <p class="text-xs text-gray-600">{{ $businessInfo['tagline'] }}</p>
                     @endif
-                    @php
-                        $isPropertyOwnerCompany = $receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
-                                                  $receipt->lease->property->owner->type === 'company' &&
-                                                  $receipt->lease->property->owner->company_name;
-                    @endphp
                     @if($isPropertyOwnerCompany)
                         <!-- Show PropertyOwner company contacts under company name -->
                         <div class="text-xs text-gray-600 mt-1 space-y-0.5">
@@ -684,9 +683,9 @@
                 </div>
             </div>
 
-            <!-- Contact Details (only for non-PropertyOwner companies) -->
+            <!-- Center: Contact Details (only for non-PropertyOwner companies) -->
             @if(!$isPropertyOwnerCompany)
-                <div class="text-center text-gray-600 text-xs">
+                <div class="text-center text-gray-600 text-xs flex-1">
                     <p class="font-semibold">{{ $businessInfo['email'] }}</p>
                     @if($businessInfo['website'])
                         <p>{{ $businessInfo['website'] }}</p>
@@ -695,9 +694,9 @@
                 </div>
             @endif
 
-            <!-- Receipt Number -->
+            <!-- Right: Receipt Number (Always at far right) -->
             <div class="text-right">
-                <div class="bg-indigo-100 px-2 py-1 rounded shadow-sm border border-indigo-200">
+                <div class="bg-indigo-100 px-3 py-2 rounded shadow-sm border border-indigo-200">
                     <p class="text-xs text-gray-600">Receipt No:</p>
                     <p class="text-sm font-bold text-indigo-700">{{ $receipt->receipt_number }}</p>
                 </div>

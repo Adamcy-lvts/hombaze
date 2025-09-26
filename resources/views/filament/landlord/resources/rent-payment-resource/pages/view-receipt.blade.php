@@ -241,7 +241,7 @@
             </div>
 
             <!-- Second Row: Property & Lease Information -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <!-- Property Information -->
                 @if($receipt->lease && $receipt->lease->property)
                 <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 shadow-sm">
@@ -253,12 +253,17 @@
                 </div>
                 @endif
 
-                <!-- Lease Dates -->
+                <!-- Lease Start Date -->
                 @if($receipt->lease)
                 <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-sm">
-                    <p class="font-semibold text-green-700 mb-2">Lease Period</p>
-                    <p class="text-sm text-gray-600">Start: <span class="font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</span></p>
-                    <p class="text-sm text-gray-600">End: <span class="font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</span></p>
+                    <p class="font-semibold text-green-700 mb-2">Lease Start</p>
+                    <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</p>
+                </div>
+
+                <!-- Lease End Date -->
+                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
+                    <p class="font-semibold text-red-700 mb-2">Lease End</p>
+                    <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</p>
                 </div>
                 @endif
 

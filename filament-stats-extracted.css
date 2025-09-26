@@ -1,0 +1,301 @@
+/*
+ * Filament Stats Overview Widget CSS
+ * Extracted from Filament v3 Widget Components
+ * 
+ * This file contains all the necessary CSS classes to create
+ * Filament-style stat components in any project.
+ */
+
+/* Base CSS Variables */
+:root {
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --gray-950: #030712;
+  --white: #ffffff;
+}
+
+/* Dark mode */
+.dark {
+  color-scheme: dark;
+}
+
+/* Container Classes */
+.fi-wi-stats-overview {
+  display: grid;
+  gap: 1rem 0; /* gap-y-4 */
+}
+
+.fi-wi-stats-overview-header {
+  display: grid;
+  gap: 0.25rem 0; /* gap-y-1 */
+}
+
+.fi-wi-stats-overview-header-heading {
+  grid-column: 1 / -1; /* col-span-full */
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 600;
+  color: rgb(var(--gray-950));
+}
+
+.dark .fi-wi-stats-overview-header-heading {
+  color: rgb(var(--white));
+}
+
+.fi-wi-stats-overview-header-description {
+  overflow: hidden;
+  word-wrap: break-word;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: rgb(var(--gray-500));
+}
+
+.dark .fi-wi-stats-overview-header-description {
+  color: rgb(var(--gray-400));
+}
+
+.fi-wi-stats-overview-stats-ctn {
+  display: grid;
+  gap: 1.5rem; /* gap-6 */
+}
+
+/* Responsive Grid Columns */
+@media (min-width: 768px) {
+  .fi-wi-stats-overview-stats-ctn.md\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .fi-wi-stats-overview-stats-ctn.md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .fi-wi-stats-overview-stats-ctn.md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .fi-wi-stats-overview-stats-ctn.md\:grid-cols-2.xl\:grid-cols-4 { 
+    grid-template-columns: repeat(4, minmax(0, 1fr)); 
+  }
+}
+
+/* Individual Stat Card */
+.fi-wi-stats-overview-stat {
+  position: relative;
+  border-radius: 0.75rem; /* rounded-xl */
+  background-color: rgb(var(--white));
+  padding: 1.5rem; /* p-6 */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(var(--gray-950), 0.05); /* ring-1 ring-gray-950/5 */
+}
+
+.dark .fi-wi-stats-overview-stat {
+  background-color: rgb(var(--gray-900));
+  border-color: rgba(var(--white), 0.1); /* dark:ring-white/10 */
+}
+
+/* Stat Content Container */
+.fi-wi-stats-overview-stat > div {
+  display: grid;
+  gap: 0.5rem 0; /* gap-y-2 */
+}
+
+/* Header with icon and label */
+.fi-wi-stats-overview-stat .flex {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem; /* gap-x-2 */
+}
+
+.fi-wi-stats-overview-stat .flex.gap-x-1 {
+  gap: 0.25rem; /* gap-x-1 */
+}
+
+/* Icon */
+.fi-wi-stats-overview-stat-icon {
+  height: 1.25rem; /* h-5 */
+  width: 1.25rem; /* w-5 */
+  color: rgb(var(--gray-400));
+}
+
+.dark .fi-wi-stats-overview-stat-icon {
+  color: rgb(var(--gray-500));
+}
+
+/* Label */
+.fi-wi-stats-overview-stat-label {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  font-weight: 500; /* font-medium */
+  color: rgb(var(--gray-500));
+}
+
+.dark .fi-wi-stats-overview-stat-label {
+  color: rgb(var(--gray-400));
+}
+
+/* Value */
+.fi-wi-stats-overview-stat-value {
+  font-size: 1.875rem; /* text-3xl */
+  line-height: 2.25rem;
+  font-weight: 600; /* font-semibold */
+  letter-spacing: -0.025em; /* tracking-tight */
+  color: rgb(var(--gray-950));
+}
+
+.dark .fi-wi-stats-overview-stat-value {
+  color: rgb(var(--white));
+}
+
+/* Description */
+.fi-wi-stats-overview-stat-description {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  color: rgb(var(--gray-500));
+}
+
+.dark .fi-wi-stats-overview-stat-description {
+  color: rgb(var(--gray-400));
+}
+
+/* Description Icon */
+.fi-wi-stats-overview-stat-description-icon {
+  height: 1.25rem; /* h-5 */
+  width: 1.25rem; /* w-5 */
+  color: rgb(var(--gray-400));
+}
+
+.dark .fi-wi-stats-overview-stat-description-icon {
+  color: rgb(var(--gray-500));
+}
+
+/* Chart Container */
+.fi-wi-stats-overview-stat-chart {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  border-bottom-left-radius: 0.75rem;
+  border-bottom-right-radius: 0.75rem;
+}
+
+/* Canvas */
+.fi-wi-stats-overview-stat-chart canvas {
+  height: 1.5rem; /* h-6 */
+}
+
+/* Color variants for descriptions and charts */
+.fi-wi-stats-overview-stat-description.fi-color-custom {
+  color: rgb(var(--custom-600));
+}
+
+.dark .fi-wi-stats-overview-stat-description.fi-color-custom {
+  color: rgb(var(--custom-400));
+}
+
+.fi-wi-stats-overview-stat-chart.fi-color-custom {
+  /* Custom color styles can be applied here */
+}
+
+/* Base Utility Classes */
+.relative { position: relative; }
+.absolute { position: absolute; }
+.inset-x-0 { left: 0; right: 0; }
+.bottom-0 { bottom: 0; }
+.grid { display: grid; }
+.flex { display: flex; }
+.h-5 { height: 1.25rem; }
+.h-6 { height: 1.5rem; }
+.w-5 { width: 1.25rem; }
+.items-center { align-items: center; }
+.gap-x-1 { column-gap: 0.25rem; }
+.gap-x-2 { column-gap: 0.5rem; }
+.gap-y-1 { row-gap: 0.25rem; }
+.gap-y-2 { row-gap: 0.5rem; }
+.gap-y-4 { row-gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.overflow-hidden { overflow: hidden; }
+.break-words { overflow-wrap: break-word; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-b-xl { 
+  border-bottom-left-radius: 0.75rem; 
+  border-bottom-right-radius: 0.75rem; 
+}
+.bg-white { background-color: rgb(255 255 255); }
+.p-6 { padding: 1.5rem; }
+.text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-base { font-size: 1rem; line-height: 1.5rem; }
+.text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.leading-6 { line-height: 1.5rem; }
+.tracking-tight { letter-spacing: -0.025em; }
+.text-gray-400 { color: rgb(156 163 175); }
+.text-gray-500 { color: rgb(107 114 128); }
+.text-gray-950 { color: rgb(3 7 18); }
+.text-white { color: rgb(255 255 255); }
+.shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+.ring-1 { border-width: 1px; border-style: solid; }
+.ring-gray-950\/5 { border-color: rgb(3 7 18 / 0.05); }
+.col-span-full { grid-column: 1 / -1; }
+
+/* Dark mode utilities */
+.dark .bg-gray-900 { background-color: rgb(17 24 39); }
+.dark .text-white { color: rgb(255 255 255); }
+.dark .text-gray-400 { color: rgb(156 163 175); }
+.dark .text-gray-500 { color: rgb(107 114 128); }
+.dark .ring-white\/10 { border-color: rgb(255 255 255 / 0.1); }
+
+/* Responsive utilities */
+@media (min-width: 768px) {
+  .md\:grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .md\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .md\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .xl\:grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+/* Example HTML Structure:
+ 
+<div class="fi-wi-stats-overview grid gap-y-4">
+  <!-- Optional Header -->
+  <div class="fi-wi-stats-overview-header grid gap-y-1">
+    <h3 class="fi-wi-stats-overview-header-heading col-span-full text-base font-semibold leading-6 text-gray-950 dark:text-white">
+      Stats Overview
+    </h3>
+    <p class="fi-wi-stats-overview-header-description overflow-hidden break-words text-sm text-gray-500 dark:text-gray-400">
+      Your key metrics at a glance
+    </p>
+  </div>
+  
+  <!-- Stats Grid -->
+  <div class="fi-wi-stats-overview-stats-ctn grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+    <!-- Individual Stat -->
+    <div class="fi-wi-stats-overview-stat relative rounded-xl bg-white p-6 shadow-sm ring-1 ring-gray-950/5 dark:bg-gray-900 dark:ring-white/10">
+      <div class="grid gap-y-2">
+        <div class="flex items-center gap-x-2">
+          <svg class="fi-wi-stats-overview-stat-icon h-5 w-5 text-gray-400 dark:text-gray-500">...</svg>
+          <span class="fi-wi-stats-overview-stat-label text-sm font-medium text-gray-500 dark:text-gray-400">
+            Total Users
+          </span>
+        </div>
+        <div class="fi-wi-stats-overview-stat-value text-3xl font-semibold tracking-tight text-gray-950 dark:text-white">
+          1,234
+        </div>
+        <div class="flex items-center gap-x-1">
+          <span class="fi-wi-stats-overview-stat-description text-sm text-gray-500 dark:text-gray-400">
+            +12% from last month
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+*/

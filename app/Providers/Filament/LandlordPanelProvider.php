@@ -39,6 +39,7 @@ class LandlordPanelProvider extends PanelProvider
             ->discoverWidgets(in: app_path('Filament/Landlord/Widgets'), for: 'App\\Filament\\Landlord\\Widgets')
             ->widgets([
                 Widgets\AccountWidget::class,
+                \App\Filament\Landlord\Widgets\PropertyOwnerProfileWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([

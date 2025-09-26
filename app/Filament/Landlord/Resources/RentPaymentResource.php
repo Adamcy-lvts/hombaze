@@ -112,8 +112,11 @@ class RentPaymentResource extends Resource
                                         $amount = (float) $state;
                                         $lateFee = (float) ($get('late_fee') ?? 0);
                                         $discount = (float) ($get('discount') ?? 0);
+                                        $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
+                                        $balanceDue = $netAmount - $deposit;
                                         $set('net_amount', $netAmount);
+                                        $set('balance_due', max(0, $balanceDue));
                                     }),
 
                                 Forms\Components\TextInput::make('late_fee')
@@ -126,8 +129,11 @@ class RentPaymentResource extends Resource
                                         $amount = (float) ($get('amount') ?? 0);
                                         $lateFee = (float) $state;
                                         $discount = (float) ($get('discount') ?? 0);
+                                        $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
+                                        $balanceDue = $netAmount - $deposit;
                                         $set('net_amount', $netAmount);
+                                        $set('balance_due', max(0, $balanceDue));
                                     }),
 
                                 Forms\Components\TextInput::make('discount')
@@ -140,9 +146,38 @@ class RentPaymentResource extends Resource
                                         $amount = (float) ($get('amount') ?? 0);
                                         $lateFee = (float) ($get('late_fee') ?? 0);
                                         $discount = (float) $state;
+                                        $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
+                                        $balanceDue = $netAmount - $deposit;
                                         $set('net_amount', $netAmount);
+                                        $set('balance_due', max(0, $balanceDue));
                                     }),
+                            ]),
+
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('deposit')
+                                    ->label('Deposit')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->default(0)
+                                    ->reactive()
+                                    ->afterStateUpdated(function ($state, $get, $set) {
+                                        $amount = (float) ($get('amount') ?? 0);
+                                        $lateFee = (float) ($get('late_fee') ?? 0);
+                                        $discount = (float) ($get('discount') ?? 0);
+                                        $deposit = (float) $state;
+                                        $netAmount = $amount + $lateFee - $discount;
+                                        $balanceDue = $netAmount - $deposit;
+                                        $set('balance_due', max(0, $balanceDue));
+                                    }),
+
+                                Forms\Components\TextInput::make('balance_due')
+                                    ->label('Balance Due')
+                                    ->numeric()
+                                    ->prefix('₦')
+                                    ->readonly()
+                                    ->dehydrated(),
                             ]),
 
                         Forms\Components\Grid::make(1)
@@ -242,9 +277,14 @@ class RentPaymentResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('payment_period')
-                    ->label('Period')
-                    ->badge()
+                Tables\Columns\TextColumn::make('lease_period')
+                    ->label('Lease Period')
+                    ->formatStateUsing(function (RentPayment $record) {
+                        if ($record->lease && $record->lease->start_date && $record->lease->end_date) {
+                            return $record->lease->start_date->format('M d, Y') . ' - ' . $record->lease->end_date->format('M d, Y');
+                        }
+                        return 'N/A';
+                    })
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('amount')
@@ -252,6 +292,17 @@ class RentPaymentResource extends Resource
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('late_fee')
+                    ->money('NGN')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('deposit')
+                    ->money('NGN')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                Tables\Columns\TextColumn::make('balance_due')
+                    ->label('Balance Due')
                     ->money('NGN')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -278,10 +329,6 @@ class RentPaymentResource extends Resource
                 Tables\Columns\TextColumn::make('payment_method')
                     ->badge(),
 
-                Tables\Columns\IconColumn::make('is_overdue')
-                    ->boolean()
-                    ->label('Overdue')
-                    ->toggleable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -324,14 +371,27 @@ class RentPaymentResource extends Resource
                     ->label('Paid'),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('downloadReceipt')
-                    ->label('Download Receipt')
-                    ->icon('heroicon-o-document-arrow-down')
-                    ->color('success')
-                    ->url(fn (RentPayment $record) => route('landlord.payment.download-receipt', $record))
-                    ->openUrlInNewTab(false)
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('viewReceipt')
+                        ->label('View Receipt')
+                        ->icon('heroicon-o-receipt-percent')
+                        ->color('primary')
+                        ->url(fn (RentPayment $record) => route('filament.landlord.resources.rent-payments.view-receipt', $record))
+                        ->openUrlInNewTab(true)
+                        ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
+                    Tables\Actions\Action::make('downloadReceipt')
+                        ->label('Download PDF')
+                        ->icon('heroicon-o-document-arrow-down')
+                        ->color('success')
+                        ->action(function (RentPayment $record) {
+                            return redirect()->to(route('filament.landlord.resources.rent-payments.view-receipt', $record))->with('auto_download', 'pdf');
+                        })
+                        ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
+                ])
+                    ->label('Receipt')
+                    ->icon('heroicon-o-document-text')
+                    ->color('primary')
                     ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
                 Tables\Actions\DeleteAction::make(),
             ])
@@ -362,6 +422,7 @@ class RentPaymentResource extends Resource
             'index' => Pages\ListRentPayments::route('/'),
             'create' => Pages\CreateRentPayment::route('/create'),
             'edit' => Pages\EditRentPayment::route('/{record}/edit'),
+            'view-receipt' => Pages\ViewReceipt::route('/{record}/receipt'),
         ];
     }
 }

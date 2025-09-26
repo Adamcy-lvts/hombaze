@@ -33,6 +33,7 @@ class Tenant extends Model
         'is_active',
         'user_id', // Optional link to platform user
         'landlord_id', // Link to landlord/property owner
+        'agent_id', // Optional link to agent who brought the tenant
     ];
 
     protected $casts = [
@@ -87,6 +88,14 @@ class Tenant extends Model
     public function landlord(): BelongsTo
     {
         return $this->belongsTo(User::class, 'landlord_id');
+    }
+
+    /**
+     * Agent who brought this tenant (if any)
+     */
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Agent::class);
     }
 
     /**

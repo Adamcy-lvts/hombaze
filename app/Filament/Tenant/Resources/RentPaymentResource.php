@@ -208,12 +208,21 @@ class RentPaymentResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->label('View Receipt'),
+                    ->label('View Payment Details'),
+                Tables\Actions\Action::make('view_receipt')
+                    ->label('View Receipt')
+                    ->icon('heroicon-o-receipt-percent')
+                    ->color('primary')
+                    ->url(fn (RentPayment $record) => route('filament.tenant.resources.rent-payments.view-receipt', $record))
+                    ->openUrlInNewTab(true)
+                    ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
                 Tables\Actions\Action::make('download_receipt')
-                    ->label('Download Receipt')
+                    ->label('Download PDF')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->url(fn (RentPayment $record): string => route('tenant.receipt.download', $record))
-                    ->openUrlInNewTab(),
+                    ->color('success')
+                    ->url(fn (RentPayment $record) => route('filament.tenant.resources.rent-payments.view-receipt', $record) . '?download=pdf')
+                    ->openUrlInNewTab(false)
+                    ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
             ])
             ->bulkActions([
                 // No bulk actions for tenant payment view
@@ -249,6 +258,7 @@ class RentPaymentResource extends Resource
         return [
             'index' => Pages\ListRentPayments::route('/'),
             'view' => Pages\ViewRentPayment::route('/{record}'),
+            'view-receipt' => Pages\ViewReceipt::route('/{record}/receipt'),
         ];
     }
 

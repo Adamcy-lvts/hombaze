@@ -22,6 +22,8 @@ class RentPayment extends Model
         'payment_reference',
         'late_fee',
         'discount',
+        'deposit',
+        'balance_due',
         'net_amount',
         'status',
         'payment_for_period',
@@ -37,6 +39,8 @@ class RentPayment extends Model
         'amount' => 'decimal:2',
         'late_fee' => 'decimal:2',
         'discount' => 'decimal:2',
+        'deposit' => 'decimal:2',
+        'balance_due' => 'decimal:2',
         'net_amount' => 'decimal:2',
     ];
 
@@ -50,11 +54,9 @@ class RentPayment extends Model
 
     // Payment methods
     const METHOD_CASH = 'cash';
-    const METHOD_BANK_TRANSFER = 'bank_transfer';
-    const METHOD_CHEQUE = 'cheque';
+    const METHOD_TRANSFER = 'transfer';
+    const METHOD_POS = 'pos';
     const METHOD_CARD = 'card';
-    const METHOD_MOBILE_MONEY = 'mobile_money';
-    const METHOD_CRYPTO = 'crypto';
 
     public static function getStatuses(): array
     {
@@ -72,11 +74,9 @@ class RentPayment extends Model
     {
         return [
             self::METHOD_CASH => 'Cash',
-            self::METHOD_BANK_TRANSFER => 'Bank Transfer',
-            self::METHOD_CHEQUE => 'Cheque',
-            self::METHOD_CARD => 'Credit/Debit Card',
-            self::METHOD_MOBILE_MONEY => 'Mobile Money',
-            self::METHOD_CRYPTO => 'Cryptocurrency',
+            self::METHOD_TRANSFER => 'Transfer',
+            self::METHOD_POS => 'POS',
+            self::METHOD_CARD => 'Card',
         ];
     }
 

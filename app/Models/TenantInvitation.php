@@ -13,6 +13,7 @@ class TenantInvitation extends Model
         'token',
         'status',
         'landlord_id',
+        'agent_id',
         'property_id',
         'message',
         'expires_at',
@@ -67,6 +68,11 @@ class TenantInvitation extends Model
     public function tenantUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'tenant_user_id');
+    }
+
+    public function agent(): BelongsTo
+    {
+        return $this->belongsTo(\App\Models\Agent::class);
     }
 
     /**

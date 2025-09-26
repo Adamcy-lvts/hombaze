@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\TenantInvitationController;
+use App\Http\Controllers\ReceiptViewController;
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
 Route::get('/properties', App\Livewire\PropertySearch::class)->name('properties.search');
@@ -26,6 +27,9 @@ Route::prefix('tenant/invitation')->name('tenant.invitation.')->group(function (
 Route::get('/tenant/no-landlord', function () {
     return view('tenant.no-landlord');
 })->name('tenant.no-landlord');
+
+// Universal receipt view route for QR codes
+Route::get('/receipt/{receiptId}', [ReceiptViewController::class, 'view'])->name('receipt.view');
 
 // PDF download routes
 Route::middleware(['auth'])->group(function () {

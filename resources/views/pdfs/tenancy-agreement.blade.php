@@ -433,8 +433,17 @@
             <p class="text-xs text-gray-600 font-medium mb-1">
                 Document generated on {{ now()->format('F j, Y \\a\\t g:i A') }}
             </p>
+            @php
+                $businessName = 'HomeBaze Property Management System';
+
+                // Try to get agency info from property
+                if ($record->property && $record->property->agency) {
+                    $businessName = $record->property->agency->name;
+                }
+            @endphp
+
             <p class="text-xs text-gray-500">
-                via HomeBaze Property Management System
+                via {{ $businessName }}
             </p>
         </div>
     </div>

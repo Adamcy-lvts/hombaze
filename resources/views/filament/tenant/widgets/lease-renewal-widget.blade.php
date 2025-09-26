@@ -95,6 +95,24 @@
                 </div>
 
                 @if($canRenew && !$isExpired)
+                    @if($hasExistingRequest)
+                        <div class="rounded-md bg-blue-50 p-4 dark:bg-blue-900/20 mb-4">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <x-heroicon-m-information-circle class="h-5 w-5 text-blue-400" />
+                                </div>
+                                <div class="ml-3">
+                                    <h3 class="text-sm font-medium text-blue-800 dark:text-blue-200">
+                                        Renewal Request Submitted
+                                    </h3>
+                                    <div class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                                        <p>Your renewal request was submitted on {{ $existingRequest->created_at->format('F j, Y') }}. Status: {{ ucfirst($existingRequest->status) }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <div class="flex justify-end space-x-3">
                         <x-filament::button
                             color="gray"
@@ -104,12 +122,21 @@
                             Contact Landlord
                         </x-filament::button>
                         
-                        <x-filament::button
-                            color="primary"
-                            wire:click="requestRenewal"
-                        >
-                            Request Renewal
-                        </x-filament::button>
+                        @if(!$hasExistingRequest)
+                            <x-filament::button
+                                color="primary"
+                                wire:click="requestRenewal"
+                            >
+                                Request Renewal
+                            </x-filament::button>
+                        @else
+                            <x-filament::button
+                                color="gray"
+                                disabled
+                            >
+                                Request Submitted
+                            </x-filament::button>
+                        @endif
                     </div>
                 @elseif($isExpired)
                     <div class="flex justify-end">

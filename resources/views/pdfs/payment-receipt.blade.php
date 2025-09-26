@@ -362,8 +362,17 @@
                 <div class="bg-green-50 p-3 rounded border border-green-200">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
+                            @php
+                                $businessName = 'HomeBaze Property Management System';
+
+                                // Try to get agency info from property
+                                if ($record->lease && $record->lease->property && $record->lease->property->agency) {
+                                    $businessName = $record->lease->property->agency->name;
+                                }
+                            @endphp
+
                             <p class="text-xs text-gray-700 mb-2">
-                                <strong>This receipt confirms payment of ₦{{ number_format($record->net_amount ?? $record->total_amount, 2) }}</strong> 
+                                <strong>This receipt confirms payment of ₦{{ number_format($record->net_amount ?? $record->total_amount, 2) }}</strong>
                                 for rental period {{ $record->payment_for_period ?? 'as specified above' }} under lease agreement dated {{ $record->lease->start_date->format('M j, Y') }}.
                             </p>
                             <p class="text-xs text-gray-600 mb-2">
@@ -371,14 +380,16 @@
                                 @if($record->lease->renewal_option) • <span class="text-green-600 font-medium">Renewable</span> @endif
                             </p>
                             <p class="text-xs text-gray-600">
-                                Payment processed through HomeBaze Property Management System on {{ now()->format('F j, Y \\a\\t g:i A') }}.
+                                Payment processed through {{ $businessName }} on {{ now()->format('F j, Y \\a\\t g:i A') }}.
                             </p>
                         </div>
                         <div class="text-center">
-                            <div class="border-t border-gray-400 pt-2 mt-6">
-                                <p class="text-xs font-semibold text-gray-700">Authorized Signature</p>
-                                <p class="text-xs text-gray-600">{{ $record->landlord->name ?? 'Landlord Name' }}</p>
-                                <p class="text-xs text-gray-500 mt-1">{{ now()->format('M j, Y') }}</p>
+                            <div class="pt-2 mt-6">
+                                <div class="inline-block border border-gray-300 p-2 rounded">
+                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(80)->generate(route('receipt.view', $record->id)) !!}
+                                </div>
+                                <p class="text-xs text-gray-600 mt-2">Scan to verify receipt</p>
+                                <p class="text-xs text-gray-500">Receipt #{{ $record->receipt_number }}</p>
                             </div>
                         </div>
                     </div>
@@ -392,7 +403,7 @@
                 Receipt generated on {{ now()->format('F j, Y \\a\\t g:i A') }}
             </p>
             <p class="text-xs text-gray-500">
-                via HomeBaze Property Management System | Receipt #{{ $record->receipt_number }}
+                via {{ $businessName }} | Receipt #{{ $record->receipt_number }}
             </p>
         </div>
     </div>

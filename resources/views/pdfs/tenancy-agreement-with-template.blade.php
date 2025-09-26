@@ -22,7 +22,7 @@
     </script>
     <style>
         @page {
-            margin: 15mm;
+            margin: 10mm;
             size: A4;
         }
 
@@ -69,33 +69,38 @@
 
         /* Fix for ordered list numbering in Tailwind CSS */
         ol {
-            list-style-type: decimal;
-            padding-left: 1.5rem;
+            list-style-type: decimal !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
         }
 
         ol ol {
-            list-style-type: lower-alpha;
-            padding-left: 1.5rem;
+            list-style-type: lower-alpha !important;
+            padding-left: 1.5rem !important;
         }
 
         ol ol ol {
-            list-style-type: lower-roman;
-            padding-left: 1.5rem;
+            list-style-type: lower-roman !important;
+            padding-left: 1.5rem !important;
         }
 
         ul {
-            list-style-type: disc;
-            padding-left: 1.5rem;
+            list-style-type: disc !important;
+            padding-left: 1.5rem !important;
+            margin-bottom: 0.5rem !important;
         }
 
         ul ul {
-            list-style-type: circle;
-            padding-left: 1.5rem;
+            list-style-type: circle !important;
+            padding-left: 1.5rem !important;
         }
 
         li {
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.25rem !important;
+            display: list-item !important;
         }
+
+     
     </style>
 </head>
 
@@ -135,10 +140,7 @@
             </div>
         @endif --}}
 
-        <!-- Replace your footer section with this -->
-        <div class="mt-2 pt-1.5 border-t border-gray-200 text-center text-xs text-gray-500">
-            Generated via HomeBaze Property Management System
-        </div>
+        {{-- Footer moved to PDF footerHtml() for better positioning --}}
     </div>
 </body>
 

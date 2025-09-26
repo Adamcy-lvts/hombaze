@@ -48,7 +48,6 @@ class LeaseResource extends Resource
                                     ->disabled(),
                                     
                                 Forms\Components\TextInput::make('status')
-                                    ->badge()
                                     ->disabled(),
                                     
                                 Forms\Components\DatePicker::make('start_date')
@@ -205,18 +204,50 @@ class LeaseResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
-                    ->label('View Details'),
+                    ->label('View Lease Agreement'),
                 Tables\Actions\Action::make('request_renewal')
                     ->label('Request Renewal')
                     ->icon('heroicon-o-arrow-path')
+                    ->color('primary')
                     ->visible(fn (Lease $record): bool => 
                         $record->status === 'active' && 
                         $record->end_date && 
-                        now()->diffInDays($record->end_date, false) <= 60
+                        now()->diffInDays($record->end_date, false) <= 90 &&
+                        !\App\Models\LeaseRenewalRequest::where('lease_id', $record->id)
+                            ->where('tenant_id', Auth::user()->tenant->id ?? 0)
+                            ->where('status', 'pending')
+                            ->exists()
                     )
                     ->action(function (Lease $record) {
-                        // TODO: Implement renewal request logic
-                        // This could create a maintenance request or send notification
+                        $user = Auth::user();
+                        $tenant = $user->tenant;
+
+                        if (!$tenant) {
+                            \Filament\Notifications\Notification::make()
+                                ->title('Error')
+                                ->body('Tenant profile not found.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        // Create renewal request
+                        \App\Models\LeaseRenewalRequest::create([
+                            'lease_id' => $record->id,
+                            'tenant_id' => $tenant->id,
+                            'landlord_id' => $tenant->landlord_id,
+                            'agent_id' => $tenant->agent_id,
+                            'requested_start_date' => $record->end_date->addDay(),
+                            'requested_end_date' => $record->end_date->addYear(),
+                            'requested_monthly_rent' => $record->monthly_rent,
+                            'tenant_message' => 'I would like to renew my lease for another term.',
+                        ]);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Renewal Request Submitted')
+                            ->body('Your lease renewal request has been submitted successfully.')
+                            ->success()
+                            ->send();
                     }),
             ])
             ->bulkActions([

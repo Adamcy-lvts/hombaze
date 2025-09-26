@@ -118,27 +118,36 @@
         }
 
         .terms-content ol {
-            list-style-type: decimal;
+            list-style-type: decimal !important;
+            list-style-position: outside !important;
+            display: block !important;
         }
 
         .terms-content ol ol {
-            list-style-type: lower-alpha;
+            list-style-type: lower-alpha !important;
+            list-style-position: outside !important;
         }
 
         .terms-content ol ol ol {
-            list-style-type: lower-roman;
+            list-style-type: lower-roman !important;
+            list-style-position: outside !important;
         }
 
         .terms-content ul {
-            list-style-type: disc;
+            list-style-type: disc !important;
+            list-style-position: outside !important;
+            display: block !important;
         }
 
         .terms-content ul ul {
-            list-style-type: circle;
+            list-style-type: circle !important;
+            list-style-position: outside !important;
         }
         
         .terms-content li {
             margin-bottom: 8px;
+            display: list-item !important;
+            list-style-position: outside !important;
         }
         
         .template-info {

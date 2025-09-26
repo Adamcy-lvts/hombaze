@@ -7,10 +7,10 @@
                 <span class="text-blue-600 font-medium w-12">Name:</span>
                 <span class="text-gray-900">{{ $landlord->name }}</span>
             </div>
-            @if ($landlord->phone_number)
+            @if ($landlord->phone)
                 <div class="flex">
                     <span class="text-blue-600 font-medium w-12">Phone:</span>
-                    <span class="text-gray-900">{{ $landlord->phone_number }}</span>
+                    <span class="text-gray-900">{{ $landlord->phone }}</span>
                 </div>
             @endif
         </div>
@@ -23,10 +23,10 @@
                 <span class="text-green-600 font-medium w-12">Name:</span>
                 <span class="text-gray-900">{{ $tenant->name }}</span>
             </div>
-            @if ($tenant->phone_number)
+            @if ($tenant->phone)
                 <div class="flex">
                     <span class="text-green-600 font-medium w-12">Phone:</span>
-                    <span class="text-gray-900">{{ $tenant->phone_number }}</span>
+                    <span class="text-gray-900">{{ $tenant->phone }}</span>
                 </div>
             @endif
         </div>

@@ -703,157 +703,152 @@
             </div>
         </div>
 
-        <!-- Main Content Row - Split into Left and Right -->
-        <div class="grid grid-cols-2 gap-4 mb-3">
-            <!-- Left Column -->
-            <div class="space-y-4">
-                <!-- Tenant & Date Info -->
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                        <p class="text-xs font-semibold text-gray-600 mb-1">Received From:</p>
-                        <p class="text-sm text-gray-800">{{ $receipt->tenant->name ?? 'N/A' }}</p>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                        <p class="text-xs font-semibold text-gray-600 mb-1">Payment Date:</p>
-                        <p class="text-sm text-gray-800">{{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}</p>
-                    </div>
-                </div>
+        <!-- Main Content Area - Optimized Layout -->
+        <!-- Top Row: Basic Information (4 columns) -->
+        <div class="grid grid-cols-4 gap-3 mb-3">
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="text-xs font-semibold text-gray-600 mb-1">Received From:</p>
+                <p class="text-sm text-gray-800 font-medium">{{ $receipt->tenant->name ?? 'N/A' }}</p>
+            </div>
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="text-xs font-semibold text-gray-600 mb-1">Payment Date:</p>
+                <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}</p>
+            </div>
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="text-xs font-semibold text-gray-600 mb-1">Payment For:</p>
+                <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
+            </div>
+            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-2 rounded shadow-sm border-2 border-indigo-200">
+                <p class="text-xs font-semibold text-indigo-700 mb-1">Total Amount</p>
+                <p class="text-lg font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
+            </div>
+        </div>
 
-                <!-- Property Information -->
-                @if($receipt->lease && $receipt->lease->property)
-                <div class="bg-blue-50 p-3 rounded-lg border-l-4 border-blue-500 shadow-sm">
-                    <p class="font-semibold text-gray-700 mb-1 text-xs">Property Details</p>
-                    <p class="text-gray-800 font-medium text-sm">{{ $receipt->lease->property->title }}</p>
-                    @if($receipt->lease->property->address)
-                        <p class="text-xs text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
-                    @endif
-                </div>
-                @endif
-
-                <!-- Lease Information -->
-                @if($receipt->lease)
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-green-50 p-3 rounded-lg border-l-4 border-green-500 shadow-sm">
-                        <p class="font-semibold text-gray-700 text-xs">Lease Start:</p>
-                        <p class="text-gray-800 text-sm">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('F j, Y') : 'N/A' }}</p>
-                    </div>
-                    <div class="bg-red-50 p-3 rounded-lg border-l-4 border-red-500 shadow-sm">
-                        <p class="font-semibold text-gray-700 text-xs">Lease End:</p>
-                        <p class="text-gray-800 text-sm">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('F j, Y') : 'N/A' }}</p>
-                    </div>
-                </div>
+        <!-- Second Row: Property & Lease Information -->
+        <div class="grid grid-cols-3 gap-3 mb-3">
+            <!-- Property Information -->
+            @if($receipt->lease && $receipt->lease->property)
+            <div class="bg-blue-50 p-2 rounded border-l-4 border-blue-500 shadow-sm">
+                <p class="font-semibold text-blue-700 mb-1 text-xs">Property Details</p>
+                <p class="text-gray-800 font-medium text-sm">{{ $receipt->lease->property->title }}</p>
+                @if($receipt->lease->property->address)
+                    <p class="text-xs text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
                 @endif
             </div>
+            @endif
 
-            <!-- Right Column -->
-            <div class="space-y-4">
-                <!-- Amount Section -->
-                <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg shadow-lg border-2 border-indigo-100">
-                    <p class="text-sm font-semibold text-gray-700 mb-1">Total Amount</p>
-                    <p class="text-2xl font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
-                    <div class="mt-3 p-2 bg-white rounded text-xs">
-                        <p class="font-semibold text-gray-600">Amount in Words:</p>
-                        <p class="text-gray-800 italic">{{ $amountInWords }}</p>
-                    </div>
-                </div>
+            <!-- Lease Dates -->
+            @if($receipt->lease)
+            <div class="bg-green-50 p-2 rounded border-l-4 border-green-500 shadow-sm">
+                <p class="font-semibold text-green-700 text-xs mb-1">Lease Period</p>
+                <p class="text-xs text-gray-600">Start: <span class="font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</span></p>
+                <p class="text-xs text-gray-600">End: <span class="font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</span></p>
+            </div>
+            @endif
 
-                <!-- Payment Details -->
-                <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                    <p class="font-semibold text-gray-700 mb-2 text-xs">Payment Information</p>
-                    <div class="space-y-1 text-xs">
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Payment For:</span>
-                            <span class="font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</span>
-                        </div>
-                        @if($receipt->notes)
-                        <div class="flex justify-between">
-                            <span class="text-gray-600">Notes:</span>
-                            <span class="font-medium">{{ $receipt->notes }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->late_fee > 0)
-                        <div class="flex justify-between text-red-600">
-                            <span>Late Fee:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->late_fee, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->discount > 0)
-                        <div class="flex justify-between text-green-600">
-                            <span>Discount:</span>
-                            <span class="font-medium">-₦{{ number_format($receipt->discount, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->deposit > 0)
-                        <div class="flex justify-between text-blue-600">
-                            <span>Deposit:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->deposit, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->balance_due > 0)
-                        <div class="flex justify-between text-red-600">
-                            <span>Balance Due:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->balance_due, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->lease && $receipt->lease->security_deposit)
-                        <div class="flex justify-between text-yellow-600">
-                            <span>Security Deposit:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->lease->security_deposit, 2) }}</span>
-                        </div>
-                        @endif
+            <!-- Payment Breakdown -->
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="font-semibold text-gray-700 mb-1 text-xs">Payment Breakdown</p>
+                <div class="space-y-1 text-xs">
+                    @if($receipt->late_fee > 0)
+                    <div class="flex justify-between text-red-600">
+                        <span>Late Fee:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->late_fee, 2) }}</span>
                     </div>
+                    @endif
+                    @if($receipt->discount > 0)
+                    <div class="flex justify-between text-green-600">
+                        <span>Discount:</span>
+                        <span class="font-medium">-₦{{ number_format($receipt->discount, 2) }}</span>
+                    </div>
+                    @endif
+                    @if($receipt->deposit > 0)
+                    <div class="flex justify-between text-blue-600">
+                        <span>Deposit:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->deposit, 2) }}</span>
+                    </div>
+                    @endif
+                    @if($receipt->balance_due > 0)
+                    <div class="flex justify-between text-red-600">
+                        <span>Balance Due:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->balance_due, 2) }}</span>
+                    </div>
+                    @endif
+                    @if($receipt->lease && $receipt->lease->security_deposit)
+                    <div class="flex justify-between text-yellow-600">
+                        <span>Security Deposit:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->lease->security_deposit, 2) }}</span>
+                    </div>
+                    @endif
+                    @if(!$receipt->late_fee && !$receipt->discount && !$receipt->deposit && !$receipt->balance_due && (!$receipt->lease || !$receipt->lease->security_deposit))
+                    <p class="text-gray-500 text-xs italic">No additional charges</p>
+                    @endif
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Row - Payment Methods & QR Code -->
-        <div class="grid grid-cols-2 gap-4 items-end">
-            <!-- Payment Methods -->
-            <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-200">
-                <p class="font-semibold text-gray-700 mb-2 text-xs">Payment Method</p>
-                <div class="flex gap-1">
-                    <div class="flex items-center space-x-1 px-1 py-1 rounded border text-xs {{ $receipt->payment_method == 'cash' ? 'bg-indigo-100 border-indigo-500' : 'border-gray-300' }}">
+        <!-- Third Row: Amount in Words & Payment Method -->
+        <div class="grid grid-cols-4 gap-3 mb-3">
+            <!-- Amount in Words (spans 2 columns) -->
+            <div class="col-span-2 bg-gray-50 p-2 rounded shadow-sm border border-gray-200">
+                <p class="font-semibold text-gray-600 text-xs mb-1">Amount in Words:</p>
+                <p class="text-gray-800 text-sm italic font-medium">{{ $amountInWords }}</p>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="font-semibold text-gray-700 mb-1 text-xs">Payment Method</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'cash' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
                         <div class="checkbox @if($receipt->payment_method == 'cash') checked @endif"></div>
                         <span>Cash</span>
                     </div>
-                    <div class="flex items-center space-x-1 px-1 py-1 rounded border text-xs {{ $receipt->payment_method == 'transfer' ? 'bg-indigo-100 border-indigo-500' : 'border-gray-300' }}">
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'transfer' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
                         <div class="checkbox @if($receipt->payment_method == 'transfer') checked @endif"></div>
                         <span>Transfer</span>
                     </div>
-                    <div class="flex items-center space-x-1 px-1 py-1 rounded border text-xs {{ $receipt->payment_method == 'pos' ? 'bg-indigo-100 border-indigo-500' : 'border-gray-300' }}">
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'pos' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
                         <div class="checkbox @if($receipt->payment_method == 'pos') checked @endif"></div>
                         <span>POS</span>
                     </div>
-                    <div class="flex items-center space-x-1 px-1 py-1 rounded border text-xs {{ $receipt->payment_method == 'card' ? 'bg-indigo-100 border-indigo-500' : 'border-gray-300' }}">
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'card' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
                         <div class="checkbox @if($receipt->payment_method == 'card') checked @endif"></div>
                         <span>Card</span>
                     </div>
                 </div>
             </div>
 
-            <!-- QR Code Section -->
-            <div class="flex justify-end">
+            <!-- QR Code -->
+            <div class="flex justify-center items-center">
                 <div class="text-center">
-                    <div class="bg-white p-2 rounded-lg shadow-sm border border-gray-300 mb-2 inline-block">
+                    <div class="bg-white p-1 rounded shadow-sm border border-gray-300 inline-block">
                         @if(isset($qrCode))
                             {!! $qrCode !!}
                         @else
-                            <svg width="80" height="80" viewBox="0 0 80 80" class="border">
-                                <rect width="80" height="80" fill="white"/>
+                            <svg width="60" height="60" viewBox="0 0 60 60" class="border">
+                                <rect width="60" height="60" fill="white"/>
                                 <g fill="black">
-                                    <rect x="5" y="5" width="15" height="15"/>
-                                    <rect x="60" y="5" width="15" height="15"/>
-                                    <rect x="5" y="60" width="15" height="15"/>
-                                    <rect x="35" y="35" width="10" height="10"/>
+                                    <rect x="5" y="5" width="10" height="10"/>
+                                    <rect x="45" y="5" width="10" height="10"/>
+                                    <rect x="5" y="45" width="10" height="10"/>
+                                    <rect x="25" y="25" width="10" height="10"/>
                                 </g>
-                                <text x="40" y="45" text-anchor="middle" font-size="6" fill="black">QR</text>
+                                <text x="30" y="35" text-anchor="middle" font-size="5" fill="black">QR</text>
                             </svg>
                         @endif
                     </div>
-                    <p class="text-xs text-gray-600 font-medium">Scan to verify receipt</p>
+                    <p class="text-xs text-gray-500 mt-1">Verify</p>
                 </div>
             </div>
         </div>
+
+        <!-- Notes Section (if exists) -->
+        @if($receipt->notes)
+        <div class="bg-yellow-50 p-2 rounded border-l-4 border-yellow-400 shadow-sm mb-3">
+            <p class="font-semibold text-yellow-700 text-xs mb-1">Additional Notes:</p>
+            <p class="text-gray-800 text-sm">{{ $receipt->notes }}</p>
+        </div>
+        @endif
 
         <!-- Footer -->
         <div class="mt-3 pt-2 border-t border-gray-200 text-center text-gray-500 text-xs">

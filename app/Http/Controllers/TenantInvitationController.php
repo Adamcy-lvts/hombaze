@@ -88,14 +88,27 @@ class TenantInvitationController extends Controller
             ]);
             
             // Create the tenant profile
-            $tenantUser->tenant()->create([
+            $tenantProfileData = [
                 'first_name' => explode(' ', $request->name)[0] ?? $request->name,
                 'last_name' => explode(' ', $request->name, 2)[1] ?? '',
                 'email' => $invitation->email,
                 'phone' => $request->phone,
-                'landlord_id' => $invitation->landlord_id,
                 'is_active' => true,
-            ]);
+            ];
+            
+            // Set landlord_id and agent_id based on invitation source
+            if ($invitation->agent_id) {
+                // Invitation from agent - set both agent and landlord (if property has one)
+                $tenantProfileData['agent_id'] = $invitation->agent_id;
+                if ($invitation->landlord_id) {
+                    $tenantProfileData['landlord_id'] = $invitation->landlord_id;
+                }
+            } else {
+                // Direct invitation from landlord
+                $tenantProfileData['landlord_id'] = $invitation->landlord_id;
+            }
+            
+            $tenantUser->tenant()->create($tenantProfileData);
             
             // Mark invitation as accepted
             $invitation->markAsAccepted($tenantUser, $request->ip());
@@ -117,19 +130,38 @@ class TenantInvitationController extends Controller
         DB::transaction(function () use ($invitation, $tenant) {
             // Create tenant profile if it doesn't exist
             if (!$tenant->tenant) {
-                $tenant->tenant()->create([
+                $tenantProfileData = [
                     'first_name' => explode(' ', $tenant->name)[0] ?? $tenant->name,
                     'last_name' => explode(' ', $tenant->name, 2)[1] ?? '',
                     'email' => $tenant->email,
                     'phone' => $tenant->phone,
-                    'landlord_id' => $invitation->landlord_id,
                     'is_active' => true,
-                ]);
+                ];
+                
+                // Set landlord_id and agent_id based on invitation source
+                if ($invitation->agent_id) {
+                    $tenantProfileData['agent_id'] = $invitation->agent_id;
+                    if ($invitation->landlord_id) {
+                        $tenantProfileData['landlord_id'] = $invitation->landlord_id;
+                    }
+                } else {
+                    $tenantProfileData['landlord_id'] = $invitation->landlord_id;
+                }
+                
+                $tenant->tenant()->create($tenantProfileData);
             } else {
-                // Update landlord association if needed
-                $tenant->tenant()->update([
-                    'landlord_id' => $invitation->landlord_id,
-                ]);
+                // Update associations based on invitation source
+                $updateData = [];
+                if ($invitation->agent_id) {
+                    $updateData['agent_id'] = $invitation->agent_id;
+                    if ($invitation->landlord_id) {
+                        $updateData['landlord_id'] = $invitation->landlord_id;
+                    }
+                } else {
+                    $updateData['landlord_id'] = $invitation->landlord_id;
+                }
+                
+                $tenant->tenant()->update($updateData);
             }
             
             // Mark invitation as accepted
@@ -175,19 +207,38 @@ class TenantInvitationController extends Controller
         DB::transaction(function () use ($invitation, $user) {
             // Create tenant profile if it doesn't exist
             if (!$user->tenant) {
-                $user->tenant()->create([
+                $tenantProfileData = [
                     'first_name' => explode(' ', $user->name)[0] ?? $user->name,
                     'last_name' => explode(' ', $user->name, 2)[1] ?? '',
                     'email' => $user->email,
                     'phone' => $user->phone,
-                    'landlord_id' => $invitation->landlord_id,
                     'is_active' => true,
-                ]);
+                ];
+                
+                // Set landlord_id and agent_id based on invitation source
+                if ($invitation->agent_id) {
+                    $tenantProfileData['agent_id'] = $invitation->agent_id;
+                    if ($invitation->landlord_id) {
+                        $tenantProfileData['landlord_id'] = $invitation->landlord_id;
+                    }
+                } else {
+                    $tenantProfileData['landlord_id'] = $invitation->landlord_id;
+                }
+                
+                $user->tenant()->create($tenantProfileData);
             } else {
-                // Update landlord association if needed
-                $user->tenant()->update([
-                    'landlord_id' => $invitation->landlord_id,
-                ]);
+                // Update associations based on invitation source
+                $updateData = [];
+                if ($invitation->agent_id) {
+                    $updateData['agent_id'] = $invitation->agent_id;
+                    if ($invitation->landlord_id) {
+                        $updateData['landlord_id'] = $invitation->landlord_id;
+                    }
+                } else {
+                    $updateData['landlord_id'] = $invitation->landlord_id;
+                }
+                
+                $user->tenant()->update($updateData);
             }
             
             $invitation->markAsAccepted($user, request()->ip());

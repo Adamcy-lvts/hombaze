@@ -23,7 +23,7 @@ class ViewLease extends ViewRecord
     protected static string $resource = LeaseResource::class;
 
     protected static string $view = 'filament.landlord.pages.lease-view';
-    
+
     public ?array $data = [];
     public ?array $leaseDocument = null;
 
@@ -37,7 +37,7 @@ class ViewLease extends ViewRecord
     public function mount($record): void
     {
         parent::mount($record);
-        
+
         $this->data = [
             'template_id' => null // Default to no template selected
         ];
@@ -54,11 +54,11 @@ class ViewLease extends ViewRecord
     public function generateLeaseDocument(): void
     {
         $data = $this->data;
-        
+
         try {
             $lease = $this->record;
             $template = null;
-            
+
             if ($data['template_id']) {
                 $template = LeaseTemplate::where('id', $data['template_id'])
                     ->where('landlord_id', Auth::id())
@@ -83,7 +83,7 @@ class ViewLease extends ViewRecord
                     'tenant_phone' => $lease->tenant->phone_number ?? '',
                     'lease_start_date' => $lease->start_date ? $lease->start_date->format('F j, Y') : '',
                     'lease_end_date' => $lease->end_date ? $lease->end_date->format('F j, Y') : '',
-                    'lease_duration_months' => $lease->start_date && $lease->end_date 
+                    'lease_duration_months' => $lease->start_date && $lease->end_date
                         ? $lease->start_date->diffInMonths($lease->end_date) : '',
                     'rent_amount' => $lease->monthly_rent,
                     'payment_frequency' => $lease->payment_frequency,
@@ -99,7 +99,7 @@ class ViewLease extends ViewRecord
                     'current_year' => now()->year,
                     'lease_status' => ucfirst($lease->status),
                 ]);
-                
+
                 $this->leaseDocument = [
                     'template' => $template,
                     'content' => $leaseContent,
@@ -121,7 +121,6 @@ class ViewLease extends ViewRecord
                 ->title('Lease Document Generated')
                 ->body('Generated with ' . ($template ? $template->name : 'default template'))
                 ->send();
-                
         } catch (\Exception $e) {
             $this->leaseDocument = [
                 'error' => 'Failed to generate lease document: ' . $e->getMessage()
@@ -206,17 +205,20 @@ class ViewLease extends ViewRecord
                     'record' => $lease,
                 ]);
             }
-            
+
             $pdf->format('a4')
                 ->withBrowsershot(function (Browsershot $browsershot) {
                     $browsershot->setChromePath(config('app.chrome_path'))
                         ->format('A4')
-                        ->margins(5, 5, 5, 5)
+                        ->margins(3, 5, 3, 5, 'px')
                         ->showBackground()
                         ->waitUntilNetworkIdle()
                         ->scale(1)
                         ->preferCssPageSize(true)
                         ->timeout(120)
+                        ->showBrowserHeaderAndFooter()
+                        ->hideHeader()
+                        ->footerHtml('<div style="text-align: center; font-size: 8px; color: #9ca3af; font-family: Inter, system-ui, sans-serif; font-weight: bold; opacity: 0.7; padding: 4px 0; width: 100%; display: block;">Generated via HomeBaze Property Management System | Powered by Devcentric</div>')
                         ->setNodeBinary(config('app.browsershot.node_binary', '/usr/bin/node'))
                         ->setNpmBinary(config('app.browsershot.npm_binary', '/usr/bin/npm'));
                 });
@@ -231,7 +233,6 @@ class ViewLease extends ViewRecord
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $fileName . '"'
             ])->deleteFileAfterSend(true);
-
         } catch (\Exception $e) {
             Log::error('PDF Download Failed', [
                 'error' => $e->getMessage(),

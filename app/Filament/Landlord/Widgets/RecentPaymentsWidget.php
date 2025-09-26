@@ -68,7 +68,7 @@ class RecentPaymentsWidget extends BaseWidget
             ])
             ->actions([
                 Tables\Actions\Action::make('view')
-                    ->url(fn (RentPayment $record): string => route('filament.landlord.resources.rent-payments.view', $record))
+                    ->url(fn (RentPayment $record): string => route('filament.landlord.resources.rent-payments.view-receipt', ['record' => $record]))
                     ->icon('heroicon-m-eye'),
                     
                 Tables\Actions\Action::make('downloadReceipt')

@@ -72,7 +72,10 @@ class PdfDownloadController extends Controller
                     ->preferCssPageSize(true)
                     ->timeout(120)
                     ->setNodeBinary(config('app.browsershot.node_binary', '/usr/bin/node'))
-                    ->setNpmBinary(config('app.browsershot.npm_binary', '/usr/bin/npm'));
+                    ->setNpmBinary(config('app.browsershot.npm_binary', '/usr/bin/npm'))
+                    ->showBrowserHeaderAndFooter()
+                    ->hideHeader()
+                    ->footerHtml('<div style="text-align: center; font-size: 8px; color: #9ca3af; font-family: Inter, system-ui, sans-serif; opacity: 0.7; padding: 4px 0;">Generated via HomeBaze Property Management System</div>');
             });
             
             $pdf->save($filePath);
@@ -222,7 +225,10 @@ class PdfDownloadController extends Controller
                     ->preferCssPageSize(true)
                     ->timeout(120)
                     ->setNodeBinary(config('app.browsershot.node_binary', '/usr/bin/node'))
-                    ->setNpmBinary(config('app.browsershot.npm_binary', '/usr/bin/npm'));
+                    ->setNpmBinary(config('app.browsershot.npm_binary', '/usr/bin/npm'))
+                    ->showBrowserHeaderAndFooter()
+                    ->hideHeader()
+                    ->footerHtml('<div style="text-align: center; font-size: 8px; color: #9ca3af; font-family: Inter, system-ui, sans-serif; opacity: 0.7; padding: 4px 0;">Generated via HomeBaze Property Management System</div>');
             });
             
             $pdf->save($filePath);

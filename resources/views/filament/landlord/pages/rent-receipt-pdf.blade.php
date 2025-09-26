@@ -619,8 +619,8 @@
                             'name' => $owner->company_name,
                             'email' => $owner->email ?? $receipt->landlord->email ?? 'support@homebaze.com',
                             'phone' => $owner->phone ?? $receipt->landlord->phone ?? '+234 (0) 123-456-7890',
-                            'website' => 'www.homebaze.com', // Default for now
-                            'tagline' => 'Property Management Company'
+                            'website' => $owner->website ?? null,
+                            'tagline' => null // No tagline for property owner companies
                         ];
                         $businessInitials = strtoupper(substr($owner->company_name, 0, 2));
                     }
@@ -663,14 +663,18 @@
                 @endif
                 <div>
                     <p class="text-lg font-bold text-gray-800">{{ $businessInfo['name'] }}</p>
-                    <p class="text-xs text-gray-600">{{ $businessInfo['tagline'] }}</p>
+                    @if($businessInfo['tagline'])
+                        <p class="text-xs text-gray-600">{{ $businessInfo['tagline'] }}</p>
+                    @endif
                 </div>
             </div>
 
             <!-- Contact Details -->
             <div class="text-center text-gray-600 text-xs">
                 <p class="font-semibold">{{ $businessInfo['email'] }}</p>
-                <p>{{ $businessInfo['website'] }}</p>
+                @if($businessInfo['website'])
+                    <p>{{ $businessInfo['website'] }}</p>
+                @endif
                 <p class="text-xs">{{ $businessInfo['phone'] }}</p>
             </div>
 

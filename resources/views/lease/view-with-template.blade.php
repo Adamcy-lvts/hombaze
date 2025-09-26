@@ -114,6 +114,27 @@
         
         .terms-content ol, .terms-content ul {
             margin-bottom: 20px;
+            padding-left: 2rem;
+        }
+
+        .terms-content ol {
+            list-style-type: decimal;
+        }
+
+        .terms-content ol ol {
+            list-style-type: lower-alpha;
+        }
+
+        .terms-content ol ol ol {
+            list-style-type: lower-roman;
+        }
+
+        .terms-content ul {
+            list-style-type: disc;
+        }
+
+        .terms-content ul ul {
+            list-style-type: circle;
         }
         
         .terms-content li {

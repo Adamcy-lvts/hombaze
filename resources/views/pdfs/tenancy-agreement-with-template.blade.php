@@ -66,6 +66,36 @@
         .rounded-sm {
             border-radius: 2px;
         }
+
+        /* Fix for ordered list numbering in Tailwind CSS */
+        ol {
+            list-style-type: decimal;
+            padding-left: 1.5rem;
+        }
+
+        ol ol {
+            list-style-type: lower-alpha;
+            padding-left: 1.5rem;
+        }
+
+        ol ol ol {
+            list-style-type: lower-roman;
+            padding-left: 1.5rem;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+        }
+
+        ul ul {
+            list-style-type: circle;
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.25rem;
+        }
     </style>
 </head>
 

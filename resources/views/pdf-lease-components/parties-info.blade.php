@@ -7,10 +7,6 @@
                 <span class="text-blue-600 font-medium w-12">Name:</span>
                 <span class="text-gray-900">{{ $landlord->name }}</span>
             </div>
-            <div class="flex">
-                <span class="text-blue-600 font-medium w-12">Email:</span>
-                <span class="text-gray-900">{{ $landlord->email }}</span>
-            </div>
             @if ($landlord->phone_number)
                 <div class="flex">
                     <span class="text-blue-600 font-medium w-12">Phone:</span>
@@ -26,10 +22,6 @@
             <div class="flex">
                 <span class="text-green-600 font-medium w-12">Name:</span>
                 <span class="text-gray-900">{{ $tenant->name }}</span>
-            </div>
-            <div class="flex">
-                <span class="text-green-600 font-medium w-12">Email:</span>
-                <span class="text-gray-900">{{ $tenant->email }}</span>
             </div>
             @if ($tenant->phone_number)
                 <div class="flex">

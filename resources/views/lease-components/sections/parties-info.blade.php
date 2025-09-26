@@ -4,7 +4,6 @@
         <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">LANDLORD (Lessor)</h3>
         <div class="space-y-2">
             <p><span class="font-medium">Name:</span> {{ $landlord->name }}</p>
-            <p><span class="font-medium">Email:</span> {{ $landlord->email }}</p>
             @if($landlord->phone_number)
                 <p><span class="font-medium">Phone:</span> {{ $landlord->phone_number }}</p>
             @endif
@@ -15,7 +14,6 @@
         <h3 class="text-lg font-semibold text-green-800 dark:text-green-200 mb-3">TENANT (Lessee)</h3>
         <div class="space-y-2">
             <p><span class="font-medium">Name:</span> {{ $tenant->name }}</p>
-            <p><span class="font-medium">Email:</span> {{ $tenant->email }}</p>
             @if($tenant->phone_number)
                 <p><span class="font-medium">Phone:</span> {{ $tenant->phone_number }}</p>
             @endif

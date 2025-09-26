@@ -666,17 +666,34 @@
                     @if($businessInfo['tagline'])
                         <p class="text-xs text-gray-600">{{ $businessInfo['tagline'] }}</p>
                     @endif
+                    @php
+                        $isPropertyOwnerCompany = $receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
+                                                  $receipt->lease->property->owner->type === 'company' &&
+                                                  $receipt->lease->property->owner->company_name;
+                    @endphp
+                    @if($isPropertyOwnerCompany)
+                        <!-- Show PropertyOwner company contacts under company name -->
+                        <div class="text-xs text-gray-600 mt-1 space-y-0.5">
+                            <p class="font-medium">{{ $businessInfo['email'] }}</p>
+                            <p>{{ $businessInfo['phone'] }}</p>
+                            @if($businessInfo['website'])
+                                <p>{{ $businessInfo['website'] }}</p>
+                            @endif
+                        </div>
+                    @endif
                 </div>
             </div>
 
-            <!-- Contact Details -->
-            <div class="text-center text-gray-600 text-xs">
-                <p class="font-semibold">{{ $businessInfo['email'] }}</p>
-                @if($businessInfo['website'])
-                    <p>{{ $businessInfo['website'] }}</p>
-                @endif
-                <p class="text-xs">{{ $businessInfo['phone'] }}</p>
-            </div>
+            <!-- Contact Details (only for non-PropertyOwner companies) -->
+            @if(!$isPropertyOwnerCompany)
+                <div class="text-center text-gray-600 text-xs">
+                    <p class="font-semibold">{{ $businessInfo['email'] }}</p>
+                    @if($businessInfo['website'])
+                        <p>{{ $businessInfo['website'] }}</p>
+                    @endif
+                    <p class="text-xs">{{ $businessInfo['phone'] }}</p>
+                </div>
+            @endif
 
             <!-- Receipt Number -->
             <div class="text-right">

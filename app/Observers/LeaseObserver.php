@@ -24,19 +24,22 @@ class LeaseObserver
             $dueDate = $this->calculateFirstDueDate($lease);
             $paymentPeriod = $this->getPaymentPeriod($lease);
 
+            // Use yearly_rent for annual payments
+            $rentAmount = $lease->yearly_rent ?? 0;
+
             RentPayment::create([
                 'lease_id' => $lease->id,
                 'tenant_id' => $lease->tenant_id,
                 'landlord_id' => $lease->landlord_id,
                 'property_id' => $lease->property_id,
-                'amount' => $lease->monthly_rent,
+                'amount' => $rentAmount,
                 'payment_date' => null, // Not paid yet
                 'due_date' => $dueDate,
                 'payment_method' => null, // To be filled when payment is made
                 'payment_reference' => null,
                 'late_fee' => 0,
                 'discount' => 0,
-                'net_amount' => $lease->monthly_rent,
+                'net_amount' => $rentAmount,
                 'status' => 'pending',
                 'payment_for_period' => $paymentPeriod,
                 'notes' => 'Initial payment record created automatically upon lease activation.',

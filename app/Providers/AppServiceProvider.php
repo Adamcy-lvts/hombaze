@@ -6,7 +6,9 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Lease;
+use App\Models\RentPayment;
 use App\Observers\LeaseObserver;
+use App\Observers\RentPaymentObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,5 +31,6 @@ class AppServiceProvider extends ServiceProvider
 
         // Register model observers
         Lease::observe(LeaseObserver::class);
+        RentPayment::observe(RentPaymentObserver::class);
     }
 }

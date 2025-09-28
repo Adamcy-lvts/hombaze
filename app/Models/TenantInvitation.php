@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class TenantInvitation extends Model
 {
     protected $fillable = [
-        'email',
+        'phone',
         'token',
         'status',
         'landlord_id',
@@ -21,11 +21,16 @@ class TenantInvitation extends Model
         'invited_from_ip',
         'accepted_from_ip',
         'tenant_user_id',
+        'link_copied_at',
+        'link_copy_count',
+        'sent_via',
     ];
 
     protected $casts = [
         'expires_at' => 'datetime',
         'accepted_at' => 'datetime',
+        'link_copied_at' => 'datetime',
+        'sent_via' => 'array',
     ];
 
     // Status constants
@@ -45,9 +50,13 @@ class TenantInvitation extends Model
             if (empty($invitation->token)) {
                 $invitation->token = Str::random(64);
             }
-            
+
             if (empty($invitation->expires_at)) {
                 $invitation->expires_at = now()->addDays(7); // Default 7 days expiry
+            }
+
+            if (empty($invitation->status)) {
+                $invitation->status = self::STATUS_PENDING; // Ensure status is set to pending
             }
         });
     }
@@ -98,9 +107,9 @@ class TenantInvitation extends Model
         return $query->where('expires_at', '>', now());
     }
 
-    public function scopeForEmail($query, string $email)
+    public function scopeForPhone($query, string $phone)
     {
-        return $query->where('email', $email);
+        return $query->where('phone', $phone);
     }
 
     /**

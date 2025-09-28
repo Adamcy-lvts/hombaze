@@ -159,6 +159,14 @@ class Property extends Model implements HasMedia
     }
 
     /**
+     * Get the user who created the property (through PropertyOwner.user_id)
+     */
+    public function creator()
+    {
+        return $this->hasOneThrough(User::class, PropertyOwner::class, 'id', 'id', 'owner_id', 'user_id');
+    }
+
+    /**
      * Get the managing agent
      */
     public function agent(): BelongsTo
@@ -452,19 +460,41 @@ class Property extends Model implements HasMedia
      */
     public function registerMediaConversions(?Media $media = null): void
     {
+        // Preview conversion - maintains aspect ratio, max width 400px
         $this
             ->addMediaConversion('preview')
-            ->width(300)
+            ->width(400)
             ->height(300)
-            ->sharpen(10)
-            ->nonQueued();
+            ->quality(85)
+            ->fit(Fit::Max, 400, 300)
+            ->performOnCollections('gallery', 'featured')
+            ->nonQueued()
+            ->optimize()
+            ->sharpen(10);
 
+        // Thumbnail conversion - maintains aspect ratio, max width 200px
         $this
             ->addMediaConversion('thumb')
-            ->width(150)
+            ->width(200)
             ->height(150)
-            ->sharpen(10)
-            ->nonQueued();
+            ->quality(80)
+            ->fit(Fit::Max, 200, 150)
+            ->performOnCollections('gallery', 'featured')
+            ->nonQueued()
+            ->optimize()
+            ->sharpen(10);
+
+        // Square thumbnail for grid displays (1:1 aspect ratio)
+        $this
+            ->addMediaConversion('square')
+            ->width(200)
+            ->height(200)
+            ->quality(80)
+            ->fit(Fit::Crop, 200, 200)
+            ->performOnCollections('gallery', 'featured')
+            ->nonQueued()
+            ->optimize()
+            ->sharpen(10);
     }
 
     /**

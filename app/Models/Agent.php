@@ -181,6 +181,14 @@ class Agent extends Model
     }
 
     /**
+     * Get agent's name (alias for full_name for consistency)
+     */
+    public function getNameAttribute(): string
+    {
+        return $this->getFullNameAttribute();
+    }
+
+    /**
      * Get agent's specializations as array
      */
     public function getSpecializationsArrayAttribute(): array

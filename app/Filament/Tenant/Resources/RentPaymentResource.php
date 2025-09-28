@@ -88,8 +88,8 @@ class RentPaymentResource extends Resource
                             ->label('Property')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('lease.monthly_rent')
-                            ->label('Monthly Rent')
+                        Forms\Components\TextInput::make('lease.yearly_rent')
+                            ->label('Annual Rent')
                             ->prefix('₦')
                             ->numeric()
                             ->disabled(),

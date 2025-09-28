@@ -31,6 +31,9 @@ class MaintenanceRequestResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    // Hide maintenance requests feature for now
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -45,11 +48,40 @@ class MaintenanceRequestResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('property_id')
                                     ->label('Property')
-                                    ->relationship('property', 'title')
+                                    ->relationship('property', 'title', function (Builder $query) {
+                                        $user = Auth::user();
+                                        $tenant = $user->tenant;
+
+                                        if ($tenant) {
+                                            // Get properties from active leases for this tenant
+                                            $propertyIds = \App\Models\Lease::where('tenant_id', $tenant->id)
+                                                ->where('status', 'active')
+                                                ->pluck('property_id');
+
+                                            return $query->whereIn('id', $propertyIds);
+                                        }
+
+                                        return $query->whereRaw('1 = 0'); // No properties if no tenant
+                                    })
                                     ->searchable()
                                     ->preload()
                                     ->required()
-                                    ->columnSpan(2),
+                                    ->columnSpan(2)
+                                    ->default(function () {
+                                        $user = Auth::user();
+                                        $tenant = $user->tenant;
+
+                                        if ($tenant) {
+                                            // Auto-select if tenant has only one active lease
+                                            $activeLease = \App\Models\Lease::where('tenant_id', $tenant->id)
+                                                ->where('status', 'active')
+                                                ->first();
+
+                                            return $activeLease?->property_id;
+                                        }
+
+                                        return null;
+                                    }),
                                     
                                 Forms\Components\Select::make('category')
                                     ->label('Category')

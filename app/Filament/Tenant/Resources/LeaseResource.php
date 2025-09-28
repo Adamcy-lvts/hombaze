@@ -60,8 +60,8 @@ class LeaseResource extends Resource
                                     ->disabled()
                                     ->native(false),
                                     
-                                Forms\Components\TextInput::make('monthly_rent')
-                                    ->label('Monthly Rent')
+                                Forms\Components\TextInput::make('yearly_rent')
+                                    ->label('Annual Rent')
                                     ->prefix('₦')
                                     ->numeric()
                                     ->disabled(),
@@ -159,7 +159,7 @@ class LeaseResource extends Resource
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('monthly_rent')
+                Tables\Columns\TextColumn::make('yearly_rent')
                     ->label('Monthly Rent')
                     ->prefix('₦')
                     ->numeric()
@@ -169,7 +169,7 @@ class LeaseResource extends Resource
                     ->label('Days Remaining')
                     ->getStateUsing(function (Lease $record): string {
                         if ($record->end_date) {
-                            $daysRemaining = now()->diffInDays($record->end_date, false);
+                            $daysRemaining = (int) now()->diffInDays($record->end_date, false);
                             if ($daysRemaining < 0) {
                                 return 'Expired';
                             } elseif ($daysRemaining < 30) {
@@ -183,8 +183,8 @@ class LeaseResource extends Resource
                     ->badge()
                     ->color(fn (Lease $record): string => match (true) {
                         !$record->end_date => 'gray',
-                        now()->diffInDays($record->end_date, false) < 0 => 'danger',
-                        now()->diffInDays($record->end_date, false) < 30 => 'warning',
+                        (int) now()->diffInDays($record->end_date, false) < 0 => 'danger',
+                        (int) now()->diffInDays($record->end_date, false) < 30 => 'warning',
                         default => 'success'
                     }),
 
@@ -239,7 +239,7 @@ class LeaseResource extends Resource
                             'agent_id' => $tenant->agent_id,
                             'requested_start_date' => $record->end_date->addDay(),
                             'requested_end_date' => $record->end_date->addYear(),
-                            'requested_monthly_rent' => $record->monthly_rent,
+                            'requested_monthly_rent' => $record->yearly_rent,
                             'tenant_message' => 'I would like to renew my lease for another term.',
                         ]);
 

@@ -7,8 +7,8 @@
             <span class="text-gray-900">{{ $lease->start_date?->format('F j, Y') ?? 'Not set' }}</span>
         </div>
         <div class="flex">
-            <span class="text-amber-700 font-medium w-20">Annual Rent:</span>
-            <span class="text-gray-900 font-semibold">₦{{ number_format($lease->monthly_rent * 12, 2) }}</span>
+            <span class="text-amber-700 font-medium w-20">Rent Amount:</span>
+            <span class="text-gray-900 font-semibold">₦{{ number_format($lease->yearly_rent, 2) }}</span>
         </div>
         <div class="flex">
             <span class="text-amber-700 font-medium w-20">End Date:</span>

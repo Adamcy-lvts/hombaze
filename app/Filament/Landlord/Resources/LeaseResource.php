@@ -69,7 +69,7 @@ class LeaseResource extends Resource
                                                         'lease_start_date' => $get('start_date') ? \Carbon\Carbon::parse($get('start_date'))->format('F j, Y') : '',
                                                         'lease_end_date' => $get('end_date') ? \Carbon\Carbon::parse($get('end_date'))->format('F j, Y') : '',
                                                         'lease_duration_months' => $get('start_date') && $get('end_date') ? \Carbon\Carbon::parse($get('start_date'))->diffInMonths(\Carbon\Carbon::parse($get('end_date'))) : '',
-                                                        'rent_amount' => $get('monthly_rent'),
+                                                        'rent_amount' => $get('yearly_rent'),
                                                         'payment_frequency' => $get('payment_frequency'),
                                                         'renewal_option' => $get('renewal_option'),
                                                     ]);
@@ -115,7 +115,7 @@ class LeaseResource extends Resource
                                         if ($state) {
                                             $property = \App\Models\Property::find($state);
                                             if ($property) {
-                                                $set('monthly_rent', $property->price);
+                                                $set('yearly_rent', $property->price);
                                             }
                                         }
                                     }),
@@ -151,7 +151,7 @@ class LeaseResource extends Resource
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('monthly_rent')
+                                Forms\Components\TextInput::make('yearly_rent')
                                     ->label('Annual Rent')
                                     ->required()
                                     ->numeric()
@@ -261,7 +261,7 @@ class LeaseResource extends Resource
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('monthly_rent')
+                Tables\Columns\TextColumn::make('yearly_rent')
                     ->label('Annual Rent')
                     ->money('NGN')
                     ->sortable(),

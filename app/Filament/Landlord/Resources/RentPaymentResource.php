@@ -57,7 +57,7 @@ class RentPaymentResource extends Resource
                                                 $set('tenant_id', $lease->tenant_id);
                                                 $set('property_id', $lease->property_id);
                                                 $set('landlord_id', Auth::id());
-                                                $set('amount', $lease->monthly_rent);
+                                                $set('amount', $lease->yearly_rent);
                                             }
                                         }
                                     }),

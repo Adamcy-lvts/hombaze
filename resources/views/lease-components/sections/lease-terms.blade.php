@@ -11,8 +11,8 @@
             <p class="text-gray-900 dark:text-gray-100">{{ $lease->end_date?->format('F j, Y') ?? 'Not set' }}</p>
         </div>
         <div>
-            <span class="font-medium text-gray-700 dark:text-gray-300">Annual Rent:</span>
-            <p class="text-gray-900 dark:text-gray-100">₦{{ number_format($lease->monthly_rent, 2) }}</p>
+            <span class="font-medium text-gray-700 dark:text-gray-300">Rent Amount:</span>
+            <p class="text-gray-900 dark:text-gray-100">₦{{ number_format($lease->yearly_rent, 2) }} <span class="text-sm text-gray-500">({{ ucfirst($lease->payment_frequency) }})</span></p>
         </div>
         <div>
             <span class="font-medium text-gray-700 dark:text-gray-300">Payment:</span>

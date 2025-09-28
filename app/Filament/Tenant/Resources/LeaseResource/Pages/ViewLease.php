@@ -78,7 +78,7 @@ class ViewLease extends ViewRecord
                     'lease_end_date' => $lease->end_date ? $lease->end_date->format('F j, Y') : '',
                     'lease_duration_months' => $lease->start_date && $lease->end_date
                         ? $lease->start_date->diffInMonths($lease->end_date) : '',
-                    'rent_amount' => $lease->monthly_rent,
+                    'rent_amount' => $lease->yearly_rent,
                     'payment_frequency' => $lease->payment_frequency,
                     'security_deposit' => $lease->security_deposit ?? 0,
                     'service_charge' => $lease->service_charge ?? 0,
@@ -198,7 +198,7 @@ class ViewLease extends ViewRecord
                         ->timeout(120)
                         ->showBrowserHeaderAndFooter()
                         ->hideHeader()
-                        ->footerHtml('<div style="text-align: center; font-size: 8px; color: #9ca3af; font-family: Inter, system-ui, sans-serif; font-weight: bold; opacity: 0.7; padding: 4px 0; width: 100%; display: block;">Generated via HomeBaze Property Management System | Powered by Devcentric</div>')
+                        ->footerHtml('<div style="text-align: center; font-size: 8px; color: #9ca3af; font-family: Inter, system-ui, sans-serif; font-weight: bold; opacity: 0.7; padding: 4px 0; width: 100%; display: block;">Generated via ' . config('app.name', 'HomeBaze Property Management System') . '</div>')
                         ->setNodeBinary(config('app.browsershot.node_binary', '/usr/bin/node'))
                         ->setNpmBinary(config('app.browsershot.npm_binary', '/usr/bin/npm'));
                 });

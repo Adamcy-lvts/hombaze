@@ -107,7 +107,7 @@ class LeaseRenewalWidget extends Widget
             'agent_id' => $tenant->agent_id, // Will be null if no agent
             'requested_start_date' => $currentLease->end_date->addDay(),
             'requested_end_date' => $currentLease->end_date->addYear(),
-            'requested_monthly_rent' => $currentLease->monthly_rent,
+            'requested_monthly_rent' => $currentLease->yearly_rent,
             'tenant_message' => 'I would like to renew my lease for another term. Please let me know if you need any additional information.',
         ]);
 

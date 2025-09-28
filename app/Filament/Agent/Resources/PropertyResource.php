@@ -119,6 +119,8 @@ class PropertyResource extends Resource
                                                     ->maxLength(255)
                                                     ->unique(ignoreRecord: true)
                                                     ->disabled()
+                                                    ->dehydrated()
+                                                    ->hidden()
                                                     ->columnSpanFull(),
                                                     
                                                 Forms\Components\Select::make('property_type_id')
@@ -139,7 +141,7 @@ class PropertyResource extends Resource
                                                         ->toArray())
                                                     ->searchable()
                                                     ->preload()
-                                                    ->required()
+                                                    ->placeholder('Select subtype (optional)')
                                                     ->columnSpan(1),
                                             ]),
                                         Forms\Components\Textarea::make('description')
@@ -158,6 +160,7 @@ class PropertyResource extends Resource
                                         ])
                                             ->schema([
                                                 Forms\Components\Select::make('state_id')
+                                                    ->label('State')
                                                     ->relationship('state', 'name')
                                                     ->searchable()
                                                     ->preload()
@@ -170,6 +173,7 @@ class PropertyResource extends Resource
                                                     ->columnSpan(1),
                                                     
                                                 Forms\Components\Select::make('city_id')
+                                                    ->label('City')
                                                     ->options(fn (Get $get): array => City::query()
                                                         ->where('state_id', $get('state_id'))
                                                         ->pluck('name', 'id')
@@ -182,86 +186,24 @@ class PropertyResource extends Resource
                                                     ->columnSpan(1),
                                                     
                                                 Forms\Components\Select::make('area_id')
+                                                    ->label('Area')
                                                     ->options(fn (Get $get): array => Area::query()
                                                         ->where('city_id', $get('city_id'))
                                                         ->pluck('name', 'id')
                                                         ->toArray())
                                                     ->searchable()
                                                     ->preload()
+                                                    ->placeholder('Select area (optional)')
                                                     ->columnSpan(1),
                                             ]),
                                         Forms\Components\Textarea::make('address')
+                                            ->label('Street Address')
                                             ->required()
                                             ->rows(3)
+                                            ->placeholder('Enter the full street address')
                                             ->columnSpanFull(),
                                     ])->collapsible(),
 
-                                // Property Features
-                                Forms\Components\Section::make('Property Features')
-                                    ->description('Physical characteristics and specifications')
-                                    ->schema([
-                                        Forms\Components\Grid::make([
-                                            'default' => 1,
-                                            'sm' => 2,
-                                            'lg' => 4,
-                                        ])
-                                            ->schema([
-                                                Forms\Components\TextInput::make('bedrooms')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->maxValue(20)
-                                                    ->required()
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\TextInput::make('bathrooms')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->maxValue(20)
-                                                    ->required()
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\TextInput::make('toilets')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->maxValue(20)
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\TextInput::make('parking_spaces')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->default(0)
-                                                    ->columnSpan(1),
-                                            ]),
-                                        Forms\Components\Grid::make([
-                                            'default' => 1,
-                                            'sm' => 2,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                Forms\Components\TextInput::make('size_sqm')
-                                                    ->label('Size (sqm)')
-                                                    ->numeric()
-                                                    ->suffix('sqm')
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\Select::make('furnishing_status')
-                                                    ->options([
-                                                        'unfurnished' => 'Unfurnished',
-                                                        'semi_furnished' => 'Semi Furnished',
-                                                        'furnished' => 'Fully Furnished',
-                                                    ])
-                                                    ->required()
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\Select::make('compound_type')
-                                                    ->label('Compound/Estate Type')
-                                                    ->options(\App\Models\Property::getCompoundTypeOptions())
-                                                    ->searchable()
-                                                    ->placeholder('Select compound type...')
-                                                    ->helperText('Specify if the property is in a compound, estate, or standalone')
-                                                    ->columnSpan(1),
-                                            ]),
-                                    ])->collapsible(),
 
                                 // Property Features & Amenities
                                 Forms\Components\Section::make('Features & Amenities')
@@ -285,50 +227,10 @@ class PropertyResource extends Resource
                                             ->columns(3)
                                             ->gridDirection('row')
                                             ->bulkToggleable()
-                                            ->searchable()
-                                            ->noSearchResultsMessage('No features found matching your search.')
                                             ->helperText('Select all features and amenities that apply to this property. Features are grouped by category for easy selection.')
                                             ->columnSpanFull(),
                                     ])->collapsible(),
 
-                                // Additional Fees & Charges
-                                Forms\Components\Section::make('Additional Fees & Charges')
-                                    ->description('Optional additional costs associated with this property')
-                                    ->schema([
-                                        Forms\Components\Grid::make([
-                                            'default' => 1,
-                                            'sm' => 2,
-                                        ])
-                                            ->schema([
-                                                Forms\Components\TextInput::make('service_charge')
-                                                    ->label('Service Charge')
-                                                    ->numeric()
-                                                    ->prefix('₦')
-                                                    ->helperText('Monthly or annual service charge')
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\TextInput::make('agency_fee')
-                                                    ->label('Agency Fee')
-                                                    ->numeric()
-                                                    ->prefix('₦')
-                                                    ->helperText('One-time agency commission fee')
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\TextInput::make('legal_fee')
-                                                    ->label('Legal Fee')
-                                                    ->numeric()
-                                                    ->prefix('₦')
-                                                    ->helperText('Legal documentation fees')
-                                                    ->columnSpan(1),
-                                                    
-                                                Forms\Components\TextInput::make('caution_deposit')
-                                                    ->label('Caution Deposit')
-                                                    ->numeric()
-                                                    ->prefix('₦')
-                                                    ->helperText('Refundable security deposit')
-                                                    ->columnSpan(1),
-                                            ]),
-                                    ])->collapsible(),
 
                                 // Additional Property Details
                                 Forms\Components\Section::make('Additional Details')
@@ -407,7 +309,6 @@ class PropertyResource extends Resource
                                                 'caption' => null,
                                                 'alt_text' => null,
                                             ])
-                                            ->responsiveImages()
                                             ->maxSize(5120) // 5MB
                                             ->helperText('Upload a high-quality featured image for this property')
                                             ->columnSpanFull(),
@@ -418,15 +319,14 @@ class PropertyResource extends Resource
                                             ->image()
                                             ->multiple()
                                             ->reorderable()
-                                            ->imageEditor()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->customProperties([
                                                 'caption' => null,
                                                 'alt_text' => null,
                                             ])
-                                            ->responsiveImages()
                                             ->maxFiles(20)
                                             ->maxSize(5120) // 5MB per file
-                                            ->helperText('Upload up to 20 high-quality images showcasing the property. You can add captions to each image after upload.')
+                                            ->helperText('Upload up to 20 high-quality images showcasing the property.')
                                             ->columnSpanFull(),
                                             
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('floor_plans')
@@ -503,6 +403,53 @@ class PropertyResource extends Resource
                                         Forms\Components\Toggle::make('price_negotiable')
                                             ->label('Price Negotiable')
                                             ->default(false),
+                                    ])->columns(1)->collapsible(),
+
+                                // Property Features - Sidebar
+                                Forms\Components\Section::make('Property Features')
+                                    ->description('Physical characteristics and specifications')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('bedrooms')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(20)
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('bathrooms')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(20)
+                                            ->required(),
+
+                                        Forms\Components\TextInput::make('toilets')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(20),
+
+                                        Forms\Components\TextInput::make('parking_spaces')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(0),
+
+                                        Forms\Components\TextInput::make('size_sqm')
+                                            ->label('Size (sqm)')
+                                            ->numeric()
+                                            ->suffix('sqm'),
+
+                                        Forms\Components\Select::make('furnishing_status')
+                                            ->options([
+                                                'unfurnished' => 'Unfurnished',
+                                                'semi_furnished' => 'Semi Furnished',
+                                                'furnished' => 'Fully Furnished',
+                                            ])
+                                            ->required(),
+
+                                        Forms\Components\Select::make('compound_type')
+                                            ->label('Compound/Estate Type')
+                                            ->options(\App\Models\Property::getCompoundTypeOptions())
+                                            ->searchable()
+                                            ->placeholder('Select compound type...')
+                                            ->helperText('Specify if the property is in a compound, estate, or standalone'),
                                     ])->columns(1)->collapsible(),
 
                                 // Property Owner - Sidebar
@@ -628,20 +575,10 @@ class PropertyResource extends Resource
                                             ->columnSpanFull(),
                                     ])->columns(1)->collapsible(),
 
-                                // Property Settings - Sidebar  
+                                // Property Settings - Sidebar
                                 Forms\Components\Section::make('Property Settings')
                                     ->description('Property status and visibility settings')
                                     ->schema([
-                                        Forms\Components\Toggle::make('is_featured')
-                                            ->label('Featured Property')
-                                            ->default(false)
-                                            ->helperText('Featured properties appear at the top of search results'),
-                                            
-                                        Forms\Components\Toggle::make('is_verified')
-                                            ->label('Verified Property')
-                                            ->default(false)
-                                            ->helperText('Mark as verified after property inspection'),
-                                            
                                         Forms\Components\Toggle::make('is_active')
                                             ->label('Active Listing')
                                             ->default(true)

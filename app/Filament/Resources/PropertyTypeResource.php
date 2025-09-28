@@ -43,7 +43,9 @@ class PropertyTypeResource extends Resource
                                                 Forms\Components\TextInput::make('slug')
                                                     ->required()
                                                     ->maxLength(255)
-                                                    ->helperText('URL-friendly version'),
+                                                    ->helperText('URL-friendly version (auto-generated)')
+                                                    ->disabled()
+                                                    ->dehydrated(),
                                             ]),
                                         
                                         Forms\Components\Textarea::make('description')

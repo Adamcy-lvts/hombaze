@@ -114,15 +114,38 @@
                     <div class="lg:col-span-2 property-gallery">
                         <!-- Prepare gallery images as PHP variables -->
                         @php
-                            // Get featured image
+                            // Get featured image URLs
                             $featuredMedia = $property->getFirstMedia('featured');
-                            $featuredImage = $featuredMedia ? $featuredMedia->getUrl() : null;
-                            
-                            // Prepare media library images
+                            $featuredImagePreview = null;
+                            $featuredImageOriginal = null;
+                            if ($featuredMedia) {
+                                $featuredImageOriginal = $featuredMedia->getUrl();
+
+                                // Try to get preview conversion for gallery grid
+                                try {
+                                    $featuredImagePreview = $featuredMedia->getUrl('preview');
+                                } catch (Exception $e) {
+                                    $featuredImagePreview = $featuredImageOriginal;
+                                }
+                            }
+
+                            // Prepare media library images with preview and original URLs
                             $mediaLibraryImages = $property->getMedia('gallery')
                                 ->map(function ($media) use ($property) {
+                                    $originalUrl = $media->getUrl();
+                                    $previewUrl = $originalUrl;
+
+                                    // Try to get preview conversion for gallery grid
+                                    try {
+                                        $previewUrl = $media->getUrl('preview');
+                                    } catch (Exception $e) {
+                                        // Use original if preview conversion doesn't exist
+                                        $previewUrl = $originalUrl;
+                                    }
+
                                     return [
-                                        'src' => $media->getUrl(),
+                                        'src' => $previewUrl, // For gallery grid thumbnails
+                                        'original' => $originalUrl, // For lightbox
                                         'caption' => $media->getCustomProperty('caption') ?? null,
                                         'alt' => $media->getCustomProperty('alt_text') ?? $media->getCustomProperty('caption') ?? $property->title,
                                     ];
@@ -130,19 +153,20 @@
                                 ->toArray();
 
                             // Add featured image if it exists and is not already in gallery
-                            if ($featuredImage) {
+                            if ($featuredImagePreview && $featuredImageOriginal) {
                                 $featuredMedia = $property->getFirstMedia('featured');
                                 $featuredImageData = [
-                                    'src' => $featuredImage,
+                                    'src' => $featuredImagePreview, // For gallery grid thumbnails
+                                    'original' => $featuredImageOriginal, // For lightbox
                                     'caption' => $featuredMedia?->getCustomProperty('caption') ?? 'Featured Image',
                                     'alt' => $featuredMedia?->getCustomProperty('alt_text') ?? $featuredMedia?->getCustomProperty('caption') ?? $property->title,
                                 ];
                                 
-                                // Check if featured image is already in gallery
-                                $existsInGallery = collect($mediaLibraryImages)->contains(function ($image) use ($featuredImage) {
-                                    return $image['src'] === $featuredImage;
+                                // Check if featured image is already in gallery (compare original URLs)
+                                $existsInGallery = collect($mediaLibraryImages)->contains(function ($image) use ($featuredImageOriginal) {
+                                    return $image['original'] === $featuredImageOriginal;
                                 });
-                                
+
                                 if (!$existsInGallery) {
                                     array_unshift($mediaLibraryImages, $featuredImageData);
                                 }
@@ -150,8 +174,10 @@
 
                             // Fallback if no images
                             if (empty($mediaLibraryImages)) {
+                                $fallbackUrl = 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80';
                                 $mediaLibraryImages = [[
-                                    'src' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+                                    'src' => $fallbackUrl,
+                                    'original' => $fallbackUrl,
                                     'caption' => null,
                                     'alt' => $property->title,
                                 ]];
@@ -317,7 +343,7 @@
                             <!-- Main Image Display -->
                             <div class="relative rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl mb-3 lg:mb-4 group cursor-pointer"
                                  @click="openLightbox(currentPreviewIndex)">
-                                <img x-bind:src="images[currentPreviewIndex]?.src" 
+                                <img x-bind:src="images[currentPreviewIndex]?.original || images[currentPreviewIndex]?.src" 
                                      x-bind:alt="images[currentPreviewIndex]?.alt"
                                      class="w-full h-80 lg:h-[450px] xl:h-[500px] object-cover group-hover:scale-105 transition-transform duration-700">
                                 
@@ -433,7 +459,7 @@
                                         </div>
 
                                         <!-- Current Image -->
-                                        <img x-bind:src="images[currentImageIndex]?.src"
+                                        <img x-bind:src="images[currentImageIndex]?.original || images[currentImageIndex]?.src"
                                              x-bind:alt="images[currentImageIndex]?.alt"
                                              class="max-h-full max-w-full object-contain select-none lightbox-image transition-transform duration-200 mx-auto shadow-2xl"
                                              style="transform-origin: center; touch-action: none;"
@@ -562,8 +588,8 @@
                             @endif
                         </div>
 
-                        <!-- Address -->
-                        <div class="mb-4 lg:mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200">
+                        {{-- Address --}}
+                        {{-- <div class="mb-4 lg:mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200">
                             <div class="flex items-start text-gray-600">
                                 <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 mt-0.5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -573,25 +599,24 @@
                                     {{ $property->address }}, {{ $property->area->name ?? '' }} {{ $property->city->name }}, {{ $property->city->state->name }}
                                 </span>
                             </div>
-                        </div>
+                        </div> --}}
 
                         <!-- Quick Stats -->
-                        <div class="grid grid-cols-3 gap-2 lg:gap-4 mb-4 lg:mb-6">
-                            <div class="text-center p-2 lg:p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                        <div class="grid grid-cols-3 gap-3 lg:gap-4 mb-4 lg:mb-6">
+                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
                                 <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->bedrooms }}</div>
                                 <div class="text-xs text-gray-600 uppercase tracking-wide">Bedrooms</div>
                             </div>
-                            <div class="text-center p-2 lg:p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->bathrooms }}</div>
-                                <div class="text-xs text-gray-600 uppercase tracking-wide">Bathrooms</div>
+                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->toilets }}</div>
+                                <div class="text-xs text-gray-600 uppercase tracking-wide">Toilets</div>
                             </div>
-                            @if($property->size_sqm)
-                            <div class="text-center p-2 lg:p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-sm lg:text-lg font-bold text-gray-900">{{ number_format($property->size_sqm) }}</div>
-                                <div class="text-xs text-gray-600 uppercase tracking-wide">SqM</div>
+                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->parking_spaces ?? 0 }}</div>
+                                <div class="text-xs text-gray-600 uppercase tracking-wide">Parking</div>
                             </div>
-                            @endif
                         </div>
+
 
                         <!-- Contact Buttons -->
                         <div class="space-y-2 lg:space-y-3">
@@ -645,6 +670,107 @@
                                 @endif
                             </div>
                         </div>
+
+                        <!-- Listed By -->
+                        <div class="mt-4 pt-4 border-t border-gray-200">
+                            <h3 class="text-base font-semibold text-gray-900 mb-4">Listed By</h3>
+
+                            @if($property->agency && $property->agent)
+                                <!-- Agency with Agent -->
+                                <div class="space-y-4">
+                                    <!-- Agency Info (smaller) -->
+                                    <div class="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                        <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xs shadow-md">
+                                            {{ substr($property->agency->name, 0, 1) }}
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <h4 class="font-medium text-gray-700 text-xs truncate">{{ $property->agency->name }}</h4>
+                                            <p class="text-xs text-gray-500">Licensed Agency</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Agent Info (prominent) -->
+                                    <div class="text-center">
+                                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                            {{ substr($property->agent->full_name ?? 'Agent', 0, 1) }}
+                                        </div>
+                                        <h4 class="font-bold text-gray-900 text-lg mb-1">{{ $property->agent->full_name ?? 'Licensed Agent' }}</h4>
+                                        <p class="text-sm text-gray-600 mb-3">Senior Property Consultant</p>
+
+                                        <!-- Agent Stats -->
+                                        <div class="grid grid-cols-3 gap-2 mb-3">
+                                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                                <div class="text-sm font-bold text-emerald-600">4.0</div>
+                                                <div class="text-xs text-gray-600">Rating</div>
+                                            </div>
+                                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                                <div class="text-sm font-bold text-emerald-600">25+</div>
+                                                <div class="text-xs text-gray-600">Listings</div>
+                                            </div>
+                                            <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                                <div class="text-sm font-bold text-emerald-600">3+</div>
+                                                <div class="text-xs text-gray-600">Years</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif($property->agent)
+                                <!-- Independent Agent -->
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                        {{ substr($property->agent->full_name ?? 'Agent', 0, 1) }}
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-lg mb-1">{{ $property->agent->full_name ?? 'Licensed Agent' }}</h4>
+                                    <p class="text-sm text-gray-600 mb-4">Licensed Real Estate Professional</p>
+
+                                    <!-- Agent Stats -->
+                                    <div class="grid grid-cols-3 gap-2 mb-3">
+                                        <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                            <div class="text-sm font-bold text-emerald-600">4.7</div>
+                                            <div class="text-xs text-gray-600">Rating</div>
+                                        </div>
+                                        <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                            <div class="text-sm font-bold text-emerald-600">45+</div>
+                                            <div class="text-xs text-gray-600">Listings</div>
+                                        </div>
+                                        <div class="text-center p-2 bg-gray-50 rounded-lg">
+                                            <div class="text-sm font-bold text-emerald-600">3+</div>
+                                            <div class="text-xs text-gray-600">Years</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @elseif($property->owner)
+                                <!-- Property Owner -->
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                        @if($property->owner->user)
+                                            {{ substr($property->owner->user->name, 0, 1) }}
+                                        @else
+                                            {{ substr($property->owner->name, 0, 1) }}
+                                        @endif
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-lg mb-1">
+                                        @if($property->owner->user)
+                                            {{ $property->owner->user->name }}
+                                        @else
+                                            {{ $property->owner->name }}
+                                        @endif
+                                    </h4>
+                                    <p class="text-sm text-gray-600 mb-4">Property Owner</p>
+                                </div>
+                            @else
+                                <!-- Fallback for properties without any contact -->
+                                @if($property->creator)
+                                <div class="text-center">
+                                    <div class="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                        {{ substr($property->creator->name, 0, 1) }}
+                                    </div>
+                                    <h4 class="font-bold text-gray-900 text-lg mb-1">{{ $property->creator->name }}</h4>
+                                    <p class="text-sm text-gray-600 mb-4">Property Lister</p>
+                                </div>
+                                @endif
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -664,6 +790,15 @@
                         <div class="mb-4 lg:mb-6">
                             <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">{{ $property->title }}</h1>
                         </div>
+
+                        <!-- Property Description -->
+                        @if($property->description)
+                        <div class="mb-6 lg:mb-8">
+                            <div class="prose prose-gray max-w-none">
+                                <p class="text-sm lg:text-base text-gray-700 leading-relaxed">{{ $property->description }}</p>
+                            </div>
+                        </div>
+                        @endif
 
                         <!-- Property Stats Grid -->
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4 mb-6">
@@ -973,116 +1108,12 @@
                             </div>
                         </div>
                     </div>
+
+
                 </div>
 
                 <!-- Right Sidebar -->
                 <div class="lg:col-span-1 space-y-4 lg:space-y-6">
-                    <!-- Agent Information Card -->
-                    @if($property->agent || $property->agency)
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
-                        <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-4">Listed By</h3>
-                        
-                        @if($property->agency && $property->agent)
-                            <!-- Agency with Agent -->
-                            <div class="space-y-4">
-                                <!-- Agency Info -->
-                                <div class="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md">
-                                        {{ substr($property->agency->name, 0, 1) }}
-                                    </div>
-                                    <div class="flex-1 min-w-0">
-                                        <div class="flex items-center space-x-1 mb-1">
-                                            <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $property->agency->name }}</h4>
-                                            <svg class="w-3 h-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-xs text-gray-600">Licensed Agency</p>
-                                    </div>
-                                </div>
-
-                                <!-- Agent Info -->
-                                <div class="text-center">
-                                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                                        {{ substr($property->agent->name ?? 'Agent', 0, 1) }}
-                                    </div>
-                                    <div class="flex items-center justify-center space-x-1 mb-2">
-                                        <h4 class="font-semibold text-gray-900 text-sm">{{ $property->agent->name ?? 'Licensed Agent' }}</h4>
-                                        <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <p class="text-xs text-gray-600 mb-3">Senior Property Consultant</p>
-                                    
-                                    <!-- Agent Stats -->
-                                    <div class="grid grid-cols-3 gap-2 mb-3">
-                                        <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                            <div class="text-sm font-bold text-emerald-600">4.0</div>
-                                            <div class="text-xs text-gray-600">Rating</div>
-                                        </div>
-                                        <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                            <div class="text-sm font-bold text-emerald-600">25+</div>
-                                            <div class="text-xs text-gray-600">Listings</div>
-                                        </div>
-                                        <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                            <div class="text-sm font-bold text-emerald-600">3+</div>
-                                            <div class="text-xs text-gray-600">Years</div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Reviews -->
-                                    <div class="flex items-center justify-center space-x-1">
-                                        <div class="flex">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <svg class="w-3 h-3 {{ $i <= 4 ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                                </svg>
-                                            @endfor
-                                        </div>
-                                        <span class="text-xs text-gray-600">25 reviews</span>
-                                    </div>
-                                </div>
-                            </div>
-                        @elseif($property->agent)
-                            <!-- Independent Agent -->
-                            <div class="text-center">
-                                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                                    {{ substr($property->agent->name ?? 'Agent', 0, 1) }}
-                                </div>
-                                <h4 class="font-semibold text-gray-900 text-base mb-2">{{ $property->agent->name ?? 'Licensed Agent' }}</h4>
-                                <p class="text-sm text-gray-600 mb-4">Licensed Real Estate Professional</p>
-                                
-                                <!-- Agent Stats -->
-                                <div class="grid grid-cols-3 gap-2 mb-4">
-                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                        <div class="text-base font-bold text-emerald-600">4.7</div>
-                                        <div class="text-xs text-gray-600">Rating</div>
-                                    </div>
-                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                        <div class="text-base font-bold text-emerald-600">45+</div>
-                                        <div class="text-xs text-gray-600">Listings</div>
-                                    </div>
-                                    <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                        <div class="text-base font-bold text-emerald-600">3+</div>
-                                        <div class="text-xs text-gray-600">Years</div>
-                                    </div>
-                                </div>
-
-                                <!-- Reviews -->
-                                <div class="flex items-center justify-center space-x-1">
-                                    <div class="flex">
-                                        @for($i = 1; $i <= 5; $i++)
-                                            <svg class="w-3 h-3 {{ $i <= 4 ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                            </svg>
-                                        @endfor
-                                    </div>
-                                    <span class="text-xs text-gray-600">18 reviews</span>
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                    @endif
 
                     <!-- Features & Amenities -->
                     @if($property->features && $property->features->count() > 0)
@@ -1120,7 +1151,7 @@
                     <a href="{{ route('property.show', $relatedProperty->slug ?? $relatedProperty->id) }}" 
                        class="group bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-lg border border-gray-300/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105">
                         <div class="relative h-40 lg:h-48 overflow-hidden">
-                            <img src="{{ $relatedProperty->getFeaturedImageUrl() }}" 
+                            <img src="{{ $relatedProperty->getFeaturedImageUrl('preview') }}" 
                                  alt="{{ $relatedProperty->title }}"
                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                  onerror="this.src='/images/property-placeholder.svg'">

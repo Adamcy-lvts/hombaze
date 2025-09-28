@@ -35,4 +35,46 @@ return [
         ],
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | WhatsApp Business API Configuration
+    |--------------------------------------------------------------------------
+    */
+    'whatsapp' => [
+        'enabled' => env('WHATSAPP_ENABLED', false),
+        'api_url' => env('WHATSAPP_API_URL', 'https://graph.facebook.com/v18.0'),
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'phone_number_id' => env('WHATSAPP_PHONE_NUMBER_ID'),
+        'verify_token' => env('WHATSAPP_VERIFY_TOKEN'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | SMS Services Configuration
+    |--------------------------------------------------------------------------
+    */
+    'sms' => [
+        'enabled' => env('SMS_ENABLED', false),
+        'default_provider' => env('SMS_DEFAULT_PROVIDER', 'termii'),
+
+        'providers' => [
+            'termii' => [
+                'api_key' => env('TERMII_API_KEY'),
+                'sender_id' => env('TERMII_SENDER_ID', 'HomeBaze'),
+                'channel' => env('TERMII_CHANNEL', 'generic'),
+            ],
+
+            'bulk_sms' => [
+                'api_token' => env('BULK_SMS_API_TOKEN'),
+                'sender_id' => env('BULK_SMS_SENDER_ID', 'HomeBaze'),
+            ],
+
+            'twilio' => [
+                'account_sid' => env('TWILIO_ACCOUNT_SID'),
+                'auth_token' => env('TWILIO_AUTH_TOKEN'),
+                'from_number' => env('TWILIO_FROM_NUMBER'),
+            ],
+        ],
+    ],
+
 ];

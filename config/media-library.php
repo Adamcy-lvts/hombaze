@@ -18,7 +18,7 @@ return [
      * This queue connection will be used to generate derived and responsive images.
      * Leave empty to use the default queue connection.
      */
-    'queue_connection_name' => env('QUEUE_CONNECTION', 'sync'),
+    'queue_connection_name' => env('MEDIA_QUEUE_CONNECTION', 'database'),
 
     /*
      * This queue will be used to generate derived and responsive images.
@@ -92,9 +92,7 @@ return [
      * Here you can specify which path generator should be used for the given class.
      */
     'custom_path_generators' => [
-        // Model::class => PathGenerator::class
-        // or
-        // 'model_morph_alias' => PathGenerator::class
+        \App\Models\Property::class => \App\PathGenerators\PropertyPathGenerator::class,
     ],
 
     /*
@@ -182,7 +180,7 @@ return [
      * The engine that should perform the image conversions.
      * Should be either `gd` or `imagick`.
      */
-    'image_driver' => env('IMAGE_DRIVER', 'gd'),
+    'image_driver' => env('IMAGE_DRIVER', 'imagick'),
 
     /*
      * FFMPEG & FFProbe binaries paths, only used if you try to generate video

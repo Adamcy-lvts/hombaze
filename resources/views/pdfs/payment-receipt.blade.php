@@ -87,7 +87,7 @@
 
 <body class="text-gray-800 bg-white">
     <!-- Document Container - Edge to Edge -->
-    <div class="bg-white border border-gray-300 overflow-hidden">
+    <div id="capture-area" class="bg-white border border-gray-300 overflow-hidden">
 
         <!-- Header Section -->
         <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 text-center">
@@ -162,8 +162,59 @@
                         <h3 class="text-xs font-bold text-gray-700 mb-2 flex items-center dot-accent">
                             RECEIVED BY (LANDLORD)
                         </h3>
-                        <p class="text-sm font-semibold text-gray-800 mb-1">{{ $record->landlord->name ?? 'Landlord Name' }}</p>
-                        <p class="text-xs text-gray-600">{{ $record->landlord->email ?? 'landlord@example.com' }}</p>
+
+                        @php
+                            // Business detection hierarchy similar to landlord view
+                            $businessInfo = null;
+                            $showBusinessInfo = false;
+
+                            // 1. Check for Agency
+                            if ($record->lease && $record->lease->property && $record->lease->property->agency) {
+                                $agency = $record->lease->property->agency;
+                                $businessInfo = [
+                                    'name' => $agency->name,
+                                    'email' => $agency->email ?? 'support@homebaze.com',
+                                    'phone' => $agency->phone ?? '+234 (0) 123-456-7890'
+                                ];
+                                $showBusinessInfo = true;
+                            }
+                            // 2. Check for Property Owner Company
+                            elseif ($record->lease && $record->lease->property && $record->lease->property->owner &&
+                                    $record->lease->property->owner->type === 'company' &&
+                                    $record->lease->property->owner->company_name) {
+                                $owner = $record->lease->property->owner;
+                                $businessInfo = [
+                                    'name' => $owner->company_name,
+                                    'email' => $owner->email ?? $record->landlord->email ?? 'support@homebaze.com',
+                                    'phone' => $owner->phone ?? $record->landlord->phone ?? '+234 (0) 123-456-7890'
+                                ];
+                                $showBusinessInfo = true;
+                            }
+                            // 3. Check for Independent Agent's business
+                            elseif ($record->lease && $record->lease->property && $record->lease->property->agent_id &&
+                                    !$record->lease->property->agency_id) {
+                                $agentUser = \App\Models\User::find($record->lease->property->agent_id);
+                                if ($agentUser) {
+                                    $businessInfo = [
+                                        'name' => $agentUser->name . ' Real Estate',
+                                        'email' => $agentUser->email,
+                                        'phone' => $agentUser->phone ?? '+234 (0) 123-456-7890'
+                                    ];
+                                    $showBusinessInfo = true;
+                                }
+                            }
+                        @endphp
+
+                        @if($showBusinessInfo && $businessInfo)
+                            <p class="text-sm font-semibold text-gray-800 mb-1">{{ $businessInfo['name'] }}</p>
+                            <p class="text-xs text-gray-600">{{ $businessInfo['email'] }}</p>
+                            @if($businessInfo['phone'])
+                                <p class="text-xs text-gray-600">{{ $businessInfo['phone'] }}</p>
+                            @endif
+                        @else
+                            <p class="text-sm font-semibold text-gray-800 mb-1">{{ $record->landlord->name ?? 'Landlord Name' }}</p>
+                            <p class="text-xs text-gray-600">{{ $record->landlord->email ?? 'landlord@example.com' }}</p>
+                        @endif
                     </div>
 
                     <!-- Tenant -->
@@ -217,90 +268,6 @@
                 </div>
             </section>
 
-            <!-- Lease Validity & Renewal Information -->
-            <section>
-                <h2 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1 flex items-center section-accent">
-                    LEASE VALIDITY & RENEWAL
-                </h2>
-
-                <div class="bg-blue-50 p-3 rounded border border-blue-200">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <h3 class="text-sm font-bold text-blue-700 mb-2">Lease Period</h3>
-                            <div class="space-y-1">
-                                <div class="flex justify-between">
-                                    <span class="text-xs font-semibold text-gray-600">Start Date:</span>
-                                    <span class="text-xs text-gray-800 font-medium">{{ $record->lease->start_date->format('M j, Y') }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-xs font-semibold text-gray-600">End Date:</span>
-                                    <span class="text-xs text-gray-800 font-medium">{{ $record->lease->end_date->format('M j, Y') }}</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-xs font-semibold text-gray-600">Duration:</span>
-                                    <span class="text-xs text-gray-800 font-medium">{{ $record->lease->start_date->diffInMonths($record->lease->end_date) }} Months</span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-xs font-semibold text-gray-600">Status:</span>
-                                    <span class="text-xs px-2 py-0.5 rounded font-medium
-                                        @if($record->lease->status === 'active') bg-green-100 text-green-800
-                                        @elseif($record->lease->status === 'expired') bg-red-100 text-red-800
-                                        @elseif($record->lease->status === 'draft') bg-gray-100 text-gray-800
-                                        @else bg-yellow-100 text-yellow-800 @endif">
-                                        {{ ucfirst($record->lease->status) }}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <h3 class="text-sm font-bold text-blue-700 mb-2">Renewal Information</h3>
-                            <div class="space-y-1">
-                                <div class="flex justify-between">
-                                    <span class="text-xs font-semibold text-gray-600">Renewal Option:</span>
-                                    <span class="text-xs px-2 py-0.5 rounded font-medium
-                                        {{ $record->lease->renewal_option ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                        {{ $record->lease->renewal_option ? 'Available' : 'Not Available' }}
-                                    </span>
-                                </div>
-                                @if($record->lease->renewal_option)
-                                <div class="mt-2 p-2 bg-green-50 rounded border border-green-200">
-                                    <p class="text-xs text-green-800">
-                                        <strong>Renewal Terms:</strong> This lease may be renewed upon mutual agreement between landlord and tenant before the expiration date ({{ $record->lease->end_date->format('M j, Y') }}).
-                                    </p>
-                                </div>
-                                @else
-                                <div class="mt-2 p-2 bg-red-50 rounded border border-red-200">
-                                    <p class="text-xs text-red-800">
-                                        <strong>No Renewal:</strong> This lease will terminate on {{ $record->lease->end_date->format('M j, Y') }} and is not eligible for renewal.
-                                    </p>
-                                </div>
-                                @endif
-                                
-                                @php
-                                    $daysToExpiry = $record->lease->end_date->diffInDays(now(), false);
-                                    $isExpiringSoon = $daysToExpiry >= -30 && $daysToExpiry <= 0;
-                                    $isExpired = $daysToExpiry > 0;
-                                @endphp
-                                
-                                @if($isExpired)
-                                <div class="mt-2 p-2 bg-red-100 rounded border border-red-300">
-                                    <p class="text-xs text-red-800 font-medium">
-                                        ⚠️ LEASE EXPIRED: {{ abs($daysToExpiry) }} days ago
-                                    </p>
-                                </div>
-                                @elseif($isExpiringSoon)
-                                <div class="mt-2 p-2 bg-yellow-100 rounded border border-yellow-300">
-                                    <p class="text-xs text-yellow-800 font-medium">
-                                        ⏰ EXPIRES SOON: {{ abs($daysToExpiry) }} days remaining
-                                    </p>
-                                </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
             <!-- Payment Breakdown -->
             <section>
                 <h2 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1 flex items-center section-accent">
@@ -314,25 +281,46 @@
                             <span class="text-sm text-gray-800 font-mono">₦{{ number_format($record->amount, 2) }}</span>
                         </div>
 
-                        @if($record->late_fee && $record->late_fee > 0)
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-600">Late Fee:</span>
-                            <span class="text-sm text-red-600 font-mono">+₦{{ number_format($record->late_fee, 2) }}</span>
+                            <span class="text-sm text-red-600 font-mono">₦{{ number_format($record->late_fee ?? 0, 2) }}</span>
+                        </div>
+
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Discount:</span>
+                            <span class="text-sm text-green-600 font-mono">-₦{{ number_format($record->discount ?? 0, 2) }}</span>
+                        </div>
+
+                        @if($record->deposit ?? 0 > 0)
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Deposit:</span>
+                            <span class="text-sm text-green-600 font-mono">₦{{ number_format($record->deposit, 2) }}</span>
                         </div>
                         @endif
 
-                        @if($record->discount && $record->discount > 0)
+                        @if($record->balance_due ?? 0 > 0)
                         <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-600">Discount:</span>
-                            <span class="text-sm text-green-600 font-mono">-₦{{ number_format($record->discount, 2) }}</span>
+                            <span class="text-sm text-gray-600">Balance Due:</span>
+                            <span class="text-sm text-red-600 font-mono">₦{{ number_format($record->balance_due, 2) }}</span>
                         </div>
+                        @endif
+
+                        @if($record->lease && $record->lease->security_deposit)
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm text-gray-600">Security Deposit:</span>
+                            <span class="text-sm text-yellow-600 font-mono">₦{{ number_format($record->lease->security_deposit, 2) }}</span>
+                        </div>
+                        @endif
+
+                        @if(!($record->late_fee ?? 0) && !($record->discount ?? 0) && !($record->deposit ?? 0) && !($record->balance_due ?? 0) && (!$record->lease || !$record->lease->security_deposit))
+                        <p class="text-gray-500 text-sm italic">No additional charges</p>
                         @endif
 
                         <div class="border-t border-gray-300 pt-2 mt-3">
                             <div class="amount-highlight">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm font-bold">TOTAL AMOUNT:</span>
-                                    <span class="text-lg font-bold font-mono">₦{{ number_format($record->net_amount ?? $record->total_amount, 2) }}</span>
+                                    <span class="text-lg font-bold font-mono">₦{{ number_format($record->amount, 2) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -340,61 +328,18 @@
                 </div>
             </section>
 
-            @if($record->notes)
-            <!-- Notes Section -->
-            <section>
-                <h2 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1 flex items-center section-accent">
-                    PAYMENT NOTES
-                </h2>
-
-                <div class="bg-gray-50 p-3 rounded border border-gray-200">
-                    <p class="text-xs text-gray-800 leading-tight">{{ $record->notes }}</p>
-                </div>
-            </section>
-            @endif
-
-            <!-- Verification Section -->
-            <section>
-                <h2 class="text-sm font-bold text-gray-800 mb-2 border-b border-gray-300 pb-1 flex items-center section-accent">
-                    RECEIPT VERIFICATION
-                </h2>
-
-                <div class="bg-green-50 p-3 rounded border border-green-200">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            @php
-                                $businessName = 'HomeBaze Property Management System';
-
-                                // Try to get agency info from property
-                                if ($record->lease && $record->lease->property && $record->lease->property->agency) {
-                                    $businessName = $record->lease->property->agency->name;
-                                }
-                            @endphp
-
-                            <p class="text-xs text-gray-700 mb-2">
-                                <strong>This receipt confirms payment of ₦{{ number_format($record->net_amount ?? $record->total_amount, 2) }}</strong>
-                                for rental period {{ $record->payment_for_period ?? 'as specified above' }} under lease agreement dated {{ $record->lease->start_date->format('M j, Y') }}.
-                            </p>
-                            <p class="text-xs text-gray-600 mb-2">
-                                <strong>Lease Validity:</strong> {{ $record->lease->start_date->format('M j, Y') }} to {{ $record->lease->end_date->format('M j, Y') }}
-                                @if($record->lease->renewal_option) • <span class="text-green-600 font-medium">Renewable</span> @endif
-                            </p>
-                            <p class="text-xs text-gray-600">
-                                Payment processed through {{ $businessName }} on {{ now()->format('F j, Y \\a\\t g:i A') }}.
-                            </p>
-                        </div>
-                        <div class="text-center">
-                            <div class="pt-2 mt-6">
-                                <div class="inline-block border border-gray-300 p-2 rounded">
-                                    {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(80)->generate(route('receipt.view', $record->id)) !!}
-                                </div>
-                                <p class="text-xs text-gray-600 mt-2">Scan to verify receipt</p>
-                                <p class="text-xs text-gray-500">Receipt #{{ $record->receipt_number }}</p>
-                            </div>
-                        </div>
+            <!-- QR Code positioned at bottom right -->
+            <div class="relative">
+                <div class="absolute bottom-0 right-0 mb-4">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-300 inline-block">
+                        @php
+                            // Generate QR code for receipt verification - use the same route as landlord receipt
+                            $qrUrl = url('/receipt/' . $record->id);
+                        @endphp
+                        {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(80)->generate($qrUrl) !!}
                     </div>
                 </div>
-            </section>
+            </div>
         </div>
 
         <!-- Footer -->
@@ -403,7 +348,15 @@
                 Receipt generated on {{ now()->format('F j, Y \\a\\t g:i A') }}
             </p>
             <p class="text-xs text-gray-500">
-                via {{ $businessName }} | Receipt #{{ $record->receipt_number }}
+                @php
+                    $footerBusinessName = 'HomeBaze Property Management System';
+
+                    // Use the same business detection logic for footer
+                    if ($showBusinessInfo && $businessInfo) {
+                        $footerBusinessName = $businessInfo['name'];
+                    }
+                @endphp
+                via {{ $footerBusinessName }} | Receipt #{{ $record->receipt_number }}
             </p>
         </div>
     </div>

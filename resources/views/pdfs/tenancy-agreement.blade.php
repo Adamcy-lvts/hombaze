@@ -183,8 +183,8 @@
                             LANDLORD
                         </h3>
                         <p class="text-sm font-semibold text-gray-800 mb-1">
-                            {{ $record->landlord->name ?? 'Landlord Name' }}</p>
-                        <p class="text-xs text-gray-600">{{ $record->landlord->email ?? 'landlord@example.com' }}</p>
+                            {{ $record->landlord->name ?? '[Landlord Name]' }}</p>
+                        <p class="text-xs text-gray-600">{{ $record->landlord->email ?? '[Landlord Email]' }}</p>
                     </div>
 
                     <!-- Tenant -->
@@ -192,9 +192,9 @@
                         <h3 class="text-xs font-bold text-gray-700 mb-1 flex items-center dot-accent">
                             TENANT
                         </h3>
-                        <p class="text-sm font-semibold text-gray-800 mb-1">{{ $record->tenant->name ?? 'Tenant Name' }}
+                        <p class="text-sm font-semibold text-gray-800 mb-1">{{ $record->tenant->name ?? '[Tenant Name]' }}
                         </p>
-                        <p class="text-xs text-gray-600">{{ $record->tenant->email ?? 'tenant@example.com' }}</p>
+                        <p class="text-xs text-gray-600">{{ $record->tenant->email ?? '[Tenant Email]' }}</p>
                     </div>
                 </div>
             </section>
@@ -212,7 +212,7 @@
                             <div class="flex items-start">
                                 <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Property:</span>
                                 <span
-                                    class="text-xs text-gray-800 font-medium">{{ $record->property->title ?? 'Property Title' }}</span>
+                                    class="text-xs text-gray-800 font-medium">{{ $record->property->title ?? '[Property Title]' }}</span>
                             </div>
                             @if ($record->property->address)
                                 <div class="flex items-start">
@@ -267,11 +267,12 @@
                                 {{ $record->start_date->diffInMonths($record->end_date) }} Months</p>
                         </div>
 
-                        <!-- Annual Rent -->
+                        <!-- Rent Amount -->
                         <div class="text-center">
-                            <span class="text-xs font-semibold text-gray-600 block mb-1">Annual Rent</span>
-                            <p class="text-xs font-bold text-gray-800">₦{{ number_format($record->monthly_rent, 0) }}
+                            <span class="text-xs font-semibold text-gray-600 block mb-1">Rent Amount</span>
+                            <p class="text-xs font-bold text-gray-800">₦{{ number_format($record->yearly_rent, 0) }}
                             </p>
+                            <p class="text-xs text-gray-500">{{ ucfirst($record->payment_frequency) }}</p>
                         </div>
 
                         <!-- Payment Terms -->
@@ -279,10 +280,10 @@
                             <span class="text-xs font-semibold text-gray-600 block mb-1">Payment Terms</span>
                             <p class="text-xs font-medium text-gray-800">{{ ucfirst($record->payment_frequency) }}</p>
                             @if ($record->payment_frequency === 'biannually')
-                                <p class="text-xs text-gray-600">(₦{{ number_format($record->monthly_rent / 2, 0) }})
+                                <p class="text-xs text-gray-600">(₦{{ number_format($record->yearly_rent / 2, 0) }})
                                 </p>
                             @elseif($record->payment_frequency === 'quarterly')
-                                <p class="text-xs text-gray-600">(₦{{ number_format($record->monthly_rent / 4, 0) }})
+                                <p class="text-xs text-gray-600">(₦{{ number_format($record->yearly_rent / 4, 0) }})
                                 </p>
                             @endif
                         </div>
@@ -395,7 +396,7 @@
                         <div class="signature-line"></div>
                         <div class="space-y-0">
                             <p class="text-xs font-semibold text-gray-800">
-                                {{ $record->landlord->name ?? 'Landlord Name' }}</p>
+                                {{ $record->landlord->name ?? '[Landlord Name]' }}</p>
                             <p class="text-xs text-gray-600">
                                 @if ($record->signed_date)
                                     Date: {{ $record->signed_date->format('M j, Y') }}
@@ -413,7 +414,7 @@
                         </h3>
                         <div class="signature-line"></div>
                         <div class="space-y-0">
-                            <p class="text-xs font-semibold text-gray-800">{{ $record->tenant->name ?? 'Tenant Name' }}
+                            <p class="text-xs font-semibold text-gray-800">{{ $record->tenant->name ?? '[Tenant Name]' }}
                             </p>
                             <p class="text-xs text-gray-600">
                                 @if ($record->signed_date)
@@ -434,11 +435,13 @@
                 Document generated on {{ now()->format('F j, Y \\a\\t g:i A') }}
             </p>
             @php
-                $businessName = 'HomeBaze Property Management System';
+                $businessName = config('app.name', 'HomeBaze Property Management System');
 
                 // Try to get agency info from property
                 if ($record->property && $record->property->agency) {
                     $businessName = $record->property->agency->name;
+                } elseif ($record->property && $record->property->agent && $record->property->agent->agency) {
+                    $businessName = $record->property->agent->agency->name;
                 }
             @endphp
 

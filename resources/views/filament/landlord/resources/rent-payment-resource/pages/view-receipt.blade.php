@@ -20,83 +20,6 @@
             <!-- Premium subtle background pattern -->
             <div class="absolute inset-0 opacity-5 pattern-diagonal-lines pattern-gray-700 pattern-size-2 pattern-bg-transparent"></div>
 
-            <!-- Watermark/seal effect -->
-            <div class="absolute right-10 bottom-10 opacity-5 transform rotate-12">
-                <svg class="w-56 h-56" viewBox="0 0 100 100">
-                    <!-- Complex background pattern -->
-                    <defs>
-                        <pattern id="microtext" patternUnits="userSpaceOnUse" width="100" height="100">
-                            <text x="0" y="2" font-size="1.5" fill="currentColor" opacity="0.7">HOMEBAZE PROPERTY MANAGEMENT HOMEBAZE PROPERTY MANAGEMENT</text>
-                            <text x="0" y="4" font-size="1.5" fill="currentColor" opacity="0.7">SECURE RECEIPT {{ $receipt->receipt_number }} SECURE RECEIPT</text>
-                            <text x="0" y="6" font-size="1.5" fill="currentColor" opacity="0.7">HOMEBAZE PROPERTY MANAGEMENT HOMEBAZE PROPERTY MANAGEMENT</text>
-                            <text x="0" y="8" font-size="1.5" fill="currentColor" opacity="0.7">SECURE RECEIPT {{ $receipt->receipt_number }} SECURE RECEIPT</text>
-                        </pattern>
-                    </defs>
-                    
-                    <!-- Microtext background circle -->
-                    <circle cx="50" cy="50" r="42" fill="url(#microtext)" opacity="0.4"></circle>
-                    
-                    <!-- Outer circle with intricate pattern -->
-                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="2"></circle>
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="currentColor" stroke-width="0.3"></circle>
-                    <circle cx="50" cy="50" r="43" fill="none" stroke="currentColor" stroke-width="0.2" stroke-dasharray="1,2"></circle>
-                    
-                    <!-- Middle decorative elements -->
-                    <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="1"></circle>
-                    <circle cx="50" cy="50" r="36" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3,2"></circle>
-                    <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="0.3" stroke-dasharray="1,1"></circle>
-                    
-                    <!-- Unique pattern elements - waves -->
-                    <path d="M30,50 Q40,45 50,50 Q60,55 70,50" fill="none" stroke="currentColor" stroke-width="0.3"></path>
-                    <path d="M30,52 Q40,57 50,52 Q60,47 70,52" fill="none" stroke="currentColor" stroke-width="0.3"></path>
-                    
-                    <!-- Geometric security elements -->
-                    <polygon points="50,28 52,30 50,32 48,30" fill="currentColor" opacity="0.7"></polygon>
-                    <polygon points="50,68 52,70 50,72 48,70" fill="currentColor" opacity="0.7"></polygon>
-                    <polygon points="28,50 30,52 28,54 26,52" fill="currentColor" opacity="0.7"></polygon>
-                    <polygon points="72,50 74,52 72,54 70,52" fill="currentColor" opacity="0.7"></polygon>
-                    
-                    <!-- Company name with subtle shadow effect -->
-                    <text x="50" y="42" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="currentColor">HOMEBAZE</text>
-                    <text x="50" y="42.3" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="8" font-weight="bold" fill="currentColor" opacity="0.3">HOMEBAZE</text>
-                    <text x="50" y="52" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="currentColor">PROPERTY</text>
-                    <text x="50" y="52.3" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="currentColor" opacity="0.3">PROPERTY</text>
-                    <text x="50" y="58" text-anchor="middle" dominant-baseline="middle" font-family="Arial, sans-serif" font-size="6" font-weight="bold" fill="currentColor">MANAGEMENT</text>
-                    
-                    <!-- Radial lines with varied lengths and thicknesses -->
-                    <g stroke="currentColor">
-                        <line x1="50" y1="10" x2="50" y2="22" stroke-width="0.6"></line>
-                        <line x1="50" y1="78" x2="50" y2="90" stroke-width="0.6"></line>
-                        <line x1="10" y1="50" x2="22" y2="50" stroke-width="0.6"></line>
-                        <line x1="78" y1="50" x2="90" y2="50" stroke-width="0.6"></line>
-                        
-                        <!-- Diagonal lines with varied lengths -->
-                        <line x1="25" y1="25" x2="34" y2="34" stroke-width="0.4"></line>
-                        <line x1="75" y1="25" x2="66" y2="34" stroke-width="0.4"></line>
-                        <line x1="25" y1="75" x2="34" y2="66" stroke-width="0.4"></line>
-                        <line x1="75" y1="75" x2="66" y2="66" stroke-width="0.4"></line>
-                        
-                        <!-- Additional diagonal security lines -->
-                        <line x1="36" y1="25" x2="40" y2="29" stroke-width="0.2"></line>
-                        <line x1="64" y1="25" x2="60" y2="29" stroke-width="0.2"></line>
-                        <line x1="36" y1="75" x2="40" y2="71" stroke-width="0.2"></line>
-                        <line x1="64" y1="75" x2="60" y2="71" stroke-width="0.2"></line>
-                    </g>
-                    
-                    <!-- Unique Receipt number in small print -->
-                    <text x="50" y="66" text-anchor="middle" font-family="monospace" font-size="2.5" font-weight="bold">{{ $receipt->receipt_number }}</text>
-                    
-                    <!-- Text curved around bottom semicircle -->
-                    <path id="curve" d="M20,70 A30,30 0 0,0 80,70" fill="none" stroke="none"></path>
-                    <text font-family="Arial, sans-serif" font-size="4" font-weight="bold">
-                        <textPath href="#curve" startOffset="50%" text-anchor="middle">OFFICIAL RENT RECEIPT</textPath>
-                    </text>
-                    
-                    <!-- Establishment year -->
-                    <text x="50" y="78" text-anchor="middle" font-family="Arial, sans-serif" font-size="3.5" font-weight="bold">EST. 2024</text>
-                </svg>
-            </div>
-
             <!-- Header Row - Improved Layout -->
             <div class="flex justify-between items-start mb-6 relative z-10">
                 <!-- Left: Company Info -->
@@ -255,6 +178,14 @@
                         @if($receipt->lease->property->state){{ $receipt->lease->property->state->name }}@endif
                     </p>
                 @endif
+                @if($receipt->lease->property->bedrooms)
+                    <p class="text-sm text-gray-600 mt-2">
+                        <span class="font-medium">{{ $receipt->lease->property->bedrooms }} Bedroom{{ $receipt->lease->property->bedrooms > 1 ? 's' : '' }}</span>
+                        @if($receipt->lease->property->bathrooms)
+                            • {{ $receipt->lease->property->bathrooms }} Bathroom{{ $receipt->lease->property->bathrooms > 1 ? 's' : '' }}
+                        @endif
+                    </p>
+                @endif
             </div>
             @endif
 
@@ -291,7 +222,7 @@
                         </div>
                         @endif
                         @if($receipt->deposit > 0)
-                        <div class="flex justify-between text-blue-600">
+                        <div class="flex justify-between text-green-600">
                             <span>Deposit:</span>
                             <span class="font-medium">₦{{ number_format($receipt->deposit, 2) }}</span>
                         </div>
@@ -370,31 +301,6 @@
                     </div>
                 </div>
 
-                <!-- QR Code -->
-                <div class="flex justify-center items-center">
-                    <div class="text-center">
-                        <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-300 inline-block">
-                            @php
-                                $qrCode = $this->generateQrCode();
-                            @endphp
-                            @if($qrCode)
-                                {!! $qrCode !!}
-                            @else
-                                <svg width="80" height="80" viewBox="0 0 80 80" class="border">
-                                    <rect width="80" height="80" fill="white"/>
-                                    <g fill="black">
-                                        <rect x="10" y="10" width="15" height="15"/>
-                                        <rect x="55" y="10" width="15" height="15"/>
-                                        <rect x="10" y="55" width="15" height="15"/>
-                                        <rect x="35" y="35" width="10" height="10"/>
-                                    </g>
-                                    <text x="40" y="45" text-anchor="middle" font-size="6" fill="black">QR</text>
-                                </svg>
-                            @endif
-                        </div>
-                        <p class="text-sm text-gray-500 mt-2">Verify</p>
-                    </div>
-                </div>
             </div>
 
             <!-- Notes Section (if exists) -->
@@ -404,6 +310,31 @@
                 <p class="text-gray-800">{{ $receipt->notes }}</p>
             </div>
             @endif
+
+            <!-- QR Code positioned at bottom right -->
+            <div class="relative">
+                <div class="absolute bottom-0 right-0 mb-4">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-300 inline-block">
+                        @php
+                            $qrCode = $this->generateQrCode();
+                        @endphp
+                        @if($qrCode)
+                            {!! $qrCode !!}
+                        @else
+                            <svg width="80" height="80" viewBox="0 0 80 80" class="border">
+                                <rect width="80" height="80" fill="white"/>
+                                <g fill="black">
+                                    <rect x="10" y="10" width="15" height="15"/>
+                                    <rect x="55" y="10" width="15" height="15"/>
+                                    <rect x="10" y="55" width="15" height="15"/>
+                                    <rect x="35" y="35" width="10" height="10"/>
+                                </g>
+                                <text x="40" y="45" text-anchor="middle" font-size="6" fill="black">QR</text>
+                            </svg>
+                        @endif
+                    </div>
+                </div>
+            </div>
 
             <!-- Footer -->
             <div class="mt-6 pt-4 border-t border-gray-200 text-center text-gray-500 text-sm">

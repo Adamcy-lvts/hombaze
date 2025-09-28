@@ -1,253 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Receipt #{{ $receipt->receipt_number }}</title>
+    <title>Rent Receipt {{ $receipt->receipt_number }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {!! isset($customCss) ? $customCss : '' !!}
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        @page {
+            margin: 0.3cm;
+            size: A4 landscape;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 12px;
-            line-height: 1.4;
-            color: #333;
-            background-color: #fff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.3;
+            font-size: 10pt;
         }
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e5e5e5;
-        }
-
-        .logo-section {
-            flex: 2;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #f97316, #dc2626);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 12px;
-        }
-
-        .logo-icon span {
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
-
-        .company-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #1f2937;
-        }
-
-        .company-tagline {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        .company-info {
-            font-size: 10px;
-            color: #6b7280;
-            line-height: 1.5;
-        }
-
-        .receipt-header {
-            text-align: center;
-            margin-bottom: 10px;
-        }
-
-        .receipt-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 5px;
-        }
-
-        .receipt-number {
-            font-size: 14px;
-            color: #6b7280;
-            font-family: monospace;
-        }
-
-        .qr-section {
-            text-align: center;
-        }
-
-        .qr-code {
-            width: 80px;
-            height: 80px;
-            border: 1px solid #d1d5db;
-            padding: 5px;
-            background: white;
-        }
-
-        .qr-text {
-            font-size: 9px;
-            color: #6b7280;
-            margin-top: 5px;
-        }
-
-        .content {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .info-section {
-            flex: 1;
-        }
-
-        .section-title {
-            font-size: 14px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
-            border-bottom: 1px solid #e5e5e5;
-        }
-
-        .info-item {
-            margin-bottom: 10px;
-        }
-
-        .info-label {
-            font-weight: 600;
-            color: #4b5563;
-            font-size: 11px;
-        }
-
-        .info-value {
-            color: #1f2937;
-            font-size: 11px;
-            margin-top: 2px;
-        }
-
-        .payment-summary {
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        .summary-grid {
-            display: flex;
-            gap: 30px;
-        }
-
-        .amount-details {
-            flex: 1;
-        }
-
-        .amount-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 11px;
-        }
-
-        .amount-row.total {
-            border-top: 1px solid #d1d5db;
-            padding-top: 8px;
-            margin-top: 8px;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .amount-row.total .amount {
-            color: #059669;
-            font-size: 16px;
-        }
-
-        .amount-words {
-            font-size: 9px;
-            color: #6b7280;
-            margin-top: 10px;
-        }
-
-        .payment-methods {
-            flex: 1;
-        }
-
-        .checkbox-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            font-size: 11px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        .pattern-diagonal-lines {
+            background-image: repeating-linear-gradient(45deg, currentColor 0, currentColor 1px, transparent 0, transparent 50%);
+            background-size: 10px 10px;
         }
 
         .checkbox {
-            width: 12px;
-            height: 12px;
-            border: 1px solid #d1d5db;
-            border-radius: 2px;
-            background: #fff;
             position: relative;
+            width: 14px;
+            height: 14px;
+            border: 1px solid #6b7280;
+            border-radius: 2px;
+            margin-right: 6px;
+            background-color: white;
+            display: inline-block;
         }
 
-        .checkbox.checked::after {
+        .checkbox.checked {
+            background-color: #059669;
+            border-color: #059669;
+        }
+
+        .checkbox.checked:after {
             content: '✓';
             position: absolute;
             top: -2px;
-            left: 1px;
-            font-size: 10px;
-            color: #2563eb;
-            font-weight: bold;
+            left: 2px;
+            font-size: 12px;
+            font-weight: 900;
+            color: white;
+            line-height: 14px;
+            text-shadow: 0 0 1px rgba(0,0,0,0.5);
         }
 
-        .footer {
+        p {
+            margin-top: 0;
+            margin-bottom: 0.2em;
+        }
+
+        .wide-layout {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .text-xs {
+            font-size: 0.7rem;
+        }
+
+        .text-sm {
+            font-size: 0.8rem;
+        }
+
+        .text-base {
+            font-size: 0.9rem;
+        }
+
+        .text-lg {
+            font-size: 1rem;
+        }
+
+        .text-xl {
+            font-size: 1.1rem;
+        }
+
+        .text-2xl {
+            font-size: 1.3rem;
+        }
+
+        .text-3xl {
+            font-size: 1.5rem;
+        }
+
+        .gap-2 {
+            gap: 0.5rem;
+        }
+
+        .gap-4 {
+            gap: 1rem;
+        }
+
+        .gap-6 {
+            gap: 1.5rem;
+        }
+
+        .gap-8 {
+            gap: 2rem;
+        }
+
+        .p-2 {
+            padding: 0.4rem;
+        }
+
+        .p-3 {
+            padding: 0.6rem;
+        }
+
+        .p-4 {
+            padding: 0.8rem;
+        }
+
+        .p-6 {
+            padding: 1rem;
+        }
+
+        .p-8 {
+            padding: 1.2rem;
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-3 {
+            margin-bottom: 0.75rem;
+        }
+
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.25rem;
+        }
+
+        .mt-4 {
+            margin-top: 1rem;
+        }
+
+        .mt-6 {
+            margin-top: 1.5rem;
+        }
+
+        .pt-4 {
+            padding-top: 1rem;
+        }
+
+        .space-y-2 > * + * {
+            margin-top: 0.5rem;
+        }
+
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+
+        .space-y-6 > * + * {
+            margin-top: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: repeat(1, minmax(0, 1fr));
+        }
+
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .grid-cols-3 {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .items-end {
+            align-items: flex-end;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .space-x-2 > * + * {
+            margin-left: 0.5rem;
+        }
+
+        .space-x-3 > * + * {
+            margin-left: 0.75rem;
+        }
+
+        .space-x-4 > * + * {
+            margin-left: 1rem;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .rounded {
+            border-radius: 0.25rem;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .border {
+            border-width: 0.5px;
+        }
+
+        .border-2 {
+            border-width: 1px;
+        }
+
+        .border-l-4 {
+            border-left-width: 2px;
+        }
+
+        .border-b-2 {
+            border-bottom-width: 1px;
+        }
+
+        .border-t {
+            border-top-width: 0.5px;
+        }
+
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .inset-0 {
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+
+        .right-10 {
+            right: 2.5rem;
+        }
+
+        .bottom-10 {
+            bottom: 2.5rem;
+        }
+
+        .z-10 {
+            z-index: 10;
+        }
+
+        .transform {
+            transform: translateZ(0);
+        }
+
+        .rotate-12 {
+            transform: rotate(12deg);
+        }
+
+        .opacity-5 {
+            opacity: 0.05;
+        }
+
+        .overflow-hidden {
+            overflow: hidden;
+        }
+
+        .text-center {
             text-align: center;
-            font-size: 9px;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .text-gray-500 {
             color: #6b7280;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
+        }
+
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
+        .text-gray-700 {
+            color: #374151;
+        }
+
+        .text-gray-800 {
+            color: #1f2937;
+        }
+
+        .text-indigo-700 {
+            color: #3730a3;
+        }
+
+        .text-red-600 {
+            color: #dc2626;
+        }
+
+        .text-green-600 {
+            color: #16a34a;
+        }
+
+        .text-yellow-600 {
+            color: #ca8a04;
+        }
+
+        .bg-white {
+            background-color: #ffffff;
+        }
+
+        .bg-gray-50 {
+            background-color: #f9fafb;
+        }
+
+        .bg-blue-50 {
+            background-color: #eff6ff;
+        }
+
+        .bg-green-50 {
+            background-color: #f0fdf4;
+        }
+
+        .bg-red-50 {
+            background-color: #fef2f2;
+        }
+
+        .bg-yellow-50 {
+            background-color: #fefce8;
+        }
+
+        .bg-indigo-50 {
+            background-color: #eef2ff;
+        }
+
+        .bg-indigo-100 {
+            background-color: #e0e7ff;
+        }
+
+        .bg-gradient-to-r {
+            background-image: linear-gradient(to right, var(--tw-gradient-stops));
+        }
+
+        .from-slate-50 {
+            --tw-gradient-from: #f8fafc;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(248, 250, 252, 0));
+        }
+
+        .to-slate-100 {
+            --tw-gradient-to: #f1f5f9;
+        }
+
+        .from-indigo-50 {
+            --tw-gradient-from: #eef2ff;
+            --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(238, 242, 255, 0));
+        }
+
+        .to-blue-50 {
+            --tw-gradient-to: #eff6ff;
+        }
+
+        .border-gray-200 {
+            border-color: #e5e7eb;
+        }
+
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+
+        .border-gray-400 {
+            border-color: #9ca3af;
+        }
+
+        .border-blue-500 {
+            border-color: #3b82f6;
+        }
+
+        .border-green-500 {
+            border-color: #22c55e;
+        }
+
+        .border-red-500 {
+            border-color: #ef4444;
+        }
+
+        .border-indigo-100 {
+            border-color: #e0e7ff;
+        }
+
+        .border-indigo-200 {
+            border-color: #c7d2fe;
+        }
+
+        .border-indigo-500 {
+            border-color: #6366f1;
+        }
+
+        .w-16 {
+            width: 4rem;
+        }
+
+        .w-32 {
+            width: 8rem;
+        }
+
+        .w-48 {
+            width: 12rem;
+        }
+
+        .w-56 {
+            width: 14rem;
+        }
+
+        .h-56 {
+            height: 14rem;
+        }
+
+        .max-w-7xl {
+            max-width: 80rem;
+        }
+
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .drop-shadow-md {
+            filter: drop-shadow(0 4px 3px rgba(0, 0, 0, 0.07));
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="logo-section">
+
+<body class="bg-gray-50">
+    <div id="capture-area" class="wide-layout p-4 bg-gradient-to-r from-slate-50 to-slate-100 shadow-lg rounded border border-gray-200 relative overflow-hidden">
+        <!-- Background pattern -->
+        <div class="absolute inset-0 opacity-5 pattern-diagonal-lines pattern-gray-700"></div>
+
+        <!-- Header Row - Improved Layout -->
+        <div class="flex justify-between items-start mb-4 relative z-10">
+            <!-- Left: Company Info -->
+            <div class="flex items-center space-x-3 flex-1">
                 @php
                     $businessInfo = null;
+                    $businessLogo = null;
                     $businessInitials = 'HB';
 
-                    // Try to get agency info from property
+                    // Business detection hierarchy:
+                    // 1. Agency (if property belongs to an agency)
+                    // 2. Property Owner's Company (if it's a company)
+                    // 3. Independent Agent's business (if managed by independent agent)
+                    // 4. Landlord's business info (from user preferences - future)
+                    // 5. HomeBaze fallback
+
+                    // 1. Check for Agency
                     if ($receipt->lease && $receipt->lease->property && $receipt->lease->property->agency) {
                         $agency = $receipt->lease->property->agency;
                         $businessInfo = [
@@ -257,180 +531,247 @@
                             'website' => $agency->website ?? 'www.homebaze.com',
                             'tagline' => 'Real Estate Agency'
                         ];
+                        $businessLogo = $agency->logo ?? null;
                         $businessInitials = strtoupper(substr($agency->name, 0, 2));
-                    } else {
-                        // Fallback to HomeBaze default
+                    }
+                    // 2. Check for Property Owner Company
+                    elseif ($receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
+                            $receipt->lease->property->owner->type === 'company' &&
+                            $receipt->lease->property->owner->company_name) {
+                        $owner = $receipt->lease->property->owner;
                         $businessInfo = [
-                            'name' => 'HomeBaze',
+                            'name' => $owner->company_name,
+                            'email' => $owner->email ?? $receipt->landlord->email ?? 'support@homebaze.com',
+                            'phone' => $owner->phone ?? $receipt->landlord->phone ?? '+234 (0) 123-456-7890',
+                            'website' => $owner->website ?? null,
+                            'tagline' => null // No tagline for property owner companies
+                        ];
+                        $businessInitials = strtoupper(substr($owner->company_name, 0, 2));
+                    }
+                    // 3. Check for Independent Agent's business (if property has independent agent)
+                    elseif ($receipt->lease && $receipt->lease->property && $receipt->lease->property->agent_id &&
+                            !$receipt->lease->property->agency_id) {
+                        // Independent agent - for now use agent's name as business name
+                        // This can be enhanced when agent business info is added
+                        $agentUser = \App\Models\User::find($receipt->lease->property->agent_id);
+                        if ($agentUser) {
+                            $businessInfo = [
+                                'name' => $agentUser->name . ' Real Estate',
+                                'email' => $agentUser->email,
+                                'phone' => $agentUser->phone ?? '+234 (0) 123-456-7890',
+                                'website' => 'www.homebaze.com',
+                                'tagline' => 'Independent Real Estate Agent'
+                            ];
+                            $businessInitials = strtoupper(substr($agentUser->name, 0, 2));
+                        }
+                    }
+
+                    // Default fallback to HomeBaze
+                    if (!$businessInfo) {
+                        $businessInfo = [
+                            'name' => 'HomeBaze Property',
                             'email' => 'support@homebaze.com',
                             'phone' => '+234 (0) 123-456-7890',
                             'website' => 'www.homebaze.com',
-                            'tagline' => 'Property Management Platform'
+                            'tagline' => 'Property Management System'
                         ];
                     }
+
+                    $isPropertyOwnerCompany = $receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
+                                              $receipt->lease->property->owner->type === 'company' &&
+                                              $receipt->lease->property->owner->company_name;
                 @endphp
 
-                <div class="logo">
-                    <div class="logo-icon">
-                        <span>{{ $businessInitials }}</span>
-                    </div>
-                    <div>
-                        <div class="company-name">{{ $businessInfo['name'] }}</div>
-                        <div class="company-tagline">{{ $businessInfo['tagline'] }}</div>
-                    </div>
-                </div>
-                <div class="company-info">
-                    Email: {{ $businessInfo['email'] }}<br>
-                    Phone: {{ $businessInfo['phone'] }}<br>
-                    Website: {{ $businessInfo['website'] }}
-                </div>
-            </div>
-
-            <div class="receipt-header">
-                <div class="receipt-title">RENT PAYMENT RECEIPT</div>
-                <div class="receipt-number">#{{ $receipt->receipt_number }}</div>
-            </div>
-        </div>
-
-        <!-- Content -->
-        <div class="content">
-            <!-- Property Information -->
-            <div class="info-section">
-                <div class="section-title">Property Information</div>
-                <div class="info-item">
-                    <div class="info-label">Property:</div>
-                    <div class="info-value">{{ $receipt->property->title ?? 'N/A' }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Address:</div>
-                    <div class="info-value">{{ $receipt->property->address ?? 'N/A' }}</div>
-                </div>
-                @if($receipt->lease)
-                    <div class="info-item">
-                        <div class="info-label">Lease Period:</div>
-                        <div class="info-value">
-                            {{ $receipt->lease->start_date->format('M d, Y') }} - {{ $receipt->lease->end_date->format('M d, Y') }}
-                        </div>
+                @if ($businessLogo)
+                    <img src="{{ $businessLogo }}" alt="Company Logo" class="w-16 drop-shadow-md">
+                @else
+                    <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center">
+                        <span class="text-base font-bold text-indigo-600">{{ $businessInitials }}</span>
                     </div>
                 @endif
+                <div>
+                    <p class="text-lg font-bold text-gray-800">{{ $businessInfo['name'] }}</p>
+                    @if($businessInfo['tagline'])
+                        <p class="text-xs text-gray-600">{{ $businessInfo['tagline'] }}</p>
+                    @endif
+                    @if($isPropertyOwnerCompany)
+                        <!-- Show PropertyOwner company contacts under company name -->
+                        <div class="text-xs text-gray-600 mt-1 space-y-0.5">
+                            <p class="font-medium">{{ $businessInfo['email'] }}</p>
+                            <p>{{ $businessInfo['phone'] }}</p>
+                            @if($businessInfo['website'])
+                                <p>{{ $businessInfo['website'] }}</p>
+                            @endif
+                        </div>
+                    @endif
+                </div>
             </div>
 
-            <!-- Payment Details -->
-            <div class="info-section">
-                <div class="section-title">Payment Details</div>
-                <div class="info-item">
-                    <div class="info-label">Payment Date:</div>
-                    <div class="info-value">{{ $receipt->payment_date->format('F d, Y') }}</div>
+            <!-- Center: Contact Details (only for non-PropertyOwner companies) -->
+            @if(!$isPropertyOwnerCompany)
+                <div class="text-center text-gray-600 text-xs flex-1">
+                    <p class="font-semibold">{{ $businessInfo['email'] }}</p>
+                    @if($businessInfo['website'])
+                        <p>{{ $businessInfo['website'] }}</p>
+                    @endif
+                    <p class="text-xs">{{ $businessInfo['phone'] }}</p>
                 </div>
-                <div class="info-item">
-                    <div class="info-label">Due Date:</div>
-                    <div class="info-value">{{ $receipt->due_date->format('F d, Y') }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Payment Period:</div>
-                    <div class="info-value">{{ $receipt->payment_for_period ?? 'N/A' }}</div>
-                </div>
-                @if($receipt->payment_reference)
-                    <div class="info-item">
-                        <div class="info-label">Reference:</div>
-                        <div class="info-value">{{ $receipt->payment_reference }}</div>
-                    </div>
-                @endif
-            </div>
+            @endif
 
-            <!-- Tenant Information -->
-            <div class="info-section">
-                <div class="section-title">Tenant Information</div>
-                <div class="info-item">
-                    <div class="info-label">Name:</div>
-                    <div class="info-value">{{ $receipt->tenant->name ?? 'N/A' }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Email:</div>
-                    <div class="info-value">{{ $receipt->tenant->email ?? 'N/A' }}</div>
-                </div>
-                <div class="info-item">
-                    <div class="info-label">Phone:</div>
-                    <div class="info-value">{{ $receipt->tenant->phone ?? 'N/A' }}</div>
+            <!-- Right: Receipt Number (Always at far right) -->
+            <div class="text-right">
+                <div class="bg-indigo-100 px-3 py-2 rounded shadow-sm border border-indigo-200">
+                    <p class="text-xs text-gray-600">Receipt No:</p>
+                    <p class="text-sm font-bold text-indigo-700">{{ $receipt->receipt_number }}</p>
                 </div>
             </div>
         </div>
 
-        <!-- Payment Summary -->
-        <div class="payment-summary">
-            <div class="summary-grid">
-                <div class="amount-details">
-                    <div class="section-title">Amount Details</div>
-                    <div class="amount-row">
-                        <span>Net Amount:</span>
-                        <span>₦{{ number_format($receipt->net_amount ?? $receipt->amount, 2) }}</span>
-                    </div>
-                    @if($receipt->deposit && $receipt->deposit > 0)
-                        <div class="amount-row">
-                            <span>Deposit:</span>
-                            <span>₦{{ number_format($receipt->deposit, 2) }}</span>
-                        </div>
-                    @endif
-                    @if($receipt->balance_due && $receipt->balance_due > 0)
-                        <div class="amount-row">
-                            <span>Balance Due:</span>
-                            <span style="color: #dc2626;">₦{{ number_format($receipt->balance_due, 2) }}</span>
-                        </div>
-                    @endif
-                    @if($receipt->late_fee && $receipt->late_fee > 0)
-                        <div class="amount-row">
-                            <span>Late Fee:</span>
-                            <span>₦{{ number_format($receipt->late_fee, 2) }}</span>
-                        </div>
-                    @endif
-                    <div class="amount-row total">
-                        <span>Total Amount:</span>
-                        <span class="amount">₦{{ number_format($receipt->amount, 2) }}</span>
-                    </div>
-                    <div class="amount-words">
-                        <strong>Amount in Words:</strong> {{ $amountInWords }}
-                    </div>
-                </div>
+        <!-- Main Content Area - Optimized Layout -->
+        <!-- Top Row: Basic Information (4 columns) -->
+        <div class="grid grid-cols-4 gap-3 mb-3">
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="text-xs font-semibold text-gray-600 mb-1">Received From:</p>
+                <p class="text-sm text-gray-800 font-medium">{{ $receipt->tenant->name ?? 'N/A' }}</p>
+            </div>
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="text-xs font-semibold text-gray-600 mb-1">Payment Date:</p>
+                <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}</p>
+            </div>
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="text-xs font-semibold text-gray-600 mb-1">Payment For:</p>
+                <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
+            </div>
+            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-2 rounded shadow-sm border-2 border-indigo-200">
+                <p class="text-xs font-semibold text-indigo-700 mb-1">Total Amount</p>
+                <p class="text-lg font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
+            </div>
+        </div>
 
-                <div class="payment-methods">
-                    <div class="section-title">Payment Method</div>
-                    <div class="checkbox-grid">
-                        <div class="checkbox-item">
-                            <div class="checkbox {{ $receipt->payment_method === 'cash' ? 'checked' : '' }}"></div>
-                            <span>Cash</span>
-                        </div>
-                        <div class="checkbox-item">
-                            <div class="checkbox {{ $receipt->payment_method === 'transfer' ? 'checked' : '' }}"></div>
-                            <span>Transfer</span>
-                        </div>
-                        <div class="checkbox-item">
-                            <div class="checkbox {{ $receipt->payment_method === 'pos' ? 'checked' : '' }}"></div>
-                            <span>POS</span>
-                        </div>
-                        <div class="checkbox-item">
-                            <div class="checkbox {{ $receipt->payment_method === 'card' ? 'checked' : '' }}"></div>
-                            <span>Card</span>
-                        </div>
+        <!-- Second Row: Property Information (Full Width) -->
+        @if($receipt->lease && $receipt->lease->property)
+        <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-500 shadow-sm mb-3">
+            <p class="font-semibold text-blue-700 mb-1 text-xs">Property Details</p>
+            <p class="text-gray-800 font-medium text-sm">{{ $receipt->lease->property->title }}</p>
+            @if($receipt->lease->property->address)
+                <p class="text-xs text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
+            @endif
+            @if($receipt->lease->property->city || $receipt->lease->property->state)
+                <p class="text-xs text-gray-600">
+                    @if($receipt->lease->property->city){{ $receipt->lease->property->city->name }}@endif
+                    @if($receipt->lease->property->city && $receipt->lease->property->state), @endif
+                    @if($receipt->lease->property->state){{ $receipt->lease->property->state->name }}@endif
+                </p>
+            @endif
+            @if($receipt->lease->property->bedrooms)
+                <p class="text-xs text-gray-600 mt-1">
+                    <span class="font-medium">{{ $receipt->lease->property->bedrooms }} Bedroom{{ $receipt->lease->property->bedrooms > 1 ? 's' : '' }}</span>
+                    @if($receipt->lease->property->bathrooms)
+                        • {{ $receipt->lease->property->bathrooms }} Bathroom{{ $receipt->lease->property->bathrooms > 1 ? 's' : '' }}
+                    @endif
+                </p>
+            @endif
+        </div>
+        @endif
+
+        <!-- Third Row: Lease Dates & Payment Information -->
+        <div class="grid grid-cols-3 gap-3 mb-3">
+            <!-- Lease Start Date -->
+            @if($receipt->lease)
+            <div class="bg-green-50 p-2 rounded border-l-4 border-green-500 shadow-sm">
+                <p class="font-semibold text-green-700 text-xs mb-1">Lease Start</p>
+                <p class="text-sm font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</p>
+            </div>
+
+            <!-- Lease End Date -->
+            <div class="bg-red-50 p-2 rounded border-l-4 border-red-500 shadow-sm">
+                <p class="font-semibold text-red-700 text-xs mb-1">Lease End</p>
+                <p class="text-sm font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</p>
+            </div>
+            @endif
+
+            <!-- Payment Breakdown -->
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="font-semibold text-gray-700 mb-1 text-xs">Payment Breakdown</p>
+                <div class="space-y-1 text-xs">
+                    <div class="flex justify-between text-green-600">
+                        <span>Deposit:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->deposit ?? 0, 2) }}</span>
                     </div>
+                    <div class="flex justify-between text-red-600">
+                        <span>Balance Due:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->balance_due ?? 0, 2) }}</span>
+                    </div>
+                    @if($receipt->lease && $receipt->lease->security_deposit)
+                    <div class="flex justify-between text-yellow-600">
+                        <span>Security Deposit:</span>
+                        <span class="font-medium">₦{{ number_format($receipt->lease->security_deposit, 2) }}</span>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
 
-        <!-- QR Code Section -->
-        <div style="text-align: center; margin: 20px 0; padding: 15px;">
-            <div style="display: inline-block; border: 1px solid #d1d5db; padding: 8px; border-radius: 6px; background: white;">
-                {!! \SimpleSoftwareIO\QrCode\Facades\QrCode::format('svg')->size(80)->generate(route('receipt.view', $receipt->id)) !!}
+        <!-- Fourth Row: Amount in Words & Payment Method -->
+        <div class="grid grid-cols-4 gap-3 mb-3">
+            <!-- Amount in Words (spans 2 columns) -->
+            <div class="col-span-2 bg-gray-50 p-2 rounded shadow-sm border border-gray-200">
+                <p class="font-semibold text-gray-600 text-xs mb-1">Amount in Words:</p>
+                <p class="text-gray-800 text-sm italic font-medium">{{ $amountInWords }}</p>
             </div>
-            <div style="font-size: 10px; color: #6b7280; margin-top: 8px;">
-                <strong>Scan to verify receipt</strong><br>
-                Receipt #{{ $receipt->receipt_number }}
+
+            <!-- Payment Method -->
+            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+                <p class="font-semibold text-gray-700 mb-1 text-xs">Payment Method</p>
+                <div class="grid grid-cols-2 gap-1">
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'cash' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                        <div class="checkbox @if($receipt->payment_method == 'cash') checked @endif"></div>
+                        <span>Cash</span>
+                    </div>
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'transfer' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                        <div class="checkbox @if($receipt->payment_method == 'transfer') checked @endif"></div>
+                        <span>Transfer</span>
+                    </div>
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'pos' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                        <div class="checkbox @if($receipt->payment_method == 'pos') checked @endif"></div>
+                        <span>POS</span>
+                    </div>
+                    <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'card' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                        <div class="checkbox @if($receipt->payment_method == 'card') checked @endif"></div>
+                        <span>Card</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- QR Code positioned at bottom right -->
+        <div class="relative">
+            <div class="absolute bottom-0 right-0 mb-2">
+                <div class="bg-white p-1 rounded shadow-sm border border-gray-300 inline-block">
+                    @if(isset($qrCode))
+                        {!! $qrCode !!}
+                    @else
+                        <svg width="60" height="60" viewBox="0 0 60 60" class="border">
+                            <rect width="60" height="60" fill="white"/>
+                            <g fill="black">
+                                <rect x="5" y="5" width="10" height="10"/>
+                                <rect x="45" y="5" width="10" height="10"/>
+                                <rect x="5" y="45" width="10" height="10"/>
+                                <rect x="25" y="25" width="10" height="10"/>
+                            </g>
+                            <text x="30" y="35" text-anchor="middle" font-size="5" fill="black">QR</text>
+                        </svg>
+                    @endif
+                </div>
             </div>
         </div>
 
         <!-- Footer -->
-        <div class="footer">
-            This is an automated receipt generated by {{ $businessInfo['name'] }}.<br>
-            For inquiries, please contact {{ $businessInfo['email'] }}
+        <div class="mt-3 pt-2 border-t border-gray-200 text-center text-gray-500 text-xs">
+            <p>Thank you for your timely payment!</p>
+            <p class="mt-1">This receipt was generated electronically and is valid without a physical signature.</p>
+            <p class="mt-1 font-semibold">Generated via HomeBaze Property Management System | <strong>Powered by DevCentric</strong></p>
         </div>
     </div>
 </body>

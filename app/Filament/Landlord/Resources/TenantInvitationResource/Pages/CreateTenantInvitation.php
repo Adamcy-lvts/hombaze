@@ -14,7 +14,8 @@ class CreateTenantInvitation extends CreateRecord
     {
         $data['landlord_id'] = Auth::id();
         $data['invited_from_ip'] = request()->ip();
-        
+        $data['status'] = 'pending'; // Ensure status is set to pending
+
         return $data;
     }
 

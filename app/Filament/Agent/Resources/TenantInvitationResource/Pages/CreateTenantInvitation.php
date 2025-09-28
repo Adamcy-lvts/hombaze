@@ -21,7 +21,8 @@ class CreateTenantInvitation extends CreateRecord
         
         $data['agent_id'] = $agentProfile->id;
         $data['invited_from_ip'] = request()->ip();
-        
+        $data['status'] = 'pending'; // Ensure status is set to pending
+
         return $data;
     }
 

@@ -29,12 +29,14 @@ class TenantInvitationResource extends Resource
             ->schema([
                 Forms\Components\Section::make('Invitation Details')
                     ->schema([
-                        Forms\Components\TextInput::make('email')
-                            ->label('Tenant Email')
-                            ->email()
+                        Forms\Components\TextInput::make('phone')
+                            ->label('Tenant Phone Number')
+                            ->tel()
                             ->required()
-                            ->maxLength(255)
-                            ->helperText('Enter the email address of the person you want to invite as a tenant'),
+                            ->maxLength(20)
+                            ->placeholder('+234 801 234 5678')
+                            ->helperText('Enter the phone number of the person you want to invite as a tenant')
+                            ->rules(['regex:/^(\+234|234|0)[789][01]\d{8}$/']),
 
                         Forms\Components\Select::make('property_id')
                             ->label('Property (Optional)')
@@ -72,8 +74,8 @@ class TenantInvitationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('email')
-                    ->label('Tenant Email')
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('Tenant Phone')
                     ->searchable()
                     ->sortable(),
 
@@ -138,17 +140,76 @@ class TenantInvitationResource extends Resource
                     ->placeholder('All Properties'),
             ])
             ->actions([
-                Tables\Actions\Action::make('copy_link')
-                    ->label('Copy Link')
-                    ->icon('heroicon-o-link')
-                    ->action(function (TenantInvitation $record) {
-                        // This would typically copy to clipboard via JavaScript
-                        Notification::make()
-                            ->title('Invitation Link')
-                            ->body($record->getInvitationUrl())
-                            ->success()
-                            ->send();
-                    })
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('copy_link')
+                        ->label('Copy Link')
+                        ->icon('heroicon-o-link')
+                        ->action(function (TenantInvitation $record) {
+                            $record->update([
+                                'link_copied_at' => now(),
+                                'link_copy_count' => $record->link_copy_count + 1
+                            ]);
+
+                            Notification::make()
+                                ->title('Invitation Link Ready')
+                                ->body('Click the link below to copy: ' . $record->getInvitationUrl())
+                                ->success()
+                                ->persistent()
+                                ->actions([
+                                    \Filament\Notifications\Actions\Action::make('copy')
+                                        ->label('Copy to Clipboard')
+                                        ->url('javascript:copyInvitationLink("' . $record->getInvitationUrl() . '")')
+                                        ->openUrlInNewTab(false)
+                                ])
+                                ->send();
+                        })
+                        ->visible(fn (TenantInvitation $record) => $record->isPending()),
+
+                    Tables\Actions\Action::make('whatsapp')
+                        ->label('Share via WhatsApp')
+                        ->icon('heroicon-o-chat-bubble-left-right')
+                        ->color('success')
+                        ->url(function (TenantInvitation $record) {
+                            $whatsappService = app(\App\Services\Communication\WhatsAppService::class);
+                            $whatsappService->trackSharing($record, 'whatsapp');
+                            return $whatsappService->generateInvitationShareLink($record);
+                        })
+                        ->openUrlInNewTab()
+                        ->visible(fn (TenantInvitation $record) => $record->isPending()),
+
+                    Tables\Actions\Action::make('copy_message')
+                        ->label('Copy SMS Message')
+                        ->icon('heroicon-o-device-phone-mobile')
+                        ->color('info')
+                        ->action(function (TenantInvitation $record) {
+                            $smsService = app(\App\Services\Communication\SmsService::class);
+                            $smsService->trackSending($record);
+
+                            $message = "🏠 HomeBaze Invitation\n\n";
+                            $message .= "Hi! {$record->agent->name} invited you as tenant";
+                            if ($record->property) {
+                                $message .= " for {$record->property->title}";
+                            }
+                            $message .= ".\n\nComplete registration: {$record->getInvitationUrl()}\n\n";
+                            $message .= "Valid until {$record->expires_at->format('M j, Y')}";
+
+                            Notification::make()
+                                ->title('SMS Message Ready')
+                                ->body('Send this message to: ' . $record->phone)
+                                ->success()
+                                ->persistent()
+                                ->actions([
+                                    \Filament\Notifications\Actions\Action::make('copy_sms')
+                                        ->label('Copy SMS Message')
+                                        ->url('javascript:copySmsMessage("' . addslashes($message) . '")')
+                                        ->openUrlInNewTab(false)
+                                ])
+                                ->send();
+                        })
+                        ->visible(fn (TenantInvitation $record) => $record->isPending()),
+                ])
+                    ->label('Share Invitation')
+                    ->icon('heroicon-o-share')
                     ->visible(fn (TenantInvitation $record) => $record->isPending()),
 
                 Tables\Actions\Action::make('resend')

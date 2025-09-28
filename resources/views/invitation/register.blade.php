@@ -216,17 +216,17 @@
                                 </div>
                             </div>
 
-                            <!-- Email (read-only) -->
+                            <!-- Phone (read-only) -->
                             <div>
-                                <label for="email" class="block text-sm font-bold text-white mb-3">
-                                    Email Address
+                                <label for="phone" class="block text-sm font-bold text-white mb-3">
+                                    Phone Number
                                 </label>
                                 <div class="relative">
-                                    <input 
-                                        id="email" 
-                                        type="email" 
-                                        name="email" 
-                                        value="{{ $invitation->email }}"
+                                    <input
+                                        id="phone"
+                                        type="tel"
+                                        name="phone"
+                                        value="{{ $invitation->phone }}"
                                         readonly
                                         class="w-full px-4 py-4 bg-white/5 border border-white/10 rounded-2xl text-white/70 placeholder-white/30 cursor-not-allowed backdrop-blur-xl"
                                     >
@@ -236,24 +236,23 @@
                                         </svg>
                                     </div>
                                 </div>
-                                <p class="text-white/50 text-xs mt-2">This email was provided by your landlord</p>
+                                <p class="text-white/50 text-xs mt-2">This phone number was provided by your landlord</p>
                             </div>
 
-                            <!-- Phone -->
+                            <!-- Email (optional) -->
                             <div>
-                                <label for="phone" class="block text-sm font-bold text-white mb-3">
-                                    Phone Number
+                                <label for="email" class="block text-sm font-bold text-white mb-3">
+                                    Email Address (Optional)
                                 </label>
                                 <div class="relative group">
-                                    <input 
-                                        id="phone" 
-                                        type="text" 
-                                        name="phone" 
-                                        value="{{ old('phone') }}"
-                                        required 
-                                        autocomplete="tel"
+                                    <input
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        value="{{ old('email') }}"
+                                        autocomplete="email"
                                         class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
-                                        placeholder="Enter your phone number"
+                                        placeholder="Enter your email address (optional)"
                                     >
                                     <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
@@ -387,11 +386,42 @@
             document.getElementById('registrationForm').classList.add('hidden');
             document.getElementById('loginForm').classList.remove('hidden');
         }
-        
+
         function hideLoginForm() {
             document.getElementById('loginForm').classList.add('hidden');
             document.getElementById('registrationForm').classList.remove('hidden');
         }
+
+        // Add copy invitation link functionality
+        window.copyCurrentInvitationLink = function() {
+            const link = window.location.href;
+            if (window.copyInvitationLink) {
+                window.copyInvitationLink(link);
+            } else {
+                // Fallback if clipboard.js not loaded
+                navigator.clipboard.writeText(link).then(() => {
+                    alert('Invitation link copied to clipboard!');
+                }).catch(() => {
+                    alert('Unable to copy link. Please copy manually: ' + link);
+                });
+            }
+        };
+
+        // Add WhatsApp sharing functionality
+        window.shareCurrentInvitation = function() {
+            const message = "🏠 HomeBaze Invitation\n\nI've been invited to join HomeBaze as a tenant. Complete registration: " + window.location.href;
+            const phone = "{{ $invitation->phone }}";
+
+            if (window.generateWhatsAppUrl) {
+                const url = window.generateWhatsAppUrl(phone, message);
+                window.open(url, '_blank');
+            } else {
+                // Fallback
+                const encodedMessage = encodeURIComponent(message);
+                const url = `https://wa.me/${phone.replace(/[^\d+]/g, '')}?text=${encodedMessage}`;
+                window.open(url, '_blank');
+            }
+        };
     </script>
 </body>
 </html>

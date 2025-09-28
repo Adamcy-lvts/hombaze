@@ -33,7 +33,7 @@
             <h2 class="text-xl font-semibold text-gray-900 mb-2">Account Already Exists</h2>
             
             <p class="text-gray-600 mb-4">
-                An account with the email <strong>{{ $invitation->email }}</strong> already exists.
+                An account with the phone number <strong>{{ $invitation->phone }}</strong> already exists.
             </p>
 
             <div class="bg-blue-50 p-3 rounded-lg mb-4">

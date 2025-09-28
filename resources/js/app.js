@@ -1,4 +1,5 @@
 import './bootstrap';
+import './invitation-clipboard';
 
 // GSAP Landing Page Animations and Interactions
 document.addEventListener('DOMContentLoaded', function () {

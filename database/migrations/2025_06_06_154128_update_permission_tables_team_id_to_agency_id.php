@@ -13,20 +13,26 @@ return new class extends Migration
     {
         $tableNames = config('permission.table_names');
 
-        // Rename team_id to agency_id in roles table
-        Schema::table($tableNames['roles'], function (Blueprint $table) {
-            $table->renameColumn('team_id', 'agency_id');
-        });
+        // Check and rename team_id to agency_id in roles table
+        if (Schema::hasColumn($tableNames['roles'], 'team_id')) {
+            Schema::table($tableNames['roles'], function (Blueprint $table) {
+                $table->renameColumn('team_id', 'agency_id');
+            });
+        }
 
-        // Rename team_id to agency_id in model_has_permissions table
-        Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) {
-            $table->renameColumn('team_id', 'agency_id');
-        });
+        // Check and rename team_id to agency_id in model_has_permissions table
+        if (Schema::hasColumn($tableNames['model_has_permissions'], 'team_id')) {
+            Schema::table($tableNames['model_has_permissions'], function (Blueprint $table) {
+                $table->renameColumn('team_id', 'agency_id');
+            });
+        }
 
-        // Rename team_id to agency_id in model_has_roles table  
-        Schema::table($tableNames['model_has_roles'], function (Blueprint $table) {
-            $table->renameColumn('team_id', 'agency_id');
-        });
+        // Check and rename team_id to agency_id in model_has_roles table
+        if (Schema::hasColumn($tableNames['model_has_roles'], 'team_id')) {
+            Schema::table($tableNames['model_has_roles'], function (Blueprint $table) {
+                $table->renameColumn('team_id', 'agency_id');
+            });
+        }
     }
 
     /**

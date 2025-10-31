@@ -82,7 +82,11 @@
     @include('components.landing.navigation')
 
     <!-- Main Content -->
-    {{ $slot }}
+    @hasSection('content')
+        @yield('content')
+    @else
+        {{ $slot ?? '' }}
+    @endif
     
     <!-- Footer Section -->
     @include('components.landing.footer')

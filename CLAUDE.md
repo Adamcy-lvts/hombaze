@@ -6,7 +6,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 HomeBaze is a comprehensive real estate management platform built with Laravel 12 and Filament v3, designed specifically for the Nigerian property market. It features a multi-panel architecture serving different user types: Admin, Agency, Agent, Property Owner (Landlord), and Tenant panels.
 
+## We are using the following tech stack
+- TALL Stack
+- Tailwind css
+- Apline js
+- Laravel
+- Livewire
+- app.js has alpine in it
+
+
 ## Development Commands
+
+## we are working in docker env
+- always use docker compose exec app when executing artisan command database related
 
 ### Essential Commands
 - `composer dev` - Start development environment (runs server, queue, logs, and Vite concurrently)
@@ -28,6 +40,12 @@ HomeBaze is a comprehensive real estate management platform built with Laravel 1
 
 ### Code Quality
 - `vendor/bin/pint` - Format code with Laravel Pint
+
+### WhatsApp Integration
+- `php artisan whatsapp:test` - Test WhatsApp integration and check status
+- `php artisan whatsapp:test +2348012345678` - Send test message to specific number
+- **Setup Guide:** See `WHATSAPP_QUICK_START.md` for 5-minute setup
+- **Webhook URL:** `/api/whatsapp/webhook` (for Facebook configuration)
 
 ## Architecture Overview
 

@@ -74,9 +74,15 @@
                              x-transition:leave-start="transform opacity-100 scale-100"
                              x-transition:leave-end="transform opacity-0 scale-95"
                              class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Dashboard</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Saved Properties</a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</a>
+                            @if(auth()->user()->isCustomer())
+                                <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">My Dashboard</a>
+                                <a href="{{ route('properties.search') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Saved Properties</a>
+                            @elseif(auth()->user()->isAgent())
+                                <a href="{{ route('filament.agent.pages.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Agent Dashboard</a>
+                            @elseif(auth()->user()->isPropertyOwner())
+                                <a href="{{ route('filament.landlord.pages.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Landlord Dashboard</a>
+                            @endif
+                            <a href="{{ route('profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Profile</a>
                             <hr class="my-1">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

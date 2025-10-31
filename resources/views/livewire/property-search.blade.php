@@ -479,8 +479,10 @@
                                 </div>
                             </div>
 
-                            <!-- Compact Features Row -->
+                            <!-- Compact Features Row - Only show if there's actual data -->
+                            @if($property->bedrooms || $property->bathrooms || $property->floor_area)
                             <div class="flex items-center space-x-3 mb-3">
+                                @if($property->bedrooms)
                                 <div class="flex items-center space-x-1.5 text-xs font-semibold text-gray-900">
                                     <div class="w-5 h-5 bg-emerald-100/60 rounded-md flex items-center justify-center">
                                         <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -489,7 +491,13 @@
                                     </div>
                                     <span>{{ $property->bedrooms }} bed</span>
                                 </div>
+                                @endif
+
+                                @if($property->bedrooms && $property->bathrooms)
                                 <div class="w-px h-4 bg-gray-400"></div>
+                                @endif
+
+                                @if($property->bathrooms)
                                 <div class="flex items-center space-x-1.5 text-xs font-semibold text-gray-900">
                                     <div class="w-5 h-5 bg-blue-100/60 rounded-md flex items-center justify-center">
                                         <svg class="w-3 h-3 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -498,13 +506,19 @@
                                     </div>
                                     <span>{{ $property->bathrooms }} bath</span>
                                 </div>
-                                @if($property->floor_area)
+                                @endif
+
+                                @if($property->floor_area && ($property->bedrooms || $property->bathrooms))
                                 <div class="w-px h-4 bg-gray-400"></div>
+                                @endif
+
+                                @if($property->floor_area)
                                 <div class="flex items-center space-x-1.5 text-xs font-semibold text-gray-600">
                                     <span>{{ number_format($property->floor_area) }}m²</span>
                                 </div>
                                 @endif
                             </div>
+                            @endif
 
                             <!-- Compact Price + Action Row -->
                             <div class="flex items-center justify-between">
@@ -519,10 +533,32 @@
                                 
                                 <!-- Compact Action Buttons -->
                                 <div class="flex items-center space-x-2">
-                                    <button class="group/heart p-2.5 bg-white/60 hover:bg-white/80 backdrop-blur-sm rounded-lg border border-gray-200/40 hover:border-emerald-500/50 transition-all duration-300 hover:scale-110">
-                                        <svg class="w-3.5 h-3.5 text-gray-500 group-hover/heart:text-emerald-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                    <button
+                                        wire:click.stop="toggleSaveProperty({{ $property->id }})"
+                                        wire:target="toggleSaveProperty({{ $property->id }})"
+                                        onclick="event.stopPropagation(); event.preventDefault();"
+                                        class="group/heart p-2.5 {{ $this->isPropertySaved($property->id) ? 'bg-red-50 border-red-300 hover:bg-red-100' : 'bg-white/60 hover:bg-white/80 border-gray-200/40 hover:border-emerald-500/50' }} backdrop-blur-sm rounded-lg border transition-all duration-300 hover:scale-110"
+                                        title="{{ $this->isPropertySaved($property->id) ? 'Remove from saved' : 'Save property' }}"
+                                    >
+                                        <!-- Loading spinner -->
+                                        <svg wire:loading wire:target="toggleSaveProperty({{ $property->id }})" class="animate-spin w-3.5 h-3.5 text-gray-500" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>
+
+                                        <div wire:loading.remove wire:target="toggleSaveProperty({{ $property->id }})">
+                                            @if($this->isPropertySaved($property->id))
+                                                <!-- Filled heart for saved properties -->
+                                                <svg class="w-3.5 h-3.5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                                </svg>
+                                            @else
+                                                <!-- Outline heart for unsaved properties -->
+                                                <svg class="w-3.5 h-3.5 text-gray-500 group-hover/heart:text-emerald-600 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                </svg>
+                                            @endif
+                                        </div>
                                     </button>
                                     <button class="group/btn bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white text-xs font-bold py-2.5 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
                                         <span class="flex items-center space-x-1.5">
@@ -561,8 +597,9 @@
                 @endif
             </div>
         @endif
-    </div>
 
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
 
     <!-- Premium Custom Styles -->
     <style>
@@ -733,6 +770,59 @@
                 window.Livewire.dispatch('hideSuggestions');
             }
         });
+
+        // Toast notification handlers
+        Livewire.on('property-saved', (data) => {
+            showToast('Property saved successfully!', 'success');
+        });
+
+        Livewire.on('property-unsaved', (data) => {
+            showToast('Property removed from saved list', 'info');
+        });
+
+        // Toast notification function
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+
+            const bgColor = type === 'success' ? 'bg-emerald-500' :
+                           type === 'error' ? 'bg-red-500' :
+                           'bg-blue-500';
+
+            const icon = type === 'success' ?
+                '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' :
+                type === 'error' ?
+                '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>' :
+                '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+
+            toast.className = `flex items-center space-x-3 ${bgColor} text-white px-6 py-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300 backdrop-blur-sm`;
+            toast.innerHTML = `
+                <div class="flex-shrink-0">${icon}</div>
+                <span class="font-medium">${message}</span>
+                <button onclick="this.parentElement.remove()" class="flex-shrink-0 ml-4 hover:bg-white/20 rounded p-1 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+
+            container.appendChild(toast);
+
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    if (toast.parentElement) {
+                        toast.parentElement.removeChild(toast);
+                    }
+                }, 300);
+            }, 3000);
+        }
     });
 </script>
 </div>

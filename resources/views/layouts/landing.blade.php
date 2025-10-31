@@ -34,24 +34,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Structured Data for SEO -->
+ 
+
+     <!-- Structured Data for SEO -->
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org",
-        "@type": "RealEstateAgent",
+        "@@context": "https://schema.org",
+        "@@type": "RealEstateAgent",
         "name": "HomeBaze",
         "description": "Nigeria's premier real estate platform",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('images/homebaze-logo.png') }}",
         "address": {
-            "@type": "PostalAddress",
+            "@@type": "PostalAddress",
             "addressCountry": "Nigeria"
         },
         "contactPoint": {
-            "@type": "ContactPoint",
+            "@@type": "ContactPoint",
             "telephone": "+234-XXX-XXX-XXXX",
             "contactType": "customer service"
         }
@@ -59,7 +59,7 @@
     </script>
 </head>
 
-<body class="font-inter antialiased bg-gray-900 overflow-x-hidden">
+<body class="font-inter antialiased  ">
     <!-- Page Loading Indicator -->
     <div id="page-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900">
         <div class="flex flex-col items-center space-y-4">
@@ -82,7 +82,7 @@
     @include('components.landing.navigation')
 
     <!-- Main Content -->
-    @yield('content')
+    {{ $slot }}
     
     <!-- Footer Section -->
     @include('components.landing.footer')

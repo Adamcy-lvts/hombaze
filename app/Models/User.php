@@ -119,6 +119,30 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     }
 
     /**
+     * Relationship: User's customer profile
+     */
+    public function customerProfile(): HasOne
+    {
+        return $this->hasOne(CustomerProfile::class);
+    }
+
+    /**
+     * Relationship: User's saved searches
+     */
+    public function savedSearches(): HasMany
+    {
+        return $this->hasMany(SavedSearch::class);
+    }
+
+    /**
+     * Relationship: User's active saved searches
+     */
+    public function activeSearches(): HasMany
+    {
+        return $this->savedSearches()->active();
+    }
+
+    /**
      * Many-to-many relationship with agencies (for Filament tenancy)
      */
     public function agencies(): BelongsToMany
@@ -249,14 +273,6 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     }
 
     /**
-     * Relationship: User's saved searches
-     */
-    public function savedSearches(): HasMany
-    {
-        return $this->hasMany(SavedSearch::class);
-    }
-
-    /**
      * Relationship: User's reviews
      */
     public function reviews(): HasMany
@@ -289,12 +305,29 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     }
 
     /**
+     * Scope: Get only customer users
+     */
+    public function scopeCustomers(Builder $query): Builder
+    {
+        return $query->where('user_type', 'customer');
+    }
+
+    /**
      * Check if user is admin
      */
     public function isAdmin(): bool
     {
         return $this->user_type === 'admin';
     }
+
+    /**
+     * Check if user is a customer
+     */
+    public function isCustomer(): bool
+    {
+        return $this->user_type === 'customer';
+    }
+
 
     /**
      * Check if user is agency owner
@@ -510,8 +543,7 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
      */
     public function initializeProfileCompletion(): void
     {
-        $this->profile_completion_steps = ['basic_info']; // Mark basic registration as completed
-        $this->profile_completion_percentage = $this->calculateProfileCompletion();
-        $this->save();
+        // Add basic_info to existing steps if not already present
+        $this->markStepCompleted('basic_info');
     }
 }

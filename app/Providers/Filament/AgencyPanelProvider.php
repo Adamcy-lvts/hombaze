@@ -2,29 +2,30 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Agency\Pages\AgencyDashboard;
-use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
-use App\Filament\Agency\Pages\Tenancy\EditAgencyProfile;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use App\Models\Agency;
 use Filament\PanelProvider;
+use Filament\Enums\ThemeMode;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
 use App\Http\Middleware\ApplyAgencyScopes;
 use Filament\Http\Middleware\Authenticate;
+use App\Filament\Agency\Pages\AgencyDashboard;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
 use App\Http\Middleware\EnsureUserBelongsToAgency;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Agency\Pages\Tenancy\EditAgencyProfile;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use Filament\Navigation\MenuItem;
 
 class AgencyPanelProvider extends PanelProvider
 {
@@ -42,10 +43,11 @@ class AgencyPanelProvider extends PanelProvider
                 'profile' => MenuItem::make()
                     ->label('Agency Profile')
                     ->icon('heroicon-o-building-office')
-                    ->url(fn (): string => EditAgencyProfile::getUrl())
-                    ->visible(fn (): bool => auth()->user()->can('update_agency_profile')),
-                
+                    ->url(fn(): string => EditAgencyProfile::getUrl())
+                    ->visible(fn(): bool => auth()->user()->can('update_agency_profile')),
+
             ])
+            ->defaultThemeMode(ThemeMode::Light)
             ->colors([
                 'primary' => Color::Green,
             ])

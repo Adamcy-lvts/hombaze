@@ -6,6 +6,7 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use Filament\Enums\ThemeMode;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
 use App\Filament\Tenant\Widgets\TenantOverview;
@@ -14,9 +15,9 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
 use App\Filament\Tenant\Widgets\LeaseStatusWidget;
 use App\Filament\Tenant\Widgets\LeaseRenewalWidget;
-use App\Filament\Tenant\Widgets\TenantStatusInfoWidget;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use App\Filament\Tenant\Widgets\TenantStatusInfoWidget;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -37,6 +38,7 @@ class TenantPanelProvider extends PanelProvider
                 'success' => Color::Green,
                 'danger' => Color::Red,
             ])
+            ->defaultThemeMode(ThemeMode::Light)
             ->discoverResources(in: app_path('Filament/Tenant/Resources'), for: 'App\\Filament\\Tenant\\Resources')
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\\Filament\\Tenant\\Pages')
             ->pages([
@@ -47,7 +49,7 @@ class TenantPanelProvider extends PanelProvider
                 TenantStatusInfoWidget::class,
                 TenantOverview::class,
                 Widgets\AccountWidget::class,
-             
+
             ])
             ->middleware([
                 EncryptCookies::class,

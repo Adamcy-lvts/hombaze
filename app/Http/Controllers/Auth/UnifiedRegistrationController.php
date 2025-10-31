@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Agent;
 use App\Models\PropertyOwner;
+use App\Models\CustomerProfile;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
@@ -40,23 +41,34 @@ class UnifiedRegistrationController extends Controller
     private function getUserTypeOptions(): array
     {
         return [
+            'customer' => [
+                'label' => 'Property Seeker',
+                'description' => 'Find, save, and inquire about properties',
+                'icon' => 'heroicon-o-heart',
+                'panel' => null, // Uses main dashboard, not Filament panel
+                'features' => ['Save Favorites', 'Contact Agents', 'Property Alerts', 'Rate & Review'],
+                'popular' => true // Mark as most popular option
+            ],
             'agent' => [
                 'label' => 'Real Estate Agent',
                 'description' => 'Independent real estate professional',
                 'icon' => 'heroicon-o-user-circle',
-                'panel' => 'agent'
+                'panel' => 'agent',
+                'features' => ['List Properties', 'Manage Clients', 'Track Commissions']
             ],
             'property_owner' => [
                 'label' => 'Property Owner/Landlord',
                 'description' => 'Property owner or landlord',
                 'icon' => 'heroicon-o-home',
-                'panel' => 'landlord'
+                'panel' => 'landlord',
+                'features' => ['List Properties', 'Manage Tenants', 'Collect Rent']
             ],
             'agency_owner' => [
                 'label' => 'Real Estate Agency',
                 'description' => 'Real estate agency or brokerage',
                 'icon' => 'heroicon-o-building-office',
-                'panel' => 'agency'
+                'panel' => 'agency',
+                'features' => ['Manage Agents', 'Agency Branding', 'Team Performance']
             ],
             // Note: 'tenant' is intentionally excluded - tenants register via landlord invitations only
         ];
@@ -76,11 +88,13 @@ class UnifiedRegistrationController extends Controller
 
         // Validate common fields
         $request->validate([
-            'user_type' => 'required|in:agent,property_owner,agency_owner',
+            'user_type' => 'required|in:customer,agent,property_owner,agency_owner',
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
+
+            // No additional customer fields required during registration
         ]);
 
         DB::beginTransaction();
@@ -139,6 +153,11 @@ class UnifiedRegistrationController extends Controller
     private function createUserTypeSpecificData(User $user, array $data): void
     {
         switch ($user->user_type) {
+            case 'customer':
+                $this->createCustomerProfile($user, $data);
+                // Customers don't need specific roles initially
+                break;
+
             case 'agent':
                 $this->createAgentProfile($user, $data);
                 $this->assignRole($user, 'independent_agent');
@@ -198,6 +217,32 @@ class UnifiedRegistrationController extends Controller
     }
 
     /**
+     * Create basic customer profile
+     */
+    private function createCustomerProfile(User $user, array $data): void
+    {
+        // Create minimal customer profile - preferences will be set later
+        CustomerProfile::create([
+            'user_id' => $user->id,
+            'interested_in' => ['renting'], // Default minimal interest
+            'budget_min' => null,
+            'budget_max' => null,
+            'preferred_locations' => [],
+            'email_alerts' => true, // Default to enabled
+            'sms_alerts' => false,
+            'whatsapp_alerts' => false,
+            'notification_preferences' => [
+                'new_properties' => true,
+                'price_drops' => true,
+                'agent_responses' => true,
+                'property_updates' => false,
+            ],
+        ]);
+
+        Log::info('Minimal customer profile created', ['user_id' => $user->id]);
+    }
+
+    /**
      * Assign role to user
      */
     private function assignRole(User $user, string $roleName): void
@@ -227,6 +272,7 @@ class UnifiedRegistrationController extends Controller
     private function redirectToPanel(User $user): RedirectResponse
     {
         return match($user->user_type) {
+            'customer' => redirect()->route('dashboard')->with('success', 'Welcome to HomeBaze! Let\'s complete your profile to find perfect properties.'),
             'agent' => redirect()->route('filament.agent.pages.dashboard'),
             'property_owner' => redirect()->route('filament.landlord.pages.dashboard'),
             'agency_owner' => redirect()->route('filament.agency.pages.dashboard'),

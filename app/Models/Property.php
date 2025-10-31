@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Support\Str;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Jobs\ProcessSavedSearchMatches;
 
 class Property extends Model implements HasMedia
 {
@@ -64,6 +66,9 @@ class Property extends Model implements HasMedia
         'featured_until',
         'verified_at',
         'published_at',
+        'plot_size_id',
+        'custom_plot_size',
+        'custom_plot_unit',
     ];
 
     protected $casts = [
@@ -73,6 +78,7 @@ class Property extends Model implements HasMedia
         'agency_fee' => 'decimal:2',
         'caution_deposit' => 'decimal:2',
         'size_sqm' => 'decimal:2',
+        'custom_plot_size' => 'decimal:2',
         'latitude' => 'decimal:8',
         'longitude' => 'decimal:8',
         'is_featured' => 'boolean',
@@ -106,6 +112,8 @@ class Property extends Model implements HasMedia
                 $property->published_at = now();
             }
         });
+
+        // SavedSearch matching is now handled by PropertyObserver
     }
 
     // Relationships
@@ -148,6 +156,14 @@ class Property extends Model implements HasMedia
     public function area(): BelongsTo
     {
         return $this->belongsTo(Area::class);
+    }
+
+    /**
+     * Get the plot size
+     */
+    public function plotSize(): BelongsTo
+    {
+        return $this->belongsTo(PlotSize::class);
     }
 
     /**
@@ -228,6 +244,28 @@ class Property extends Model implements HasMedia
     public function views(): HasMany
     {
         return $this->hasMany(PropertyView::class);
+    }
+
+    // Helper Methods
+
+    /**
+     * Check if property is saved by a specific user
+     */
+    public function isSavedBy(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $this->savedByUsers()->where('user_id', $user->id)->exists();
+    }
+
+    /**
+     * Check if property is favorited by current user (alias for isSavedBy)
+     */
+    public function isFavoritedBy(?User $user): bool
+    {
+        return $this->isSavedBy($user);
     }
 
     // Scopes

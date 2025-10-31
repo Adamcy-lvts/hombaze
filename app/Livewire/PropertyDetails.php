@@ -3,6 +3,8 @@
 namespace App\Livewire;
 
 use App\Models\Property;
+use App\Services\SimpleRecommendationEngine;
+use App\Services\PropertyCommunicationService;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -10,6 +12,7 @@ class PropertyDetails extends Component
 {
     public Property $property;
     public $relatedProperties;
+    public $recommendedProperties;
     public $showContactForm = false;
     public $showImageGallery = false;
     public $currentImageIndex = 0;
@@ -42,13 +45,16 @@ class PropertyDetails extends Component
 
         // Get related properties
         $this->loadRelatedProperties();
-        
-        // Track property view
+
+        // Get personalized recommendations
+        $this->loadRecommendedProperties();
+
+        // Track property view (simplified)
         $this->trackPropertyView();
-        
+
         // Check if favorited (if user is logged in)
         if (auth()->check()) {
-            $this->isFavorited = auth()->user()->favoritedProperties()->where('property_id', $this->property->id)->exists();
+            $this->isFavorited = auth()->user()->savedProperties()->where('property_id', $this->property->id)->exists();
         }
     }
 
@@ -60,11 +66,14 @@ class PropertyDetails extends Component
         }
 
         if ($this->isFavorited) {
-            auth()->user()->favoritedProperties()->detach($this->property->id);
+            auth()->user()->savedProperties()->where('property_id', $this->property->id)->delete();
             $this->isFavorited = false;
             session()->flash('message', 'Property removed from favorites.');
         } else {
-            auth()->user()->favoritedProperties()->attach($this->property->id);
+            auth()->user()->savedProperties()->create([
+                'property_id' => $this->property->id,
+                'notes' => null,
+            ]);
             $this->isFavorited = true;
             session()->flash('message', 'Property added to favorites.');
         }
@@ -99,6 +108,11 @@ class PropertyDetails extends Component
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            // Track property inquiry (simplified)
+            if (auth()->check()) {
+                SimpleRecommendationEngine::trackPropertyInquiry(auth()->id(), $this->property->id);
+            }
 
             session()->flash('message', 'Your inquiry has been sent successfully! We\'ll get back to you soon.');
             $this->reset(['inquiryName', 'inquiryEmail', 'inquiryPhone', 'inquiryMessage']);
@@ -147,6 +161,36 @@ class PropertyDetails extends Component
         session()->flash('message', 'Viewing scheduling feature coming soon!');
     }
 
+    public function getAgentPhoneNumber()
+    {
+        return PropertyCommunicationService::getContactPhone($this->property);
+    }
+
+    public function getContactEmail()
+    {
+        return PropertyCommunicationService::getContactEmail($this->property);
+    }
+
+    public function getWhatsAppUrl()
+    {
+        return PropertyCommunicationService::getWhatsAppUrl($this->property);
+    }
+
+    public function getSMSUrl()
+    {
+        return PropertyCommunicationService::getSMSUrl($this->property);
+    }
+
+    public function getEmailUrl()
+    {
+        return PropertyCommunicationService::getEmailUrl($this->property);
+    }
+
+    public function getContactName()
+    {
+        return PropertyCommunicationService::getContactName($this->property);
+    }
+
     private function loadRelatedProperties()
     {
         $this->relatedProperties = Property::with(['city', 'state', 'propertyType'])
@@ -159,13 +203,33 @@ class PropertyDetails extends Component
             ->get();
     }
 
+    private function loadRecommendedProperties()
+    {
+        if (auth()->check()) {
+            $engine = new SimpleRecommendationEngine();
+            $this->recommendedProperties = $engine->getRecommendationsForProperty(
+                $this->property,
+                auth()->user(),
+                4
+            );
+        } else {
+            // For non-authenticated users, show similar properties
+            $this->recommendedProperties = collect();
+        }
+    }
+
     private function trackPropertyView()
     {
         try {
             // Increment view count
             $this->property->increment('view_count');
 
-            // Track detailed view analytics
+            // Simplified interaction tracking for authenticated users
+            if (auth()->check()) {
+                SimpleRecommendationEngine::trackPropertyView(auth()->id(), $this->property->id);
+            }
+
+            // Basic view analytics (keep for reporting)
             DB::table('property_views')->insert([
                 'property_id' => $this->property->id,
                 'user_id' => auth()->id(),

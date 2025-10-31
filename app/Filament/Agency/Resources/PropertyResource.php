@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use App\Models\PropertyType;
 use App\Models\PropertySubtype;
 use App\Models\PropertyFeature;
+use App\Models\PlotSize;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -373,28 +374,91 @@ class PropertyResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
-                                            ->required(),
+                                            ->required()
+                                            ->visible(fn (Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
 
                                         Forms\Components\TextInput::make('bathrooms')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
-                                            ->required(),
+                                            ->required()
+                                            ->visible(fn (Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
 
                                         Forms\Components\TextInput::make('toilets')
                                             ->numeric()
                                             ->minValue(0)
-                                            ->maxValue(20),
+                                            ->maxValue(20)
+                                            ->visible(fn (Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
 
                                         Forms\Components\TextInput::make('parking_spaces')
                                             ->numeric()
                                             ->minValue(0)
-                                            ->default(0),
+                                            ->default(0)
+                                            ->visible(fn (Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
 
                                         Forms\Components\TextInput::make('size_sqm')
                                             ->label('Size (sqm)')
                                             ->numeric()
-                                            ->suffix('sqm'),
+                                            ->suffix('sqm')
+                                            ->visible(fn (Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
+
+                                        // Plot Size Selection for Land Properties
+                                        Forms\Components\Select::make('plot_size_id')
+                                            ->label('Standard Plot Size')
+                                            ->options(PlotSize::getFormOptions())
+                                            ->searchable()
+                                            ->placeholder('Select a standard plot size...')
+                                            ->visible(fn (Get $get): bool => in_array($get('property_type_id'), [3])) // Show only for land properties
+                                            ->live()
+                                            ->afterStateUpdated(function (Set $set, $state) {
+                                                if ($state) {
+                                                    $plotSize = PlotSize::find($state);
+                                                    if ($plotSize) {
+                                                        $set('size_sqm', $plotSize->size_in_sqm);
+                                                        $set('custom_plot_size', null);
+                                                        $set('custom_plot_unit', null);
+                                                    }
+                                                }
+                                            })
+                                            ->helperText('Select from predefined plot sizes'),
+
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('custom_plot_size')
+                                                    ->label('Custom Plot Size')
+                                                    ->numeric()
+                                                    ->step(0.01)
+                                                    ->placeholder('e.g., 1200')
+                                                    ->visible(fn (Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id'))
+                                                    ->live()
+                                                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                                                        if ($state && $get('custom_plot_unit')) {
+                                                            $sqm = PlotSize::convertToSquareMeters((float) $state, $get('custom_plot_unit'));
+                                                            $set('size_sqm', $sqm);
+                                                        }
+                                                    })
+                                                    ->helperText('Enter custom size value'),
+
+                                                Forms\Components\Select::make('custom_plot_unit')
+                                                    ->label('Unit')
+                                                    ->options(PlotSize::getUnits())
+                                                    ->default('sqm')
+                                                    ->visible(fn (Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id'))
+                                                    ->live()
+                                                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                                                        if ($state && $get('custom_plot_size')) {
+                                                            $sqm = PlotSize::convertToSquareMeters((float) $get('custom_plot_size'), $state);
+                                                            $set('size_sqm', $sqm);
+                                                        }
+                                                    })
+                                                    ->helperText('Select unit of measurement'),
+                                            ])
+                                            ->visible(fn (Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id')),
+
+                                        Forms\Components\Placeholder::make('calculated_sqm')
+                                            ->label('Calculated Size in SQM')
+                                            ->content(fn (Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated')
+                                            ->visible(fn (Get $get): bool => in_array($get('property_type_id'), [3])),
 
                                         Forms\Components\Select::make('furnishing_status')
                                             ->options([
@@ -402,7 +466,8 @@ class PropertyResource extends Resource
                                                 'semi_furnished' => 'Semi Furnished',
                                                 'furnished' => 'Fully Furnished',
                                             ])
-                                            ->required(),
+                                            ->required()
+                                            ->visible(fn (Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
 
                                         Forms\Components\Select::make('compound_type')
                                             ->label('Compound/Estate Type')

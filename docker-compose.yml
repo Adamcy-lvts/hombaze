@@ -15,6 +15,7 @@ services:
       - mysql
       - redis
 
+
   nginx:
     image: nginx:alpine
     container_name: homebaze_nginx

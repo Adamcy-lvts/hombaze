@@ -1,6 +1,102 @@
 import './bootstrap';
 import './invitation-clipboard';
 
+// Alpine.js Components
+document.addEventListener('alpine:init', () => {
+
+    Alpine.data('currencyInput', (config = {}) => ({
+        rawValue: '',
+
+        // Configuration
+        thousands: config.thousands || ',',
+        min: config.min || null,
+        max: config.max || null,
+        wireModel: config.wireModel || null,
+
+        init() {
+            // Initialize with existing value
+            const initialValue = this.$el.value || '';
+            this.rawValue = initialValue.replace(/[^\d]/g, '');
+
+            // Format if there's a value
+            if (this.rawValue) {
+                this.formatDisplay();
+            }
+        },
+
+        formatDisplay() {
+            let formattedValue = '';
+            if (this.rawValue) {
+                formattedValue = this.rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, this.thousands);
+            }
+
+            if (this.$el.value !== formattedValue) {
+                const cursorPos = this.$el.selectionStart || 0;
+                const oldLength = this.$el.value.length;
+
+                this.$el.value = formattedValue;
+
+                // Restore cursor position if focused
+                if (document.activeElement === this.$el && this.$el.setSelectionRange) {
+                    const newLength = formattedValue.length;
+                    const newCursorPos = Math.max(0, Math.min(cursorPos + (newLength - oldLength), formattedValue.length));
+                    this.$el.setSelectionRange(newCursorPos, newCursorPos);
+                }
+            }
+        },
+
+        handleInput(event) {
+            const inputValue = event.target.value;
+            const newRawValue = inputValue.replace(/[^\d]/g, '');
+
+            // Apply max constraint
+            if (this.max && newRawValue && parseInt(newRawValue) > this.max) {
+                return;
+            }
+
+            this.rawValue = newRawValue;
+
+            // Update Livewire
+            if (this.wireModel && this.$wire) {
+                this.$wire[this.wireModel] = this.rawValue;
+            }
+
+            this.formatDisplay();
+        },
+
+        handleBlur() {
+            // Apply min validation only if there's a value
+            if (this.rawValue && this.min && parseInt(this.rawValue) < this.min) {
+                this.rawValue = this.min.toString();
+
+                if (this.wireModel && this.$wire) {
+                    this.$wire[this.wireModel] = this.rawValue;
+                }
+
+                this.formatDisplay();
+            }
+        },
+
+        handleKeydown(event) {
+            // Allow navigation and control keys
+            const allowedKeys = [8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40];
+            const isControlKey = event.ctrlKey && [65, 67, 86, 88, 90].includes(event.keyCode);
+
+            if (allowedKeys.includes(event.keyCode) || isControlKey) {
+                return;
+            }
+
+            // Only allow numeric input
+            const isNumeric = (event.keyCode >= 48 && event.keyCode <= 57) ||
+                             (event.keyCode >= 96 && event.keyCode <= 105);
+
+            if (!isNumeric) {
+                event.preventDefault();
+            }
+        }
+    }));
+});
+
 // GSAP Landing Page Animations and Interactions
 document.addEventListener('DOMContentLoaded', function () {
     // Check if GSAP is loaded

@@ -250,21 +250,28 @@
                                     <p class="text-xs text-white/60 mb-4">Please select the type of account you want to create</p>
                                 </div>
                                 
-                                <!-- Desktop Layout (3 columns) -->
-                                <div class="hidden lg:grid lg:grid-cols-3 gap-4">
+                                <!-- Desktop Layout (4 columns - more compact) -->
+                                <div class="hidden lg:grid lg:grid-cols-4 gap-3">
                                     @foreach($userTypes as $type => $config)
                                     <div class="relative">
-                                        <input type="radio" 
-                                               name="user_type" 
-                                               value="{{ $type }}" 
+                                        <input type="radio"
+                                               name="user_type"
+                                               value="{{ $type }}"
                                                id="user_type_{{ $type }}"
-                                               class="peer sr-only" 
-                                               {{ old('user_type') === $type ? 'checked' : '' }}>
-                                        <label for="user_type_{{ $type }}" 
-                                               class="flex flex-col items-center p-4 backdrop-blur-md bg-white/5 border border-white/10 rounded-xl cursor-pointer hover:bg-white/10 hover:border-white/20 peer-checked:bg-white/10 peer-checked:border-blue-400 peer-checked:ring-2 peer-checked:ring-blue-400/50 transition-all duration-300 group h-full min-h-[120px]">
-                                            <div class="w-10 h-10 bg-gradient-to-br from-white/10 to-white/5 rounded-lg flex items-center justify-center peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 group-hover:scale-105 mb-3">
-                                                <svg class="w-5 h-5 text-white/70 peer-checked:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    @if($type === 'agent')
+                                               class="peer sr-only"
+                                               {{ old('user_type') === $type || ($type === 'customer' && !old('user_type')) ? 'checked' : '' }}>
+                                        <label for="user_type_{{ $type }}"
+                                               class="flex flex-col items-center p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/20 peer-checked:bg-white/10 peer-checked:border-blue-400 peer-checked:ring-2 peer-checked:ring-blue-400/50 transition-all duration-300 group h-full min-h-[85px]">
+                                            @if(isset($config['popular']) && $config['popular'])
+                                                <div class="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                                    Popular
+                                                </div>
+                                            @endif
+                                            <div class="w-8 h-8 bg-gradient-to-br from-white/10 to-white/5 rounded-lg flex items-center justify-center peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 group-hover:scale-105 mb-2">
+                                                <svg class="w-4 h-4 text-white/70 peer-checked:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    @if($type === 'customer')
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                                    @elseif($type === 'agent')
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                                     @elseif($type === 'property_owner')
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
@@ -274,8 +281,8 @@
                                                 </svg>
                                             </div>
                                             <div class="text-center">
-                                                <div class="font-semibold text-white text-sm mb-1">{{ $config['label'] }}</div>
-                                                <div class="text-xs text-white/60 leading-tight">{{ $config['description'] }}</div>
+                                                <div class="font-medium text-white text-xs mb-1">{{ $config['label'] }}</div>
+                                                <div class="text-xs text-white/50 leading-tight line-clamp-2">{{ $config['description'] }}</div>
                                             </div>
                                         </label>
                                     </div>
@@ -327,6 +334,21 @@
                                         <p class="text-sm">{{ $message }}</p>
                                     </div>
                                 @enderror
+                            </div>
+
+                            <!-- Customer Welcome Message (shown when customer is selected) -->
+                            <div id="customerWelcome" class="lg:col-span-2 p-4 backdrop-blur-md bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/20 rounded-xl" style="display: none;">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-white font-semibold">Welcome to HomeBaze!</h4>
+                                        <p class="text-white/70 text-sm">After registration, you can set your preferences, save favorite properties, and connect with verified agents.</p>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Name -->
@@ -466,9 +488,10 @@
         </div>
     </div>
 
-    <!-- Password Toggle Script -->
+    <!-- Enhanced Form Interaction Script -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // Password Toggle
             const togglePassword = document.getElementById('togglePassword');
             const passwordInput = document.getElementById('password');
             const eyeIcon = document.getElementById('eyeIcon');
@@ -478,7 +501,7 @@
                 togglePassword.addEventListener('click', function () {
                     const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
                     passwordInput.setAttribute('type', type);
-                    
+
                     if (type === 'password') {
                         eyeIcon.classList.remove('hidden');
                         eyeOffIcon.classList.add('hidden');
@@ -488,6 +511,65 @@
                     }
                 });
             }
+
+            // Customer Welcome Toggle
+            const customerWelcome = document.getElementById('customerWelcome');
+            const userTypeRadios = document.querySelectorAll('input[name="user_type"]');
+
+            function toggleCustomerWelcome() {
+                const selectedType = document.querySelector('input[name="user_type"]:checked');
+                if (selectedType && selectedType.value === 'customer') {
+                    customerWelcome.style.display = 'block';
+                    // Add smooth fade-in animation
+                    customerWelcome.style.opacity = '0';
+                    setTimeout(() => {
+                        customerWelcome.style.opacity = '1';
+                        customerWelcome.style.transition = 'opacity 0.3s ease-in-out';
+                    }, 10);
+                } else {
+                    customerWelcome.style.display = 'none';
+                }
+            }
+
+            // Add event listeners to all user type radio buttons
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', toggleCustomerWelcome);
+            });
+
+            // Initial check on page load
+            toggleCustomerWelcome();
+
+            // Dynamic submit button text based on user type
+            const submitButton = document.querySelector('button[type="submit"] span');
+            function updateSubmitButtonText() {
+                const selectedType = document.querySelector('input[name="user_type"]:checked');
+                if (selectedType && submitButton) {
+                    switch(selectedType.value) {
+                        case 'customer':
+                            submitButton.textContent = 'Start Property Search';
+                            break;
+                        case 'agent':
+                            submitButton.textContent = 'Join as Agent';
+                            break;
+                        case 'property_owner':
+                            submitButton.textContent = 'Start Listing Properties';
+                            break;
+                        case 'agency_owner':
+                            submitButton.textContent = 'Register Agency';
+                            break;
+                        default:
+                            submitButton.textContent = 'Create Account';
+                    }
+                }
+            }
+
+            // Update button text when user type changes
+            userTypeRadios.forEach(radio => {
+                radio.addEventListener('change', updateSubmitButtonText);
+            });
+
+            // Initial button text update
+            updateSubmitButtonText();
         });
     </script>
 </body>

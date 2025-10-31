@@ -5,6 +5,7 @@ namespace App\Filament\Agent\Pages;
 use Filament\Pages\Page;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
+use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 use Filament\Forms\Form;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
@@ -14,10 +15,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProfileCompletion extends Page implements HasForms, HasActions
 {
@@ -30,18 +33,23 @@ class ProfileCompletion extends Page implements HasForms, HasActions
 
     public ?array $data = [];
 
+    public $record;
+
     public function mount(): void
     {
         $user = Auth::user();
         $agent = $user->agentProfile;
-        
+
+        // Set the record for SpatieMediaLibraryFileUpload to work
+        $this->record = $agent;
+
         $this->form->fill([
             'bio' => $agent?->bio ?? '',
             'years_experience' => $agent?->years_experience ?? 0,
             'specializations' => $agent?->specializations ? explode(',', $agent->specializations) : [],
             'service_areas' => $agent?->service_areas ? json_decode($agent->service_areas, true) : [],
             'languages' => $agent?->languages ? json_decode($agent->languages, true) : ['english'],
-            'certifications' => [],
+            'profile_photo' => $user->avatar,
             'phone' => $user->phone,
             'email' => $user->email,
         ]);
@@ -50,6 +58,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
     public function form(Form $form): Form
     {
         return $form
+            ->model($this->record)
             ->schema([
                 Wizard::make([
                     Wizard\Step::make('Professional Details')
@@ -122,11 +131,12 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                             Section::make('Professional Certifications')
                                 ->description('Upload your professional certifications and documents')
                                 ->schema([
-                                    FileUpload::make('certifications')
+                                    SpatieMediaLibraryFileUpload::make('certifications')
                                         ->label('Certifications & Licenses')
                                         ->multiple()
                                         ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png'])
                                         ->maxSize(5120)
+                                        ->collection('certifications')
                                         ->helperText('Upload your real estate license, certifications, etc. (PDF, JPG, PNG - Max 5MB each)'),
                                 ]),
                         ]),
@@ -143,6 +153,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                         ->required()
                                         ->maxSize(2048)
                                         ->imageEditor()
+                                        ->directory('avatars')
                                         ->helperText('Upload a professional headshot (Max 2MB)'),
                                 ]),
                         ]),
@@ -157,36 +168,60 @@ class ProfileCompletion extends Page implements HasForms, HasActions
         $user = Auth::user();
         $agent = $user->agentProfile;
 
-        // Update agent profile
-        $agent->update([
-            'bio' => $data['bio'],
-            'years_experience' => $data['years_experience'],
-            'specializations' => implode(',', $data['specializations']),
-            'service_areas' => json_encode($data['service_areas']),
-            'languages' => json_encode($data['languages']),
-            'is_verified' => false, // Will be verified by admin
-        ]);
+        try {
+            // Log the form data for debugging
+            Log::info('ProfileCompletion save data:', $data);
 
-        // Mark profile completion steps
-        $user->markStepCompleted('professional_details');
-        $user->markStepCompleted('service_areas');
-        
-        if (!empty($data['certifications'])) {
-            $user->markStepCompleted('certifications');
+            // Update the agent record with form data first
+            $agent->update([
+                'bio' => $data['bio'] ?? '',
+                'years_experience' => $data['years_experience'] ?? 0,
+                'specializations' => !empty($data['specializations']) ? implode(',', $data['specializations']) : '',
+                'service_areas' => !empty($data['service_areas']) ? json_encode($data['service_areas']) : '[]',
+                'languages' => !empty($data['languages']) ? json_encode($data['languages']) : '["english"]',
+                'is_verified' => false, // Will be verified by admin
+            ]);
+
+            Log::info('Agent updated successfully', ['agent_id' => $agent->id]);
+
+            // Handle profile photo upload
+            if (!empty($data['profile_photo'])) {
+                // Save to user's avatar field
+                $user->update([
+                    'avatar' => $data['profile_photo']
+                ]);
+                $user->markStepCompleted('profile_photo');
+            }
+
+            // Check completion steps
+            $user->markStepCompleted('professional_details');
+            $user->markStepCompleted('service_areas');
+            Log::info('Marked professional_details and service_areas as completed');
+
+            // Check if certifications were uploaded (handled automatically by SpatieMediaLibraryFileUpload)
+            if ($agent->fresh()->hasCertifications()) {
+                $user->markStepCompleted('certifications');
+                Log::info('Marked certifications as completed');
+            } else {
+                Log::info('No certifications found, step not marked');
+            }
+
+            Notification::make()
+                ->title('Profile Updated Successfully!')
+                ->body('Your profile has been updated. You can now access all features.')
+                ->success()
+                ->send();
+
+            // Redirect to dashboard
+            $this->redirect(route('filament.agent.pages.dashboard'));
+
+        } catch (\Exception $e) {
+            Notification::make()
+                ->title('Error updating profile')
+                ->body('There was an error updating your profile: ' . $e->getMessage())
+                ->danger()
+                ->send();
         }
-        
-        if (!empty($data['profile_photo'])) {
-            $user->markStepCompleted('profile_photo');
-        }
-
-        Notification::make()
-            ->title('Profile Updated Successfully!')
-            ->body('Your profile has been updated. You can now access all features.')
-            ->success()
-            ->send();
-
-        // Redirect to dashboard
-        $this->redirect(route('filament.agent.pages.dashboard'));
     }
 
     public function getHeaderActions(): array

@@ -1,5 +1,5 @@
 # Use the official PHP image
-FROM php:8.2.0-fpm
+FROM php:8.3-fpm
 
 # Install dependencies for PHP and Node.js
 RUN apt-get update && apt-get install -y \
@@ -31,8 +31,8 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     gnupg \
     wget \
-    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
+    && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/google-chrome-keyring.gpg \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome-keyring.gpg] https://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list \
     && apt-get update \
     && apt-get install -y google-chrome-stable
 

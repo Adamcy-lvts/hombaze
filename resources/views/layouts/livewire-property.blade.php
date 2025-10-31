@@ -32,8 +32,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-    <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
 
     <!-- Additional Head Content -->
     @stack('head')
@@ -47,6 +46,7 @@
     <main class="min-h-screen">
         {{ $slot }}
     </main>
+
 
     <!-- Footer -->
     @include('components.landing.footer')
@@ -119,6 +119,8 @@
                 opacity: .5;
             }
         }
+
+       
     </style>
 
     <!-- Custom JavaScript -->
@@ -220,7 +222,9 @@
     </script>
 
     @livewireScripts
-    @stack('scripts')
+
+
+
 </body>
 
 </html>

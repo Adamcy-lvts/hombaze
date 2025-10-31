@@ -86,6 +86,7 @@ class UnifiedLoginController extends Controller
             'agent' => $this->redirectAgentToDashboard($user),
             'property_owner' => redirect()->route('filament.landlord.pages.dashboard'),
             'tenant' => redirect()->route('filament.tenant.pages.dashboard'),
+            'customer' => redirect('/dashboard'),
             default => redirect()->route('filament.tenant.pages.dashboard') // Default fallback
         };
     }

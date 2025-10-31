@@ -221,6 +221,9 @@ class Register extends BaseRegister
         // Assign Independent Agent role and permissions
         $this->assignIndependentAgentRole($user);
 
+        // Initialize profile completion tracking
+        $user->initializeProfileCompletion();
+
         Log::info('Agent registration completed successfully', [
             'user_id' => $user->id,
             'agent_id' => $agent->id,

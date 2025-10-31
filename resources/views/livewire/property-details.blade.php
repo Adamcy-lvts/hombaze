@@ -620,12 +620,21 @@
 
                         <!-- Contact Buttons -->
                         <div class="space-y-2 lg:space-y-3">
-                            <button class="w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm lg:text-base">
-                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                                </svg>
-                                Call Agent
-                            </button>
+                            @if($this->getAgentPhoneNumber())
+                                <a href="tel:{{ $this->getAgentPhoneNumber() }}" class="w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm lg:text-base">
+                                    <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                    Call Agent
+                                </a>
+                            @else
+                                <button class="w-full bg-gray-400 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl flex items-center justify-center text-sm lg:text-base cursor-not-allowed opacity-60">
+                                    <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
+                                    </svg>
+                                    No Phone Available
+                                </button>
+                            @endif
                             
                             <button wire:click="toggleContactForm" class="w-full bg-white/95 backdrop-blur-xl text-gray-700 font-semibold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl border-2 border-gray-300/60 hover:bg-white hover:border-gray-400/60 transition-all duration-500 transform hover:scale-105 shadow-lg flex items-center justify-center text-sm lg:text-base">
                                 <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -834,13 +843,23 @@
 
                     </div>
 
-                    <!-- Area Information -->
+                    <!-- Area Information - Only show if there's actual neighborhood data -->
+                    @if($property->area && (
+                        $property->area->education_facilities ||
+                        $property->area->healthcare_facilities ||
+                        $property->area->transport_facilities ||
+                        $property->area->electricity_supply ||
+                        $property->area->water_supply ||
+                        $property->area->shopping_facilities ||
+                        $property->area->security_rating
+                    ))
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                         <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Neighborhood Overview</h2>
                         
                         <!-- Area Categories Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
-                            <!-- Education Card -->
+                            <!-- Education Card - Only show if data exists -->
+                            @if($property->area && $property->area->education_facilities)
                             <div class="bg-white rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -852,28 +871,19 @@
                                         <h3 class="text-lg font-semibold text-gray-900">Education</h3>
                                     </div>
                                     <div class="space-y-2">
-                                        @if($property->area && $property->area->education_facilities)
-                                            @foreach($property->area->education_facilities as $facility)
-                                                <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
-                                                    <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
-                                                    <span class="text-xs font-semibold text-blue-600">{{ $facility['distance'] }}</span>
-                                                </div>
-                                            @endforeach
-                                        @else
+                                        @foreach($property->area->education_facilities as $facility)
                                             <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">Green Valley Primary</span>
-                                                <span class="text-xs font-semibold text-blue-600">0.8km</span>
+                                                <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
+                                                <span class="text-xs font-semibold text-blue-600">{{ $facility['distance'] }}</span>
                                             </div>
-                                            <div class="flex justify-between items-center p-2 bg-blue-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">Excellence Secondary</span>
-                                                <span class="text-xs font-semibold text-blue-600">1.2km</span>
-                                            </div>
-                                        @endif
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
-                            <!-- Healthcare Card -->
+                            <!-- Healthcare Card - Only show if data exists -->
+                            @if($property->area && $property->area->healthcare_facilities)
                             <div class="bg-white rounded-xl border border-red-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -885,28 +895,19 @@
                                         <h3 class="text-lg font-semibold text-gray-900">Healthcare</h3>
                                     </div>
                                     <div class="space-y-2">
-                                        @if($property->area && $property->area->healthcare_facilities)
-                                            @foreach($property->area->healthcare_facilities as $facility)
-                                                <div class="flex justify-between items-center p-2 bg-red-50 rounded-lg">
-                                                    <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
-                                                    <span class="text-xs font-semibold text-red-600">{{ $facility['distance'] }}</span>
-                                                </div>
-                                            @endforeach
-                                        @else
+                                        @foreach($property->area->healthcare_facilities as $facility)
                                             <div class="flex justify-between items-center p-2 bg-red-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">General Hospital</span>
-                                                <span class="text-xs font-semibold text-red-600">1.5km</span>
+                                                <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
+                                                <span class="text-xs font-semibold text-red-600">{{ $facility['distance'] }}</span>
                                             </div>
-                                            <div class="flex justify-between items-center p-2 bg-red-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">MediCare Clinic</span>
-                                                <span class="text-xs font-semibold text-red-600">0.4km</span>
-                                            </div>
-                                        @endif
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
-                            <!-- Transport Card -->
+                            <!-- Transport Card - Only show if data exists -->
+                            @if($property->area && $property->area->transport_facilities)
                             <div class="bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -918,28 +919,19 @@
                                         <h3 class="text-lg font-semibold text-gray-900">Transport</h3>
                                     </div>
                                     <div class="space-y-2">
-                                        @if($property->area && $property->area->transport_facilities)
-                                            @foreach($property->area->transport_facilities as $facility)
-                                                <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-                                                    <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
-                                                    <span class="text-xs font-semibold text-green-600">{{ $facility['distance'] }}</span>
-                                                </div>
-                                            @endforeach
-                                        @else
+                                        @foreach($property->area->transport_facilities as $facility)
                                             <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">Express Road</span>
-                                                <span class="text-xs font-semibold text-green-600">0.3km</span>
+                                                <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
+                                                <span class="text-xs font-semibold text-green-600">{{ $facility['distance'] }}</span>
                                             </div>
-                                            <div class="flex justify-between items-center p-2 bg-green-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">BRT Station</span>
-                                                <span class="text-xs font-semibold text-green-600">0.7km</span>
-                                            </div>
-                                        @endif
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
-                            <!-- Electricity Card -->
+                            <!-- Electricity Card - Only show if data exists -->
+                            @if($property->area && $property->area->electricity_supply)
                             <div class="bg-white rounded-xl border border-yellow-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -951,42 +943,27 @@
                                         <h3 class="text-lg font-semibold text-gray-900">Electricity</h3>
                                     </div>
                                     <div class="space-y-2">
-                                        @if($property->area && $property->area->electricity_supply)
-                                            <div class="p-2 bg-yellow-50 rounded-lg">
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm font-medium text-gray-700">Quality</span>
-                                                    <span class="text-xs font-semibold text-yellow-600">{{ $property->area->electricity_supply['quality'] ?? 'Good' }}</span>
-                                                </div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm text-gray-600">Availability</span>
-                                                    <span class="text-xs text-yellow-600">{{ $property->area->electricity_supply['availability'] ?? '18-20 hrs/day' }}</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span class="text-sm text-gray-600">Backup</span>
-                                                    <span class="text-xs text-yellow-600">{{ $property->area->electricity_supply['backup'] ?? 'Available' }}</span>
-                                                </div>
+                                        <div class="p-2 bg-yellow-50 rounded-lg">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm font-medium text-gray-700">Quality</span>
+                                                <span class="text-xs font-semibold text-yellow-600">{{ $property->area->electricity_supply['quality'] ?? 'Good' }}</span>
                                             </div>
-                                        @else
-                                            <div class="p-2 bg-yellow-50 rounded-lg">
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm font-medium text-gray-700">Quality</span>
-                                                    <span class="text-xs font-semibold text-yellow-600">Good</span>
-                                                </div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm text-gray-600">Availability</span>
-                                                    <span class="text-xs text-yellow-600">18-20 hrs/day</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span class="text-sm text-gray-600">Backup</span>
-                                                    <span class="text-xs text-yellow-600">Available</span>
-                                                </div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm text-gray-600">Availability</span>
+                                                <span class="text-xs text-yellow-600">{{ $property->area->electricity_supply['availability'] ?? '18-20 hrs/day' }}</span>
                                             </div>
-                                        @endif
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm text-gray-600">Backup</span>
+                                                <span class="text-xs text-yellow-600">{{ $property->area->electricity_supply['backup'] ?? 'Available' }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
-                            <!-- Water Card -->
+                            <!-- Water Card - Only show if data exists -->
+                            @if($property->area && $property->area->water_supply)
                             <div class="bg-white rounded-xl border border-cyan-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -998,42 +975,27 @@
                                         <h3 class="text-lg font-semibold text-gray-900">Water Supply</h3>
                                     </div>
                                     <div class="space-y-2">
-                                        @if($property->area && $property->area->water_supply)
-                                            <div class="p-2 bg-cyan-50 rounded-lg">
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm font-medium text-gray-700">Quality</span>
-                                                    <span class="text-xs font-semibold text-cyan-600">{{ $property->area->water_supply['quality'] ?? 'Good' }}</span>
-                                                </div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm text-gray-600">Availability</span>
-                                                    <span class="text-xs text-cyan-600">{{ $property->area->water_supply['availability'] ?? 'Daily' }}</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span class="text-sm text-gray-600">Source</span>
-                                                    <span class="text-xs text-cyan-600">{{ $property->area->water_supply['source'] ?? 'Municipal' }}</span>
-                                                </div>
+                                        <div class="p-2 bg-cyan-50 rounded-lg">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm font-medium text-gray-700">Quality</span>
+                                                <span class="text-xs font-semibold text-cyan-600">{{ $property->area->water_supply['quality'] ?? 'Good' }}</span>
                                             </div>
-                                        @else
-                                            <div class="p-2 bg-cyan-50 rounded-lg">
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm font-medium text-gray-700">Quality</span>
-                                                    <span class="text-xs font-semibold text-cyan-600">Good</span>
-                                                </div>
-                                                <div class="flex items-center justify-between mb-1">
-                                                    <span class="text-sm text-gray-600">Availability</span>
-                                                    <span class="text-xs text-cyan-600">Daily</span>
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <span class="text-sm text-gray-600">Source</span>
-                                                    <span class="text-xs text-cyan-600">Municipal</span>
-                                                </div>
+                                            <div class="flex items-center justify-between mb-1">
+                                                <span class="text-sm text-gray-600">Availability</span>
+                                                <span class="text-xs text-cyan-600">{{ $property->area->water_supply['availability'] ?? 'Daily' }}</span>
                                             </div>
-                                        @endif
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-sm text-gray-600">Source</span>
+                                                <span class="text-xs text-cyan-600">{{ $property->area->water_supply['source'] ?? 'Municipal' }}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
-                            <!-- Shopping Card -->
+                            <!-- Shopping Card - Only show if data exists -->
+                            @if($property->area && $property->area->shopping_facilities)
                             <div class="bg-white rounded-xl border border-purple-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -1045,28 +1007,19 @@
                                         <h3 class="text-lg font-semibold text-gray-900">Shopping</h3>
                                     </div>
                                     <div class="space-y-2">
-                                        @if($property->area && $property->area->shopping_facilities)
-                                            @foreach($property->area->shopping_facilities as $facility)
-                                                <div class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
-                                                    <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
-                                                    <span class="text-xs font-semibold text-purple-600">{{ $facility['distance'] }}</span>
-                                                </div>
-                                            @endforeach
-                                        @else
+                                        @foreach($property->area->shopping_facilities as $facility)
                                             <div class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">City Mall</span>
-                                                <span class="text-xs font-semibold text-purple-600">2.1km</span>
+                                                <span class="text-sm text-gray-700">{{ $facility['name'] }}</span>
+                                                <span class="text-xs font-semibold text-purple-600">{{ $facility['distance'] }}</span>
                                             </div>
-                                            <div class="flex justify-between items-center p-2 bg-purple-50 rounded-lg">
-                                                <span class="text-sm text-gray-700">Central Market</span>
-                                                <span class="text-xs font-semibold text-purple-600">0.5km</span>
-                                            </div>
-                                        @endif
+                                        @endforeach
                                     </div>
                                 </div>
                             </div>
+                            @endif
 
-                            <!-- Security Card -->
+                            <!-- Security Card - Only show if data exists -->
+                            @if($property->area && ($property->area->security_rating || $property->area->security_features))
                             <div class="bg-white rounded-xl border border-emerald-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                                 <div class="p-4">
                                     <div class="flex items-center space-x-3 mb-4">
@@ -1077,37 +1030,38 @@
                                         </div>
                                         <div class="flex-1">
                                             <h3 class="text-lg font-semibold text-gray-900">Security</h3>
+                                            @if($property->area->security_rating)
                                             <div class="text-right">
-                                                <div class="text-xl font-bold text-emerald-600">{{ $property->area && $property->area->security_rating ? number_format($property->area->security_rating, 1) . '/10' : '8.5/10' }}</div>
-                                                <div class="text-xs text-gray-600">{{ $property->area && $property->area->security_rating ? $property->area->security_rating_display : 'Excellent' }}</div>
+                                                <div class="text-xl font-bold text-emerald-600">{{ number_format($property->area->security_rating, 1) }}/10</div>
+                                                <div class="text-xs text-gray-600">{{ $property->area->security_rating_display ?? 'Good' }}</div>
                                             </div>
+                                            @endif
                                         </div>
                                     </div>
                                     <div class="space-y-2">
+                                        @if($property->area->security_stars)
                                         <div class="flex items-center space-x-1">
-                                            @php
-                                                $securityStars = $property->area && $property->area->security_stars ? $property->area->security_stars : 4;
-                                            @endphp
                                             @for($i = 1; $i <= 5; $i++)
-                                                <svg class="w-4 h-4 {{ $i <= $securityStars ? 'text-emerald-500' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                <svg class="w-4 h-4 {{ $i <= $property->area->security_stars ? 'text-emerald-500' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                                 </svg>
                                             @endfor
                                         </div>
+                                        @endif
+                                        @if($property->area->security_features)
                                         <div class="p-2 bg-emerald-50 rounded-lg">
                                             <div class="text-xs text-gray-600">
-                                                @if($property->area && $property->area->security_features)
-                                                    {{ implode(' • ', $property->area->security_features) }}
-                                                @else
-                                                    24/7 Security • CCTV • Gated Community • Low Crime Rate
-                                                @endif
+                                                {{ implode(' • ', $property->area->security_features) }}
                                             </div>
                                         </div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
+                    @endif
 
 
                 </div>
@@ -1137,6 +1091,57 @@
                 </div>
             </div>
         </div>
+
+        <!-- Personalized Recommendations -->
+        @auth
+        @if($recommendedProperties && $recommendedProperties->count() > 0)
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 lg:pb-12">
+            <div class="mb-6 lg:mb-8">
+                <div class="flex items-center space-x-3 mb-2">
+                    <div class="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl lg:text-3xl font-bold text-gray-900">Recommended for You</h2>
+                </div>
+                <p class="text-gray-600 text-sm lg:text-base">Properties matched to your preferences and search history</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                @foreach($recommendedProperties as $recommendedProperty)
+                    <a href="{{ route('property.show', $recommendedProperty->slug ?? $recommendedProperty->id) }}"
+                       class="group bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-lg border border-emerald-200/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105 relative">
+                        <!-- Recommendation Score Badge -->
+                        @if($recommendedProperty->recommendation_score && $recommendedProperty->recommendation_score > 0.7)
+                        <div class="absolute top-3 right-3 z-10 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-lg">
+                            {{ round($recommendedProperty->recommendation_score * 100) }}% Match
+                        </div>
+                        @endif
+
+                        <div class="relative h-40 lg:h-48 overflow-hidden">
+                            <img src="{{ $recommendedProperty->getFeaturedImageUrl('preview') }}"
+                                 alt="{{ $recommendedProperty->title }}"
+                                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                 onerror="this.src='/images/property-placeholder.svg'">
+                        </div>
+                        <div class="p-3 lg:p-4">
+                            <h4 class="font-semibold text-gray-900 mb-2 line-clamp-2 text-sm lg:text-base">{{ $recommendedProperty->title }}</h4>
+                            <p class="text-xs lg:text-sm text-gray-600 mb-2 flex items-center">
+                                <svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                </svg>
+                                {{ $recommendedProperty->area->name ?? '' }}, {{ $recommendedProperty->area->city->name ?? '' }}
+                            </p>
+                            <p class="text-base lg:text-lg font-bold text-emerald-600">{{ $recommendedProperty->formatted_price }}</p>
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+        @endif
+        @endauth
 
         <!-- Related Properties -->
         @if($relatedProperties->count() > 0)

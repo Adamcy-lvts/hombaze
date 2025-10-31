@@ -8,6 +8,7 @@ use App\Models\State;
 use Livewire\Component;
 use App\Models\Property;
 use App\Models\PropertyType;
+use App\Models\SavedProperty;
 use Livewire\Attributes\Url;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
@@ -35,6 +36,9 @@ class PropertySearch extends Component
     public $isLoading = false;
     public $showFilters = false;
     public $isDarkMode = false;
+
+    // Saved properties tracking
+    public $savedPropertyIds = [];
     
     // Available filter options
     public $filterOptions = [
@@ -51,6 +55,9 @@ class PropertySearch extends Component
     {
         // Load property types for filter options
         $this->filterOptions['property_type'] = PropertyType::pluck('name', 'id')->toArray();
+
+        // Load saved property IDs for authenticated users
+        $this->loadSavedProperties();
     }
 
     public function updatedSearchQuery()
@@ -356,6 +363,59 @@ class PropertySearch extends Component
             default:
                 return $range;
         }
+    }
+
+    /**
+     * Load saved property IDs for the authenticated user
+     */
+    private function loadSavedProperties()
+    {
+        if (auth()->check()) {
+            $this->savedPropertyIds = SavedProperty::where('user_id', auth()->id())
+                ->pluck('property_id')
+                ->toArray();
+        }
+    }
+
+    /**
+     * Toggle save status of a property
+     */
+    public function toggleSaveProperty($propertyId)
+    {
+        if (!auth()->check()) {
+            session()->flash('error', 'Please login to save properties.');
+            return $this->redirect(route('login'));
+        }
+
+        $userId = auth()->id();
+        $savedProperty = SavedProperty::where('user_id', $userId)
+            ->where('property_id', $propertyId)
+            ->first();
+
+        if ($savedProperty) {
+            // Remove from saved properties
+            $savedProperty->delete();
+            $this->savedPropertyIds = array_diff($this->savedPropertyIds, [$propertyId]);
+
+            $this->dispatch('property-unsaved', ['message' => 'Property removed from saved list']);
+        } else {
+            // Add to saved properties
+            SavedProperty::create([
+                'user_id' => $userId,
+                'property_id' => $propertyId,
+            ]);
+            $this->savedPropertyIds[] = $propertyId;
+
+            $this->dispatch('property-saved', ['message' => 'Property saved successfully']);
+        }
+    }
+
+    /**
+     * Check if a property is saved by the current user
+     */
+    public function isPropertySaved($propertyId)
+    {
+        return in_array($propertyId, $this->savedPropertyIds);
     }
 
     public function render()

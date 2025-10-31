@@ -102,6 +102,8 @@ class CreateProperty extends CreateRecord
             'property_slug' => $property->slug,
         ]);
 
+        // SavedSearch matching is now handled automatically by PropertyObserver
+
         // Send success notification
         Notification::make()
             ->title('Property created successfully')

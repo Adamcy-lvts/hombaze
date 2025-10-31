@@ -121,6 +121,7 @@
                                     <input type="text" 
                                            name="q"
                                            x-model="searchQuery"
+                                           @input="if(searchQuery.length < 2) { suggestions = []; showSuggestions = false; isLoading = false; }"
                                            @input.debounce.300ms="getSuggestions()"
                                            @focus="handleFocus()"
                                            @blur.debounce.150ms="handleBlur()"
@@ -157,7 +158,7 @@
                     </div>
 
                     <!-- Smart Suggestions Dropdown -->
-                    <div x-show="showSuggestions && suggestions.length > 0" 
+                    <div x-show="showSuggestions && suggestions.length > 0 && !isLoading"
                          x-transition:enter="transition ease-out duration-200"
                          x-transition:enter-start="opacity-0 transform scale-95 -translate-y-2"
                          x-transition:enter-end="opacity-100 transform scale-100 translate-y-0"
@@ -220,7 +221,7 @@
                             </template>
 
                             <!-- No Results Message -->
-                            <div x-show="searchQuery.length >= 2 && suggestions.length === 0 && !isLoading" class="p-4 text-center text-gray-500">
+                            <div x-show="false" class="p-4 text-center text-gray-500">
                                 <svg class="w-12 h-12 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -371,7 +372,7 @@
                 }
 
                 // Redirect to dedicated search results page
-                const searchUrl = `{{ route('properties.search') }}?${searchParams.toString()}`;
+                const searchUrl = `/properties?${searchParams.toString()}`;
                 console.log('🔍 Hero Search: Redirecting to', searchUrl);
                 
                 // Force redirect to dedicated search page
@@ -597,25 +598,89 @@
             highlightedIndex: -1,
             isLoading: false,
             recentSearches: JSON.parse(localStorage.getItem('recentSearches') || '[]'),
+
+            init() {
+                console.log('Smart search component initialized');
+                // Load popular searches on component init
+                this.loadPopularSearches();
+            },
+
+            loadPopularSearches() {
+                // Provide immediate popular suggestions
+                this.popularSuggestions = [
+                    { type: 'location', label: 'Lagos Island', value: 'Lagos Island', count: '234 properties', icon: 'map-pin' },
+                    { type: 'location', label: 'Victoria Island', value: 'Victoria Island', count: '189 properties', icon: 'map-pin' },
+                    { type: 'location', label: 'Ikoyi', value: 'Ikoyi', count: '156 properties', icon: 'map-pin' },
+                    { type: 'property', label: '3 Bedroom Apartment', value: '3 bedroom apartment', count: 'Popular search', icon: 'home' },
+                    { type: 'property', label: '2 Bedroom Flat', value: '2 bedroom flat', count: 'Popular search', icon: 'home' }
+                ];
+            },
             
             async getSuggestions() {
+                // Clear previous suggestions
+                this.suggestions = [];
+                this.showSuggestions = false;
+                this.isLoading = false;
+
                 if (this.searchQuery.length < 2) {
                     this.suggestions = [];
                     this.showSuggestions = false;
+                    this.isLoading = false;
                     return;
                 }
 
                 this.isLoading = true;
-                
+
                 try {
-                    const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(this.searchQuery)}&limit=8`);
+                    console.log('Fetching suggestions for:', this.searchQuery);
+
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+                    const response = await fetch(`/api/search/suggestions?q=${encodeURIComponent(this.searchQuery)}&limit=8`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+
                     const data = await response.json();
-                    
-                    this.suggestions = data.suggestions || [];
-                    this.showSuggestions = this.suggestions.length > 0;
-                    this.highlightedIndex = -1;
+                    console.log('Suggestions response:', data);
+
+                    if (data && Array.isArray(data.suggestions)) {
+                        this.suggestions = data.suggestions;
+                        this.highlightedIndex = -1;
+
+                        // Only show dropdown if we have suggestions
+                        this.showSuggestions = this.suggestions.length > 0;
+
+                        // Don't show fallbacks - just hide dropdown if no results
+                        if (this.suggestions.length === 0) {
+                            this.showSuggestions = false;
+                        }
+                    } else {
+                        console.warn('Invalid response format:', data);
+                        this.suggestions = [];
+                        this.showSuggestions = false;
+                    }
+
                 } catch (error) {
                     console.error('Search suggestions error:', error);
+
+                    if (error.name === 'AbortError') {
+                        console.warn('Search suggestion request timed out');
+                    }
+
+                    // Hide dropdown on error
                     this.suggestions = [];
                     this.showSuggestions = false;
                 } finally {
@@ -623,9 +688,43 @@
                 }
             },
 
+            addFallbackSuggestions() {
+                // Use popular suggestions as fallback
+                const fallbackSuggestions = this.popularSuggestions || [
+                    { type: 'location', label: 'Lagos Properties', value: 'Lagos', count: 'Popular location', icon: 'map-pin' },
+                    { type: 'location', label: 'Abuja Properties', value: 'Abuja', count: 'Popular location', icon: 'map-pin' },
+                    { type: 'property', label: '3 Bedroom Apartments', value: '3 bedroom apartment', count: 'Popular search', icon: 'home' },
+                    { type: 'property', label: '2 Bedroom Flats', value: '2 bedroom flat', count: 'Popular search', icon: 'home' }
+                ];
+
+                // Filter fallbacks based on current query
+                const query = this.searchQuery.toLowerCase();
+                this.suggestions = fallbackSuggestions.filter(suggestion =>
+                    suggestion.label.toLowerCase().includes(query) ||
+                    suggestion.value.toLowerCase().includes(query)
+                ).slice(0, 4); // Limit to 4 fallback suggestions
+
+                this.showSuggestions = this.suggestions.length > 0;
+                console.log('Added fallback suggestions:', this.suggestions);
+            },
+
             handleFocus() {
-                if (this.searchQuery.length >= 2 && this.suggestions.length > 0) {
+                if (this.searchQuery.length >= 2) {
+                    if (this.suggestions.length > 0) {
+                        this.showSuggestions = true;
+                    } else {
+                        // Trigger new search if no suggestions
+                        this.getSuggestions();
+                    }
+                }
+                // Don't show anything for empty searches on focus
+            },
+
+            showPopularSuggestions() {
+                if (this.popularSuggestions && this.popularSuggestions.length > 0) {
+                    this.suggestions = this.popularSuggestions.slice(0, 5);
                     this.showSuggestions = true;
+                    console.log('Showing popular suggestions');
                 }
             },
 
@@ -634,7 +733,7 @@
                 setTimeout(() => {
                     this.showSuggestions = false;
                     this.highlightedIndex = -1;
-                }, 150);
+                }, 200);
             },
 
             highlightNext() {
@@ -713,7 +812,7 @@
                 }
 
                 // Navigate to dedicated search results page
-                const searchUrl = `{{ route('properties.search') }}?${searchParams.toString()}`;
+                const searchUrl = `/properties?${searchParams.toString()}`;
                 
                 console.log('🔍 Enhanced Search: Redirecting to', searchUrl);
                 

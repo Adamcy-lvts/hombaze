@@ -273,10 +273,43 @@ class UnifiedRegistrationController extends Controller
     {
         return match($user->user_type) {
             'customer' => redirect()->route('dashboard')->with('success', 'Welcome to HomeBaze! Let\'s complete your profile to find perfect properties.'),
-            'agent' => redirect()->route('filament.agent.pages.dashboard'),
+            'agent' => $this->redirectAgentToDashboard($user),
             'property_owner' => redirect()->route('filament.landlord.pages.dashboard'),
-            'agency_owner' => redirect()->route('filament.agency.pages.dashboard'),
+            'agency_owner' => $this->redirectToAgencyDashboard($user),
             default => redirect()->route('dashboard')
         };
+    }
+
+    /**
+     * Route agency owners to their agency dashboard
+     */
+    private function redirectToAgencyDashboard(User $user): RedirectResponse
+    {
+        // Get the user's first agency as tenant
+        $agency = $user->ownedAgencies()->first() ?? $user->agencies()->first();
+
+        if ($agency) {
+            return redirect()->route('filament.agency.pages.agency-dashboard', ['tenant' => $agency]);
+        }
+
+        // If no agency found, redirect to agency registration
+        return redirect()->route('filament.agency.auth.register')->with('info', 'Please complete your agency registration to access the agency dashboard.');
+    }
+
+    /**
+     * Route agents to appropriate dashboard (agency or independent)
+     */
+    private function redirectAgentToDashboard(User $user): RedirectResponse
+    {
+        // Check if agent belongs to any agency
+        $agency = $user->agencies()->first();
+
+        if ($agency) {
+            // Redirect to agency dashboard with tenant context
+            return redirect()->route('filament.agency.pages.agency-dashboard', ['tenant' => $agency]);
+        }
+
+        // Independent agent - redirect to agent panel
+        return redirect()->route('filament.agent.pages.dashboard');
     }
 }

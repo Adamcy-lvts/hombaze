@@ -190,4 +190,185 @@ class WhatsAppService
             'access_token' => $this->accessToken ? 'Set' : 'Not Set'
         ];
     }
+
+    /**
+     * Send property inquiry message
+     */
+    public function sendPropertyInquiry(string $phoneNumber, string $propertyTitle, string $propertyUrl, array $propertyDetails = []): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        $message = $this->formatPropertyInquiryMessage($propertyTitle, $propertyUrl, $propertyDetails);
+
+        return $this->sendTextMessage($phoneNumber, $message);
+    }
+
+    /**
+     * Send viewing confirmation message
+     */
+    public function sendViewingConfirmation(string $phoneNumber, array $viewingDetails): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        $message = $this->formatViewingConfirmationMessage($viewingDetails);
+
+        return $this->sendTextMessage($phoneNumber, $message);
+    }
+
+    /**
+     * Send general text message
+     */
+    public function sendTextMessage(string $phoneNumber, string $message): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        if (!$this->accessToken || !$this->phoneNumberId) {
+            throw new Exception('WhatsApp credentials not configured');
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Content-Type' => 'application/json',
+            ])->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", [
+                'messaging_product' => 'whatsapp',
+                'to' => $this->formatPhoneNumber($phoneNumber),
+                'type' => 'text',
+                'text' => [
+                    'body' => $message
+                ]
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                Log::info('WhatsApp message sent successfully', [
+                    'phone' => $phoneNumber,
+                    'message_id' => $data['messages'][0]['id'] ?? null
+                ]);
+
+                return [
+                    'success' => true,
+                    'message_id' => $data['messages'][0]['id'] ?? null,
+                    'response' => $data
+                ];
+            }
+
+            throw new Exception('WhatsApp API request failed: ' . $response->body());
+
+        } catch (Exception $e) {
+            Log::error('Failed to send WhatsApp message', [
+                'phone' => $phoneNumber,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Send interactive button message
+     */
+    public function sendButtonMessage(string $phoneNumber, string $bodyText, array $buttons): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Content-Type' => 'application/json',
+            ])->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", [
+                'messaging_product' => 'whatsapp',
+                'to' => $this->formatPhoneNumber($phoneNumber),
+                'type' => 'interactive',
+                'interactive' => [
+                    'type' => 'button',
+                    'body' => ['text' => $bodyText],
+                    'action' => [
+                        'buttons' => $buttons
+                    ]
+                ]
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return [
+                    'success' => true,
+                    'message_id' => $data['messages'][0]['id'] ?? null,
+                    'response' => $data
+                ];
+            }
+
+            throw new Exception('WhatsApp API request failed: ' . $response->body());
+
+        } catch (Exception $e) {
+            Log::error('Failed to send WhatsApp button message', [
+                'phone' => $phoneNumber,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Format property inquiry message
+     */
+    protected function formatPropertyInquiryMessage(string $propertyTitle, string $propertyUrl, array $details): string
+    {
+        $message = "🏠 *Property Inquiry Response - HomeBaze*\n\n";
+        $message .= "Thank you for your interest in: *{$propertyTitle}*\n\n";
+
+        if (!empty($details)) {
+            $message .= "📋 *Property Details:*\n";
+            foreach ($details as $key => $value) {
+                $message .= "• {$key}: {$value}\n";
+            }
+            $message .= "\n";
+        }
+
+        $message .= "🔗 *View Full Details:* {$propertyUrl}\n\n";
+        $message .= "Our agent will contact you within 2 hours to discuss your requirements and schedule a viewing if needed.\n\n";
+        $message .= "🔐 *HomeBaze - Nigeria's Premier Real Estate Platform*";
+
+        return $message;
+    }
+
+    /**
+     * Format viewing confirmation message
+     */
+    protected function formatViewingConfirmationMessage(array $details): string
+    {
+        $message = "✅ *Viewing Appointment Confirmed - HomeBaze*\n\n";
+        $message .= "📅 *Date & Time:* {$details['date']} at {$details['time']}\n";
+        $message .= "🏠 *Property:* {$details['property_title']}\n";
+        $message .= "📍 *Location:* {$details['address']}\n";
+        $message .= "👤 *Agent:* {$details['agent_name']}\n";
+        $message .= "📞 *Agent Contact:* {$details['agent_phone']}\n\n";
+
+        $message .= "📋 *What to bring:*\n";
+        $message .= "• Valid ID\n";
+        $message .= "• Proof of income (if interested)\n";
+        $message .= "• Any questions you have\n\n";
+
+        $message .= "⚠️ *Please arrive 5 minutes early*\n\n";
+        $message .= "Need to reschedule? Reply to this message or call our agent directly.\n\n";
+        $message .= "🔐 *HomeBaze - Your Trusted Property Partner*";
+
+        return $message;
+    }
 }

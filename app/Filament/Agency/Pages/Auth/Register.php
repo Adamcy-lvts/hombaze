@@ -114,7 +114,8 @@ class Register extends BaseRegister
                 Filament::auth()->login($user);
                 session()->regenerate();
 
-                return app(RegistrationResponse::class);
+                // Redirect to agency dashboard with proper tenant context
+                return $this->redirectToAgencyDashboard($user, $agency);
 
             } catch (\Exception $e) {
                 Log::error('Agency registration error:', [
@@ -646,5 +647,15 @@ class Register extends BaseRegister
             ->link()
             ->label(__('filament-panels::pages/auth/register.actions.login.label'))
             ->url(filament()->getLoginUrl());
+    }
+
+    /**
+     * Redirect to agency dashboard with proper tenant context
+     */
+    protected function redirectToAgencyDashboard(User $user, Agency $agency): \Illuminate\Http\RedirectResponse
+    {
+        // Redirect to the agency dashboard with tenant context
+        return redirect()->route('filament.agency.pages.agency-dashboard', ['tenant' => $agency])
+            ->with('success', 'Welcome to HomeBaze! Your agency has been successfully registered.');
     }
 }

@@ -14,46 +14,55 @@ class StateSeeder extends Seeder
     public function run(): void
     {
         if (State::count() == 0) {
+            $now = now();
 
-            State::insert([
-                ['name' => "Abia"],
-                ['name' => "Adamawa"],
-                ['name' => "Anambra"],
-                ['name' => "Akwa Ibom"],
-                ['name' => "Bauchi"],
-                ['name' => "Bayelsa"],
-                ['name' => "Benue"],
-                ['name' => "Borno"],
-                ['name' => "Cross River"],
-                ['name' => "Delta"],
-                ['name' => "Ebonyi"],
-                ['name' => "Enugu"],
-                ['name' => "Edo"],
-                ['name' => "Ekiti"],
-                ['name' => "FCT - Abuja"],
-                ['name' => "Gombe"],
-                ['name' => "Imo"],
-                ['name' => "Jigawa"],
-                ['name' => "Kaduna"],
-                ['name' => "Kano"],
-                ['name' => "Katsina"],
-                ['name' => "Kebbi"],
-                ['name' => "Kogi"],
-                ['name' => "Kwara"],
-                ['name' => "Lagos"],
-                ['name' => "Nasarawa"],
-                ['name' => "Niger"],
-                ['name' => "Ogun"],
-                ['name' => "Ondo"],
-                ['name' => "Osun"],
-                ['name' => "Oyo"],
-                ['name' => "Plateau"],
-                ['name' => "Rivers"],
-                ['name' => "Sokoto"],
-                ['name' => "Taraba"],
-                ['name' => "Yobe"],
-                ['name' => "Zamfara"]
-            ]);
+            $states = [
+                ['name' => "Abia", 'code' => 'AB'],
+                ['name' => "Adamawa", 'code' => 'AD'],
+                ['name' => "Anambra", 'code' => 'AN'],
+                ['name' => "Akwa Ibom", 'code' => 'AK'],
+                ['name' => "Bauchi", 'code' => 'BA'],
+                ['name' => "Bayelsa", 'code' => 'BY'],
+                ['name' => "Benue", 'code' => 'BE'],
+                ['name' => "Borno", 'code' => 'BO'],
+                ['name' => "Cross River", 'code' => 'CR'],
+                ['name' => "Delta", 'code' => 'DE'],
+                ['name' => "Ebonyi", 'code' => 'EB'],
+                ['name' => "Enugu", 'code' => 'EN'],
+                ['name' => "Edo", 'code' => 'ED'],
+                ['name' => "Ekiti", 'code' => 'EK'],
+                ['name' => "FCT - Abuja", 'code' => 'FC'],
+                ['name' => "Gombe", 'code' => 'GO'],
+                ['name' => "Imo", 'code' => 'IM'],
+                ['name' => "Jigawa", 'code' => 'JI'],
+                ['name' => "Kaduna", 'code' => 'KD'],
+                ['name' => "Kano", 'code' => 'KN'],
+                ['name' => "Katsina", 'code' => 'KT'],
+                ['name' => "Kebbi", 'code' => 'KE'],
+                ['name' => "Kogi", 'code' => 'KO'],
+                ['name' => "Kwara", 'code' => 'KW'],
+                ['name' => "Lagos", 'code' => 'LA'],
+                ['name' => "Nasarawa", 'code' => 'NA'],
+                ['name' => "Niger", 'code' => 'NI'],
+                ['name' => "Ogun", 'code' => 'OG'],
+                ['name' => "Ondo", 'code' => 'ON'],
+                ['name' => "Osun", 'code' => 'OS'],
+                ['name' => "Oyo", 'code' => 'OY'],
+                ['name' => "Plateau", 'code' => 'PL'],
+                ['name' => "Rivers", 'code' => 'RI'],
+                ['name' => "Sokoto", 'code' => 'SO'],
+                ['name' => "Taraba", 'code' => 'TA'],
+                ['name' => "Yobe", 'code' => 'YO'],
+                ['name' => "Zamfara", 'code' => 'ZA']
+            ];
+
+            // Add timestamps to each state
+            foreach ($states as &$state) {
+                $state['created_at'] = $now;
+                $state['updated_at'] = $now;
+            }
+
+            State::insert($states);
         }
     }
 }

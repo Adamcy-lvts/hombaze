@@ -29,7 +29,21 @@ class AreaSeeder extends Seeder
     {
         if (DB::table('areas')->count() == 0) {
             $now = now();
-            $maiduguriCityId = 1; // Maiduguri city ID
+
+            // Find Maiduguri city ID dynamically
+            $maiduguriCity = DB::table('cities')
+                ->join('states', 'cities.state_id', '=', 'states.id')
+                ->where('states.name', 'Borno')
+                ->where('cities.name', 'Maiduguri')
+                ->select('cities.id')
+                ->first();
+
+            if (!$maiduguriCity) {
+                $this->command->error('Maiduguri city not found in Borno state!');
+                return;
+            }
+
+            $maiduguriCityId = $maiduguriCity->id;
 
             // Major Areas/Districts in Maiduguri, Borno State
             $maiduguriAreas = [

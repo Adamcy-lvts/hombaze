@@ -433,7 +433,6 @@ class CitySeeder extends Seeder
                 ['name' => "Isiala Mbano",     'state_id' => 17],
                 ['name' => "Isu",              'state_id' => 17],
                 ['name' => "Mbaitoli",         'state_id' => 17],
-                ['name' => "Mbaitoli",         'state_id' => 17],
                 ['name' => "Ngor-Okpala",      'state_id' => 17],
                 ['name' => "Njaba",            'state_id' => 17],
                 ['name' => "Nwangele",         'state_id' => 17],

@@ -20,6 +20,8 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 
 class UnifiedRegistrationController extends Controller
@@ -357,6 +359,9 @@ class UnifiedRegistrationController extends Controller
         // Create agent profile for the agency owner
         $this->createAgentProfileForOwner($user, $agency);
 
+        // Assign super-admin role with all permissions for the agency
+        $this->assignAgencyOwnerRole($user, $agency);
+
         Log::info('Agency created for owner via unified registration', [
             'user_id' => $user->id,
             'agency_id' => $agency->id,
@@ -395,5 +400,44 @@ class UnifiedRegistrationController extends Controller
             'user_id' => $user->id,
             'agency_id' => $agency->id,
         ]);
+    }
+
+    /**
+     * Assign super-admin role with all permissions for agency owner
+     */
+    private function assignAgencyOwnerRole(User $user, Agency $agency): void
+    {
+        try {
+            // Use Artisan command to create super admin with all permissions
+            Artisan::call('shield:super-admin', [
+                '--user' => $user->id,
+                '--tenant' => $agency->id
+            ]);
+
+            // Get the super admin and give all permissions
+            $superAdmin = $agency->getSuperAdmin();
+            if ($superAdmin) {
+                $superAdmin->givePermissionTo(Permission::all());
+                Log::info("Assigned super_admin role with all permissions to agency owner", [
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'agency_id' => $agency->id,
+                    'agency_name' => $agency->name,
+                ]);
+            } else {
+                Log::warning("Could not find super admin for agency", [
+                    'agency_id' => $agency->id,
+                    'agency_name' => $agency->name,
+                ]);
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Failed to assign super-admin role to agency owner', [
+                'user_id' => $user->id,
+                'agency_id' => $agency->id,
+                'error' => $e->getMessage(),
+            ]);
+            // Don't throw exception - log the error but continue registration
+        }
     }
 }

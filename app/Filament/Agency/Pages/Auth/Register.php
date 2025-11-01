@@ -114,6 +114,13 @@ class Register extends BaseRegister
                 Filament::auth()->login($user);
                 session()->regenerate();
 
+                // Show success notification
+                Notification::make()
+                    ->title('Welcome to HomeBaze!')
+                    ->body('Your agency has been successfully registered.')
+                    ->success()
+                    ->send();
+
                 // Redirect to agency dashboard with proper tenant context
                 return $this->redirectToAgencyDashboard($user, $agency);
 
@@ -652,10 +659,12 @@ class Register extends BaseRegister
     /**
      * Redirect to agency dashboard with proper tenant context
      */
-    protected function redirectToAgencyDashboard(User $user, Agency $agency): \Illuminate\Http\RedirectResponse
+    protected function redirectToAgencyDashboard(User $user, Agency $agency)
     {
-        // Redirect to the agency dashboard with tenant context
-        return redirect()->route('filament.agency.pages.agency-dashboard', ['tenant' => $agency])
-            ->with('success', 'Welcome to HomeBaze! Your agency has been successfully registered.');
+        // Use Livewire redirect for Filament compatibility
+        return $this->redirect(
+            route('filament.agency.pages.agency-dashboard', ['tenant' => $agency]),
+            navigate: true
+        );
     }
 }

@@ -13,12 +13,14 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Agent;
+use App\Models\Agency;
 use App\Models\PropertyOwner;
 use App\Models\CustomerProfile;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Str;
 
 class UnifiedRegistrationController extends Controller
 {
@@ -169,9 +171,7 @@ class UnifiedRegistrationController extends Controller
                 break;
 
             case 'agency_owner':
-                // For agency, we redirect to the full agency registration flow
-                // This is a placeholder - the full agency registration should be handled
-                // by the existing Agency Filament registration
+                $this->createAgencyForOwner($user, $data);
                 $this->assignRole($user, 'agency_owner');
                 break;
         }
@@ -311,5 +311,86 @@ class UnifiedRegistrationController extends Controller
 
         // Independent agent - redirect to agent panel
         return redirect()->route('filament.agent.pages.dashboard');
+    }
+
+    /**
+     * Create agency for agency owner with minimal required data
+     */
+    private function createAgencyForOwner(User $user, array $data): void
+    {
+        // Create basic agency with minimal data
+        $agency = Agency::create([
+            'name' => $user->name . "'s Agency",
+            'slug' => Str::slug($user->name . '-agency'),
+            'description' => 'Real estate agency managed by ' . $user->name,
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'owner_id' => $user->id,
+            'address' => [
+                'street' => '',
+                'city_id' => null,
+                'state_id' => null,
+                'area_id' => null,
+            ],
+            'social_media' => [],
+            'specializations' => 'residential_sales,residential_rentals',
+            'years_in_business' => 0,
+            'rating' => 0.0,
+            'total_reviews' => 0,
+            'total_properties' => 0,
+            'total_agents' => 1,
+            'is_verified' => false,
+            'is_featured' => false,
+            'is_active' => true,
+        ]);
+
+        // Associate user with agency as owner
+        $agency->users()->attach($user->id, [
+            'role' => 'owner',
+            'is_active' => true,
+            'joined_at' => now(),
+        ]);
+
+        // Create agent profile for the agency owner
+        $this->createAgentProfileForOwner($user, $agency);
+
+        Log::info('Agency created for owner via unified registration', [
+            'user_id' => $user->id,
+            'agency_id' => $agency->id,
+            'agency_name' => $agency->name,
+        ]);
+    }
+
+    /**
+     * Create agent profile for agency owner
+     */
+    private function createAgentProfileForOwner(User $user, Agency $agency): void
+    {
+        $nameParts = explode(' ', $user->name, 2);
+
+        Agent::create([
+            'user_id' => $user->id,
+            'agency_id' => $agency->id,
+            'first_name' => $nameParts[0],
+            'last_name' => $nameParts[1] ?? '',
+            'email' => $user->email,
+            'phone' => $user->phone,
+            'bio' => "Agency owner and super admin for {$agency->name}.",
+            'specializations' => $agency->specializations,
+            'years_experience' => 0,
+            'languages' => 'English',
+            'is_verified' => true,
+            'is_featured' => true,
+            'is_active' => true,
+            'accepts_new_clients' => true,
+            'state_id' => null,
+            'city_id' => null,
+            'area_id' => null,
+        ]);
+
+        Log::info('Agent profile created for agency owner', [
+            'user_id' => $user->id,
+            'agency_id' => $agency->id,
+        ]);
     }
 }

@@ -4,19 +4,34 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class CitySeeder extends Seeder
 {
+    /**
+     * Insert cities with required fields
+     */
+    private function insertCities(array $cities, $now)
+    {
+        foreach ($cities as &$city) {
+            $city['slug'] = Str::slug($city['name']);
+            $city['created_at'] = $now;
+            $city['updated_at'] = $now;
+        }
+        DB::table('cities')->insert($cities);
+    }
+
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
         if (DB::table('cities')->count() == 0) {
-            //Abia
-            DB::table('cities')->insert([
+            $now = now();
 
+            //Abia
+            $cities = [
                 ['name' => "Aba North",         'state_id' => 1],
                 ['name' => "Aba South",         'state_id' => 1],
                 ['name' => "Arochukwu",         'state_id' => 1],
@@ -35,13 +50,12 @@ class CitySeeder extends Seeder
                 ['name' => "Umuahia North",     'state_id' => 1],
                 ['name' => "Umuahia South",     'state_id' => 1],
                 ['name' => "Umu-Neochi",        'state_id' => 1],
+            ];
 
-
-
-            ]);
+            $this->insertCities($cities, $now);
 
             //Adamawa
-            DB::table('lgas')->insert([
+            $adamawaCities = [
 
                 ['name' =>   "Demsa",       'state_id' => 2],
                 ['name' =>   "Fufore",      'state_id' => 2],
@@ -64,13 +78,12 @@ class CitySeeder extends Seeder
                 ['name' =>   "Toungo",      'state_id' => 2],
                 ['name' =>   "Yola North",  'state_id' => 2],
                 ['name' =>   "Yola South",  'state_id' => 2]
+            ];
 
-
-
-            ]);
+            $this->insertCities($adamawaCities, $now);
 
             //Anamabra
-            DB::table('lgas')->insert([
+            $tempCities = [
 
                 ['name' => "Aguata",       'state_id' => 3],
                 ['name' => "Anambra East", 'state_id' => 3],
@@ -95,12 +108,12 @@ class CitySeeder extends Seeder
                 ['name' => "Oyi",          'state_id' => 3]
 
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
 
             //Akwa Ibom  
 
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Abak",                'state_id' => 4],
                 ['name' => "Eastern Obolo",       'state_id' => 4],
@@ -134,12 +147,12 @@ class CitySeeder extends Seeder
                 ['name' => "Urue-Offong/Oruko ",  'state_id' => 4],
                 ['name' => "Uyo",                 'state_id' => 4]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //Bauchi
 
 
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Alkaleri",     'state_id' => 5],
                 ['name' => "Bauchi",       'state_id' => 5],
@@ -161,10 +174,10 @@ class CitySeeder extends Seeder
                 ['name' => "Warji",        'state_id' => 5],
                 ['name' => "Zaki",         'state_id' => 5]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Bayelsa"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>  "Brass",            'state_id' => 6],
                 ['name' =>  "Ekeremor",         'state_id' => 6],
@@ -175,10 +188,10 @@ class CitySeeder extends Seeder
                 ['name' =>  "Southern Jaw",     'state_id' => 6],
                 ['name' =>  "Yenegoa",          'state_id' => 6]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Benue"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>  "Ado",          'state_id' => 7],
                 ['name' =>  "Agatu",        'state_id' => 7],
@@ -204,10 +217,10 @@ class CitySeeder extends Seeder
                 ['name' =>  "Ushongo",      'state_id' => 7],
                 ['name' =>  "Vandeikya",    'state_id' => 7]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Borno"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>   "Abadam",       'state_id' => 8],
                 ['name' =>   "Askira/Uba",   'state_id' => 8],
@@ -237,10 +250,10 @@ class CitySeeder extends Seeder
                 ['name' =>   "Nganzai",      'state_id' => 8],
                 ['name' =>   "Shani",        'state_id' => 8]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Cross River"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>  "Akpabuyo",                 'state_id' => 9],
                 ['name' =>  "Odukpani",                 'state_id' => 9],
@@ -261,10 +274,10 @@ class CitySeeder extends Seeder
                 ['name' =>  "Bakassi",                  'state_id' => 9],
                 ['name' =>  "Calabar Municipality",     'state_id' => 9]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Delta"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Oshimili",            'state_id' => 10],
                 ['name' => "Aniocha",             'state_id' => 10],
@@ -292,10 +305,10 @@ class CitySeeder extends Seeder
                 ['name' => "Oshimili North",      'state_id' => 10],
                 ['name' => "Patani",              'state_id' => 10]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Ebonyi
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Afikpo South",     'state_id' => 11],
                 ['name' => "Afikpo North",     'state_id' => 11],
@@ -310,10 +323,10 @@ class CitySeeder extends Seeder
                 ['name' => "Ebonyi",           'state_id' => 11],
                 ['name' => "Ivo",              'state_id' => 11]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Enugu"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>    "Enugu South,",   'state_id' => 12],
                 ['name' =>    "Igbo-Eze South", 'state_id' => 12],
@@ -332,10 +345,10 @@ class CitySeeder extends Seeder
                 ['name' =>    "Nkanu East",     'state_id' => 12],
                 ['name' =>    "Udenu.",        'state_id' => 12]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Edo"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Esan North-East",  'state_id' => 13],
                 ['name' => "Esan Central",     'state_id' => 13],
@@ -353,10 +366,10 @@ class CitySeeder extends Seeder
                 ['name' => "Etsako East",      'state_id' => 13],
                 ['name' => "Esan South-East",  'state_id' => 13]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //Ekiti
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Ado",              'state_id' => 14],
                 ['name' => "Ekiti-East",       'state_id' => 14],
@@ -375,10 +388,10 @@ class CitySeeder extends Seeder
                 ['name' => "Ise/Orun",         'state_id' => 14],
                 ['name' => "Ilejemeje.",       'state_id' => 14]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"FCT - Abuja
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>  "Abaji",            'state_id' => 15],
                 ['name' =>  "Abuja Municipal",  'state_id' => 15],
@@ -387,10 +400,10 @@ class CitySeeder extends Seeder
                 ['name' =>  "Kuje",             'state_id' => 15],
                 ['name' =>  "Kwali",           'state_id' => 15]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Gombe"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' =>       "Akko",           'state_id' => 16],
                 ['name' =>       "Balanga",        'state_id' => 16],
@@ -404,10 +417,10 @@ class CitySeeder extends Seeder
                 ['name' =>       "Nafada/Bajoga",  'state_id' => 16],
                 ['name' =>       "Yamaltu/Delta.", 'state_id' => 16]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //Imo
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Aboh-Mbaise",      'state_id' => 17],
                 ['name' => "Ahiazu-Mbaise",    'state_id' => 17],
@@ -437,10 +450,10 @@ class CitySeeder extends Seeder
                 ['name' => "Owerri North",     'state_id' => 17],
                 ['name' => "Owerri West",      'state_id' => 17]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Jigawa"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Auyo",           'state_id' => 18],
                 ['name' => "Babura",         'state_id' => 18],
@@ -469,10 +482,10 @@ class CitySeeder extends Seeder
                 ['name' => "Taura",          'state_id' => 18],
                 ['name' => "Yankwashi",      'state_id' => 18]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Kaduna"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Birni-Gwari",   'state_id' => 19],
                 ['name' => "Chikun",        'state_id' => 19],
@@ -498,10 +511,10 @@ class CitySeeder extends Seeder
                 ['name' => "Zango-Kataf",   'state_id' => 19],
                 ['name' => "Zaria",         'state_id' => 19]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Kano"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Ajingi",         'state_id' => 20],
                 ['name' => "Albasu",         'state_id' => 20],
@@ -549,10 +562,10 @@ class CitySeeder extends Seeder
                 ['name' => "Warawa",         'state_id' => 20],
                 ['name' => "Wudil",          'state_id' => 20]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Katsina"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Bakori",      'state_id' => 21],
                 ['name' => "Batagarawa",  'state_id' => 21],
@@ -589,10 +602,10 @@ class CitySeeder extends Seeder
                 ['name' => "Sandamu",     'state_id' => 21],
                 ['name' => "Zango",       'state_id' => 21]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"kebbi"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Aleiro",       'state_id' => 22],
                 ['name' => "Arewa-Dandi",  'state_id' => 22],
@@ -616,10 +629,10 @@ class CitySeeder extends Seeder
                 ['name' => "Yauri",        'state_id' => 22],
                 ['name' => "Zuru",         'state_id' => 22]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"kogi"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Adavi",                'state_id' => 23],
                 ['name' => "Ajaokuta",             'state_id' => 23],
@@ -643,10 +656,10 @@ class CitySeeder extends Seeder
                 ['name' => "Yagba East",           'state_id' => 23],
                 ['name' => "Yagba West",           'state_id' => 23]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"kwara"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Asa",          'state_id' => 24],
                 ['name' => "Baruten",      'state_id' => 24],
@@ -664,10 +677,10 @@ class CitySeeder extends Seeder
                 ['name' => "Oyun",         'state_id' => 24],
                 ['name' => "Pategi",       'state_id' => 24]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Lagos"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Agege",            'state_id' => 25],
                 ['name' => "Ajeromi-Ifelodun", 'state_id' => 25],
@@ -690,10 +703,10 @@ class CitySeeder extends Seeder
                 ['name' => "Shomolu",          'state_id' => 25],
                 ['name' => "Surulere",         'state_id' => 25]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Nasarawa"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Akwanga",            'state_id' => 26],
                 ['name' => "Awe",                'state_id' => 26],
@@ -709,10 +722,10 @@ class CitySeeder extends Seeder
                 ['name' => "Toto",               'state_id' => 26],
                 ['name' => "Wamba",              'state_id' => 26]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Niger"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Agaie",     'state_id' => 27],
                 ['name' => "Agwara",    'state_id' => 27],
@@ -740,10 +753,10 @@ class CitySeeder extends Seeder
                 ['name' => "Tafa",      'state_id' => 27],
                 ['name' => "Wushishi",  'state_id' => 27]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Ogun"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Abeokuta North",   'state_id' => 28],
                 ['name' => "Abeokuta South",   'state_id' => 28],
@@ -766,10 +779,10 @@ class CitySeeder extends Seeder
                 ['name' => "Remo North",       'state_id' => 28],
                 ['name' => "Shagamu",          'state_id' => 28]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Ondo"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Akoko North East",       'state_id' => 29],
                 ['name' => "Akoko North West",       'state_id' => 29],
@@ -791,10 +804,10 @@ class CitySeeder extends Seeder
                 ['name' => "Ose",                    'state_id' => 29],
                 ['name' => "Owo",                    'state_id' => 29]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Osun"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Aiyedade",       'state_id' => 30],
                 ['name' => "Aiyedire",       'state_id' => 30],
@@ -827,10 +840,10 @@ class CitySeeder extends Seeder
                 ['name' => "Orolu",          'state_id' => 30],
                 ['name' => "Osogbo",         'state_id' => 30]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Oyo"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Afijio",                 'state_id' => 31],
                 ['name' => "Akinyele",               'state_id' => 31],
@@ -865,10 +878,10 @@ class CitySeeder extends Seeder
                 ['name' => "Saki West",              'state_id' => 31],
                 ['name' => "Surulere",               'state_id' => 31]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"{Plataeu}"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Barikin Ladi",   'state_id' => 32],
                 ['name' => "Bassa",          'state_id' => 32],
@@ -888,10 +901,10 @@ class CitySeeder extends Seeder
                 ['name' => "Shendam",        'state_id' => 32],
                 ['name' => "Wase",           'state_id' => 32]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Rivers"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Abua/Odual",        'state_id' => 33],
                 ['name' => "Ahoada East",       'state_id' => 33],
@@ -917,10 +930,10 @@ class CitySeeder extends Seeder
                 ['name' => "Port-Harcourt",     'state_id' => 33],
                 ['name' => "Tai",               'state_id' => 33]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Sokoto"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Binji",        'state_id' => 34],
                 ['name' => "Bodinga",      'state_id' => 34],
@@ -946,10 +959,10 @@ class CitySeeder extends Seeder
                 ['name' => "Wurno",        'state_id' => 34],
                 ['name' => "Yabo",         'state_id' => 34]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Taraba"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Ardo-kola",    'state_id' => 35],
                 ['name' => "Bali",         'state_id' => 35],
@@ -968,10 +981,10 @@ class CitySeeder extends Seeder
                 ['name' => "Yorro",        'state_id' => 35],
                 ['name' => "Zing",         'state_id' => 35]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Yobe"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Bade",           'state_id' => 36],
                 ['name' => "Bursari",        'state_id' => 36],
@@ -991,10 +1004,10 @@ class CitySeeder extends Seeder
                 ['name' => "Yunusari",       'state_id' => 36],
                 ['name' => "Yusufari",       'state_id' => 36]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
 
             //"Zamfara"
-            DB::table('cities')->insert([
+            $tempCities = [
 
                 ['name' => "Anka",          'state_id' => 37],
                 ['name' => "Bakura",        'state_id' => 37],
@@ -1012,7 +1025,7 @@ class CitySeeder extends Seeder
                 ['name' => "Tsafe",         'state_id' => 37],
                 ['name' => "Zurmi",         'state_id' => 37]
 
-            ]);
+]; $this->insertCities($tempCities, $now);
         }
     }
 }

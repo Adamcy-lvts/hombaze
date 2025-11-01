@@ -362,6 +362,9 @@ class UnifiedRegistrationController extends Controller
         // Assign super-admin role with all permissions for the agency
         $this->assignAgencyOwnerRole($user, $agency);
 
+        // Create agent role for the agency with appropriate permissions
+        $this->ensureAgentRoleExists($agency);
+
         Log::info('Agency created for owner via unified registration', [
             'user_id' => $user->id,
             'agency_id' => $agency->id,
@@ -438,6 +441,54 @@ class UnifiedRegistrationController extends Controller
                 'error' => $e->getMessage(),
             ]);
             // Don't throw exception - log the error but continue registration
+        }
+    }
+
+    /**
+     * Create the 'agent' role for the new agency with appropriate permissions
+     */
+    private function ensureAgentRoleExists(Agency $agency): void
+    {
+        try {
+            // Define agent permissions
+            $agentPermissions = [
+                // Property permissions (limited)
+                'view_property', 'view_any_property', 'create_property', 'update_property',
+                // Property inquiry permissions
+                'view_property::inquiry', 'view_any_property::inquiry', 'create_property::inquiry', 'update_property::inquiry',
+                // Property viewing permissions
+                'view_property::viewing', 'view_any_property::viewing', 'create_property::viewing', 'update_property::viewing',
+                // Dashboard access
+                'page_AgencyDashboard', 'widget_AgencyStatsWidget', 'widget_PropertiesChartWidget',
+                // Basic tenant menu access
+                'view_tenant_menu'
+            ];
+
+            // Create role with agency_id for multi-tenancy
+            $agentRole = Role::firstOrCreate([
+                'name' => 'agent',
+                'guard_name' => 'web',
+                'agency_id' => $agency->id // Use agency_id for multi-tenancy
+            ]);
+
+            // Get existing permissions and assign them to role
+            $permissionModels = Permission::whereIn('name', $agentPermissions)->get();
+
+            $agentRole->givePermissionTo($permissionModels);
+
+            Log::info("Created 'agent' role for agency", [
+                'agency_id' => $agency->id,
+                'agency_name' => $agency->name,
+                'permissions_count' => count($agentPermissions),
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Failed to create agent role for agency', [
+                'agency_id' => $agency->id,
+                'agency_name' => $agency->name,
+                'error' => $e->getMessage(),
+            ]);
+            throw $e; // Re-throw since this is critical for a new agency
         }
     }
 }

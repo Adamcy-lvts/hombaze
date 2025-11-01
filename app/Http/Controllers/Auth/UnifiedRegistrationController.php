@@ -318,7 +318,7 @@ class UnifiedRegistrationController extends Controller
      */
     private function createAgencyForOwner(User $user, array $data): void
     {
-        // Create basic agency with minimal data
+        // Create basic agency with minimal data - location can be set later
         $agency = Agency::create([
             'name' => $user->name . "'s Agency",
             'slug' => Str::slug($user->name . '-agency'),
@@ -326,6 +326,9 @@ class UnifiedRegistrationController extends Controller
             'email' => $user->email,
             'phone' => $user->phone,
             'owner_id' => $user->id,
+            'state_id' => null, // Can be set later during profile completion
+            'city_id' => null, // Can be set later during profile completion
+            'area_id' => null,
             'address' => [
                 'street' => '',
                 'city_id' => null,
@@ -383,8 +386,8 @@ class UnifiedRegistrationController extends Controller
             'is_featured' => true,
             'is_active' => true,
             'accepts_new_clients' => true,
-            'state_id' => null,
-            'city_id' => null,
+            'state_id' => null, // Can be set later during profile completion
+            'city_id' => null, // Can be set later during profile completion
             'area_id' => null,
         ]);
 

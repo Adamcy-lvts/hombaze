@@ -636,18 +636,18 @@
                                 </button>
                             @endif
                             
-                            <button wire:click="toggleContactForm" class="w-full bg-white/95 backdrop-blur-xl text-gray-700 font-semibold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl border-2 border-gray-300/60 hover:bg-white hover:border-gray-400/60 transition-all duration-500 transform hover:scale-105 shadow-lg flex items-center justify-center text-sm lg:text-base">
-                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <button wire:click="sendWhatsAppMessage" class="w-full bg-white/95 backdrop-blur-xl text-gray-700 font-semibold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl border-2 border-gray-300/60 hover:bg-white hover:border-gray-400/60 transition-all duration-500 transform hover:scale-105 shadow-lg flex items-center justify-center text-sm lg:text-base">
+                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                 </svg>
-                                Send Message
+                                Send WhatsApp Message
                             </button>
 
                             <button wire:click="scheduleViewing" class="w-full bg-blue-50 text-blue-700 font-semibold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl border border-blue-200 hover:bg-blue-100 transition-all duration-300 flex items-center justify-center text-sm lg:text-base">
                                 <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
-                                Schedule Viewing
+                                Schedule Viewing via WhatsApp
                             </button>
                         </div>
 

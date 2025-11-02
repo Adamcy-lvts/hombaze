@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Property;
 use App\Services\SimpleRecommendationEngine;
 use App\Services\PropertyCommunicationService;
+use App\Services\Communication\WhatsAppService;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -156,9 +157,123 @@ class PropertyDetails extends Component
             return;
         }
 
-        // Here you would typically redirect to a viewing scheduling form
-        // or open a modal with date/time selection
-        session()->flash('message', 'Viewing scheduling feature coming soon!');
+        try {
+            $whatsappService = new WhatsAppService();
+            $contactPhone = PropertyCommunicationService::getContactPhone($this->property);
+
+            if (!$contactPhone) {
+                session()->flash('error', 'No contact number available for this property.');
+                return;
+            }
+
+            if (!$whatsappService->isAvailable()) {
+                // Fallback to WhatsApp web link
+                $whatsappUrl = $this->getScheduleViewingWhatsAppUrl();
+                if ($whatsappUrl) {
+                    $this->redirect($whatsappUrl);
+                    return;
+                }
+                session()->flash('error', 'WhatsApp service is not available at the moment.');
+                return;
+            }
+
+            $user = auth()->user();
+            $viewingDetails = [
+                'property_title' => $this->property->title,
+                'property_url' => url("/property/{$this->property->id}"),
+                'user_name' => $user->name,
+                'user_phone' => $user->phone ?? 'Not provided',
+                'user_email' => $user->email,
+                'contact_name' => PropertyCommunicationService::getContactName($this->property)
+            ];
+
+            $message = $this->formatScheduleViewingMessage($viewingDetails);
+            $result = $whatsappService->sendTextMessage($contactPhone, $message);
+
+            if ($result['success']) {
+                session()->flash('message', 'Viewing request sent via WhatsApp successfully! The property contact will get back to you soon.');
+            } else {
+                // Fallback to WhatsApp web link
+                $whatsappUrl = $this->getScheduleViewingWhatsAppUrl();
+                if ($whatsappUrl) {
+                    $this->redirect($whatsappUrl);
+                    return;
+                }
+                session()->flash('error', 'Failed to send WhatsApp message. Please try again or contact the property directly.');
+            }
+        } catch (\Exception $e) {
+            // Fallback to WhatsApp web link
+            $whatsappUrl = $this->getScheduleViewingWhatsAppUrl();
+            if ($whatsappUrl) {
+                $this->redirect($whatsappUrl);
+                return;
+            }
+            session()->flash('error', 'Unable to send viewing request. Please contact the property directly.');
+        }
+    }
+
+    public function sendWhatsAppMessage()
+    {
+        if (!auth()->check()) {
+            session()->flash('message', 'Please login to send a message.');
+            return;
+        }
+
+        try {
+            $whatsappService = new WhatsAppService();
+            $contactPhone = PropertyCommunicationService::getContactPhone($this->property);
+
+            if (!$contactPhone) {
+                session()->flash('error', 'No contact number available for this property.');
+                return;
+            }
+
+            if (!$whatsappService->isAvailable()) {
+                // Fallback to WhatsApp web link
+                $whatsappUrl = PropertyCommunicationService::getWhatsAppUrl($this->property);
+                if ($whatsappUrl) {
+                    $this->redirect($whatsappUrl);
+                    return;
+                }
+                session()->flash('error', 'WhatsApp service is not available at the moment.');
+                return;
+            }
+
+            $user = auth()->user();
+            $propertyDetails = [
+                'title' => $this->property->title,
+                'location' => $this->property->area->name . ', ' . $this->property->city->name,
+                'price' => '₦' . number_format($this->property->price),
+                'type' => $this->property->propertySubtype->name
+            ];
+
+            $result = $whatsappService->sendPropertyInquiry(
+                $contactPhone,
+                $this->property->title,
+                url("/property/{$this->property->id}"),
+                $propertyDetails
+            );
+
+            if ($result['success']) {
+                session()->flash('message', 'Message sent via WhatsApp successfully! The property contact will get back to you soon.');
+            } else {
+                // Fallback to WhatsApp web link
+                $whatsappUrl = PropertyCommunicationService::getWhatsAppUrl($this->property);
+                if ($whatsappUrl) {
+                    $this->redirect($whatsappUrl);
+                    return;
+                }
+                session()->flash('error', 'Failed to send WhatsApp message. Please try again or contact the property directly.');
+            }
+        } catch (\Exception $e) {
+            // Fallback to WhatsApp web link
+            $whatsappUrl = PropertyCommunicationService::getWhatsAppUrl($this->property);
+            if ($whatsappUrl) {
+                $this->redirect($whatsappUrl);
+                return;
+            }
+            session()->flash('error', 'Unable to send message. Please contact the property directly.');
+        }
     }
 
     public function getAgentPhoneNumber()
@@ -247,10 +362,82 @@ class PropertyDetails extends Component
         }
     }
 
+    /**
+     * Format schedule viewing message for WhatsApp
+     */
+    private function formatScheduleViewingMessage(array $details): string
+    {
+        $message = "📅 *Property Viewing Request - HomeBaze*\n\n";
+        $message .= "Hello {$details['contact_name']},\n\n";
+        $message .= "I would like to schedule a viewing for your property:\n\n";
+        $message .= "🏠 *Property:* {$details['property_title']}\n";
+        $message .= "👤 *Requester:* {$details['user_name']}\n";
+        $message .= "📞 *Contact:* {$details['user_phone']}\n";
+        $message .= "📧 *Email:* {$details['user_email']}\n\n";
+        $message .= "🔗 *Property Details:* {$details['property_url']}\n\n";
+        $message .= "Please let me know your available times for this week or next week. I'm flexible with timing and can accommodate your schedule.\n\n";
+        $message .= "Thank you for your time!\n\n";
+        $message .= "🔐 *Via HomeBaze - Nigeria's Premier Real Estate Platform*";
+
+        return $message;
+    }
+
+    /**
+     * Get WhatsApp URL for schedule viewing (fallback)
+     */
+    private function getScheduleViewingWhatsAppUrl(): ?string
+    {
+        $phone = PropertyCommunicationService::getContactPhone($this->property);
+        if (!$phone) {
+            return null;
+        }
+
+        $user = auth()->user();
+        $message = "📅 Property Viewing Request - HomeBaze\n\n";
+        $message .= "Hi! I would like to schedule a viewing for your property: {$this->property->title}\n\n";
+        $message .= "My details:\n";
+        $message .= "Name: {$user->name}\n";
+        $message .= "Phone: " . ($user->phone ?? 'Not provided') . "\n";
+        $message .= "Email: {$user->email}\n\n";
+        $message .= "Property: " . url("/property/{$this->property->id}") . "\n\n";
+        $message .= "Please let me know your available times. Thank you!\n\n";
+        $message .= "Via HomeBaze";
+
+        $formattedPhone = $this->formatPhoneNumberForWhatsApp($phone);
+        return "https://wa.me/{$formattedPhone}?text=" . urlencode($message);
+    }
+
+    /**
+     * Format phone number for WhatsApp URL
+     */
+    private function formatPhoneNumberForWhatsApp(string $phone): string
+    {
+        // Remove any non-numeric characters except +
+        $phone = preg_replace('/[^\d+]/', '', $phone);
+
+        // If phone starts with +234, remove + for wa.me URL
+        if (str_starts_with($phone, '+234')) {
+            return substr($phone, 1);
+        }
+
+        // If phone starts with 234, keep as is
+        if (str_starts_with($phone, '234')) {
+            return $phone;
+        }
+
+        // If phone starts with 0, replace with 234
+        if (str_starts_with($phone, '0')) {
+            return '234' . substr($phone, 1);
+        }
+
+        // Otherwise assume it's a Nigerian number without country code
+        return '234' . $phone;
+    }
+
     public function render()
     {
         $title = $this->property->title . ' - ' . $this->property->city->name;
-        
+
         return view('livewire.property-details')
             ->layout('layouts.livewire-property', ['title' => $title]);
     }

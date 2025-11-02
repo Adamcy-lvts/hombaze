@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class SeedCoreData extends Command
 {
@@ -11,7 +12,8 @@ class SeedCoreData extends Command
      *
      * Runs seeders necessary for core location and property type data.
      */
-    protected $signature = 'seed:core';
+    protected $signature = 'seed:core
+                            {--fresh : Clear existing data before seeding}';
 
     /**
      * The console command description.
@@ -23,6 +25,11 @@ class SeedCoreData extends Command
     public function handle(): int
     {
         $this->info('Seeding core data in correct order...');
+
+        // Clear existing data if --fresh option is used
+        if ($this->option('fresh')) {
+            $this->clearExistingData();
+        }
 
         $coreDataSeeders = [
             // Foundation data
@@ -55,6 +62,45 @@ class SeedCoreData extends Command
 
         $this->info('Core data seeding finished successfully');
         return self::SUCCESS;
+    }
+
+    /**
+     * Clear existing core data tables to prevent duplicates
+     */
+    private function clearExistingData(): void
+    {
+        $this->info('🗑️  Clearing existing core data...');
+
+        // Disable foreign key constraints
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        // Clear tables in reverse dependency order
+        $tablesToClear = [
+            'property_subtypes',
+            'plot_sizes',
+            'areas',
+            'cities',
+            'property_features',
+            'property_types',
+            'model_has_permissions',
+            'model_has_roles',
+            'role_has_permissions',
+            'permissions',
+            'roles',
+            'states',
+        ];
+
+        foreach ($tablesToClear as $table) {
+            if (DB::getSchemaBuilder()->hasTable($table)) {
+                DB::table($table)->truncate();
+                $this->line("   ✅ Cleared: {$table}");
+            }
+        }
+
+        // Re-enable foreign key constraints
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        $this->info('✨ Core data tables cleared successfully');
     }
 
 }

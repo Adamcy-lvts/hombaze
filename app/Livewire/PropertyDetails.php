@@ -180,7 +180,7 @@ class PropertyDetails extends Component
             $user = auth()->user();
             $viewingDetails = [
                 'property_title' => $this->property->title,
-                'property_url' => url("/property/{$this->property->id}"),
+                'property_url' => route('property.show', $this->property->slug),
                 'user_name' => $user->name,
                 'user_phone' => $user->phone ?? 'Not provided',
                 'user_email' => $user->email,
@@ -250,7 +250,7 @@ class PropertyDetails extends Component
             $result = $whatsappService->sendPropertyInquiry(
                 $contactPhone,
                 $this->property->title,
-                url("/property/{$this->property->id}"),
+                route('property.show', $this->property->slug),
                 $propertyDetails
             );
 
@@ -399,7 +399,7 @@ class PropertyDetails extends Component
         $message .= "Name: {$user->name}\n";
         $message .= "Phone: " . ($user->phone ?? 'Not provided') . "\n";
         $message .= "Email: {$user->email}\n\n";
-        $message .= "Property: " . url("/property/{$this->property->id}") . "\n\n";
+        $message .= "Property: " . route('property.show', $this->property->slug) . "\n\n";
         $message .= "Please let me know your available times. Thank you!\n\n";
         $message .= "Via HomeBaze";
 

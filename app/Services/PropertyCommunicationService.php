@@ -133,7 +133,7 @@ class PropertyCommunicationService
      */
     private static function getWhatsAppMessage(Property $property): string
     {
-        $propertyUrl = url("/property/{$property->id}");
+        $propertyUrl = route('property.show', $property->slug);
         $message = "🏠 *Property Inquiry - HomeBaze*\n\n";
         $message .= "Hi! I'm interested in your property: *{$property->title}*\n\n";
         $message .= "📍 *Location:* {$property->area->name}, {$property->city->name}\n";
@@ -168,7 +168,7 @@ class PropertyCommunicationService
      */
     private static function getEmailBody(Property $property): string
     {
-        $propertyUrl = url("/property/{$property->id}");
+        $propertyUrl = route('property.show', $property->slug);
         $message = "Hi,\n\nI am interested in your property listing:\n\n";
         $message .= "Property: {$property->title}\n";
         $message .= "Location: {$property->area->name}, {$property->city->name}\n";

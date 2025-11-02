@@ -192,16 +192,32 @@ class WhatsAppService
     }
 
     /**
-     * Send property inquiry message
+     * Send property inquiry message with optional image
      */
-    public function sendPropertyInquiry(string $phoneNumber, string $propertyTitle, string $propertyUrl, array $propertyDetails = []): array
+    public function sendPropertyInquiry(string $phoneNumber, string $propertyTitle, string $propertyUrl, array $propertyDetails = [], string $imageUrl = null): array
     {
         if (!$this->enabled) {
             throw new Exception('WhatsApp service is not enabled');
         }
 
-        $message = $this->formatPropertyInquiryMessage($propertyTitle, $propertyUrl, $propertyDetails);
+        // If image URL is provided, send as media message first, then text
+        if ($imageUrl) {
+            $imageResult = $this->sendImageMessage($phoneNumber, $imageUrl, $propertyTitle);
 
+            // Wait a bit before sending text message
+            usleep(500000); // 0.5 seconds
+
+            $message = $this->formatPropertyInquiryMessage($propertyTitle, $propertyUrl, $propertyDetails, true);
+            $textResult = $this->sendTextMessage($phoneNumber, $message);
+
+            return [
+                'success' => $imageResult['success'] && $textResult['success'],
+                'image_result' => $imageResult,
+                'text_result' => $textResult
+            ];
+        }
+
+        $message = $this->formatPropertyInquiryMessage($propertyTitle, $propertyUrl, $propertyDetails);
         return $this->sendTextMessage($phoneNumber, $message);
     }
 
@@ -326,12 +342,79 @@ class WhatsAppService
     }
 
     /**
+     * Send image message
+     */
+    public function sendImageMessage(string $phoneNumber, string $imageUrl, string $caption = ''): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        if (!$this->accessToken || !$this->phoneNumberId) {
+            throw new Exception('WhatsApp credentials not configured');
+        }
+
+        try {
+            $payload = [
+                'messaging_product' => 'whatsapp',
+                'to' => $this->formatPhoneNumber($phoneNumber),
+                'type' => 'image',
+                'image' => [
+                    'link' => $imageUrl
+                ]
+            ];
+
+            // Add caption if provided
+            if (!empty($caption)) {
+                $payload['image']['caption'] = $caption;
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Content-Type' => 'application/json',
+            ])->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", $payload);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                Log::info('WhatsApp image sent successfully', [
+                    'phone' => $phoneNumber,
+                    'image_url' => $imageUrl,
+                    'message_id' => $data['messages'][0]['id'] ?? null
+                ]);
+
+                return [
+                    'success' => true,
+                    'message_id' => $data['messages'][0]['id'] ?? null,
+                    'response' => $data
+                ];
+            }
+
+            throw new Exception('WhatsApp API request failed: ' . $response->body());
+
+        } catch (Exception $e) {
+            Log::error('Failed to send WhatsApp image', [
+                'phone' => $phoneNumber,
+                'image_url' => $imageUrl,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
      * Format property inquiry message
      */
-    protected function formatPropertyInquiryMessage(string $propertyTitle, string $propertyUrl, array $details): string
+    protected function formatPropertyInquiryMessage(string $propertyTitle, string $propertyUrl, array $details, bool $imageAlreadySent = false): string
     {
-        $message = "🏠 *Property Inquiry Response - HomeBaze*\n\n";
-        $message .= "Thank you for your interest in: *{$propertyTitle}*\n\n";
+        $message = "🏠 *Property Inquiry - HomeBaze*\n\n";
+        $message .= $imageAlreadySent ?
+            "Property: *{$propertyTitle}*\n\n" :
+            "Thank you for your interest in: *{$propertyTitle}*\n\n";
 
         if (!empty($details)) {
             $message .= "📋 *Property Details:*\n";
@@ -342,8 +425,8 @@ class WhatsAppService
         }
 
         $message .= "🔗 *View Full Details:* {$propertyUrl}\n\n";
-        $message .= "Our agent will contact you within 2 hours to discuss your requirements and schedule a viewing if needed.\n\n";
-        $message .= "🔐 *HomeBaze - Nigeria's Premier Real Estate Platform*";
+        $message .= "Please let me know if it's still available and if I can schedule a viewing. Thank you! 😊\n\n";
+        $message .= "🔐 *Via HomeBaze - Nigeria's Premier Real Estate Platform*";
 
         return $message;
     }

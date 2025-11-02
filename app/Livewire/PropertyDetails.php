@@ -8,6 +8,7 @@ use App\Services\PropertyCommunicationService;
 use App\Services\Communication\WhatsAppService;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class PropertyDetails extends Component
 {
@@ -251,7 +252,8 @@ class PropertyDetails extends Component
                 $contactPhone,
                 $this->property->title,
                 route('property.show', $this->property->slug),
-                $propertyDetails
+                $propertyDetails,
+                $this->property->getFeaturedImageUrl('medium')
             );
 
             if ($result['success']) {
@@ -438,7 +440,27 @@ class PropertyDetails extends Component
     {
         $title = $this->property->title . ' - ' . $this->property->city->name;
 
+        // Prepare Open Graph data for WhatsApp link previews
+        $ogData = [
+            'title' => $this->property->title,
+            'description' => $this->property->description ?
+                Str::limit(strip_tags($this->property->description), 150) :
+                "Discover this amazing {$this->property->propertySubtype->name} in {$this->property->area->name}, {$this->property->city->name}. Price: ₦" . number_format($this->property->price),
+            'image' => $this->property->getFeaturedImageUrl('medium'),
+            'url' => route('property.show', $this->property->slug),
+            'type' => 'article',
+            'site_name' => 'HomeBaze',
+            'price' => $this->property->price,
+            'currency' => 'NGN',
+            'location' => $this->property->area->name . ', ' . $this->property->city->name,
+            'property_type' => $this->property->propertySubtype->name
+        ];
+
         return view('livewire.property-details')
-            ->layout('layouts.livewire-property', ['title' => $title]);
+            ->layout('layouts.livewire-property', [
+                'title' => $title,
+                'property' => $this->property,
+                'ogData' => $ogData
+            ]);
     }
 }

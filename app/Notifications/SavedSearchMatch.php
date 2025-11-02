@@ -9,6 +9,8 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use App\Models\SavedSearch;
+use NotificationChannels\WhatsApp\WhatsAppChannel;
+use NotificationChannels\WhatsApp\WhatsAppTextMessage;
 
 class SavedSearchMatch extends Notification implements ShouldQueue
 {
@@ -37,6 +39,11 @@ class SavedSearchMatch extends Notification implements ShouldQueue
         // Add email if enabled (when email channel is properly configured)
         if (($notificationSettings['email_alerts'] ?? false) && config('mail.default')) {
             // $channels[] = 'mail'; // Uncomment when email is ready
+        }
+
+        // Add WhatsApp if enabled and user has phone number
+        if (($notificationSettings['whatsapp_alerts'] ?? false) && $notifiable->phone && config('services.whatsapp.enabled')) {
+            $channels[] = WhatsAppChannel::class;
         }
 
         // Add SMS if enabled and user has phone number (when SMS channel is configured)
@@ -138,5 +145,88 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             : "{$count} new property matches found for '{$searchName}'! Check your HomeBaze dashboard for details.";
 
         return $message;
+    }
+
+    /**
+     * WhatsApp notification
+     */
+    public function toWhatsApp($notifiable)
+    {
+        $count = $this->properties->count();
+        $searchName = $this->savedSearch->name;
+
+        $message = $this->formatWhatsAppMessage($count, $searchName);
+
+        return WhatsAppTextMessage::create()
+            ->message($message)
+            ->to($this->formatPhoneNumber($notifiable->phone));
+    }
+
+    /**
+     * Format WhatsApp message for saved search matches
+     */
+    private function formatWhatsAppMessage(int $count, string $searchName): string
+    {
+        $emoji = $count === 1 ? '🏠' : '🎯';
+        $title = $count === 1 ? 'New Property Match!' : 'New Property Matches!';
+
+        $message = "{$emoji} *{$title}*\n\n";
+        $message .= "Great news! We found {$count} " . Str::plural('property', $count) . " matching your saved search:\n";
+        $message .= "🔍 *\"{$searchName}\"*\n\n";
+
+        if ($count === 1) {
+            $property = $this->properties->first();
+            $message .= "🏠 *{$property->title}*\n";
+            $message .= "📍 {$property->area->name}, {$property->area->city->name}\n";
+            $message .= "💰 ₦" . number_format($property->price) . "\n";
+            $message .= "🏷️ " . ucfirst($property->listing_type) . "\n\n";
+            $message .= "👁️ View Details: " . route('property.show', $property->slug) . "\n\n";
+        } else {
+            // Show top 3 properties for multiple matches
+            foreach ($this->properties->take(3) as $index => $property) {
+                $message .= "*" . ($index + 1) . ". {$property->title}*\n";
+                $message .= "📍 {$property->area->name}, {$property->area->city->name}\n";
+                $message .= "💰 ₦" . number_format($property->price) . "\n\n";
+            }
+
+            if ($count > 3) {
+                $remaining = $count - 3;
+                $message .= "...and {$remaining} more " . Str::plural('property', $remaining) . "!\n\n";
+            }
+
+            $message .= "👁️ View All Matches: " . route('properties.search') . "\n\n";
+        }
+
+        $message .= "⚡ Don't let these opportunities slip away!\n";
+        $message .= "💬 Reply to this message if you need help or have questions.\n\n";
+        $message .= "🔐 *HomeBaze - Your Trusted Property Partner*";
+
+        return $message;
+    }
+
+    /**
+     * Format phone number for WhatsApp (remove leading + and country code formatting)
+     */
+    private function formatPhoneNumber(string $phone): string
+    {
+        // Remove any non-numeric characters except +
+        $phone = preg_replace('/[^\d+]/', '', $phone);
+
+        // Remove leading + if present
+        if (str_starts_with($phone, '+')) {
+            $phone = substr($phone, 1);
+        }
+
+        // If phone starts with 0, replace with 234 (Nigeria country code)
+        if (str_starts_with($phone, '0')) {
+            $phone = '234' . substr($phone, 1);
+        }
+
+        // If phone doesn't start with 234, assume it's a Nigerian number and add country code
+        if (!str_starts_with($phone, '234')) {
+            $phone = '234' . $phone;
+        }
+
+        return $phone;
     }
 }

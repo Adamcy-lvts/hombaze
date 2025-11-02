@@ -48,6 +48,10 @@ return [
         'verify_token' => env('WHATSAPP_VERIFY_TOKEN'),
         'app_id' => env('WHATSAPP_APP_ID'),
         'app_secret' => env('WHATSAPP_APP_SECRET'),
+
+        // For Laravel Notification WhatsApp package
+        'from-phone-number-id' => env('WHATSAPP_FROM_PHONE_NUMBER_ID', env('WHATSAPP_PHONE_NUMBER_ID')),
+        'token' => env('WHATSAPP_TOKEN', env('WHATSAPP_ACCESS_TOKEN')),
     ],
 
     /*

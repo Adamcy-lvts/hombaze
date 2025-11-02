@@ -2,12 +2,13 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Command;
+use Carbon\Carbon;
 use App\Models\Property;
 use App\Models\SavedSearch;
+use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 use App\Services\SavedSearchMatcher;
 use App\Notifications\SavedSearchMatch;
-use Carbon\Carbon;
 
 class ProcessSavedSearchMatches extends Command
 {
@@ -29,7 +30,7 @@ class ProcessSavedSearchMatches extends Command
 
     public function handle()
     {
-        \Log::info('🚀 SAVEDSEARCH MATCHING JOB STARTED', [
+        Log::info('🚀 SAVEDSEARCH MATCHING JOB STARTED', [
             'job_type' => $this->getJobType(),
             'options' => [
                 'property' => $this->option('property'),
@@ -53,7 +54,7 @@ class ProcessSavedSearchMatches extends Command
             $result = $this->processAllMatches();
         }
 
-        \Log::info('🏁 SAVEDSEARCH MATCHING JOB COMPLETED', [
+        Log::info('🏁 SAVEDSEARCH MATCHING JOB COMPLETED', [
             'job_type' => $this->getJobType(),
             'result' => $result === Command::SUCCESS ? 'SUCCESS' : 'FAILURE',
             'timestamp' => now()
@@ -86,7 +87,7 @@ class ProcessSavedSearchMatches extends Command
         $this->info("   Price: ₦" . number_format($property->price));
         $this->info("   Location: " . ($property->area->name ?? 'N/A') . ', ' . ($property->city->name ?? 'N/A'));
 
-        \Log::info("Processing SavedSearch matches for property", [
+        Log::info("Processing SavedSearch matches for property", [
             'property_id' => $property->id,
             'property_title' => $property->title,
             'property_status' => $property->status,
@@ -98,7 +99,7 @@ class ProcessSavedSearchMatches extends Command
 
         if ($matches->isEmpty()) {
             $this->info('❌ No matches found for this property');
-            \Log::info("No SavedSearch matches found for property", [
+            Log::info("No SavedSearch matches found for property", [
                 'property_id' => $property->id,
                 'active_searches_count' => \App\Models\SavedSearch::active()->count()
             ]);
@@ -276,7 +277,7 @@ class ProcessSavedSearchMatches extends Command
             $search->update(['last_alerted_at' => now()]);
 
             $this->info("   ✅ Notification sent successfully!");
-            \Log::info("SavedSearch Match Notification Sent", [
+            Log::info("SavedSearch Match Notification Sent", [
                 'search_id' => $search->id,
                 'search_name' => $search->name,
                 'property_id' => $property->id,
@@ -291,7 +292,7 @@ class ProcessSavedSearchMatches extends Command
 
         } catch (\Exception $e) {
             $this->error("   ❌ Failed to send notification: {$e->getMessage()}");
-            \Log::error("SavedSearch Match Notification Failed", [
+            Log::error("SavedSearch Match Notification Failed", [
                 'search_id' => $search->id,
                 'property_id' => $property->id,
                 'user_id' => $user->id,

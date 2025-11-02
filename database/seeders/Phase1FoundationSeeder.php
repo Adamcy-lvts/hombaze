@@ -30,9 +30,10 @@ class Phase1FoundationSeeder extends Seeder
         // Re-enable foreign key constraints
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         
-        $this->seedStates();
-        $this->seedPropertyTypes();
-        $this->seedPropertyFeatures();
+    $this->seedStates();
+    // Extracted property type seeding to dedicated seeder
+    $this->call(\Database\Seeders\PropertyTypeSeeder::class);
+    $this->seedPropertyFeatures();
         
         $this->command->info('Phase 1 Foundation Data seeded successfully!');
     }
@@ -105,27 +106,7 @@ class Phase1FoundationSeeder extends Seeder
         $this->command->info('States seeded: ' . count($states));
     }
 
-    /**
-     * Seed property types
-     */
-    private function seedPropertyTypes(): void
-    {
-        $this->command->info('Seeding Property Types...');
-        
-        $propertyTypes = PropertyType::getDefaultTypes();
-        
-        foreach ($propertyTypes as $index => $type) {
-            PropertyType::firstOrCreate(
-                ['slug' => \Illuminate\Support\Str::slug($type['name'])],
-                array_merge($type, [
-                    'is_active' => true,
-                    'sort_order' => ($index + 1) * 10
-                ])
-            );
-        }
-
-        $this->command->info('Property Types seeded: ' . count($propertyTypes));
-    }
+    // Property type seeding has been extracted to PropertyTypeSeeder
 
     /**
      * Seed property features

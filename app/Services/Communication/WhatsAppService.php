@@ -249,6 +249,11 @@ class WhatsAppService
         }
 
         try {
+            // In development mode, use template instead of free-form text
+            if (config('app.env') !== 'production') {
+                return $this->sendTemplateMessage($phoneNumber, 'hello_world');
+            }
+
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . $this->accessToken,
                 'Content-Type' => 'application/json',
@@ -281,6 +286,123 @@ class WhatsAppService
         } catch (Exception $e) {
             Log::error('Failed to send WhatsApp message', [
                 'phone' => $phoneNumber,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Send template message
+     */
+    public function sendTemplateMessage(string $phoneNumber, string $templateName, array $parameters = [], string $languageCode = 'en_US'): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        if (!$this->accessToken || !$this->phoneNumberId) {
+            throw new Exception('WhatsApp credentials not configured');
+        }
+
+        try {
+            $payload = [
+                'messaging_product' => 'whatsapp',
+                'to' => $this->formatPhoneNumber($phoneNumber),
+                'type' => 'template',
+                'template' => [
+                    'name' => $templateName,
+                    'language' => [
+                        'code' => $languageCode
+                    ]
+                ]
+            ];
+
+            // Add parameters if provided
+            if (!empty($parameters)) {
+                $payload['template']['components'] = [
+                    [
+                        'type' => 'body',
+                        'parameters' => $parameters
+                    ]
+                ];
+            }
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $this->accessToken,
+                'Content-Type' => 'application/json',
+            ])->post("{$this->apiUrl}/{$this->phoneNumberId}/messages", $payload);
+
+            if ($response->successful()) {
+                $data = $response->json();
+
+                Log::info('WhatsApp template message sent successfully', [
+                    'phone' => $phoneNumber,
+                    'template' => $templateName,
+                    'message_id' => $data['messages'][0]['id'] ?? null
+                ]);
+
+                return [
+                    'success' => true,
+                    'message_id' => $data['messages'][0]['id'] ?? null,
+                    'response' => $data
+                ];
+            }
+
+            throw new Exception('WhatsApp API request failed: ' . $response->body());
+
+        } catch (Exception $e) {
+            Log::error('Failed to send WhatsApp template message', [
+                'phone' => $phoneNumber,
+                'template' => $templateName,
+                'error' => $e->getMessage()
+            ]);
+
+            return [
+                'success' => false,
+                'error' => $e->getMessage()
+            ];
+        }
+    }
+
+    /**
+     * Send property match notification using custom template
+     */
+    public function sendPropertyMatchNotification(string $phoneNumber, array $propertyData): array
+    {
+        if (!$this->enabled) {
+            throw new Exception('WhatsApp service is not enabled');
+        }
+
+        try {
+            // Format the parameters for our custom template
+            $parameters = [
+                ['type' => 'text', 'text' => $propertyData['property_count']], // {{1}} - "1 property" or "2 properties"
+                ['type' => 'text', 'text' => $propertyData['search_name']],    // {{2}} - Saved search name
+                ['type' => 'text', 'text' => $propertyData['property_title']], // {{3}} - Property title
+                ['type' => 'text', 'text' => $propertyData['location']],       // {{4}} - Location
+                ['type' => 'text', 'text' => $propertyData['price']],          // {{5}} - Price (number only)
+                ['type' => 'text', 'text' => $propertyData['property_type']],  // {{6}} - Property type
+                ['type' => 'text', 'text' => $propertyData['url']]             // {{7}} - Property URL
+            ];
+
+            // Use simple template until custom template is approved
+            if (empty($parameters) || config('app.env') !== 'production') {
+                $fallbackTemplate = config('services.whatsapp.templates.fallback', 'hello_world');
+                return $this->sendTemplateMessage($phoneNumber, $fallbackTemplate);
+            }
+
+            $propertyTemplate = config('services.whatsapp.templates.property_match', 'property_match');
+            return $this->sendTemplateMessage($phoneNumber, $propertyTemplate, $parameters);
+
+        } catch (Exception $e) {
+            Log::error('Failed to send property match notification', [
+                'phone' => $phoneNumber,
+                'property_data' => $propertyData,
                 'error' => $e->getMessage()
             ]);
 

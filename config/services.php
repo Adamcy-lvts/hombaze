@@ -52,6 +52,12 @@ return [
         // For Laravel Notification WhatsApp package
         'from-phone-number-id' => env('WHATSAPP_FROM_PHONE_NUMBER_ID', env('WHATSAPP_PHONE_NUMBER_ID')),
         'token' => env('WHATSAPP_TOKEN', env('WHATSAPP_ACCESS_TOKEN')),
+
+        // Message Templates
+        'templates' => [
+            'fallback' => env('WHATSAPP_FALLBACK_TEMPLATE', 'hello_world'),
+            'property_match' => env('WHATSAPP_PROPERTY_MATCH_TEMPLATE', 'property_match'),
+        ],
     ],
 
     /*

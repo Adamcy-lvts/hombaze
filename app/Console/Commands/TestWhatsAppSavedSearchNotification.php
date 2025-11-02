@@ -66,6 +66,7 @@ class TestWhatsAppSavedSearchNotification extends Command
             [
                 'description' => 'Test search for WhatsApp notifications',
                 'search_type' => 'rent',
+                'search_criteria' => [],
                 'notification_settings' => [
                     'email_alerts' => false,
                     'whatsapp_alerts' => true,
@@ -79,12 +80,11 @@ class TestWhatsAppSavedSearchNotification extends Command
 
         // Get some sample properties
         $properties = Property::with(['area.city', 'propertySubtype'])
-            ->where('is_active', true)
             ->take(2)
             ->get();
 
         if ($properties->isEmpty()) {
-            $this->error('No active properties found for testing.');
+            $this->error('No properties found for testing.');
             return 1;
         }
 

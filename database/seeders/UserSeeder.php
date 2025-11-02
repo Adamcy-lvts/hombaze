@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             ['email' => 'admin@mail.com'],
             [
                 'name' => 'Administrator',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('password123'),
                 'user_type' => 'super_admin',
                 'is_active' => true,
                 'is_verified' => true,

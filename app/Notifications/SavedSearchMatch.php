@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use App\Models\SavedSearch;
 use NotificationChannels\WhatsApp\WhatsAppChannel;
 use NotificationChannels\WhatsApp\WhatsAppTextMessage;
+use NotificationChannels\WhatsApp\WhatsAppTemplate;
 
 class SavedSearchMatch extends Notification implements ShouldQueue
 {
@@ -152,11 +153,15 @@ class SavedSearchMatch extends Notification implements ShouldQueue
      */
     public function toWhatsApp($notifiable)
     {
-        // Always use simple template for now since notification package handles the API call
+        $count = $this->properties->count();
+        $searchName = $this->savedSearch->name;
+
+        // Create formatted WhatsApp message
+        $message = $this->formatWhatsAppMessage($count, $searchName);
+
         return WhatsAppTextMessage::create()
-            ->templateName('hello_world')
-            ->templateLanguage('en_US')
-            ->to($this->formatPhoneNumber($notifiable->phone));
+            ->to($this->formatPhoneNumber($notifiable->phone))
+            ->message($message);
     }
 
     /**

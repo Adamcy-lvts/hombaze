@@ -127,7 +127,8 @@ class PropertyResource extends Resource
                                         ])
                                             ->schema([
                                                 Forms\Components\TextInput::make('bedrooms')
-                                                    ->required()
+                                                    ->required(fn (Get $get): bool => static::isFieldRequired('bedrooms', $get))
+                                                    ->visible(fn (Get $get): bool => static::isFieldVisible('bedrooms', $get))
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->columnSpan([
@@ -136,7 +137,8 @@ class PropertyResource extends Resource
                                                         'lg' => 1,
                                                     ]),
                                                 Forms\Components\TextInput::make('bathrooms')
-                                                    ->required()
+                                                    ->required(fn (Get $get): bool => static::isFieldRequired('bathrooms', $get))
+                                                    ->visible(fn (Get $get): bool => static::isFieldVisible('bathrooms', $get))
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->columnSpan([
@@ -145,6 +147,7 @@ class PropertyResource extends Resource
                                                         'lg' => 1,
                                                     ]),
                                                 Forms\Components\TextInput::make('toilets')
+                                                    ->visible(fn (Get $get): bool => static::isFieldVisible('toilets', $get))
                                                     ->numeric()
                                                     ->minValue(0)
                                                     ->columnSpan([
@@ -153,7 +156,7 @@ class PropertyResource extends Resource
                                                         'lg' => 1,
                                                     ]),
                                                 Forms\Components\TextInput::make('parking_spaces')
-                                                    ->required()
+                                                    ->visible(fn (Get $get): bool => static::isFieldVisible('parking_spaces', $get))
                                                     ->numeric()
                                                     ->default(0)
                                                     ->minValue(0)
@@ -188,7 +191,8 @@ class PropertyResource extends Resource
                                                         'lg' => 1,
                                                     ]),
                                                 Forms\Components\Select::make('furnishing_status')
-                                                    ->required()
+                                                    ->required(fn (Get $get): bool => static::isFieldRequired('furnishing_status', $get))
+                                                    ->visible(fn (Get $get): bool => static::isFieldVisible('furnishing_status', $get))
                                                     ->options([
                                                         'furnished' => 'Fully Furnished',
                                                         'semi_furnished' => 'Semi Furnished',
@@ -730,5 +734,47 @@ class PropertyResource extends Resource
             'create' => Pages\CreateProperty::route('/create'),
             'edit' => Pages\EditProperty::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Check if field should be visible based on property type
+     */
+    public static function isFieldVisible(string $fieldName, Get $get): bool
+    {
+        $propertyTypeId = $get('property_type_id');
+
+        if (!$propertyTypeId) {
+            return true; // Show all fields if no property type selected
+        }
+
+        $propertyType = PropertyType::find($propertyTypeId);
+        if (!$propertyType) {
+            return true;
+        }
+
+        $hiddenFields = Property::getHiddenFieldsForType($propertyType->slug);
+
+        return !in_array($fieldName, $hiddenFields);
+    }
+
+    /**
+     * Check if field should be required based on property type
+     */
+    public static function isFieldRequired(string $fieldName, Get $get): bool
+    {
+        $propertyTypeId = $get('property_type_id');
+
+        if (!$propertyTypeId) {
+            return false; // Don't require fields if no property type selected
+        }
+
+        $propertyType = PropertyType::find($propertyTypeId);
+        if (!$propertyType) {
+            return false;
+        }
+
+        $requiredFields = Property::getRequiredFieldsForType($propertyType->slug);
+
+        return in_array($fieldName, $requiredFields);
     }
 }

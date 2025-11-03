@@ -69,6 +69,11 @@ class Property extends Model implements HasMedia
         'plot_size_id',
         'custom_plot_size',
         'custom_plot_unit',
+        'price_negotiable',
+        'contact_phone',
+        'contact_email',
+        'viewing_instructions',
+        'is_active',
     ];
 
     protected $casts = [
@@ -84,6 +89,8 @@ class Property extends Model implements HasMedia
         'is_featured' => 'boolean',
         'is_verified' => 'boolean',
         'is_published' => 'boolean',
+        'is_active' => 'boolean',
+        'price_negotiable' => 'boolean',
         'last_viewed_at' => 'datetime',
         'featured_until' => 'datetime',
         'verified_at' => 'datetime',
@@ -704,5 +711,116 @@ class Property extends Model implements HasMedia
     public function getCompoundTypeLabelAttribute(): string
     {
         return $this->getCompoundTypeLabel();
+    }
+
+    /**
+     * Check if property type requires bedroom/bathroom fields
+     */
+    public function requiresResidentialFields(): bool
+    {
+        if (!$this->propertyType) {
+            return false;
+        }
+
+        $residentialTypes = ['apartment', 'house'];
+        return in_array($this->propertyType->slug, $residentialTypes);
+    }
+
+    /**
+     * Check if property type is commercial/non-residential
+     */
+    public function isCommercialProperty(): bool
+    {
+        if (!$this->propertyType) {
+            return false;
+        }
+
+        $commercialTypes = [
+            'commercial', 'office-space', 'shop', 'warehouse', 'factory',
+            'event-center', 'restaurant', 'hotel', 'shopping-mall',
+            'gas-station', 'hospital-clinic', 'school'
+        ];
+
+        return in_array($this->propertyType->slug, $commercialTypes);
+    }
+
+    /**
+     * Check if property type is land
+     */
+    public function isLandProperty(): bool
+    {
+        if (!$this->propertyType) {
+            return false;
+        }
+
+        return $this->propertyType->slug === 'land';
+    }
+
+    /**
+     * Get validation rules based on property type
+     */
+    public static function getValidationRulesForType(?string $propertyTypeSlug = null): array
+    {
+        $baseRules = [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'listing_type' => 'required|in:sale,rent,lease,shortlet',
+            'price' => 'required|numeric|min:0',
+            'address' => 'required|string',
+            'property_type_id' => 'required|exists:property_types,id',
+            'property_subtype_id' => 'required|exists:property_subtypes,id',
+            'state_id' => 'required|exists:states,id',
+            'city_id' => 'required|exists:cities,id',
+            'owner_id' => 'required|exists:users,id',
+        ];
+
+        // Add residential-specific rules
+        if ($propertyTypeSlug && in_array($propertyTypeSlug, ['apartment', 'house'])) {
+            $baseRules['bedrooms'] = 'required|integer|min:0';
+            $baseRules['bathrooms'] = 'required|integer|min:0';
+            $baseRules['furnishing_status'] = 'required|in:furnished,semi_furnished,unfurnished';
+        }
+
+        return $baseRules;
+    }
+
+    /**
+     * Get required fields based on property type
+     */
+    public static function getRequiredFieldsForType(?string $propertyTypeSlug = null): array
+    {
+        $baseFields = [
+            'title', 'description', 'listing_type', 'price', 'address',
+            'property_type_id', 'property_subtype_id', 'state_id', 'city_id', 'owner_id'
+        ];
+
+        // Add residential-specific fields
+        if ($propertyTypeSlug && in_array($propertyTypeSlug, ['apartment', 'house'])) {
+            $baseFields = array_merge($baseFields, ['bedrooms', 'bathrooms', 'furnishing_status']);
+        }
+
+        return $baseFields;
+    }
+
+    /**
+     * Get hidden fields based on property type
+     */
+    public static function getHiddenFieldsForType(?string $propertyTypeSlug = null): array
+    {
+        $hiddenFields = [];
+
+        // Hide residential fields for non-residential properties
+        if ($propertyTypeSlug && !in_array($propertyTypeSlug, ['apartment', 'house'])) {
+            $hiddenFields = array_merge($hiddenFields, ['bedrooms', 'bathrooms', 'furnishing_status']);
+        }
+
+        // Hide certain fields for land properties
+        if ($propertyTypeSlug === 'land') {
+            $hiddenFields = array_merge($hiddenFields, [
+                'bedrooms', 'bathrooms', 'furnishing_status', 'parking_spaces', 'year_built'
+            ]);
+        }
+
+        return $hiddenFields;
     }
 }

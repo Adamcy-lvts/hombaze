@@ -368,23 +368,27 @@ class PropertyResource extends Resource
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
-                                            ->required(),
+                                            ->required(fn (Get $get): bool => static::isFieldRequired('bedrooms', $get))
+                                            ->visible(fn (Get $get): bool => static::isFieldVisible('bedrooms', $get)),
 
                                         Forms\Components\TextInput::make('bathrooms')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
-                                            ->required(),
+                                            ->required(fn (Get $get): bool => static::isFieldRequired('bathrooms', $get))
+                                            ->visible(fn (Get $get): bool => static::isFieldVisible('bathrooms', $get)),
 
                                         Forms\Components\TextInput::make('toilets')
                                             ->numeric()
                                             ->minValue(0)
-                                            ->maxValue(20),
+                                            ->maxValue(20)
+                                            ->visible(fn (Get $get): bool => static::isFieldVisible('toilets', $get)),
 
                                         Forms\Components\TextInput::make('parking_spaces')
                                             ->numeric()
                                             ->minValue(0)
-                                            ->default(0),
+                                            ->default(0)
+                                            ->visible(fn (Get $get): bool => static::isFieldVisible('parking_spaces', $get)),
 
                                         Forms\Components\TextInput::make('size_sqm')
                                             ->label('Size (sqm)')
@@ -397,7 +401,8 @@ class PropertyResource extends Resource
                                                 'semi_furnished' => 'Semi Furnished',
                                                 'furnished' => 'Fully Furnished',
                                             ])
-                                            ->required(),
+                                            ->required(fn (Get $get): bool => static::isFieldRequired('furnishing_status', $get))
+                                            ->visible(fn (Get $get): bool => static::isFieldVisible('furnishing_status', $get)),
                                     ])->columns(1)->collapsible(),
 
                                 // Property Management - Sidebar (Landlord Context)
@@ -589,5 +594,47 @@ class PropertyResource extends Resource
             'create' => Pages\CreateProperty::route('/create'),
             'edit' => Pages\EditProperty::route('/{record}/edit'),
         ];
+    }
+
+    /**
+     * Check if field should be visible based on property type
+     */
+    public static function isFieldVisible(string $fieldName, Get $get): bool
+    {
+        $propertyTypeId = $get('property_type_id');
+
+        if (!$propertyTypeId) {
+            return true; // Show all fields if no property type selected
+        }
+
+        $propertyType = PropertyType::find($propertyTypeId);
+        if (!$propertyType) {
+            return true;
+        }
+
+        $hiddenFields = Property::getHiddenFieldsForType($propertyType->slug);
+
+        return !in_array($fieldName, $hiddenFields);
+    }
+
+    /**
+     * Check if field should be required based on property type
+     */
+    public static function isFieldRequired(string $fieldName, Get $get): bool
+    {
+        $propertyTypeId = $get('property_type_id');
+
+        if (!$propertyTypeId) {
+            return false; // Don't require fields if no property type selected
+        }
+
+        $propertyType = PropertyType::find($propertyTypeId);
+        if (!$propertyType) {
+            return false;
+        }
+
+        $requiredFields = Property::getRequiredFieldsForType($propertyType->slug);
+
+        return in_array($fieldName, $requiredFields);
     }
 }

@@ -152,42 +152,11 @@ class SavedSearchMatch extends Notification implements ShouldQueue
      */
     public function toWhatsApp($notifiable)
     {
-        $count = $this->properties->count();
-        $searchName = $this->savedSearch->name;
-
-        // Use our custom template for property notifications
-        $whatsappService = app(\App\Services\Communication\WhatsAppService::class);
-
-        if ($count === 1) {
-            // Single property notification
-            $property = $this->properties->first();
-            $propertyData = [
-                'property_count' => '1 property',
-                'search_name' => $searchName,
-                'property_title' => $property->title,
-                'location' => $this->getPropertyLocation($property),
-                'price' => number_format($property->price),
-                'property_type' => $property->propertySubtype->name ?? 'Property',
-                'url' => route('property.show', $property->slug)
-            ];
-        } else {
-            // Multiple properties - use first property as example
-            $firstProperty = $this->properties->first();
-            $propertyData = [
-                'property_count' => $count . ' properties',
-                'search_name' => $searchName,
-                'property_title' => $firstProperty->title . ' + ' . ($count - 1) . ' more',
-                'location' => $this->getPropertyLocation($firstProperty),
-                'price' => number_format($firstProperty->price) . '+',
-                'property_type' => 'Multiple types',
-                'url' => route('properties.search') . '?saved_search=' . $this->savedSearch->id
-            ];
-        }
-
-        return $whatsappService->sendPropertyMatchNotification(
-            $this->formatPhoneNumber($notifiable->phone),
-            $propertyData
-        );
+        // Always use simple template for now since notification package handles the API call
+        return WhatsAppTextMessage::create()
+            ->templateName('hello_world')
+            ->templateLanguage('en_US')
+            ->to($this->formatPhoneNumber($notifiable->phone));
     }
 
     /**

@@ -12,6 +12,7 @@ use App\Models\SavedSearch;
 use NotificationChannels\WhatsApp\WhatsAppChannel;
 use NotificationChannels\WhatsApp\WhatsAppTextMessage;
 use NotificationChannels\WhatsApp\WhatsAppTemplate;
+use NotificationChannels\WhatsApp\Component\Text;
 
 class SavedSearchMatch extends Notification implements ShouldQueue
 {
@@ -149,19 +150,23 @@ class SavedSearchMatch extends Notification implements ShouldQueue
     }
 
     /**
-     * WhatsApp notification
+     * WhatsApp notification using approved template
      */
     public function toWhatsApp($notifiable)
     {
         $count = $this->properties->count();
-        $searchName = $this->savedSearch->name;
+        $property = $this->properties->first(); // Get first property for template
 
-        // Create formatted WhatsApp message
-        $message = $this->formatWhatsAppMessage($count, $searchName);
-
-        return WhatsAppTextMessage::create()
+        // Create template with body components for each variable
+        $template = WhatsAppTemplate::create()
             ->to($this->formatPhoneNumber($notifiable->phone))
-            ->message($message);
+            ->name('property_match')
+            ->language('en_US');
+
+        // Add body components for each template variable
+        $this->addTemplateBodyComponents($template, $count, $property);
+
+        return $template;
     }
 
     /**
@@ -222,6 +227,33 @@ class SavedSearchMatch extends Notification implements ShouldQueue
         }
 
         return !empty($location) ? implode(', ', $location) : 'Location not specified';
+    }
+
+    /**
+     * Add template body components with property data
+     */
+    private function addTemplateBodyComponents(WhatsAppTemplate $template, int $count, $property): void
+    {
+        // Map property data to template variables based on the approved template
+        // Template variables: {{1}} {{2}} {{3}} {{4}} {{5}} {{6}}
+
+        // {{1}} - Property count
+        $template->body(new Text($count > 1 ? "{$count} properties" : '1 property'));
+
+        // {{2}} - Property title
+        $template->body(new Text($property->title ?? 'Property'));
+
+        // {{3}} - Location/Area
+        $template->body(new Text($property->area->name ?? 'Area'));
+
+        // {{4}} - City
+        $template->body(new Text($property->area->city->name ?? 'City'));
+
+        // {{5}} - Price
+        $template->body(new Text('₦' . number_format($property->price ?? 0)));
+
+        // {{6}} - Listing type
+        $template->body(new Text(ucfirst($property->listing_type ?? 'sale')));
     }
 
     /**

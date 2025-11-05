@@ -32,54 +32,54 @@
         <!-- Premium Breadcrumb Navigation -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 lg:mb-8">
             <nav class="flex items-center" aria-label="Breadcrumb">
-                <div class="flex items-center space-x-3 bg-white/70 backdrop-blur-xl rounded-2xl px-5 py-4 shadow-xl border border-white/40">
+                <div class="flex items-center space-x-2 lg:space-x-3 bg-white/70 backdrop-blur-xl rounded-2xl px-3 py-3 lg:px-5 lg:py-4 shadow-xl border border-white/40 overflow-x-auto">
                     <!-- Home -->
-                    <a href="{{ route('landing') }}" class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300">
-                        <div class="p-2 rounded-xl bg-emerald-50 group-hover:bg-emerald-100 group-hover:scale-105 transition-all duration-300">
-                            <svg class="w-4 h-4 lg:w-5 lg:h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('landing') }}" class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300 flex-shrink-0">
+                        <div class="p-1.5 lg:p-2 rounded-xl bg-emerald-50 group-hover:bg-emerald-100 group-hover:scale-105 transition-all duration-300">
+                            <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                             </svg>
                         </div>
-                        <span class="ml-2 text-sm lg:text-base font-medium">Home</span>
+                        <span class="ml-1.5 lg:ml-2 text-xs lg:text-sm xl:text-base font-medium hidden sm:inline">Home</span>
                     </a>
                     
                     <!-- Separator -->
-                    <div class="flex items-center">
-                        <div class="w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
-                        <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center flex-shrink-0">
+                        <div class="w-4 lg:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
                     
                     <!-- Properties -->
-                    <a href="{{ route('properties.search') }}" class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300">
-                        <div class="p-2 rounded-xl bg-blue-50 group-hover:bg-blue-100 group-hover:scale-105 transition-all duration-300">
-                            <svg class="w-4 h-4 lg:w-5 lg:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a href="{{ route('properties.search') }}" class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300 flex-shrink-0">
+                        <div class="p-1.5 lg:p-2 rounded-xl bg-blue-50 group-hover:bg-blue-100 group-hover:scale-105 transition-all duration-300">
+                            <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <span class="ml-2 text-sm lg:text-base font-medium">Properties</span>
+                        <span class="ml-1.5 lg:ml-2 text-xs lg:text-sm xl:text-base font-medium hidden sm:inline">Properties</span>
                     </a>
                     
                     <!-- Separator -->
-                    <div class="flex items-center">
-                        <div class="w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
-                        <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex items-center flex-shrink-0">
+                        <div class="w-4 lg:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
                     
                     <!-- Location -->
-                    <div class="flex items-center">
-                        <div class="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
+                    <div class="flex items-center flex-shrink-0">
+                        <div class="p-1.5 lg:p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
                             <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                         </div>
                         <div class="ml-2">
-                            <span class="text-sm lg:text-base font-bold text-gray-900">{{ $property->city->name }}</span>
-                            <div class="text-xs text-gray-500">{{ $property->state->name }}</div>
+                            <span class="text-sm lg:text-base font-bold text-gray-900">{{ $property->city?->name ?? 'Unknown City' }}</span>
+                            <div class="text-xs text-gray-500">{{ $property->state?->name ?? 'Unknown State' }}</div>
                         </div>
                     </div>
                 </div>
@@ -104,6 +104,14 @@
                     @endif
                 </div>
             </nav>
+        </div>
+
+        <!-- Property Title Section -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 lg:mb-8">
+            <div class="text-left">
+                <h1 class="text-2xl lg:text-4xl xl:text-5xl font-bold text-gray-900 mb-2">{{ $property->title }}</h1>
+                <p class="text-sm lg:text-base text-gray-600">{{ ($property->area?->name ?? 'Unknown Area') . ', ' . ($property->city?->name ?? 'Unknown City') . ', ' . ($property->state?->name .' '. 'State' ?? 'Unknown State') }}</p>
+            </div>
         </div>
 
         <!-- Property Hero Section -->
@@ -596,7 +604,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path>
                                 </svg>
                                 <span class="font-medium text-xs lg:text-sm leading-relaxed">
-                                    {{ $property->address }}, {{ $property->area->name ?? '' }} {{ $property->city->name }}, {{ $property->city->state->name }}
+                                    {{ $property->address }}, {{ $property->area?->name ?? '' }} {{ $property->city?->name ?? 'Unknown City' }}, {{ $property->city?->state?->name ?? $property->state?->name ?? 'Unknown State' }}
                                 </span>
                             </div>
                         </div> --}}
@@ -612,8 +620,13 @@
                                 <div class="text-xs text-gray-600 uppercase tracking-wide">Toilets</div>
                             </div>
                             <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->parking_spaces ?? 0 }}</div>
-                                <div class="text-xs text-gray-600 uppercase tracking-wide">Parking</div>
+                                @if($property->parking_spaces && $property->parking_spaces > 0)
+                                    <div class="text-lg lg:text-2xl font-bold text-emerald-600">✓</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Parking Space Available</div>
+                                @else
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-400">✗</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">No Parking Space</div>
+                                @endif
                             </div>
                         </div>
 
@@ -654,13 +667,13 @@
                         <!-- Property Stats -->
                         <div class="mt-4 pt-4 border-t border-gray-200">
                             <div class="flex justify-between items-center text-xs text-gray-500 space-x-4">
-                                @if($property->view_count)
+                                @if($viewCount > 0)
                                 <div class="flex items-center space-x-1">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                                     </svg>
-                                    <span>{{ number_format($property->view_count) }}</span>
+                                    <span>{{ number_format($viewCount) }} {{ $viewCount == 1 ? 'view' : 'views' }}</span>
                                 </div>
                                 @endif
                                 <div class="flex items-center space-x-1">
@@ -791,57 +804,15 @@
                 <!-- Main Content -->
                 <div class="lg:col-span-2 space-y-6 lg:space-y-8">
 
-                    <!-- Property Overview -->
+                    <!-- Property Description -->
+                    @if($property->description)
                     <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
-                        <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Property Overview</h2>
-                        
-                        <!-- Title and Location -->
-                        <div class="mb-4 lg:mb-6">
-                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-3">{{ $property->title }}</h1>
+                        <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Property Description</h2>
+                        <div class="prose prose-gray max-w-none">
+                            <p class="text-sm lg:text-base text-gray-700 leading-relaxed">{{ $property->description }}</p>
                         </div>
-
-                        <!-- Property Description -->
-                        @if($property->description)
-                        <div class="mb-6 lg:mb-8">
-                            <div class="prose prose-gray max-w-none">
-                                <p class="text-sm lg:text-base text-gray-700 leading-relaxed">{{ $property->description }}</p>
-                            </div>
-                        </div>
-                        @endif
-
-                        <!-- Property Stats Grid -->
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4 mb-6">
-                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-base lg:text-xl font-bold text-gray-900">{{ $property->propertyType->name ?? 'N/A' }}</div>
-                                <div class="text-xs lg:text-sm text-gray-600">Property Type</div>
-                            </div>
-                            @if($property->propertySubtype)
-                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-base lg:text-xl font-bold text-gray-900">{{ $property->propertySubtype->name }}</div>
-                                <div class="text-xs lg:text-sm text-gray-600">Subtype</div>
-                            </div>
-                            @endif
-                            @if($property->compound_type)
-                            <div class="text-center p-3 lg:p-4 bg-emerald-50 rounded-lg lg:rounded-xl border border-emerald-200">
-                                <div class="text-base lg:text-xl font-bold text-emerald-900">{{ $property->getCompoundTypeLabel() }}</div>
-                                <div class="text-xs lg:text-sm text-emerald-600">Compound Type</div>
-                            </div>
-                            @endif
-                            @if($property->parking_spaces)
-                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-base lg:text-xl font-bold text-gray-900">{{ $property->parking_spaces }}</div>
-                                <div class="text-xs lg:text-sm text-gray-600">Parking</div>
-                            </div>
-                            @endif
-                            @if($property->year_built)
-                            <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-base lg:text-xl font-bold text-gray-900">{{ $property->year_built }}</div>
-                                <div class="text-xs lg:text-sm text-gray-600">Year Built</div>
-                            </div>
-                            @endif
-                        </div>
-
                     </div>
+                    @endif
 
                     <!-- Area Information - Only show if there's actual neighborhood data -->
                     @if($property->area && (
@@ -1148,7 +1119,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 lg:pb-12">
             <div class="mb-6 lg:mb-8">
                 <h2 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">Similar Properties</h2>
-                <p class="text-gray-600 text-sm lg:text-base">Other properties in {{ $property->city->name }}</p>
+                <p class="text-gray-600 text-sm lg:text-base">Other properties in {{ $property->city?->name ?? 'this area' }}</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">

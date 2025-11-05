@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Services\SimpleRecommendationEngine;
 use App\Services\PropertyCommunicationService;
 use App\Services\Communication\WhatsAppService;
+use App\Services\PropertyViewService;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -19,6 +20,7 @@ class PropertyDetails extends Component
     public $showImageGallery = false;
     public $currentImageIndex = 0;
     public $isFavorited = false;
+    public $viewCount = 0;
 
     // Contact form fields
     public $inquiryName = '';
@@ -53,6 +55,9 @@ class PropertyDetails extends Component
 
         // Track property view (simplified)
         $this->trackPropertyView();
+
+        // Set the current view count
+        $this->viewCount = $this->property->view_count ?? 0;
 
         // Check if favorited (if user is logged in)
         if (auth()->check()) {
@@ -243,9 +248,9 @@ class PropertyDetails extends Component
             $user = auth()->user();
             $propertyDetails = [
                 'title' => $this->property->title,
-                'location' => $this->property->area->name . ', ' . $this->property->city->name,
+                'location' => ($this->property->area?->name ?? 'Unknown Area') . ', ' . ($this->property->city?->name ?? 'Unknown City'),
                 'price' => '₦' . number_format($this->property->price),
-                'type' => $this->property->propertySubtype->name
+                'type' => $this->property->propertySubtype?->name ?? 'Unknown Type'
             ];
 
             $result = $whatsappService->sendPropertyInquiry(
@@ -338,23 +343,16 @@ class PropertyDetails extends Component
     private function trackPropertyView()
     {
         try {
-            // Increment view count
-            $this->property->increment('view_count');
+            $viewService = new PropertyViewService();
 
-            // Simplified interaction tracking for authenticated users
-            if (auth()->check()) {
+            // Track view with authentication and duplicate prevention
+            $wasTracked = $viewService->trackView($this->property);
+
+            // Track for recommendation engine (only for authenticated users)
+            if ($wasTracked && auth()->check()) {
                 SimpleRecommendationEngine::trackPropertyView(auth()->id(), $this->property->id);
             }
 
-            // Basic view analytics (keep for reporting)
-            DB::table('property_views')->insert([
-                'property_id' => $this->property->id,
-                'user_id' => auth()->id(),
-                'ip_address' => request()->ip(),
-                'user_agent' => request()->userAgent(),
-                'referrer' => request()->header('referer'),
-                'viewed_at' => now(),
-            ]);
         } catch (\Exception $e) {
             // Silent fail for analytics
             logger()->warning('Failed to track property view', [
@@ -438,22 +436,26 @@ class PropertyDetails extends Component
 
     public function render()
     {
-        $title = $this->property->title . ' - ' . $this->property->city->name;
+        $title = $this->property->title . ' - ' . ($this->property->city?->name ?? 'Unknown City');
 
         // Prepare Open Graph data for WhatsApp link previews
+        $propertyTypeName = $this->property->propertySubtype?->name ?? 'property';
+        $areaName = $this->property->area?->name ?? 'Unknown Area';
+        $cityName = $this->property->city?->name ?? 'Unknown City';
+
         $ogData = [
             'title' => $this->property->title,
             'description' => $this->property->description ?
                 Str::limit(strip_tags($this->property->description), 150) :
-                "Discover this amazing {$this->property->propertySubtype->name} in {$this->property->area->name}, {$this->property->city->name}. Price: ₦" . number_format($this->property->price),
+                "Discover this amazing {$propertyTypeName} in {$areaName}, {$cityName}. Price: ₦" . number_format($this->property->price),
             'image' => $this->property->getFeaturedImageUrl('medium'),
             'url' => route('property.show', $this->property->slug),
             'type' => 'article',
             'site_name' => 'HomeBaze',
             'price' => $this->property->price,
             'currency' => 'NGN',
-            'location' => $this->property->area->name . ', ' . $this->property->city->name,
-            'property_type' => $this->property->propertySubtype->name
+            'location' => ($this->property->area?->name ?? 'Unknown Area') . ', ' . ($this->property->city?->name ?? 'Unknown City'),
+            'property_type' => $this->property->propertySubtype?->name ?? 'Unknown Type'
         ];
 
         return view('livewire.property-details')

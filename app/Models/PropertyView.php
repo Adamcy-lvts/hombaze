@@ -15,8 +15,11 @@ class PropertyView extends Model
         'property_id',
         'user_id',
         'ip_address',
+        'ip_address_hash',
         'user_agent',
+        'user_agent_hash',
         'session_id',
+        'fingerprint',
         'referrer',
         'device_type',
         'browser',
@@ -111,58 +114,97 @@ class PropertyView extends Model
     // Static Methods
 
     /**
-     * Record a property view
+     * Create a unique fingerprint for view tracking
+     */
+    public static function createFingerprint(int $propertyId, string $ipAddress, string $userAgent): string
+    {
+        return hash('sha256', $ipAddress . substr($userAgent, 0, 100) . $propertyId);
+    }
+
+    /**
+     * Hash IP address for privacy compliance
+     */
+    public static function hashIpAddress(string $ipAddress): string
+    {
+        return hash('sha256', $ipAddress . config('app.key'));
+    }
+
+    /**
+     * Check if a view already exists within the last 24 hours
+     */
+    public static function hasRecentView(string $fingerprint): bool
+    {
+        return self::where('fingerprint', $fingerprint)
+                  ->where('viewed_at', '>=', now()->subHours(24))
+                  ->exists();
+    }
+
+    /**
+     * Record a property view with duplicate prevention
      */
     public static function recordView(
-        Property $property, 
-        ?User $user = null, 
-        string $ipAddress = null, 
-        string $userAgent = null,
-        string $sessionId = null,
-        string $referrer = null
-    ): self {
-        return self::create([
-            'property_id' => $property->id,
-            'user_id' => $user?->id,
-            'ip_address' => $ipAddress ?: request()->ip(),
-            'user_agent' => $userAgent ?: request()->userAgent(),
-            'session_id' => $sessionId ?: session()->getId(),
-            'referrer' => $referrer ?: request()->header('referer'),
-            'device_type' => self::detectDeviceType($userAgent ?: request()->userAgent()),
-            'browser' => self::detectBrowser($userAgent ?: request()->userAgent()),
-            'platform' => self::detectPlatform($userAgent ?: request()->userAgent()),
-            'viewed_at' => now(),
-        ]);
+        int $propertyId,
+        ?int $userId = null,
+        ?string $ipAddress = null,
+        ?string $userAgent = null,
+        ?string $sessionId = null
+    ): ?self {
+        $ipAddress = $ipAddress ?: request()->ip();
+        $userAgent = $userAgent ?: request()->userAgent();
+        $sessionId = $sessionId ?: session()->getId();
+
+        // Create unique fingerprint
+        $fingerprint = self::createFingerprint($propertyId, $ipAddress, $userAgent);
+
+        // Check for recent views
+        if (self::hasRecentView($fingerprint)) {
+            return null; // Duplicate view, not recorded
+        }
+
+        try {
+            return self::create([
+                'property_id' => $propertyId,
+                'user_id' => $userId,
+                'ip_address' => $ipAddress, // Store original for existing functionality
+                'ip_address_hash' => self::hashIpAddress($ipAddress),
+                'user_agent' => $userAgent, // Store original for existing functionality
+                'user_agent_hash' => hash('sha256', $userAgent),
+                'session_id' => $sessionId,
+                'fingerprint' => $fingerprint,
+                'referrer' => request()->header('referer'),
+                'device_type' => self::detectDeviceType($userAgent),
+                'browser' => self::detectBrowser($userAgent),
+                'platform' => self::detectPlatform($userAgent),
+                'viewed_at' => now(),
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            // Handle race condition where duplicate fingerprint is inserted
+            if ($e->getCode() == 23000) { // Integrity constraint violation
+                return null;
+            }
+            throw $e;
+        }
     }
 
     /**
      * Get analytics for a property
      */
-    public static function getPropertyAnalytics(Property $property, int $days = 30): array
+    public static function getPropertyAnalytics(int $propertyId, int $days = 30): array
     {
         $startDate = now()->subDays($days);
-        
-        $views = self::where('property_id', $property->id)
+
+        $views = self::where('property_id', $propertyId)
                     ->where('viewed_at', '>=', $startDate)
                     ->get();
 
         return [
             'total_views' => $views->count(),
-            'unique_views' => $views->unique(function ($view) {
-                return $view->user_id ?: $view->ip_address;
-            })->count(),
-            'authenticated_views' => $views->where('user_id', '!=', null)->count(),
-            'anonymous_views' => $views->where('user_id', null)->count(),
+            'unique_views' => $views->unique('fingerprint')->count(),
+            'authenticated_views' => $views->whereNotNull('user_id')->count(),
+            'anonymous_views' => $views->whereNull('user_id')->count(),
             'daily_views' => $views->groupBy(function ($view) {
                 return $view->viewed_at->toDateString();
             })->map->count(),
-            'top_referrers' => $views->whereNotNull('referrer')
-                                  ->groupBy('referrer')
-                                  ->map->count()
-                                  ->sortDesc()
-                                  ->take(5),
-            'device_breakdown' => $views->groupBy('device_type')->map->count(),
-            'browser_breakdown' => $views->groupBy('browser')->map->count(),
         ];
     }
 
@@ -220,22 +262,5 @@ class PropertyView extends Model
         if (preg_match('/android/i', $userAgent)) return 'Android';
         if (preg_match('/iphone|ipad|ipod/i', $userAgent)) return 'iOS';
         return 'Unknown';
-    }
-
-    /**
-     * Check if this is a unique view
-     */
-    public function isUniqueView(): bool
-    {
-        $query = self::where('property_id', $this->property_id)
-                    ->where('viewed_at', '>=', now()->subHours(24));
-
-        if ($this->user_id) {
-            $query->where('user_id', $this->user_id);
-        } else {
-            $query->where('ip_address', $this->ip_address);
-        }
-
-        return $query->where('id', '!=', $this->id)->doesntExist();
     }
 }

@@ -7,6 +7,7 @@ use App\Models\PropertyType;
 use App\Models\SavedProperty;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\State;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Cache;
@@ -27,6 +28,11 @@ class LandingPage extends Component
     public $selectedBedrooms = '';
     public $selectedFurnishing = '';
     public $selectedLocation = '';
+
+    // New location filters
+    public $selectedState = '';
+    public $selectedCity = '';
+    public $selectedArea = '';
 
     // UI state
     public $isDarkMode = false;
@@ -98,7 +104,57 @@ class LandingPage extends Component
             case 'location':
                 $this->selectedLocation = $this->selectedLocation === $value ? '' : $value;
                 break;
+            case 'state':
+                $oldState = $this->selectedState;
+                $this->selectedState = $this->selectedState === $value ? '' : $value;
+                // Reset dependent filters when state actually changes
+                if ($oldState !== $this->selectedState) {
+                    $this->selectedCity = '';
+                    $this->selectedArea = '';
+                }
+                break;
+            case 'city':
+                $oldCity = $this->selectedCity;
+                $this->selectedCity = $this->selectedCity === $value ? '' : $value;
+                // Reset area when city actually changes
+                if ($oldCity !== $this->selectedCity) {
+                    $this->selectedArea = '';
+                }
+                break;
+            case 'area':
+                $this->selectedArea = $this->selectedArea === $value ? '' : $value;
+                break;
         }
+        $this->resetPage();
+    }
+
+    public function updatedSelectedState()
+    {
+        $this->selectedCity = '';
+        $this->selectedArea = '';
+        $this->resetPage();
+        // Force refresh of filter options to get cities for the selected state
+        $this->dispatch('$refresh');
+    }
+
+    public function updatedSelectedCity()
+    {
+        $this->selectedArea = '';
+        $this->resetPage();
+        // Force refresh of filter options to get areas for the selected city
+        $this->dispatch('$refresh');
+    }
+
+    public function updateCities()
+    {
+        $this->selectedCity = '';
+        $this->selectedArea = '';
+        $this->resetPage();
+    }
+
+    public function updateAreas()
+    {
+        $this->selectedArea = '';
         $this->resetPage();
     }
 
@@ -110,6 +166,9 @@ class LandingPage extends Component
         $this->selectedBedrooms = '';
         $this->selectedFurnishing = '';
         $this->selectedLocation = '';
+        $this->selectedState = '';
+        $this->selectedCity = '';
+        $this->selectedArea = '';
         $this->searchQuery = '';
         $this->resetPage();
     }
@@ -159,7 +218,8 @@ class LandingPage extends Component
         }
 
         if ($this->selectedPriceRange) {
-            $this->applyPriceRange($query, $this->selectedPriceRange);
+            // Direct numeric range filter for slider input
+            $query->where('price', '<=', $this->selectedPriceRange);
         }
 
         if ($this->selectedBedrooms) {
@@ -178,6 +238,19 @@ class LandingPage extends Component
             $query->whereHas('city', function ($q) {
                 $q->where('name', $this->selectedLocation);
             });
+        }
+
+        // New location filters
+        if ($this->selectedState) {
+            $query->where('state_id', $this->selectedState);
+        }
+
+        if ($this->selectedCity) {
+            $query->where('city_id', $this->selectedCity);
+        }
+
+        if ($this->selectedArea) {
+            $query->where('area_id', $this->selectedArea);
         }
 
         // Default sorting: featured first, then newest
@@ -314,7 +387,7 @@ class LandingPage extends Component
      */
     public function getFilterOptionsProperty()
     {
-        return Cache::remember('landing_filter_options', 3600, function () {
+        $options = Cache::remember('landing_filter_options_base', 3600, function () {
             return [
                 'property_types' => PropertyType::select('id', 'name')->get(),
                 'listing_types' => [
@@ -340,6 +413,7 @@ class LandingPage extends Component
                     ['value' => 'semi_furnished', 'label' => 'Semi-Furnished'],
                     ['value' => 'unfurnished', 'label' => 'Unfurnished'],
                 ],
+                'states' => State::select('id', 'name')->orderBy('name')->get(),
                 'popular_locations' => City::whereHas('properties', function ($query) {
                     $query->published()->available();
                 })->withCount('properties')
@@ -351,6 +425,24 @@ class LandingPage extends Component
                 })->toArray()
             ];
         });
+
+        // Add dynamic cities based on selected state
+        if ($this->selectedState) {
+            $options['cities'] = City::where('state_id', $this->selectedState)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+        }
+
+        // Add dynamic areas based on selected city
+        if ($this->selectedCity) {
+            $options['areas'] = Area::where('city_id', $this->selectedCity)
+                ->select('id', 'name')
+                ->orderBy('name')
+                ->get();
+        }
+
+        return $options;
     }
 
     /**

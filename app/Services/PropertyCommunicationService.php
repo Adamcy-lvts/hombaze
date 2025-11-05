@@ -136,9 +136,13 @@ class PropertyCommunicationService
         $propertyUrl = route('property.show', $property->slug);
         $message = "🏠 *Property Inquiry - HomeBaze*\n\n";
         $message .= "Hi! I'm interested in your property: *{$property->title}*\n\n";
-        $message .= "📍 *Location:* {$property->area->name}, {$property->city->name}\n";
+        $areaName = $property->area?->name ?? 'Unknown Area';
+        $cityName = $property->city?->name ?? 'Unknown City';
+        $propertyTypeName = $property->propertySubtype?->name ?? 'Unknown Type';
+
+        $message .= "📍 *Location:* {$areaName}, {$cityName}\n";
         $message .= "💰 *Price:* ₦" . number_format($property->price) . "\n";
-        $message .= "🏠 *Type:* {$property->propertySubtype->name}\n\n";
+        $message .= "🏠 *Type:* {$propertyTypeName}\n\n";
         $message .= "🔗 *Property Details:* {$propertyUrl}\n\n";
         $message .= "Please let me know if it's still available and if I can schedule a viewing. Thank you! 😊\n\n";
         $message .= "🔐 *Via HomeBaze - Nigeria's Premier Real Estate Platform*";
@@ -151,7 +155,8 @@ class PropertyCommunicationService
      */
     private static function getSMSMessage(Property $property): string
     {
-        $message = "Hi! I'm interested in your property: {$property->title} in {$property->area->name}. Price: ₦" . number_format($property->price) . ". Is it still available?";
+        $areaName = $property->area?->name ?? 'Unknown Area';
+        $message = "Hi! I'm interested in your property: {$property->title} in {$areaName}. Price: ₦" . number_format($property->price) . ". Is it still available?";
         return urlencode($message);
     }
 
@@ -169,11 +174,15 @@ class PropertyCommunicationService
     private static function getEmailBody(Property $property): string
     {
         $propertyUrl = route('property.show', $property->slug);
+        $areaName = $property->area?->name ?? 'Unknown Area';
+        $cityName = $property->city?->name ?? 'Unknown City';
+        $propertyTypeName = $property->propertySubtype?->name ?? 'Unknown Type';
+
         $message = "Hi,\n\nI am interested in your property listing:\n\n";
         $message .= "Property: {$property->title}\n";
-        $message .= "Location: {$property->area->name}, {$property->city->name}\n";
+        $message .= "Location: {$areaName}, {$cityName}\n";
         $message .= "Price: ₦" . number_format($property->price) . "\n";
-        $message .= "Property Type: {$property->propertySubtype->name}\n\n";
+        $message .= "Property Type: {$propertyTypeName}\n\n";
         $message .= "Property Link: {$propertyUrl}\n\n";
         $message .= "Could you please provide more details and let me know if I can schedule a viewing?\n\n";
         $message .= "Thank you for your time.\n\nBest regards";
@@ -187,17 +196,17 @@ class PropertyCommunicationService
     public static function getContactName(Property $property): string
     {
         // First try to get agent name if property has an agent
-        if ($property->agent && $property->agent->name) {
+        if ($property->agent?->name) {
             return $property->agent->name;
         }
 
         // If no agent, try to get agency name
-        if ($property->agency && $property->agency->name) {
+        if ($property->agency?->name) {
             return $property->agency->name;
         }
 
         // If no agency name, try property owner name
-        if ($property->owner && $property->owner->name) {
+        if ($property->owner?->name) {
             return $property->owner->name;
         }
 

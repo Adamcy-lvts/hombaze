@@ -37,6 +37,12 @@ class PropertySearch extends Component
     public $showFilters = false;
     public $isDarkMode = false;
 
+    // Selected filter states (for UI)
+    public $selectedBedrooms = [];
+    public $selectedListingTypes = [];
+    public $selectedPropertyType = '';
+    public $selectedPriceRanges = [];
+
     // Saved properties tracking
     public $savedPropertyIds = [];
     
@@ -58,16 +64,86 @@ class PropertySearch extends Component
 
         // Load saved property IDs for authenticated users
         $this->loadSavedProperties();
+
+        // Initialize selected states from active filters
+        $this->initializeSelectedStates();
+    }
+
+    /**
+     * Initialize selected state arrays from active filters
+     */
+    private function initializeSelectedStates()
+    {
+        $this->selectedBedrooms = [];
+        $this->selectedListingTypes = [];
+        $this->selectedPropertyType = '';
+        $this->selectedPriceRanges = [];
+
+        foreach ($this->activeFilters as $filter) {
+            switch ($filter['type']) {
+                case 'bedrooms':
+                    $this->selectedBedrooms[] = $filter['value'];
+                    break;
+                case 'listing_type':
+                    $this->selectedListingTypes[] = $filter['value'];
+                    break;
+                case 'property_type':
+                    $this->selectedPropertyType = $filter['value'];
+                    break;
+                case 'price_range':
+                    $this->selectedPriceRanges[] = $filter['value'];
+                    break;
+            }
+        }
     }
 
     public function updatedSearchQuery()
     {
         $this->resetPage();
-        
+
         if (strlen($this->searchQuery) >= 2) {
             $this->updateSuggestions();
         } else {
             $this->hideSuggestions();
+        }
+    }
+
+    public function updatedSelectedListingTypes()
+    {
+        // Remove existing listing type filters
+        $this->activeFilters = array_filter($this->activeFilters, function($filter) {
+            return $filter['type'] !== 'listing_type';
+        });
+
+        // Add new listing type filters
+        foreach ($this->selectedListingTypes as $type) {
+            $this->addFilter('listing_type', $type);
+        }
+    }
+
+    public function updatedSelectedPropertyType()
+    {
+        // Remove existing property type filters
+        $this->activeFilters = array_filter($this->activeFilters, function($filter) {
+            return $filter['type'] !== 'property_type';
+        });
+
+        // Add new property type filter if selected
+        if ($this->selectedPropertyType) {
+            $this->addFilter('property_type', $this->selectedPropertyType);
+        }
+    }
+
+    public function updatedSelectedPriceRanges()
+    {
+        // Remove existing price range filters
+        $this->activeFilters = array_filter($this->activeFilters, function($filter) {
+            return $filter['type'] !== 'price_range';
+        });
+
+        // Add new price range filters
+        foreach ($this->selectedPriceRanges as $range) {
+            $this->addFilter('price_range', $range);
         }
     }
 
@@ -127,6 +203,10 @@ class PropertySearch extends Component
     {
         $this->activeFilters = [];
         $this->searchQuery = '';
+        $this->selectedBedrooms = [];
+        $this->selectedListingTypes = [];
+        $this->selectedPropertyType = '';
+        $this->selectedPriceRanges = [];
         $this->resetPage();
     }
 
@@ -138,6 +218,63 @@ class PropertySearch extends Component
     public function toggleTheme()
     {
         $this->isDarkMode = !$this->isDarkMode;
+    }
+
+    /**
+     * Toggle a filter (add if not present, remove if present)
+     */
+    public function toggleFilter($type, $value)
+    {
+        $filterKey = $type . ':' . $value;
+
+        if (isset($this->activeFilters[$filterKey])) {
+            // Remove the filter if it exists
+            $this->removeFilter($filterKey);
+
+            // Update selected state arrays
+            switch ($type) {
+                case 'bedrooms':
+                    $this->selectedBedrooms = array_diff($this->selectedBedrooms, [$value]);
+                    break;
+                case 'listing_type':
+                    $this->selectedListingTypes = array_diff($this->selectedListingTypes, [$value]);
+                    break;
+                case 'property_type':
+                    $this->selectedPropertyType = '';
+                    break;
+                case 'price_range':
+                    $this->selectedPriceRanges = array_diff($this->selectedPriceRanges, [$value]);
+                    break;
+            }
+        } else {
+            // Add the filter if it doesn't exist
+            $this->addFilter($type, $value);
+
+            // Update selected state arrays
+            switch ($type) {
+                case 'bedrooms':
+                    $this->selectedBedrooms[] = $value;
+                    break;
+                case 'listing_type':
+                    $this->selectedListingTypes[] = $value;
+                    break;
+                case 'property_type':
+                    $this->selectedPropertyType = $value;
+                    break;
+                case 'price_range':
+                    $this->selectedPriceRanges[] = $value;
+                    break;
+            }
+        }
+    }
+
+    /**
+     * Check if a specific filter is active
+     */
+    public function isFilterActive($type, $value)
+    {
+        $filterKey = $type . ':' . $value;
+        return isset($this->activeFilters[$filterKey]);
     }
 
     public function getPropertiesProperty()

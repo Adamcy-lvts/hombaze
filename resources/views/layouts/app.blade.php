@@ -17,7 +17,8 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
-            <livewire:layout.navigation />
+            {{-- <livewire:layout.navigation /> --}}
+             @include('components.landing.navigation')
 
             <!-- Page Heading -->
             @if (isset($header))

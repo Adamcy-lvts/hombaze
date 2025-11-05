@@ -38,42 +38,60 @@ new class extends Component
     }
 }; ?>
 
-<section>
-    <header>
-        <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Update Password') }}
-        </h2>
+<div>
+    <div class="flex items-center mb-4 sm:mb-6">
+        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg mr-3">
+            <x-heroicon-o-lock-closed class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        </div>
+        <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Security</h2>
+    </div>
 
-        <p class="mt-1 text-sm text-gray-600">
-            {{ __('Ensure your account is using a long, random password to stay secure.') }}
-        </p>
-    </header>
+    <!-- Loading Overlay -->
+    <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+            <div class="animate-spin h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
+            <span class="text-gray-700">Updating...</span>
+        </div>
+    </div>
 
-    <form wire:submit="updatePassword" class="mt-6 space-y-6">
+    <form wire:submit="updatePassword" class="space-y-4">
         <div>
-            <x-input-label for="update_password_current_password" :value="__('Current Password')" />
-            <x-text-input wire:model="current_password" id="update_password_current_password" name="current_password" type="password" class="mt-1 block w-full" autocomplete="current-password" />
-            <x-input-error :messages="$errors->get('current_password')" class="mt-2" />
+            <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+            <input type="password" wire:model="current_password" placeholder="Enter your current password"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+            @error('current_password') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
         </div>
 
-        <div>
-            <x-input-label for="update_password_password" :value="__('New Password')" />
-            <x-text-input wire:model="password" id="update_password_password" name="password" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                <input type="password" wire:model="password" placeholder="Enter new password"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                @error('password') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+                <input type="password" wire:model="password_confirmation" placeholder="Confirm new password"
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                @error('password_confirmation') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
         </div>
 
-        <div>
-            <x-input-label for="update_password_password_confirmation" :value="__('Confirm Password')" />
-            <x-text-input wire:model="password_confirmation" id="update_password_password_confirmation" name="password_confirmation" type="password" class="mt-1 block w-full" autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        <div class="flex justify-end">
+            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                Save
+            </button>
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
-
-            <x-action-message class="me-3" on="password-updated">
-                {{ __('Saved.') }}
-            </x-action-message>
-        </div>
+        <x-action-message class="me-3" on="password-updated">
+            <div class="fixed top-4 right-4 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg"
+                 x-data="{ show: true }"
+                 x-show="show"
+                 x-transition
+                 x-init="setTimeout(() => show = false, 5000)">
+                Password updated successfully!
+            </div>
+        </x-action-message>
     </form>
-</section>
+</div>

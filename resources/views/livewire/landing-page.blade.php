@@ -1,10 +1,10 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Minimal Airbnb-Style Hero Section -->
     <section class="relative bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <!-- Minimal Header - Just Search -->
-            <div class="text-center mb-8">
-                <h1 class="text-2xl lg:text-3xl font-semibold text-gray-900 mb-6">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl lg:text-3xl font-semibold text-gray-900 mb-4">
                     Find your dream home
                 </h1>
             </div>
@@ -65,14 +65,14 @@
             </div>
 
             <!-- Enhanced Quick Filters -->
-            <div class="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-2xl p-4 mb-6 shadow-sm">
+            <div class="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-3 mb-4 shadow-sm">
                 <!-- Listing Type Filters (Always Visible) -->
-                <div class="mb-4">
+                <div class="mb-3">
                     <div class="flex flex-wrap items-center justify-center gap-2">
                         @foreach($filterOptions['listing_types'] as $listingType)
                             <button
                                 wire:click="updateFilter('listing_type', '{{ $listingType['value'] }}')"
-                                class="px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 {{ $selectedListingType === $listingType['value'] ? 'bg-emerald-600 text-white shadow-md' : 'bg-white border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300' }}"
+                                class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 {{ $selectedListingType === $listingType['value'] ? 'bg-emerald-600 text-white shadow-md' : 'bg-white border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300' }}"
                             >
                                 {{ $listingType['label'] }}
                             </button>
@@ -81,7 +81,7 @@
                         <!-- More Filters Toggle Button (Mobile Only) -->
                         <button
                             wire:click="toggleMobileFilters"
-                            class="md:hidden px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200"
+                            class="md:hidden px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200"
                         >
                             <span class="flex items-center space-x-1">
                                 <svg class="w-4 h-4 transform transition-transform duration-200 {{ $showMobileFilters ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,17 +94,29 @@
                 </div>
 
                 <!-- Additional Filters Row (Collapsible on Mobile) -->
-                <div class="md:grid md:grid-cols-5 md:gap-3 {{ $showMobileFilters ? 'block space-y-3' : 'hidden md:block' }}">
+                <div class="md:grid md:grid-cols-6 md:gap-2 {{ $showMobileFilters ? 'block space-y-2' : 'hidden md:block' }}">
                     <!-- Bedrooms Filter -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-2">Bedrooms</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Bedrooms</label>
                         <div class="flex flex-wrap gap-1">
                             @foreach($filterOptions['bedrooms'] as $bedroom)
                                 <button
                                     wire:click="updateFilter('bedrooms', '{{ $bedroom['value'] }}')"
-                                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 {{ $selectedBedrooms === $bedroom['value'] ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100' }}"
+                                    class="px-2 py-1 rounded text-xs font-medium transition-all duration-200 {{ $selectedBedrooms === $bedroom['value'] ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100' }}"
                                 >
-                                    {{ $bedroom['label'] }}
+                                    @if($bedroom['value'] === '1')
+                                        1BR
+                                    @elseif($bedroom['value'] === '2')
+                                        2BR
+                                    @elseif($bedroom['value'] === '3')
+                                        3BR
+                                    @elseif($bedroom['value'] === '4')
+                                        4BR
+                                    @elseif($bedroom['value'] === '5+')
+                                        5+BR
+                                    @else
+                                        {{ $bedroom['label'] }}
+                                    @endif
                                 </button>
                             @endforeach
                         </div>
@@ -112,10 +124,10 @@
 
                     <!-- Property Type Filter -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-2">Property Type</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Property Type</label>
                         <select
                             wire:model.live="selectedPropertyType"
-                            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                         >
                             <option value="">All Types</option>
                             @foreach($filterOptions['property_types'] as $type)
@@ -124,60 +136,95 @@
                         </select>
                     </div>
 
-                    <!-- Furnishing Filter -->
+                    <!-- State Filter -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-2">Furnishing</label>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">State</label>
                         <select
-                            wire:model.live="selectedFurnishing"
-                            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            wire:model.live="selectedState"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                         >
-                            <option value="">Any</option>
-                            @foreach($filterOptions['furnishing_types'] as $furnishing)
-                                <option value="{{ $furnishing['value'] }}">{{ $furnishing['label'] }}</option>
+                            <option value="">All States</option>
+                            @foreach($filterOptions['states'] as $state)
+                                <option value="{{ $state->id }}">{{ $state->name }}</option>
                             @endforeach
+                        </select>
+                    </div>
+
+                    <!-- City Filter -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">City</label>
+                        <select
+                            wire:model.live="selectedCity"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                            {{ !$selectedState ? 'disabled' : '' }}
+                        >
+                            <option value="">{{ $selectedState ? 'All Cities' : 'Select State' }}</option>
+                            @if($selectedState && isset($filterOptions['cities']))
+                                @foreach($filterOptions['cities'] as $city)
+                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+
+                    <!-- Area Filter -->
+                    <div>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Area</label>
+                        <select
+                            wire:model.live="selectedArea"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                            {{ !$selectedCity ? 'disabled' : '' }}
+                        >
+                            <option value="">{{ $selectedCity ? 'All Areas' : 'Select City' }}</option>
+                            @if($selectedCity && isset($filterOptions['areas']))
+                                @foreach($filterOptions['areas'] as $area)
+                                    <option value="{{ $area->id }}">{{ $area->name }}</option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
 
                     <!-- Price Range Filter -->
                     <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-2">Price Range</label>
-                        <select
-                            wire:model.live="selectedPriceRange"
-                            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                        >
-                            <option value="">Any Price</option>
-                            @foreach($filterOptions['price_ranges'] as $priceRange)
-                                <option value="{{ $priceRange['value'] }}">{{ $priceRange['label'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Location Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-2">Popular Cities</label>
-                        <select
-                            wire:model.live="selectedLocation"
-                            class="w-full px-3 py-1.5 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                        >
-                            <option value="">All Cities</option>
-                            @foreach($filterOptions['popular_locations'] as $location)
-                                <option value="{{ $location['value'] }}">{{ $location['label'] }}</option>
-                            @endforeach
-                        </select>
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Price Range</label>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span>₦0</span>
+                                <span>₦50M</span>
+                                <span>₦100M+</span>
+                            </div>
+                            <input
+                                type="range"
+                                wire:model.live="selectedPriceRange"
+                                min="0"
+                                max="100000000"
+                                step="5000000"
+                                class="w-full h-1 bg-gray-200 rounded appearance-none cursor-pointer slider"
+                            >
+                            <div class="text-center">
+                                <span class="text-xs font-medium text-gray-700">
+                                    @if($selectedPriceRange && $selectedPriceRange > 0)
+                                        Up to ₦{{ number_format($selectedPriceRange / 1000000) }}M
+                                    @else
+                                        Any Price
+                                    @endif
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Clear Filters Button -->
-                @if($selectedListingType || $selectedPropertyType || $selectedBedrooms || $selectedFurnishing || $selectedPriceRange || $selectedLocation || $searchQuery)
-                    <div class="mt-4 text-center {{ $showMobileFilters ? 'block' : 'hidden md:block' }}">
+                @if($selectedListingType || $selectedPropertyType || $selectedBedrooms || $selectedState || $selectedCity || $selectedArea || $selectedPriceRange || $searchQuery)
+                    <div class="mt-3 pt-2 border-t border-gray-200 text-center {{ $showMobileFilters ? 'block' : 'hidden md:block' }}">
                         <button
                             wire:click="clearAllFilters"
-                            class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-50 hover:bg-red-50 border border-gray-200 hover:border-red-200 rounded-lg transition-all duration-200"
                         >
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
-                            Clear All Filters
+                            Clear All
                         </button>
                     </div>
                 @endif
@@ -396,6 +443,40 @@
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Custom Range Slider Styling */
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #059669;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.slider::-moz-range-thumb {
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: #059669;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.slider::-webkit-slider-track {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+}
+
+.slider::-moz-range-track {
+    height: 6px;
+    background: #e5e7eb;
+    border-radius: 3px;
+    border: none;
 }
 </style>
 @endpush

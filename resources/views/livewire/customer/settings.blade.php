@@ -93,13 +93,6 @@
                         />
                     </div>
 
-                    <x-forms.textarea
-                        label="Bio"
-                        wire:model="bio"
-                        rows="3"
-                        placeholder="Tell us a bit about yourself..."
-                        :error="$errors->first('bio')"
-                    />
 
                     <div class="flex justify-end">
                         <x-forms.button type="submit" variant="primary">
@@ -204,7 +197,7 @@
                     </div>
 
                     <!-- Budget Range -->
-                    <div>
+                    {{-- <div>
                         <h3 class="text-lg font-medium text-gray-900 mb-3">Budget Range</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <x-forms.currency
@@ -221,7 +214,7 @@
                                 :error="$errors->first('max_budget')"
                             />
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="flex justify-end">
                         <x-forms.button type="submit" variant="info">

@@ -683,31 +683,94 @@ if (empty($mediaLibraryImages)) {
                             </div>
                         </div> --}}
 
-                        <!-- Quick Stats -->
+                        <!-- Quick Stats - Dynamic based on property type -->
                         <div class="grid grid-cols-3 gap-3 lg:gap-4 mb-4 lg:mb-6">
-                            <div
-                                class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->bedrooms }}
+                            @if (in_array($property->propertyType->slug, ['apartment', 'house']))
+                                {{-- Residential properties: Show bedrooms, toilets, parking --}}
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->bedrooms }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Bedrooms</div>
                                 </div>
-                                <div class="text-xs text-gray-600 uppercase tracking-wide">Bedrooms</div>
-                            </div>
-                            <div
-                                class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->toilets }}
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->toilets }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Toilets</div>
                                 </div>
-                                <div class="text-xs text-gray-600 uppercase tracking-wide">Toilets</div>
-                            </div>
-                            <div
-                                class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                @if ($property->parking_spaces && $property->parking_spaces > 0)
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    @if ($property->parking_spaces && $property->parking_spaces > 0)
+                                        <div class="text-lg lg:text-2xl font-bold text-emerald-600">✓</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">Parking Available</div>
+                                    @else
+                                        <div class="text-lg lg:text-2xl font-bold text-gray-400">✗</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">No Parking</div>
+                                    @endif
+                                </div>
+                            @elseif ($property->propertyType->slug === 'land')
+                                {{-- Land properties: Show size, zoning, access --}}
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Size (sqm)</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->propertySubtype->name ?? 'Land' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Type</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
                                     <div class="text-lg lg:text-2xl font-bold text-emerald-600">✓</div>
-                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Parking Space Available
-                                    </div>
-                                @else
-                                    <div class="text-lg lg:text-2xl font-bold text-gray-400">✗</div>
-                                    <div class="text-xs text-gray-600 uppercase tracking-wide">No Parking Space</div>
-                                @endif
-                            </div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Ready for Development</div>
+                                </div>
+                            @elseif (in_array($property->propertyType->slug, ['commercial', 'office-space']))
+                                {{-- Commercial/Office: Show floor area, parking, facilities --}}
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Floor Area (sqm)</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->toilets ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Restrooms</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    @if ($property->parking_spaces && $property->parking_spaces > 0)
+                                        <div class="text-lg lg:text-2xl font-bold text-emerald-600">{{ $property->parking_spaces }}</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">Parking Spaces</div>
+                                    @else
+                                        <div class="text-lg lg:text-2xl font-bold text-gray-400">✗</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">No Parking</div>
+                                    @endif
+                                </div>
+                            @elseif ($property->propertyType->slug === 'warehouse')
+                                {{-- Warehouse: Show storage capacity, loading bays, height --}}
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Storage Area (sqm)</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->floors ?? '1' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Floors</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    @if ($property->parking_spaces && $property->parking_spaces > 0)
+                                        <div class="text-lg lg:text-2xl font-bold text-emerald-600">✓</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">Loading Bay Available</div>
+                                    @else
+                                        <div class="text-lg lg:text-2xl font-bold text-gray-400">✗</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">No Loading Bay</div>
+                                    @endif
+                                </div>
+                            @else
+                                {{-- Default fallback for other property types --}}
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->propertyType->name }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Property Type</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->propertySubtype->name ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Subtype</div>
+                                </div>
+                                <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->listing_type }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Listing Type</div>
+                                </div>
+                            @endif
                         </div>
 
 

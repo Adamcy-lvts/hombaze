@@ -30,6 +30,16 @@ class SavedSearchMatch extends Notification implements ShouldQueue
     }
 
     /**
+     * Get the unique identifier for the notification.
+     * This prevents duplicate notifications for the same search and properties.
+     */
+    public function uniqueId(): string
+    {
+        $propertyIds = $this->properties->pluck('id')->sort()->implode('-');
+        return "saved_search_match_{$this->savedSearch->id}_{$propertyIds}";
+    }
+
+    /**
      * Get the notification's delivery channels.
      */
     public function via(object $notifiable): array
@@ -85,9 +95,15 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             $mail->line("...and {$remaining} more " . str('property')->plural($remaining));
         }
 
+        // Main action button - direct to property if single match, otherwise to search page
+        $actionText = $propertyCount === 1 ? 'View Property Details' : 'View All Matches';
+        $actionUrl = $propertyCount === 1
+            ? route('property.show', $this->properties->first()->slug)
+            : route('properties.search');
+
         return $mail
             ->line('Don\'t let these opportunities slip away!')
-            ->action('View All Searches', route('customer.searches.index'))
+            ->action($actionText, $actionUrl)
             ->line('You can update your search criteria anytime in your dashboard.')
             ->salutation('Best regards, The HomeBaze Team');
     }

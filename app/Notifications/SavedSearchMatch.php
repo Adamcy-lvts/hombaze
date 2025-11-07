@@ -273,7 +273,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
     private function addTemplateBodyComponents(WhatsAppTemplate $template, int $count, $property): void
     {
         // Map property data to template variables based on the approved template
-        // Template variables: {{1}} {{2}} {{3}} {{4}} {{5}} {{6}}
+        // Template variables: {{1}} {{2}} {{3}} {{4}} {{5}} {{6}} {{7}}
 
         // {{1}} - Property count
         $template->body(new Text($count > 1 ? "{$count} properties" : '1 property'));
@@ -290,8 +290,11 @@ class SavedSearchMatch extends Notification implements ShouldQueue
         // {{5}} - Price
         $template->body(new Text('₦' . number_format($property->price ?? 0)));
 
-        // {{6}} - Listing type
+        // {{6}} - Property type
         $template->body(new Text(ucfirst($property->listing_type ?? 'sale')));
+
+        // {{7}} - Call to action text
+        $template->body(new Text('Take a look'));
     }
 
     /**

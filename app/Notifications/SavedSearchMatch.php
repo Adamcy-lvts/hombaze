@@ -87,7 +87,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
 
         return $mail
             ->line('Don\'t let these opportunities slip away!')
-            ->action('View All Matches', route('customer.searches.show', $this->savedSearch->id))
+            ->action('View All Searches', route('customer.searches.index'))
             ->line('You can update your search criteria anytime in your dashboard.')
             ->salutation('Best regards, The HomeBaze Team');
     }
@@ -154,19 +154,57 @@ class SavedSearchMatch extends Notification implements ShouldQueue
      */
     public function toWhatsApp($notifiable)
     {
-        $count = $this->properties->count();
-        $property = $this->properties->first(); // Get first property for template
+        try {
+            $count = $this->properties->count();
+            $property = $this->properties->first(); // Get first property for template
+            $phoneNumber = $this->formatPhoneNumber($notifiable->phone);
 
-        // Create template with body components for each variable
-        $template = WhatsAppTemplate::create()
-            ->to($this->formatPhoneNumber($notifiable->phone))
-            ->name('property_match')
-            ->language('en_US');
+            // Log notification attempt
+            \Log::info('Attempting to send WhatsApp saved search notification', [
+                'user_id' => $notifiable->id,
+                'user_name' => $notifiable->name,
+                'phone_number' => $phoneNumber,
+                'search_id' => $this->savedSearch->id,
+                'search_name' => $this->savedSearch->name,
+                'property_count' => $count,
+                'property_title' => $property->title ?? 'N/A',
+                'template_name' => 'property_match',
+                'language' => 'en'
+            ]);
 
-        // Add body components for each template variable
-        $this->addTemplateBodyComponents($template, $count, $property);
+            // Create template with body components for each variable
+            $template = WhatsAppTemplate::create()
+                ->to($phoneNumber)
+                ->name('property_match')
+                ->language('en');
 
-        return $template;
+            // Add body components for each template variable
+            $this->addTemplateBodyComponents($template, $count, $property);
+
+            // Log successful template creation
+            \Log::info('WhatsApp template created successfully for saved search match', [
+                'user_id' => $notifiable->id,
+                'phone_number' => $phoneNumber,
+                'search_id' => $this->savedSearch->id
+            ]);
+
+            return $template;
+        } catch (\Exception $e) {
+            // Log the error but don't fail the entire notification
+            \Log::warning('WhatsApp template failed for saved search match', [
+                'error' => $e->getMessage(),
+                'error_code' => $e->getCode(),
+                'search_id' => $this->savedSearch->id,
+                'search_name' => $this->savedSearch->name,
+                'user_id' => $notifiable->id,
+                'user_name' => $notifiable->name,
+                'phone_number' => $notifiable->phone ?? 'N/A',
+                'template_name' => 'property_match'
+            ]);
+
+            // Return null to skip this channel
+            return null;
+        }
     }
 
     /**

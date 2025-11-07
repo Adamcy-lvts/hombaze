@@ -74,7 +74,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
         foreach ($this->properties->take(5) as $property) { // Limit to 5 in email
             $mail->line("🏠 **{$property->title}**")
                  ->line("📍 {$property->area->name}, {$property->area->city->name}")
-                 ->line("💰 ₦" . number_format($property->price))
+                 ->line("💰 {$property->price_with_period}")
                  ->line("🏷️ " . ucfirst($property->listing_type))
                  ->action('View Property', route('property.show', $property->slug))
                  ->line('---');
@@ -223,7 +223,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             $property = $this->properties->first();
             $message .= "🏠 *{$property->title}*\n";
             $message .= "📍 {$property->area->name}, {$property->area->city->name}\n";
-            $message .= "💰 ₦" . number_format($property->price) . "\n";
+            $message .= "💰 {$property->price_with_period}\n";
             $message .= "🏷️ " . ucfirst($property->listing_type) . "\n\n";
             $message .= "👁️ View Details: " . route('property.show', $property->slug) . "\n\n";
         } else {
@@ -231,7 +231,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             foreach ($this->properties->take(3) as $index => $property) {
                 $message .= "*" . ($index + 1) . ". {$property->title}*\n";
                 $message .= "📍 {$property->area->name}, {$property->area->city->name}\n";
-                $message .= "💰 ₦" . number_format($property->price) . "\n\n";
+                $message .= "💰 {$property->price_with_period}\n\n";
             }
 
             if ($count > 3) {
@@ -287,14 +287,14 @@ class SavedSearchMatch extends Notification implements ShouldQueue
         // {{4}} - City
         $template->body(new Text($property->area->city->name ?? 'City'));
 
-        // {{5}} - Price
-        $template->body(new Text('₦' . number_format($property->price ?? 0)));
+        // {{5}} - Price with period (no double ₦ symbol)
+        $template->body(new Text($property->price_with_period ?? number_format($property->price ?? 0)));
 
         // {{6}} - Property type
         $template->body(new Text(ucfirst($property->listing_type ?? 'sale')));
 
-        // {{7}} - Call to action text
-        $template->body(new Text('Take a look'));
+        // {{7}} - Property URL for direct access (clickable link in WhatsApp)
+        $template->body(new Text(route('property.show', $property->slug ?? '')));
     }
 
     /**

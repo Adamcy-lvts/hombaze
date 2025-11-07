@@ -40,7 +40,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
 
         // Add email if enabled (when email channel is properly configured)
         if (($notificationSettings['email_alerts'] ?? false) && config('mail.default')) {
-            // $channels[] = 'mail'; // Uncomment when email is ready
+            $channels[] = 'mail'; // Email notifications enabled with Resend
         }
 
         // Add WhatsApp if enabled and user has phone number

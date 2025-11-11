@@ -28,7 +28,9 @@ class AgentProfile extends Component
     public function mount(User $agent): void
     {
         // Ensure the user is actually an agent
-        if (!$agent->isAgent() || !$agent->agentProfile) {
+        $isAgentType = in_array($agent->user_type, ['agent', 'agency_owner'], true);
+
+        if (!$isAgentType || !$agent->agentProfile) {
             abort(404, 'Agent not found');
         }
 

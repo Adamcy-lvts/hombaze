@@ -827,7 +827,7 @@ class PropertyResource extends Resource
                         ->action(fn ($record) => $record->update(['status' => PropertyStatus::OFF_MARKET->value]))
                         ->requiresConfirmation()
                         ->visible(fn ($record) => $record->status !== PropertyStatus::OFF_MARKET->value),
-                ])->label('Status')->icon('heroicon-o-flag')->color('info'),
+                ])->label('Status')->icon('heroicon-o-ellipsis-vertical')->color('info'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -42,7 +42,11 @@ class PropertyDetails extends Component
                 $query->where('is_active', true)->orderBy('name');
             },
             'agency',
-            'agent',
+            'agent' => function($query) {
+                $query->withCount(['properties' => function($q) {
+                    $q->where('is_published', true);
+                }]);
+            },
             'owner',
             'media'
         ]);

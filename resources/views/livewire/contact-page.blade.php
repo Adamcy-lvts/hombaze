@@ -1,46 +1,36 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
-    <!-- Premium Background Elements -->
-    <div class="absolute inset-0">
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-500/10 to-indigo-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-emerald-500/8 to-teal-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-        <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500/5 to-pink-500/3 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
-    </div>
-
-    <!-- Premium Header Section -->
-    <div class="relative z-10 bg-white/80 backdrop-blur-2xl border-b border-gray-200/60 shadow-2xl">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-            <!-- Premium Breadcrumb -->
-            <nav class="flex items-center space-x-3 text-sm text-gray-600 mb-8">
-                <a href="{{ route('landing') }}" wire:navigate class="group flex items-center space-x-2 hover:text-emerald-600 transition-colors duration-300">
-                    <div class="w-8 h-8 bg-gray-100/60 backdrop-blur-sm rounded-lg flex items-center justify-center group-hover:bg-emerald-100/60 transition-all duration-300">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                        </svg>
-                    </div>
-                    <span class="font-medium">Home</span>
+<div class="min-h-screen bg-gray-50">
+    <!-- Clean Header Section -->
+    <section class="relative bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
+            <!-- Breadcrumb -->
+            <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-6">
+                <a href="{{ route('landing') }}" wire:navigate class="hover:text-emerald-600 transition-colors duration-200">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
                 </a>
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
-                <span class="font-bold text-gray-900">Contact Us</span>
+                <span class="font-medium text-gray-900">Contact Us</span>
             </nav>
 
-            <!-- Hero Section -->
+            <!-- Clean Header -->
             <div class="text-center">
-                <h1 class="text-4xl lg:text-6xl font-black text-gray-900 mb-6">
-                    Get In
-                    <span class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent">Touch</span>
+                <h1 class="text-2xl lg:text-3xl font-semibold text-gray-900 mb-2">
+                    Get In <span class="text-emerald-600">Touch</span>
                 </h1>
-                <p class="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto">
-                    Have questions about properties, need assistance, or want to partner with us? 
+                <p class="text-gray-600 max-w-2xl mx-auto">
+                    Have questions about properties, need assistance, or want to partner with us?
                     We're here to help you every step of the way.
                 </p>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Main Content -->
-    <div class="relative z-[1] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <section class="py-6 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         <!-- Success Message -->
         @if($success)
@@ -73,16 +63,16 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
             
             <!-- Contact Form -->
-            <div class="bg-white/80 backdrop-blur-2xl border border-gray-200/40 rounded-3xl p-8 shadow-2xl">
-                <div class="flex items-center mb-8">
-                    <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mr-4">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div class="flex items-center mb-6">
+                    <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-3">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                         </svg>
                     </div>
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900">Send us a Message</h2>
-                        <p class="text-gray-600">We'd love to hear from you</p>
+                        <h2 class="text-xl font-semibold text-gray-900">Send us a Message</h2>
+                        <p class="text-gray-600 text-sm">We'd love to hear from you</p>
                     </div>
                 </div>
 
@@ -185,18 +175,18 @@
             </div>
 
             <!-- Contact Information -->
-            <div class="space-y-8">
+            <div class="space-y-6">
                 <!-- Quick Contact -->
-                <div class="bg-white/80 backdrop-blur-2xl border border-gray-200/40 rounded-3xl p-8 shadow-2xl">
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mr-4">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-xl font-bold text-gray-900">Quick Contact</h3>
-                            <p class="text-gray-600">Get in touch directly</p>
+                            <h3 class="text-xl font-semibold text-gray-900">Quick Contact</h3>
+                            <p class="text-gray-600 text-sm">Get in touch directly</p>
                         </div>
                     </div>
 
@@ -341,5 +331,5 @@
                 @endforeach
             </div>
         </div>
-    </div>
+    </section>
 </div>

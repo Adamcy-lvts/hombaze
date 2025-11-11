@@ -93,7 +93,7 @@ class CreateProperty extends CreateRecord
 
         // Create the property
         $property = static::getModel()::create($data);
-        
+
         Log::info('Property created successfully', [
             'property_id' => $property->id,
             'property_title' => $property->title,

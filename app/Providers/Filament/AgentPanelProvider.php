@@ -35,6 +35,7 @@ class AgentPanelProvider extends PanelProvider
             ])
             ->defaultThemeMode(ThemeMode::Light)
             ->viteTheme('resources/css/filament/agent/theme.css')
+            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
             ->discoverResources(in: app_path('Filament/Agent/Resources'), for: 'App\\Filament\\Agent\\Resources')
             ->discoverPages(in: app_path('Filament/Agent/Pages'), for: 'App\\Filament\\Agent\\Pages')
             ->pages([

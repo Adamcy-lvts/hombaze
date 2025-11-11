@@ -2,6 +2,7 @@
 
 namespace App\Filament\Agency\Resources;
 
+use App\Rules\OptimalImageResolution;
 use Filament\Forms;
 use App\Models\Area;
 use App\Models\City;
@@ -18,6 +19,7 @@ use App\Models\PropertyType;
 use App\Models\PropertySubtype;
 use App\Models\PropertyFeature;
 use App\Models\PlotSize;
+use App\Enums\PropertyStatus;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
@@ -188,6 +190,7 @@ class PropertyResource extends Resource
                                 // Additional Property Details
                                 Forms\Components\Section::make('Additional Details')
                                     ->description('Optional additional property information')
+                                    ->collapsed()
                                     ->schema([
                                         Forms\Components\Grid::make([
                                             'default' => 1,
@@ -254,18 +257,22 @@ class PropertyResource extends Resource
                                             ->collection('featured')
                                             ->image()
                                             ->imageEditor()
-                                            ->imageEditorAspectRatios([
-                                                '16:9',
-                                                '4:3', 
-                                                '1:1',
-                                            ])
+                                            ->imageEditorAspectRatios(['3:2', '16:9', '4:3'])
                                             ->customProperties([
                                                 'caption' => null,
                                                 'alt_text' => null,
                                             ])
-                                            // ->responsiveImages() // Test basic conversions first
-                                            ->maxSize(5120) // 5MB
-                                            ->helperText('Upload a high-quality featured image for this property')
+                                            ->acceptedFileTypes(getOptimalImageResolution()['formats'])
+                                            ->maxSize(getOptimalImageResolution()['max_file_size'])
+                                            ->required()
+                                            ->rules([
+                                                new OptimalImageResolution(false)
+                                            ])
+                                            ->validationMessages([
+                                                'required' => '🖼️ A featured image is required to showcase your property effectively.',
+                                            ])
+                                            ->live(onBlur: true)
+                                            ->helperText('Upload a high-quality featured image for this property. ' . getOptimalImageResolution()['quality_note'])
                                             ->columnSpanFull(),
                                             
                                         Forms\Components\SpatieMediaLibraryFileUpload::make('gallery_images')
@@ -274,37 +281,64 @@ class PropertyResource extends Resource
                                             ->image()
                                             ->multiple()
                                             ->reorderable()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->acceptedFileTypes(getOptimalImageResolution()['formats'])
                                             ->customProperties([
                                                 'caption' => null,
                                                 'alt_text' => null,
                                             ])
-                                            ->maxFiles(20)
-                                            ->maxSize(5120) // 5MB per file
-                                            ->helperText('Upload up to 20 high-quality images showcasing the property.')
+                                            ->maxFiles(function (Get $get) {
+                                                $propertyTypeId = $get('property_type_id');
+                                                if ($propertyTypeId) {
+                                                    $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                                                    if ($propertyType) {
+                                                        return getPropertyImageConfig($propertyType->slug)['gallery_max_files'];
+                                                    }
+                                                }
+                                                return getPropertyImageConfig()['gallery_max_files'];
+                                            })
+                                            ->maxSize(getOptimalImageResolution()['max_file_size'])
+                                            ->minFiles(1)
+                                            ->rules([
+                                                new OptimalImageResolution(true)
+                                            ])
+                                            ->validationMessages([
+                                                'min' => '📸 Please add at least one gallery image to showcase your property.',
+                                            ])
+                                            ->live(onBlur: true)
+                                            ->helperText(function (Get $get) {
+                                                $propertyTypeId = $get('property_type_id');
+                                                $resolutionInfo = getOptimalImageResolution();
+                                                if ($propertyTypeId) {
+                                                    $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                                                    if ($propertyType) {
+                                                        return getPropertyImageConfig($propertyType->slug)['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
+                                                    }
+                                                }
+                                                return getPropertyImageConfig()['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
+                                            })
                                             ->columnSpanFull(),
                                             
-                                        Forms\Components\SpatieMediaLibraryFileUpload::make('floor_plans')
-                                            ->label('Floor Plans')
-                                            ->collection('floor_plans')
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->maxFiles(10)
-                                            ->maxSize(10240) // 10MB per file
-                                            ->helperText('Upload floor plan images or PDF documents')
-                                            ->columnSpanFull(),
-                                            
-                                        Forms\Components\SpatieMediaLibraryFileUpload::make('documents')
-                                            ->label('Property Documents')
-                                            ->collection('documents')
-                                            ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->maxFiles(10)
-                                            ->maxSize(20480) // 20MB per file
-                                            ->helperText('Upload property documents, certificates, contracts, etc.')
-                                            ->columnSpanFull(),
+                                        // Forms\Components\SpatieMediaLibraryFileUpload::make('floor_plans')
+                                        //     ->label('Floor Plans')
+                                        //     ->collection('floor_plans')
+                                        //     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
+                                        //     ->multiple()
+                                        //     ->reorderable()
+                                        //     ->maxFiles(10)
+                                        //     ->maxSize(10240) // 10MB per file
+                                        //     ->helperText('Upload floor plan images or PDF documents')
+                                        //     ->columnSpanFull(),
+                                        //
+                                        // Forms\Components\SpatieMediaLibraryFileUpload::make('documents')
+                                        //     ->label('Property Documents')
+                                        //     ->collection('documents')
+                                        //     ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
+                                        //     ->multiple()
+                                        //     ->reorderable()
+                                        //     ->maxFiles(10)
+                                        //     ->maxSize(20480) // 20MB per file
+                                        //     ->helperText('Upload property documents, certificates, contracts, etc.')
+                                        //     ->columnSpanFull(),
                                             
                                         // Forms\Components\SpatieMediaLibraryFileUpload::make('videos')
                                         //     ->label('Property Videos')
@@ -644,7 +678,7 @@ class PropertyResource extends Resource
                     
                 Tables\Columns\TextColumn::make('price')
                     ->label('Price')
-                    ->money('NGN')
+                    ->formatStateUsing(fn($state) => formatNaira($state ?? 0))
                     ->sortable()
                     ->weight('bold')
                     ->color('success'),
@@ -661,14 +695,11 @@ class PropertyResource extends Resource
                     
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'available' => 'success',
-                        'sold' => 'danger',
-                        'rented' => 'warning',
-                        'under_offer' => 'info',
-                        'withdrawn' => 'gray',
-                        default => 'gray',
-                    }),
+                    ->formatStateUsing(fn (string $state): string => PropertyStatus::from($state)->getLabel())
+                    ->color(fn (string $state): string => PropertyStatus::from($state)->getColor())
+                    ->icon(fn (string $state): string => PropertyStatus::from($state)->getIcon())
+                    ->sortable()
+                    ->searchable(),
                     
                 Tables\Columns\TextColumn::make('agent.user.name')
                     ->label('Agent')
@@ -767,24 +798,36 @@ class PropertyResource extends Resource
                     })
                     ->requiresConfirmation(),
                     
-                Tables\Actions\Action::make('change_status')
-                    ->label('Change Status')
-                    ->icon('heroicon-o-arrow-path')
-                    ->color('info')
-                    ->form([
-                        Forms\Components\Select::make('status')
-                            ->options([
-                                'available' => 'Available',
-                                'sold' => 'Sold',
-                                'rented' => 'Rented',
-                                'under_offer' => 'Under Offer',
-                                'withdrawn' => 'Withdrawn',
-                            ])
-                            ->required(),
-                    ])
-                    ->action(function ($record, array $data) {
-                        $record->update(['status' => $data['status']]);
-                    }),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('change_status')
+                        ->label('Change Status')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('info')
+                        ->form([
+                            Forms\Components\Select::make('status')
+                                ->options(PropertyStatus::class)
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $record->update(['status' => $data['status']]);
+                        }),
+
+                    Tables\Actions\Action::make('mark_sold')
+                        ->label('Mark Sold')
+                        ->icon('heroicon-o-banknotes')
+                        ->color('danger')
+                        ->action(fn ($record) => $record->update(['status' => PropertyStatus::SOLD->value]))
+                        ->requiresConfirmation()
+                        ->visible(fn ($record) => $record->status !== PropertyStatus::SOLD->value),
+
+                    Tables\Actions\Action::make('mark_off_market')
+                        ->label('Take Off Market')
+                        ->icon('heroicon-o-eye-slash')
+                        ->color('gray')
+                        ->action(fn ($record) => $record->update(['status' => PropertyStatus::OFF_MARKET->value]))
+                        ->requiresConfirmation()
+                        ->visible(fn ($record) => $record->status !== PropertyStatus::OFF_MARKET->value),
+                ])->label('Status')->icon('heroicon-o-flag')->color('info'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

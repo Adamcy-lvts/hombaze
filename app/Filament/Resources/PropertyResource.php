@@ -6,11 +6,13 @@ use App\Filament\Resources\PropertyResource\Pages;
 use App\Filament\Resources\PropertyResource\RelationManagers;
 use App\Models\Property;
 use App\Models\PropertyFeature;
+use App\Rules\OptimalImageResolution;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Enums\PropertyStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -335,9 +337,81 @@ class PropertyResource extends Resource
                                             ->columnSpanFull(),
                                     ])->collapsible(),
 
+                                // Property Media
+                                Forms\Components\Section::make('Property Media')
+                                    ->description('Upload images, videos, documents and floor plans')
+                                    ->schema([
+                                        Forms\Components\SpatieMediaLibraryFileUpload::make('featured_image')
+                                            ->label('Featured Image')
+                                            ->collection('featured')
+                                            ->image()
+                                            ->imageEditor()
+                                            ->imageEditorAspectRatios(['3:2', '16:9', '4:3'])
+                                            ->customProperties([
+                                                'caption' => null,
+                                                'alt_text' => null,
+                                            ])
+                                            ->acceptedFileTypes(getOptimalImageResolution()['formats'])
+                                            ->maxSize(getOptimalImageResolution()['max_file_size'])
+                                            ->required()
+                                            ->rules([
+                                                new OptimalImageResolution(false)
+                                            ])
+                                            ->validationMessages([
+                                                'required' => '🖼️ A featured image is required to showcase your property effectively.',
+                                            ])
+                                            ->live(onBlur: true)
+                                            ->helperText('Upload a high-quality featured image for this property. ' . getOptimalImageResolution()['quality_note'])
+                                            ->columnSpanFull(),
+
+                                        Forms\Components\SpatieMediaLibraryFileUpload::make('gallery_images')
+                                            ->label('Gallery Images')
+                                            ->collection('gallery')
+                                            ->image()
+                                            ->multiple()
+                                            ->reorderable()
+                                            ->acceptedFileTypes(getOptimalImageResolution()['formats'])
+                                            ->customProperties([
+                                                'caption' => null,
+                                                'alt_text' => null,
+                                            ])
+                                            ->maxFiles(function (Forms\Get $get) {
+                                                $propertyTypeId = $get('property_type_id');
+                                                if ($propertyTypeId) {
+                                                    $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                                                    if ($propertyType) {
+                                                        return getPropertyImageConfig($propertyType->slug)['gallery_max_files'];
+                                                    }
+                                                }
+                                                return getPropertyImageConfig()['gallery_max_files'];
+                                            })
+                                            ->maxSize(getOptimalImageResolution()['max_file_size'])
+                                            ->minFiles(1)
+                                            ->rules([
+                                                new OptimalImageResolution(true)
+                                            ])
+                                            ->validationMessages([
+                                                'min' => '📸 Please add at least one gallery image to showcase your property.',
+                                            ])
+                                            ->live(onBlur: true)
+                                            ->helperText(function (Forms\Get $get) {
+                                                $propertyTypeId = $get('property_type_id');
+                                                $resolutionInfo = getOptimalImageResolution();
+                                                if ($propertyTypeId) {
+                                                    $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                                                    if ($propertyType) {
+                                                        return getPropertyImageConfig($propertyType->slug)['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
+                                                    }
+                                                }
+                                                return getPropertyImageConfig()['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
+                                            })
+                                            ->columnSpanFull(),
+                                    ])->collapsible(),
+
                                 // Media & SEO
                                 Forms\Components\Section::make('Media & SEO')
                                     ->description('Media links and SEO optimization')
+                                    ->collapsed()
                                     ->schema([
                                         Forms\Components\Grid::make([
                                             'default' => 1,
@@ -514,15 +588,13 @@ class PropertyResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
-                    ->colors([
-                        'success' => 'available',
-                        'warning' => 'pending',
-                        'danger' => ['sold', 'rented'],
-                        'gray' => 'inactive',
-                    ])
-                    ->sortable(),
+                    ->formatStateUsing(fn (string $state): string => PropertyStatus::from($state)->getLabel())
+                    ->color(fn (string $state): string => PropertyStatus::from($state)->getColor())
+                    ->icon(fn (string $state): string => PropertyStatus::from($state)->getIcon())
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('price')
-                    ->money('NGN')
+                    ->formatStateUsing(fn($state) => formatNaira($state ?? 0))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('bedrooms')
                     ->numeric()
@@ -595,13 +667,7 @@ class PropertyResource extends Resource
                         'shortlet' => 'Shortlet',
                     ]),
                 Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        'available' => 'Available',
-                        'rented' => 'Rented',
-                        'sold' => 'Sold',
-                        'pending' => 'Pending',
-                        'inactive' => 'Inactive',
-                    ]),
+                    ->options(PropertyStatus::class),
                 Tables\Filters\SelectFilter::make('property_type_id')
                     ->relationship('propertyType', 'name')
                     ->label('Property Type')
@@ -711,7 +777,39 @@ class PropertyResource extends Resource
                     ->label('High Performance (100+ views)'),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('change_status')
+                        ->label('Change Status')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('info')
+                        ->form([
+                            Forms\Components\Select::make('status')
+                                ->options(PropertyStatus::class)
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $record->update(['status' => $data['status']]);
+                        }),
+
+                    Tables\Actions\Action::make('mark_sold')
+                        ->label('Mark Sold')
+                        ->icon('heroicon-o-banknotes')
+                        ->color('danger')
+                        ->action(fn ($record) => $record->update(['status' => PropertyStatus::SOLD->value]))
+                        ->requiresConfirmation()
+                        ->visible(fn ($record) => $record->status !== PropertyStatus::SOLD->value),
+
+                    Tables\Actions\Action::make('mark_off_market')
+                        ->label('Take Off Market')
+                        ->icon('heroicon-o-eye-slash')
+                        ->color('gray')
+                        ->action(fn ($record) => $record->update(['status' => PropertyStatus::OFF_MARKET->value]))
+                        ->requiresConfirmation()
+                        ->visible(fn ($record) => $record->status !== PropertyStatus::OFF_MARKET->value),
+                ])->label('Status')->icon('heroicon-o-flag')->color('info'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

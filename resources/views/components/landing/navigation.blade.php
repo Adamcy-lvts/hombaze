@@ -35,14 +35,14 @@
                     <span class="relative z-10">Agencies</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
-                <a href="{{ route('about') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
+                {{-- <a href="{{ route('about') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">About</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
                 </a>
                 <a href="{{ route('contact') }}" wire:navigate class="nav-link group relative px-4 py-2 text-white/90 hover:text-white font-semibold transition-all duration-300">
                     <span class="relative z-10">Contact</span>
                     <div class="absolute inset-0 bg-white/10 rounded-lg scale-0 group-hover:scale-100 transition-transform duration-300 origin-center"></div>
-                </a>
+                </a> --}}
             </div>
 
             <!-- Mobile-Optimized Premium CTA Buttons -->
@@ -200,7 +200,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
                 </a>
-                <a href="{{ route('about') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
+                {{-- <a href="{{ route('about') }}" wire:navigate class="mobile-nav-link group flex items-center py-3 px-4 text-white/90 hover:text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">
                     <span class="flex-1">About</span>
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -211,7 +211,7 @@
                     <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                     </svg>
-                </a>
+                </a> --}}
             </div>
 
             <!-- Mobile CTA Buttons -->

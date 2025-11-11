@@ -759,16 +759,21 @@ if (empty($mediaLibraryImages)) {
                             @else
                                 {{-- Default fallback for other property types --}}
                                 <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->propertyType->name }}</div>
-                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Property Type</div>
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">SIZE<br>(SQM)</div>
                                 </div>
                                 <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->propertySubtype->name ?? 'N/A' }}</div>
-                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Subtype</div>
+                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->propertySubtype->name ?? $property->propertyType->name }}</div>
+                                    <div class="text-xs text-gray-600 uppercase tracking-wide">{{ strtoupper($property->propertyType->name) }}<br>TYPE</div>
                                 </div>
                                 <div class="text-center p-3 lg:p-4 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                    <div class="text-lg lg:text-2xl font-bold text-gray-900">{{ $property->listing_type }}</div>
-                                    <div class="text-xs text-gray-600 uppercase tracking-wide">Listing Type</div>
+                                    @if ($property->development_status && strtolower($property->development_status) === 'ready for development')
+                                        <div class="text-lg lg:text-2xl font-bold text-emerald-600">✓</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">READY<br>FOR<br>DEVELOPMENT</div>
+                                    @else
+                                        <div class="text-lg lg:text-2xl font-bold text-gray-400">✗</div>
+                                        <div class="text-xs text-gray-600 uppercase tracking-wide">NO<br>DEVELOPMENT</div>
+                                    @endif
                                 </div>
                             @endif
                         </div>
@@ -895,18 +900,29 @@ if (empty($mediaLibraryImages)) {
                                         <!-- Agent Stats -->
                                         <div class="grid grid-cols-3 gap-2 mb-3">
                                             <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                                <div class="text-sm font-bold text-emerald-600">4.0</div>
+                                                <div class="text-sm font-bold text-emerald-600">{{ number_format($property->agent->average_rating ?? 0, 1) }}</div>
                                                 <div class="text-xs text-gray-600">Rating</div>
                                             </div>
                                             <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                                <div class="text-sm font-bold text-emerald-600">25+</div>
+                                                <div class="text-sm font-bold text-emerald-600">{{ $property->agent->properties_count ?? 0 }}+</div>
                                                 <div class="text-xs text-gray-600">Listings</div>
                                             </div>
                                             <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                                <div class="text-sm font-bold text-emerald-600">3+</div>
+                                                <div class="text-sm font-bold text-emerald-600">{{ $property->agent->years_experience ?? 0 }}+</div>
                                                 <div class="text-xs text-gray-600">Years</div>
                                             </div>
                                         </div>
+
+                                        <!-- Agent Actions -->
+                                        @if($property->agent && $property->agent->user)
+                                            <div class="mt-4 space-y-3">
+                                                <a href="{{ route('agent.profile', $property->agent->user) }}" wire:navigate
+                                                   class="block text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
+                                                    View Profile & Reviews
+                                                </a>
+                                                @livewire('agent-rating-form', ['agent' => $property->agent->user])
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
                             @elseif($property->agent)
@@ -923,18 +939,29 @@ if (empty($mediaLibraryImages)) {
                                     <!-- Agent Stats -->
                                     <div class="grid grid-cols-3 gap-2 mb-3">
                                         <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                            <div class="text-sm font-bold text-emerald-600">4.7</div>
+                                            <div class="text-sm font-bold text-emerald-600">{{ number_format($property->agent->average_rating ?? 0, 1) }}</div>
                                             <div class="text-xs text-gray-600">Rating</div>
                                         </div>
                                         <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                            <div class="text-sm font-bold text-emerald-600">45+</div>
+                                            <div class="text-sm font-bold text-emerald-600">{{ $property->agent->properties_count ?? 0 }}+</div>
                                             <div class="text-xs text-gray-600">Listings</div>
                                         </div>
                                         <div class="text-center p-2 bg-gray-50 rounded-lg">
-                                            <div class="text-sm font-bold text-emerald-600">3+</div>
+                                            <div class="text-sm font-bold text-emerald-600">{{ $property->agent->years_experience ?? 0 }}+</div>
                                             <div class="text-xs text-gray-600">Years</div>
                                         </div>
                                     </div>
+
+                                    <!-- Agent Actions -->
+                                    @if($property->agent && $property->agent->user)
+                                        <div class="mt-4 space-y-3">
+                                            <a href="{{ route('agent.profile', $property->agent->user) }}" wire:navigate
+                                               class="block text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
+                                                View Profile & Reviews
+                                            </a>
+                                            @livewire('agent-rating-form', ['agent' => $property->agent->user])
+                                        </div>
+                                    @endif
                                 </div>
                             @elseif($property->owner)
                                 <!-- Property Owner -->

@@ -42,12 +42,12 @@
                                 <x-nav-link :href="route('agencies')" :active="request()->routeIs('agencies')" wire:navigate>
                                     {{ __('Agencies') }}
                                 </x-nav-link>
-                                <x-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
+                                {{-- <x-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
                                     {{ __('About') }}
                                 </x-nav-link>
                                 <x-nav-link :href="route('contact')" :active="request()->routeIs('contact')" wire:navigate>
                                     {{ __('Contact') }}
-                                </x-nav-link>
+                                </x-nav-link> --}}
                             </div>
                         </div>
 
@@ -117,12 +117,12 @@
                         <x-responsive-nav-link :href="route('agencies')" :active="request()->routeIs('agencies')" wire:navigate>
                             {{ __('Agencies') }}
                         </x-responsive-nav-link>
-                        <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
+                        {{-- <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
                             {{ __('About') }}
                         </x-responsive-nav-link>
                         <x-responsive-nav-link :href="route('contact')" :active="request()->routeIs('contact')" wire:navigate>
                             {{ __('Contact') }}
-                        </x-responsive-nav-link>
+                        </x-responsive-nav-link> --}}
                     </div>
 
                     <!-- Responsive Settings Options -->

@@ -17,6 +17,7 @@ use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasTenants, HasName, FilamentUser, HasAvatar
@@ -31,6 +32,7 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
      */
     protected $fillable = [
         'name',
+        'slug',
         'email',
         'phone',
         'password',
@@ -425,6 +427,55 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar;
+    }
+
+    // =================================================================
+    // SLUG GENERATION
+    // =================================================================
+
+    /**
+     * Boot the model and set up model events
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->slug)) {
+                $user->slug = $user->generateSlug();
+            }
+        });
+
+        static::updating(function ($user) {
+            if ($user->isDirty('name') && empty($user->slug)) {
+                $user->slug = $user->generateSlug();
+            }
+        });
+    }
+
+    /**
+     * Generate a unique slug for the user
+     */
+    protected function generateSlug(): string
+    {
+        $baseSlug = Str::slug($this->name);
+        $slug = $baseSlug;
+        $counter = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $this->id ?? 0)->exists()) {
+            $slug = $baseSlug . '-' . $counter;
+            $counter++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * Get the route key name for model binding
+     */
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
     }
 
     // =================================================================

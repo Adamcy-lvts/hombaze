@@ -478,12 +478,14 @@ class Property extends Model implements HasMedia
      */
     public function registerMediaCollections(): void
     {
+        $resolutionConfig = getOptimalImageResolution();
+
         $this->addMediaCollection('gallery')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsMimeTypes($resolutionConfig['formats'])
             ->useDisk('public');
 
         $this->addMediaCollection('featured')
-            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptsMimeTypes($resolutionConfig['formats'])
             ->useDisk('public')
             ->singleFile();
 
@@ -505,25 +507,39 @@ class Property extends Model implements HasMedia
      */
     public function registerMediaConversions(?Media $media = null): void
     {
-        // Preview conversion - maintains aspect ratio, max width 400px
+        $resolutionConfig = getOptimalImageResolution();
+
+        // High-quality web display - based on recommended resolution
         $this
-            ->addMediaConversion('preview')
-            ->width(400)
-            ->height(300)
-            ->quality(85)
-            ->fit(Fit::Max, 400, 300)
+            ->addMediaConversion('web')
+            ->width($resolutionConfig['recommended_width'])
+            ->height($resolutionConfig['recommended_height'])
+            ->quality(90)
+            ->fit(Fit::Max, $resolutionConfig['recommended_width'], $resolutionConfig['recommended_height'])
             ->performOnCollections('gallery', 'featured')
             ->nonQueued()
             ->optimize()
             ->sharpen(10);
 
-        // Thumbnail conversion - maintains aspect ratio, max width 200px
+        // Preview conversion - optimized 3:2 aspect ratio
+        $this
+            ->addMediaConversion('preview')
+            ->width(600)
+            ->height(400)
+            ->quality(85)
+            ->fit(Fit::Max, 600, 400)
+            ->performOnCollections('gallery', 'featured')
+            ->nonQueued()
+            ->optimize()
+            ->sharpen(10);
+
+        // Thumbnail conversion - maintains 3:2 aspect ratio
         $this
             ->addMediaConversion('thumb')
-            ->width(200)
-            ->height(150)
+            ->width(300)
+            ->height(200)
             ->quality(80)
-            ->fit(Fit::Max, 200, 150)
+            ->fit(Fit::Max, 300, 200)
             ->performOnCollections('gallery', 'featured')
             ->nonQueued()
             ->optimize()
@@ -540,6 +556,18 @@ class Property extends Model implements HasMedia
             ->nonQueued()
             ->optimize()
             ->sharpen(10);
+
+        // Small thumbnail for lists and cards
+        $this
+            ->addMediaConversion('small')
+            ->width(150)
+            ->height(100)
+            ->quality(75)
+            ->fit(Fit::Crop, 150, 100)
+            ->performOnCollections('gallery', 'featured')
+            ->nonQueued()
+            ->optimize()
+            ->sharpen(5);
     }
 
     /**

@@ -17,20 +17,24 @@ class AgentsPage extends Component
     // Search and filter properties
     #[Url(as: 'search')]
     public $searchQuery = '';
-    
+
     #[Url(as: 'location')]
     public $selectedLocation = '';
-    
+
     #[Url(as: 'experience')]
     public $experienceFilter = '';
-    
+
     #[Url(as: 'specialization')]
     public $specializationFilter = '';
-    
+
     #[Url(as: 'sort')]
-    public $sortBy = 'rating';
+    public $sortBy = 'name';
 
     public $showFilters = false;
+    public $selectedAgentTypes = [];
+    public $selectedExperience = [];
+    public $selectedRating = null;
+    public $verifiedOnly = false;
 
     public function mount()
     {
@@ -76,16 +80,41 @@ class AgentsPage extends Component
         $this->resetPage();
     }
 
+    public function clearAllFilters()
+    {
+        $this->searchQuery = '';
+        $this->selectedLocation = '';
+        $this->experienceFilter = '';
+        $this->specializationFilter = '';
+        $this->selectedAgentTypes = [];
+        $this->selectedExperience = [];
+        $this->selectedRating = null;
+        $this->verifiedOnly = false;
+        $this->resetPage();
+    }
+
+    public function toggleFilter($type, $value)
+    {
+        if ($type === 'rating') {
+            $this->selectedRating = $this->selectedRating == $value ? null : $value;
+        }
+        $this->resetPage();
+    }
+
     public function getAgentsProperty()
     {
         $query = User::select('users.*')
             ->with(['agentProfile.agency', 'agentProfile.reviews'])
             ->whereHas('agentProfile', function ($q) {
-                $q->where('is_available', true)
-                  ->where('is_verified', true);
+                $q->where('is_available', true);
             })
-            ->whereHas('agentProfile.agency', function ($q) {
-                $q->where('is_active', true);
+            ->where(function ($q) {
+                // Include independent agents (no agency)
+                $q->whereDoesntHave('agentProfile.agency')
+                  // Or include agents with active agencies
+                  ->orWhereHas('agentProfile.agency', function ($agencyQuery) {
+                      $agencyQuery->where('is_active', true);
+                  });
             });
 
         // Apply search
@@ -101,9 +130,17 @@ class AgentsPage extends Component
 
         // Apply location filter
         if (!empty($this->selectedLocation)) {
-            $query->whereHas('agentProfile.agency', function ($q) {
-                $q->where('state_id', $this->selectedLocation)
-                  ->orWhere('city_id', $this->selectedLocation);
+            $query->where(function ($q) {
+                // Filter by agency location for agency agents
+                $q->whereHas('agentProfile.agency', function ($agencyQuery) {
+                    $agencyQuery->where('state_id', $this->selectedLocation)
+                               ->orWhere('city_id', $this->selectedLocation);
+                })
+                // Or filter by agent's personal location for independent agents
+                ->orWhereHas('agentProfile', function ($agentQuery) {
+                    $agentQuery->where('state_id', $this->selectedLocation)
+                              ->orWhere('city_id', $this->selectedLocation);
+                });
             });
         }
 
@@ -135,11 +172,65 @@ class AgentsPage extends Component
             });
         }
 
+        // Apply new filter types - agent type
+        if (!empty($this->selectedAgentTypes)) {
+            $query->where(function ($q) {
+                if (in_array('independent', $this->selectedAgentTypes)) {
+                    $q->whereDoesntHave('agentProfile.agency');
+                }
+                if (in_array('agency', $this->selectedAgentTypes)) {
+                    $q->orWhereHas('agentProfile.agency');
+                }
+            });
+        }
+
+        // Apply experience level filters
+        if (!empty($this->selectedExperience)) {
+            $query->where(function ($q) {
+                foreach ($this->selectedExperience as $experience) {
+                    switch ($experience) {
+                        case '0-2':
+                            $q->orWhereHas('agentProfile', function ($agentQuery) {
+                                $agentQuery->whereBetween('years_experience', [0, 2]);
+                            });
+                            break;
+                        case '3-5':
+                            $q->orWhereHas('agentProfile', function ($agentQuery) {
+                                $agentQuery->whereBetween('years_experience', [3, 5]);
+                            });
+                            break;
+                        case '5+':
+                            $q->orWhereHas('agentProfile', function ($agentQuery) {
+                                $agentQuery->where('years_experience', '>', 5);
+                            });
+                            break;
+                    }
+                }
+            });
+        }
+
+        // Apply rating filter
+        if ($this->selectedRating) {
+            $query->whereHas('agentProfile', function ($q) {
+                $q->where('average_rating', '>=', $this->selectedRating);
+            });
+        }
+
+        // Apply verified filter
+        if ($this->verifiedOnly) {
+            $query->whereHas('agentProfile', function ($q) {
+                $q->where('is_verified', true);
+            });
+        }
+
         // Apply sorting
         switch ($this->sortBy) {
+            case 'name':
+                $query->orderBy('users.name');
+                break;
             case 'rating':
                 $query->orderByDesc(
-                    Agent::select('rating')
+                    Agent::select('average_rating')
                         ->whereColumn('agents.user_id', 'users.id')
                         ->limit(1)
                 );
@@ -151,19 +242,18 @@ class AgentsPage extends Component
                         ->limit(1)
                 );
                 break;
-            case 'properties':
-                $query->withCount('properties')
-                      ->orderByDesc('properties_count');
+            case 'listings':
+                $query->orderByDesc(
+                    Agent::select('properties_count')
+                        ->whereColumn('agents.user_id', 'users.id')
+                        ->limit(1)
+                );
                 break;
             case 'newest':
                 $query->orderByDesc('users.created_at');
                 break;
             default:
-                $query->orderByDesc(
-                    Agent::select('rating')
-                        ->whereColumn('agents.user_id', 'users.id')
-                        ->limit(1)
-                );
+                $query->orderBy('users.name');
         }
 
         return $query->paginate(12);

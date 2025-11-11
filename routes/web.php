@@ -12,9 +12,17 @@ Route::get('/property/{property:slug}', App\Livewire\PropertyDetails::class)->na
 
 // New navigation pages
 Route::get('/agents', App\Livewire\AgentsPage::class)->name('agents');
+Route::get('/agent/{agent:slug}', App\Livewire\AgentProfile::class)->name('agent.profile');
 Route::get('/agencies', App\Livewire\AgenciesPage::class)->name('agencies');
-Route::get('/about', App\Livewire\AboutPage::class)->name('about');
-Route::get('/contact', App\Livewire\ContactPage::class)->name('contact');
+// Route::get('/about', App\Livewire\AboutPage::class)->name('about');
+// Route::get('/contact', App\Livewire\ContactPage::class)->name('contact');
+
+// Agent review routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/agent/{agent:slug}/review', [App\Http\Controllers\AgentReviewController::class, 'create'])->name('agent.review.create');
+    Route::post('/agent/{agent:slug}/review', [App\Http\Controllers\AgentReviewController::class, 'store'])->name('agent.review.store');
+    Route::patch('/agent/{agent:slug}/review', [App\Http\Controllers\AgentReviewController::class, 'update'])->name('agent.review.update');
+});
 
 // Tenant invitation routes
 Route::prefix('tenant/invitation')->name('tenant.invitation.')->group(function () {

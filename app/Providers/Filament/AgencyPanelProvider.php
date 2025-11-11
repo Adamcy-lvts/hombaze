@@ -80,6 +80,7 @@ class AgencyPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ]);
+            ])
+            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'));
     }
 }

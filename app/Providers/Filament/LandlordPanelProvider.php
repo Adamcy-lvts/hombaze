@@ -58,6 +58,7 @@ class LandlordPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 \App\Http\Middleware\RequireProfileCompletion::class,
-            ]);
+            ])
+            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'));
     }
 }

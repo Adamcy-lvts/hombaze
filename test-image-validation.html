@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Validation Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold mb-6 text-gray-900">🏠 Property Image Validation Test</h1>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">📐 Image Requirements</h2>
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <ul class="space-y-2 text-sm">
+                    <li><span class="font-semibold">Minimum Resolution:</span> 1024×683px</li>
+                    <li><span class="font-semibold">Recommended Resolution:</span> 1440×960px</li>
+                    <li><span class="font-semibold">Maximum File Size:</span> 5MB</li>
+                    <li><span class="font-semibold">Supported Formats:</span> JPEG, PNG, WebP</li>
+                    <li><span class="font-semibold">Preferred Aspect Ratio:</span> 3:2 (landscape)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">📸 Test Image Upload</h2>
+
+            <div class="space-y-6">
+                <!-- Featured Image Test -->
+                <div data-field-wrapper="featured_image">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Featured Image</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        id="featured-image"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">Upload a high-quality featured image for this property.</p>
+                </div>
+
+                <!-- Gallery Images Test -->
+                <div data-field-wrapper="gallery_images">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Gallery Images</label>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        id="gallery-images"
+                        class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100"
+                    >
+                    <p class="text-xs text-gray-500 mt-1">Upload multiple high-quality images showcasing the property.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Scenarios -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">🧪 Test Scenarios</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div class="p-3 border border-red-200 rounded-lg bg-red-50">
+                    <h3 class="font-semibold text-red-700 mb-2">❌ Should Fail:</h3>
+                    <ul class="text-red-600 space-y-1">
+                        <li>• Images smaller than 1024×683px</li>
+                        <li>• Files larger than 5MB</li>
+                        <li>• Non-image files (PDF, Word, etc.)</li>
+                        <li>• Corrupted image files</li>
+                    </ul>
+                </div>
+                <div class="p-3 border border-green-200 rounded-lg bg-green-50">
+                    <h3 class="font-semibold text-green-700 mb-2">✅ Should Pass:</h3>
+                    <ul class="text-green-600 space-y-1">
+                        <li>• Images 1024×683px or larger</li>
+                        <li>• Files under 5MB</li>
+                        <li>• JPEG, PNG, WebP formats</li>
+                        <li>• 3:2 aspect ratio (optimal)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include our validation JavaScript -->
+    <script>
+        // Simplified version of our PropertyImageValidator for testing
+        class TestPropertyImageValidator {
+            constructor() {
+                this.config = {
+                    minWidth: 1024,
+                    minHeight: 683,
+                    recommendedWidth: 1440,
+                    recommendedHeight: 960,
+                    maxFileSizeMB: 5,
+                    allowedTypes: ['image/jpeg', 'image/png', 'image/webp'],
+                    aspectRatio: 3/2,
+                    aspectTolerance: 0.15
+                };
+                this.init();
+            }
+
+            init() {
+                document.getElementById('featured-image').addEventListener('change', (e) => {
+                    this.validateFiles(e.target.files, e.target);
+                });
+
+                document.getElementById('gallery-images').addEventListener('change', (e) => {
+                    this.validateFiles(e.target.files, e.target);
+                });
+            }
+
+            validateFiles(files, input) {
+                const errors = [];
+
+                Array.from(files).forEach((file, index) => {
+                    // Check file type
+                    if (!this.config.allowedTypes.includes(file.type)) {
+                        errors.push(`File ${index + 1}: 📷 Please upload a valid image file (JPEG, PNG, or WebP)`);
+                        return;
+                    }
+
+                    // Check file size
+                    const fileSizeMB = file.size / (1024 * 1024);
+                    if (fileSizeMB > this.config.maxFileSizeMB) {
+                        errors.push(`File ${index + 1}: 📏 Image is too large (${fileSizeMB.toFixed(1)}MB). Maximum: ${this.config.maxFileSizeMB}MB`);
+                        return;
+                    }
+
+                    // Check dimensions (async)
+                    const img = new Image();
+                    img.onload = () => {
+                        if (img.width < this.config.minWidth || img.height < this.config.minHeight) {
+                            errors.push(`File ${index + 1}: 📐 Image resolution too low. Minimum: ${this.config.minWidth}×${this.config.minHeight}px. Your image: ${img.width}×${img.height}px`);
+                        }
+
+                        // Show results after all checks
+                        if (errors.length > 0) {
+                            this.showValidationErrors(errors, input);
+                            input.value = '';
+                        } else {
+                            this.showSuccess(img.width, img.height, fileSizeMB, input);
+                        }
+                    };
+                    img.src = URL.createObjectURL(file);
+                });
+
+                // Show immediate errors (file type/size)
+                if (errors.length > 0) {
+                    this.showValidationErrors(errors, input);
+                    input.value = '';
+                }
+            }
+
+            showValidationErrors(errors, input) {
+                this.clearMessages(input);
+
+                const wrapper = input.closest('[data-field-wrapper]');
+                const errorContainer = document.createElement('div');
+                errorContainer.className = 'validation-message mt-3 p-4 bg-red-50 border-2 border-red-300 rounded-lg shadow-sm';
+                errorContainer.style.animation = 'shake 0.6s ease-in-out, slideIn 0.3s ease-out';
+
+                errorContainer.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="text-red-500 flex-shrink-0 mr-3">
+                            <svg class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-semibold text-red-800 mb-2">❌ Upload Failed - Image Requirements Not Met</div>
+                            <ul class="text-sm text-red-700 space-y-2">
+                                ${errors.map(error => `<li class="flex items-start"><span class="text-red-400 mr-2">•</span><span>${error}</span></li>`).join('')}
+                            </ul>
+                            <div class="mt-3 p-2 bg-red-100 rounded text-xs text-red-600">
+                                <strong>💡 Quick Fix:</strong> Use images at least ${this.config.minWidth}×${this.config.minHeight}px, under ${this.config.maxFileSizeMB}MB, in JPEG/PNG/WebP format.
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                wrapper.appendChild(errorContainer);
+
+                // Auto-scroll to error
+                setTimeout(() => {
+                    errorContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+            }
+
+            showSuccess(width, height, sizeMB, input) {
+                this.clearMessages(input);
+
+                const wrapper = input.closest('[data-field-wrapper]');
+                const successContainer = document.createElement('div');
+                successContainer.className = 'validation-message mt-3 p-4 bg-green-50 border-2 border-green-300 rounded-lg shadow-sm';
+                successContainer.style.animation = 'slideIn 0.3s ease-out';
+
+                const aspectRatio = (width / height).toFixed(2);
+                const isOptimalRatio = Math.abs(width / height - this.config.aspectRatio) <= this.config.aspectTolerance;
+                const isHighRes = width >= this.config.recommendedWidth && height >= this.config.recommendedHeight;
+
+                successContainer.innerHTML = `
+                    <div class="flex items-start">
+                        <div class="text-green-500 flex-shrink-0 mr-3">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-semibold text-green-800 mb-2">✅ Image Validation Passed!</div>
+                            <div class="text-sm text-green-700 mb-2">
+                                📏 ${width}×${height}px (${aspectRatio}:1) • ${sizeMB.toFixed(1)}MB
+                            </div>
+                            <div class="flex space-x-4 text-xs">
+                                <span class="${isHighRes ? 'text-green-600' : 'text-orange-600'}">
+                                    ${isHighRes ? '⭐ High Resolution' : '⚠️ Consider higher resolution'}
+                                </span>
+                                <span class="${isOptimalRatio ? 'text-green-600' : 'text-orange-600'}">
+                                    ${isOptimalRatio ? '📐 Optimal Ratio' : '📐 Non-optimal ratio'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                wrapper.appendChild(successContainer);
+
+                // Auto-remove success message after 5 seconds
+                setTimeout(() => {
+                    if (successContainer.parentNode) {
+                        successContainer.remove();
+                    }
+                }, 5000);
+            }
+
+            clearMessages(input) {
+                const wrapper = input.closest('[data-field-wrapper]');
+                const existingMessages = wrapper.querySelectorAll('.validation-message');
+                existingMessages.forEach(message => message.remove());
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            new TestPropertyImageValidator();
+        });
+    </script>
+</body>
+</html>

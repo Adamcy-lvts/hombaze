@@ -2,17 +2,18 @@
 
 namespace App\Notifications;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Str;
 use App\Models\SavedSearch;
-use NotificationChannels\WhatsApp\WhatsAppChannel;
-use NotificationChannels\WhatsApp\WhatsAppTextMessage;
-use NotificationChannels\WhatsApp\WhatsAppTemplate;
+use Illuminate\Support\Str;
+use Illuminate\Bus\Queueable;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\Collection;
 use NotificationChannels\WhatsApp\Component\Text;
+use Illuminate\Notifications\Messages\MailMessage;
+use NotificationChannels\WhatsApp\WhatsAppChannel;
+use NotificationChannels\WhatsApp\WhatsAppTemplate;
+use NotificationChannels\WhatsApp\WhatsAppTextMessage;
 
 class SavedSearchMatch extends Notification implements ShouldQueue
 {
@@ -125,6 +126,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
 
         return [
             'type' => 'saved_search_match',
+            'unique_id' => $this->uniqueId(),
             'saved_search_id' => $this->savedSearch->id,
             'saved_search_name' => $this->savedSearch->name,
             'match_score' => $this->matchScore,
@@ -176,7 +178,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             $phoneNumber = $this->formatPhoneNumber($notifiable->phone);
 
             // Log notification attempt
-            \Log::info('Attempting to send WhatsApp saved search notification', [
+            Log::info('Attempting to send WhatsApp saved search notification', [
                 'user_id' => $notifiable->id,
                 'user_name' => $notifiable->name,
                 'phone_number' => $phoneNumber,
@@ -198,7 +200,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             $this->addTemplateBodyComponents($template, $count, $property);
 
             // Log successful template creation
-            \Log::info('WhatsApp template created successfully for saved search match', [
+            Log::info('WhatsApp template created successfully for saved search match', [
                 'user_id' => $notifiable->id,
                 'phone_number' => $phoneNumber,
                 'search_id' => $this->savedSearch->id
@@ -207,7 +209,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             return $template;
         } catch (\Exception $e) {
             // Log the error but don't fail the entire notification
-            \Log::warning('WhatsApp template failed for saved search match', [
+            Log::warning('WhatsApp template failed for saved search match', [
                 'error' => $e->getMessage(),
                 'error_code' => $e->getCode(),
                 'search_id' => $this->savedSearch->id,

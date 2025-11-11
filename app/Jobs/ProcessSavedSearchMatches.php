@@ -173,6 +173,7 @@ class ProcessSavedSearchMatches implements ShouldQueue
 
         $sentCount = 0;
         $errorCount = 0;
+        $skippedCount = 0;
 
         foreach ($matches as $match) {
             try {
@@ -183,6 +184,25 @@ class ProcessSavedSearchMatches implements ShouldQueue
                     $match['score']
                 );
 
+                // Check if this exact notification has already been sent recently (within last 24 hours)
+                $uniqueId = $notification->uniqueId();
+                $recentNotification = $user->notifications()
+                    ->where('type', SavedSearchMatch::class)
+                    ->where('created_at', '>', now()->subDay())
+                    ->whereJsonContains('data->unique_id', $uniqueId)
+                    ->exists();
+
+                if ($recentNotification) {
+                    $skippedCount++;
+                    Log::info('⏭️ Skipping duplicate notification', [
+                        'user_id' => $user->id,
+                        'search_id' => $match['saved_search']->id,
+                        'property_id' => $match['property']->id,
+                        'unique_id' => $uniqueId
+                    ]);
+                    continue;
+                }
+
                 $user->notify($notification);
                 $sentCount++;
 
@@ -190,7 +210,8 @@ class ProcessSavedSearchMatches implements ShouldQueue
                     'user_id' => $user->id,
                     'search_id' => $match['saved_search']->id,
                     'property_id' => $match['property']->id,
-                    'score' => $match['score']
+                    'score' => $match['score'],
+                    'unique_id' => $uniqueId
                 ]);
 
             } catch (\Exception $e) {
@@ -206,6 +227,7 @@ class ProcessSavedSearchMatches implements ShouldQueue
         Log::info('📊 Notification Summary', [
             'total_matches' => $matches->count(),
             'sent_successfully' => $sentCount,
+            'skipped_duplicates' => $skippedCount,
             'errors' => $errorCount
         ]);
 

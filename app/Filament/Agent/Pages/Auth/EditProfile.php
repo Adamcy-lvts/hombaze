@@ -7,172 +7,197 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Form;
 use Filament\Pages\Auth\EditProfile as BaseEditProfile;
-use App\Models\State;
-use App\Models\City;
-use App\Models\Area;
+use Filament\Notifications\Notification;
+use Illuminate\Database\Eloquent\Model;
 
 class EditProfile extends BaseEditProfile
 {
+    public function getMaxWidth(): ?string
+    {
+        return '5xl';
+    }
+
     public function form(Form $form): Form
     {
         return $form
             ->schema([
                 Section::make('Account Information')
+                    ->description('Update your basic account details')
+                    ->columns(2)
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                $this->getNameFormComponent(),
-                                $this->getEmailFormComponent(),
-                            ]),
-                        
-                        Grid::make(2)
-                            ->schema([
-                                $this->getPasswordFormComponent(),
-                                $this->getPasswordConfirmationFormComponent(),
-                            ]),
+                        $this->getNameFormComponent()
+                            ->required()
+                            ->columnSpan(1),
+
+                        $this->getEmailFormComponent()
+                            ->required()
+                            ->columnSpan(1),
+
+                        TextInput::make('phone')
+                            ->label('Phone Number')
+                            ->tel()
+                            ->maxLength(20)
+                            ->helperText('Your contact phone number for clients')
+                            ->columnSpan(1),
+
+                        // Empty column to balance layout
+                        \Filament\Forms\Components\Placeholder::make('')
+                            ->columnSpan(1),
+
+                        $this->getPasswordFormComponent()
+                            ->columnSpan(1),
+
+                        $this->getPasswordConfirmationFormComponent()
+                            ->columnSpan(1),
                     ]),
-                
-                Section::make('Agent Profile')
+
+                Section::make('Professional Details')
+                    ->description('Your real estate professional information')
+                    ->columns(2)
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('agent.phone')
-                                    ->label('Phone Number')
-                                    ->tel()
-                                    ->maxLength(20),
-                                
-                                TextInput::make('agent.license_number')
-                                    ->label('License Number')
-                                    ->maxLength(100),
-                            ]),
-                        
-                        Textarea::make('agent.bio')
+                        TextInput::make('agentProfile.license_number')
+                            ->label('License Number')
+                            ->maxLength(100)
+                            ->helperText('Your real estate license number')
+                            ->columnSpan(1),
+
+                        TextInput::make('agentProfile.years_experience')
+                            ->label('Years of Experience')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(50)
+                            ->columnSpan(1),
+
+                        Textarea::make('agentProfile.bio')
                             ->label('Professional Bio')
                             ->maxLength(1000)
                             ->rows(4)
+                            ->columnSpanFull()
+                            ->helperText('Tell clients about your background and expertise'),
+
+                        TagsInput::make('specializations_list')
+                            ->label('Specializations')
+                            ->placeholder('Add specializations (e.g., Residential Sales)')
+                            ->helperText('Press Enter to add each specialization')
                             ->columnSpanFull(),
-                        
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('agent.years_experience')
-                                    ->label('Years of Experience')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->maxValue(50),
-                                
-                                Select::make('agent.specializations')
-                                    ->label('Specializations')
-                                    ->multiple()
-                                    ->options([
-                                        'residential_sales' => 'Residential Sales',
-                                        'residential_rentals' => 'Residential Rentals',
-                                        'commercial_sales' => 'Commercial Sales',
-                                        'commercial_rentals' => 'Commercial Rentals',
-                                        'land_sales' => 'Land Sales',
-                                        'luxury_properties' => 'Luxury Properties',
-                                        'affordable_housing' => 'Affordable Housing',
-                                        'student_housing' => 'Student Housing',
-                                    ]),
-                            ]),
-                    ]),
-                
-                Section::make('Location & Coverage')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                Select::make('agent.state_id')
-                                    ->label('Primary State')
-                                    ->options(State::pluck('name', 'id'))
-                                    ->reactive()
-                                    ->afterStateUpdated(function (callable $set) {
-                                        $set('agent.city_id', null);
-                                        $set('agent.area_id', null);
-                                    }),
-                                
-                                Select::make('agent.city_id')
-                                    ->label('Primary City')
-                                    ->options(function (callable $get) {
-                                        $stateId = $get('agent.state_id');
-                                        if (!$stateId) return [];
-                                        return City::where('state_id', $stateId)->pluck('name', 'id');
-                                    })
-                                    ->reactive()
-                                    ->afterStateUpdated(fn (callable $set) => $set('agent.area_id', null)),
-                                
-                                Select::make('agent.area_id')
-                                    ->label('Primary Area')
-                                    ->options(function (callable $get) {
-                                        $cityId = $get('agent.city_id');
-                                        if (!$cityId) return [];
-                                        return Area::where('city_id', $cityId)->pluck('name', 'id');
-                                    }),
-                            ]),
-                        
-                        TextInput::make('agent.office_address')
-                            ->label('Office Address')
-                            ->maxLength(255)
+
+                        TagsInput::make('languages_list')
+                            ->label('Languages Spoken')
+                            ->placeholder('Add languages (e.g., English, French)')
+                            ->helperText('Press Enter to add each language')
                             ->columnSpanFull(),
                     ]),
-                
-                Section::make('Professional Information')
+
+                Section::make('Profile Photo')
+                    ->description('Upload your professional photo')
+                    ->columns(1)
                     ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextInput::make('agent.website')
-                                    ->label('Website')
-                                    ->url()
-                                    ->maxLength(255),
-                                
-                                TextInput::make('agent.social_media_links')
-                                    ->label('Social Media Profile')
-                                    ->url()
-                                    ->maxLength(255)
-                                    ->placeholder('LinkedIn, Facebook, etc.'),
-                            ]),
-                        
-                        FileUpload::make('agent.profile_photo')
+                        FileUpload::make('avatar')
                             ->label('Profile Photo')
                             ->image()
                             ->maxSize(2048)
-                            ->directory('agent-profiles')
+                            ->directory('avatars')
+                            ->imageEditor()
+                            ->circleCropper()
+                            ->alignCenter()
                             ->columnSpanFull(),
                     ]),
-            ]);
+            ])
+            ->columns(1);
     }
-    
-    /**
-     * Fill the form with current data
-     */
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        // Update user fields
+        $userData = [
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'phone' => $data['phone'] ?? null,
+        ];
+
+        if (!empty($data['password'])) {
+            $userData['password'] = bcrypt($data['password']);
+        }
+
+        if (isset($data['avatar'])) {
+            $userData['avatar'] = $data['avatar'];
+        }
+
+        $record->update($userData);
+
+        // Update or create agent profile
+        $agentData = [];
+
+        if (isset($data['agentProfile']['license_number'])) {
+            $agentData['license_number'] = $data['agentProfile']['license_number'];
+        }
+
+        if (isset($data['agentProfile']['years_experience'])) {
+            $agentData['years_experience'] = $data['agentProfile']['years_experience'];
+        }
+
+        if (isset($data['agentProfile']['bio'])) {
+            $agentData['bio'] = $data['agentProfile']['bio'];
+        }
+
+        // Handle specializations
+        if (isset($data['specializations_list'])) {
+            $agentData['specializations'] = implode(',', $data['specializations_list']);
+        }
+
+        // Handle languages
+        if (isset($data['languages_list'])) {
+            $agentData['languages'] = $data['languages_list'];
+        }
+
+        if (!empty($agentData)) {
+            $record->agentProfile()->updateOrCreate(
+                ['user_id' => $record->id],
+                $agentData
+            );
+        }
+
+        Notification::make()
+            ->title('Profile updated successfully!')
+            ->success()
+            ->send();
+
+        return $record;
+    }
+
     protected function fillForm(): void
     {
         $user = auth()->user();
-        $agent = $user->agent;
-        
+        $agent = $user->agentProfile;
+
         $data = [
             'name' => $user->name,
             'email' => $user->email,
+            'phone' => $user->phone,
+            'avatar' => $user->avatar,
         ];
-        
+
         if ($agent) {
-            $data['agent'] = [
-                'phone' => $agent->phone,
+            $data['agentProfile'] = [
                 'license_number' => $agent->license_number,
-                'bio' => $agent->bio,
                 'years_experience' => $agent->years_experience,
-                'specializations' => $agent->specializations,
-                'state_id' => $agent->state_id,
-                'city_id' => $agent->city_id,
-                'area_id' => $agent->area_id,
-                'office_address' => $agent->office_address,
-                'website' => $agent->website,
-                'social_media_links' => $agent->social_media_links,
-                'profile_photo' => $agent->profile_photo,
+                'bio' => $agent->bio,
             ];
+
+            // Handle specializations
+            if ($agent->specializations) {
+                $data['specializations_list'] = explode(',', $agent->specializations);
+            }
+
+            // Handle languages
+            if ($agent->languages) {
+                $data['languages_list'] = $agent->languages;
+            }
         }
-        
+
         $this->form->fill($data);
     }
 }

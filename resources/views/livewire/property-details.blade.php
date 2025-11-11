@@ -914,13 +914,12 @@ if (empty($mediaLibraryImages)) {
                                         </div>
 
                                         <!-- Agent Actions -->
-                                        @if($property->agent && $property->agent->user)
+                                        @if($property->agent && $property->agent->user && $property->agent->user->slug)
                                             <div class="mt-4 space-y-3">
                                                 <a href="{{ route('agent.profile', $property->agent->user) }}" wire:navigate
                                                    class="block text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
                                                     View Profile & Reviews
                                                 </a>
-                                                @livewire('agent-rating-form', ['agent' => $property->agent->user])
                                             </div>
                                         @endif
                                     </div>
@@ -953,7 +952,7 @@ if (empty($mediaLibraryImages)) {
                                     </div>
 
                                     <!-- Agent Actions -->
-                                    @if($property->agent && $property->agent->user)
+                                    @if($property->agent && $property->agent->user && $property->agent->user->slug)
                                         <div class="mt-4 space-y-3">
                                             <a href="{{ route('agent.profile', $property->agent->user) }}" wire:navigate
                                                class="block text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">

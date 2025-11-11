@@ -1,6 +1,7 @@
 <div class="agent-rating-form">
     @auth
-        <!-- Rating Button -->
+        @if($hasInteracted)
+            <!-- Rating Button -->
             <div class="mb-4">
                 <button
                     wire:click="toggleForm"
@@ -150,6 +151,13 @@
                     </form>
                 </div>
             @endif
+        @else
+            @if($interactionMessage)
+                <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-4">
+                    {{ $interactionMessage }}
+                </div>
+            @endif
+        @endif
     @else
         <!-- Not Logged In -->
         <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">

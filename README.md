@@ -59,3 +59,13 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Analytics
+
+Set the Google Analytics measurement ID in your `.env` file:
+
+```
+GA_MEASUREMENT_ID=G-XXXXXXXXXX
+```
+
+When `GA_MEASUREMENT_ID` is present and the app runs in the `production` environment, the standard GA4 `gtag.js` snippet is injected into `resources/views/layouts/app.blade.php`. After deploying, use the Google Analytics DebugView or the Tag Assistant browser extension to confirm that page views are arriving with the expected property.

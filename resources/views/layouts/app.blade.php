@@ -14,6 +14,10 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     
+        @if (app()->environment('production'))
+            @include('components.analytics.google-tag')
+        @endif
+
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

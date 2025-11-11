@@ -1,3 +1,9 @@
+@push('head')
+    @if (app()->environment('production'))
+        @include('components.analytics.google-tag')
+    @endif
+@endpush
+
 <div class="min-h-screen bg-gray-50">
     <!-- Minimal Airbnb-Style Hero Section -->
     <section class="relative bg-white border-b border-gray-200">

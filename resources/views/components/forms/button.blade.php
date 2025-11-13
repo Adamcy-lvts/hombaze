@@ -10,12 +10,12 @@
 
 @php
 $variants = [
-    'primary' => 'bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white shadow-lg',
+    'primary' => 'bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white shadow-lg',
     'secondary' => 'bg-white/95 backdrop-blur-xl border border-gray-300/60 text-gray-700 hover:bg-white hover:border-gray-400/60 shadow-lg',
-    'danger' => 'bg-gradient-to-r from-red-600 via-red-500 to-pink-500 hover:from-red-700 hover:via-red-600 hover:to-pink-600 text-white shadow-lg',
-    'success' => 'bg-gradient-to-r from-green-600 via-green-500 to-emerald-500 hover:from-green-700 hover:via-green-600 hover:to-emerald-600 text-white shadow-lg',
-    'warning' => 'bg-gradient-to-r from-yellow-600 via-yellow-500 to-orange-500 hover:from-yellow-700 hover:via-yellow-600 hover:to-orange-600 text-white shadow-lg',
-    'info' => 'bg-gradient-to-r from-blue-600 via-blue-500 to-indigo-500 hover:from-blue-700 hover:via-blue-600 hover:to-indigo-600 text-white shadow-lg',
+    'danger' => 'bg-linear-to-r from-red-600 via-red-500 to-pink-500 hover:from-red-700 hover:via-red-600 hover:to-pink-600 text-white shadow-lg',
+    'success' => 'bg-linear-to-r from-green-600 via-green-500 to-emerald-500 hover:from-green-700 hover:via-green-600 hover:to-emerald-600 text-white shadow-lg',
+    'warning' => 'bg-linear-to-r from-yellow-600 via-yellow-500 to-orange-500 hover:from-yellow-700 hover:via-yellow-600 hover:to-orange-600 text-white shadow-lg',
+    'info' => 'bg-linear-to-r from-blue-600 via-blue-500 to-indigo-500 hover:from-blue-700 hover:via-blue-600 hover:to-indigo-600 text-white shadow-lg',
 ];
 
 $sizes = [
@@ -32,7 +32,7 @@ $sizeClasses = $sizes[$size] ?? $sizes['default'];
 <button
     type="{{ $type }}"
     {{ $attributes->except(['variant', 'size', 'disabled', 'loading', 'icon', 'iconPosition', 'type'])->merge([
-        'class' => "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none {$variantClasses} {$sizeClasses}",
+        'class' => "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none {$variantClasses} {$sizeClasses}",
         'disabled' => $disabled || $loading,
     ]) }}
 >

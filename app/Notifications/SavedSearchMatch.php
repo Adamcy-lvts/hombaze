@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use Exception;
 use App\Models\SavedSearch;
 use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
@@ -207,7 +208,7 @@ class SavedSearchMatch extends Notification implements ShouldQueue
             ]);
 
             return $template;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log the error but don't fail the entire notification
             Log::warning('WhatsApp template failed for saved search match', [
                 'error' => $e->getMessage(),

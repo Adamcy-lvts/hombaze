@@ -81,7 +81,7 @@ class TenantInvitation extends Model
 
     public function agent(): BelongsTo
     {
-        return $this->belongsTo(\App\Models\Agent::class);
+        return $this->belongsTo(Agent::class);
     }
 
     /**

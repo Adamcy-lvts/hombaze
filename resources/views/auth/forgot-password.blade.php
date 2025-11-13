@@ -19,7 +19,7 @@
     <div class="min-h-screen relative overflow-hidden">
         <!-- Background Image with Overlay -->
         <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95 z-10"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95 z-10"></div>
             <img 
                 src="https://images.unsplash.com/photo-1582407947304-fd86f028f716?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
                 alt="Modern Real Estate" 
@@ -29,9 +29,9 @@
 
         <!-- Premium Background Elements -->
         <div class="absolute inset-0 z-20">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-500/15 to-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-            <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-emerald-500/20 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-linear-to-br from-blue-500/15 to-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-linear-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
         </div>
 
         <!-- Main Content -->
@@ -42,8 +42,8 @@
                 <div class="mb-12">
                     <a href="{{ route('landing') }}" class="group flex items-center space-x-4 mb-8">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div class="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                            <div class="absolute inset-0 bg-linear-to-br from-emerald-400 to-blue-500 rounded-2xl blur-xs opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative w-14 h-14 bg-linear-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
                                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                                 </svg>
@@ -115,7 +115,7 @@
                 <!-- Mobile Logo -->
                 <div class="lg:hidden mb-8 text-center">
                     <a href="{{ route('landing') }}" class="inline-flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <div class="w-12 h-12 bg-linear-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center">
                             <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                             </svg>
@@ -128,7 +128,7 @@
                 <div class="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl p-8 sm:p-10">
                     <!-- Header -->
                     <div class="text-center mb-8">
-                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
+                        <div class="w-16 h-16 bg-linear-to-br from-emerald-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
                             <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                             </svg>
@@ -214,7 +214,7 @@
                         <!-- Submit Button -->
                         <button 
                             type="submit"
-                            class="group w-full relative bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-xl hover:shadow-2xl overflow-hidden"
+                            class="group w-full relative bg-linear-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-xl hover:shadow-2xl overflow-hidden"
                         >
                             <span class="relative z-10 flex items-center justify-center">
                                 Send Password Reset Link
@@ -222,7 +222,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                                 </svg>
                             </span>
-                            <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
+                            <div class="absolute inset-0 bg-linear-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
                         </button>
                     </form>
 

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use App\Models\User;
 use App\Models\Property;
@@ -89,7 +90,7 @@ class SendPropertyRecommendations extends Command
                     $this->warn("- No new recommendations for {$user->name}");
                 }
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errorCount++;
                 $this->error("✗ Failed to send recommendations to {$user->name}: {$e->getMessage()}");
 

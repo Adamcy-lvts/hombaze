@@ -2,6 +2,32 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\PropertyResource\Pages\ListProperties;
+use App\Filament\Landlord\Resources\PropertyResource\Pages\CreateProperty;
+use App\Filament\Landlord\Resources\PropertyResource\Pages\EditProperty;
 use App\Filament\Landlord\Resources\PropertyResource\Pages;
 use App\Filament\Landlord\Resources\PropertyResource\RelationManagers;
 use App\Models\Property;
@@ -14,18 +40,13 @@ use App\Models\City;
 use App\Models\Area;
 use App\Models\PropertyOwner;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Illuminate\Support\Str;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
@@ -35,7 +56,7 @@ class PropertyResource extends Resource
 {
     protected static ?string $model = Property::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
 
     protected static ?string $navigationLabel = 'Properties';
 
@@ -45,36 +66,36 @@ class PropertyResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Main content area (2/3 width) and Sidebar (1/3 width)
-                Forms\Components\Grid::make([
+                Grid::make([
                     'default' => 1,
                     'lg' => 3,
                 ])
                     ->schema([
                         // Main Content Area (spans 2 columns)
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Basic Property Information
-                                Forms\Components\Section::make('Property Information')
+                                Section::make('Property Information')
                                     ->description('Basic details about the property')
                                     ->schema([
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 2,
                                         ])
                                             ->schema([
-                                                Forms\Components\TextInput::make('title')
+                                                TextInput::make('title')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->live(onBlur: true)
                                                     ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
                                                     ->columnSpanFull(),
 
-                                                Forms\Components\TextInput::make('slug')
+                                                TextInput::make('slug')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->unique(ignoreRecord: true)
@@ -83,7 +104,7 @@ class PropertyResource extends Resource
                                                     ->hidden()
                                                     ->columnSpanFull(),
 
-                                                Forms\Components\Select::make('property_type_id')
+                                                Select::make('property_type_id')
                                                     ->label('Property Type')
                                                     ->relationship('propertyType', 'name')
                                                     ->searchable()
@@ -93,7 +114,7 @@ class PropertyResource extends Resource
                                                     ->afterStateUpdated(fn(Set $set) => $set('property_subtype_id', null))
                                                     ->columnSpan(1),
 
-                                                Forms\Components\Select::make('property_subtype_id')
+                                                Select::make('property_subtype_id')
                                                     ->label('Property Subtype')
                                                     ->options(fn(Get $get): array => PropertySubtype::query()
                                                         ->where('property_type_id', $get('property_type_id'))
@@ -104,22 +125,22 @@ class PropertyResource extends Resource
                                                     ->placeholder('Select subtype (optional)')
                                                     ->columnSpan(1),
                                             ]),
-                                        Forms\Components\Textarea::make('description')
+                                        Textarea::make('description')
                                             ->required()
                                             ->rows(4)
                                             ->columnSpanFull(),
                                     ])->collapsible(),
 
                                 // Location Information
-                                Forms\Components\Section::make('Location Details')
+                                Section::make('Location Details')
                                     ->description('Property location and address information')
                                     ->schema([
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 3,
                                         ])
                                             ->schema([
-                                                Forms\Components\Select::make('state_id')
+                                                Select::make('state_id')
                                                     ->label('State')
                                                     ->relationship('state', 'name')
                                                     ->searchable()
@@ -132,7 +153,7 @@ class PropertyResource extends Resource
                                                     })
                                                     ->columnSpan(1),
 
-                                                Forms\Components\Select::make('city_id')
+                                                Select::make('city_id')
                                                     ->label('City')
                                                     ->options(fn(Get $get): array => City::query()
                                                         ->where('state_id', $get('state_id'))
@@ -145,7 +166,7 @@ class PropertyResource extends Resource
                                                     ->afterStateUpdated(fn(Set $set) => $set('area_id', null))
                                                     ->columnSpan(1),
 
-                                                Forms\Components\Select::make('area_id')
+                                                Select::make('area_id')
                                                     ->label('Area')
                                                     ->options(fn(Get $get): array => Area::query()
                                                         ->where('city_id', $get('city_id'))
@@ -156,7 +177,7 @@ class PropertyResource extends Resource
                                                     ->placeholder('Select area (optional)')
                                                     ->columnSpan(1),
                                             ]),
-                                        Forms\Components\Textarea::make('address')
+                                        Textarea::make('address')
                                             ->label('Street Address')
                                             ->required()
                                             ->rows(3)
@@ -166,10 +187,10 @@ class PropertyResource extends Resource
 
 
                                 // Property Features & Amenities
-                                Forms\Components\Section::make('Property Features & Amenities')
+                                Section::make('Property Features & Amenities')
                                     ->description('Select features and amenities available with this property')
                                     ->schema([
-                                        Forms\Components\CheckboxList::make('features')
+                                        CheckboxList::make('features')
                                             ->label('Property Features')
                                             ->relationship('features', 'name')
                                             ->options(function () {
@@ -192,16 +213,16 @@ class PropertyResource extends Resource
                                     ])->collapsible(),
 
                                 // Additional Property Details
-                                Forms\Components\Section::make('Additional Details')
+                                Section::make('Additional Details')
                                     ->description('Optional additional property information')
                                     ->collapsed()
                                     ->schema([
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 2,
                                         ])
                                             ->schema([
-                                                Forms\Components\TextInput::make('year_built')
+                                                TextInput::make('year_built')
                                                     ->label('Year Built')
                                                     ->numeric()
                                                     ->minValue(1800)
@@ -209,18 +230,18 @@ class PropertyResource extends Resource
                                                     ->placeholder('e.g., 2020')
                                                     ->columnSpan(1),
                                                     
-                                                Forms\Components\TextInput::make('landmark')
+                                                TextInput::make('landmark')
                                                     ->label('Nearby Landmark')
                                                     ->maxLength(255)
                                                     ->placeholder('e.g., Near Shopping Mall, Close to School')
                                                     ->columnSpan(1),
                                             ]),
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 2,
                                         ])
                                             ->schema([
-                                                Forms\Components\TextInput::make('latitude')
+                                                TextInput::make('latitude')
                                                     ->label('Latitude')
                                                     ->numeric()
                                                     ->step(0.000001)
@@ -228,7 +249,7 @@ class PropertyResource extends Resource
                                                     ->helperText('GPS coordinates for map display')
                                                     ->columnSpan(1),
                                                     
-                                                Forms\Components\TextInput::make('longitude')
+                                                TextInput::make('longitude')
                                                     ->label('Longitude')
                                                     ->numeric()
                                                     ->step(0.000001)
@@ -236,14 +257,14 @@ class PropertyResource extends Resource
                                                     ->helperText('GPS coordinates for map display')
                                                     ->columnSpan(1),
                                             ]),
-                                        Forms\Components\TextInput::make('video_url')
+                                        TextInput::make('video_url')
                                             ->label('Property Video URL')
                                             ->url()
                                             ->placeholder('https://youtube.com/watch?v=...')
                                             ->helperText('YouTube or Vimeo video link for property tour')
                                             ->columnSpanFull(),
                                             
-                                        Forms\Components\TextInput::make('virtual_tour_url')
+                                        TextInput::make('virtual_tour_url')
                                             ->label('Virtual Tour URL')
                                             ->url()
                                             ->placeholder('https://...')
@@ -252,10 +273,10 @@ class PropertyResource extends Resource
                                     ])->collapsible(),
 
                                 // Property Media
-                                Forms\Components\Section::make('Property Media')
+                                Section::make('Property Media')
                                     ->description('Upload images, videos, documents and floor plans')
                                     ->schema([
-                                        Forms\Components\SpatieMediaLibraryFileUpload::make('featured_image')
+                                        SpatieMediaLibraryFileUpload::make('featured_image')
                                             ->label('Featured Image')
                                             ->collection('featured')
                                             ->image()
@@ -278,7 +299,7 @@ class PropertyResource extends Resource
                                             ->helperText('Upload a high-quality featured image for this property. ' . getOptimalImageResolution()['quality_note'])
                                             ->columnSpanFull(),
                                             
-                                        Forms\Components\SpatieMediaLibraryFileUpload::make('gallery_images')
+                                        SpatieMediaLibraryFileUpload::make('gallery_images')
                                             ->label('Gallery Images')
                                             ->collection('gallery')
                                             ->image()
@@ -293,7 +314,7 @@ class PropertyResource extends Resource
                                             ->maxFiles(function (Get $get) {
                                                 $propertyTypeId = $get('property_type_id');
                                                 if ($propertyTypeId) {
-                                                    $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                                                    $propertyType = PropertyType::find($propertyTypeId);
                                                     if ($propertyType) {
                                                         return getPropertyImageConfig($propertyType->slug)['gallery_max_files'];
                                                     }
@@ -313,7 +334,7 @@ class PropertyResource extends Resource
                                                 $propertyTypeId = $get('property_type_id');
                                                 $resolutionInfo = getOptimalImageResolution();
                                                 if ($propertyTypeId) {
-                                                    $propertyType = \App\Models\PropertyType::find($propertyTypeId);
+                                                    $propertyType = PropertyType::find($propertyTypeId);
                                                     if ($propertyType) {
                                                         return getPropertyImageConfig($propertyType->slug)['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
                                                     }
@@ -322,7 +343,7 @@ class PropertyResource extends Resource
                                             })
                                             ->columnSpanFull(),
                                             
-                                        Forms\Components\SpatieMediaLibraryFileUpload::make('floor_plans')
+                                        SpatieMediaLibraryFileUpload::make('floor_plans')
                                             ->label('Floor Plans')
                                             ->collection('floor_plans')
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
@@ -333,7 +354,7 @@ class PropertyResource extends Resource
                                             ->helperText('Upload floor plan images or PDF documents')
                                             ->columnSpanFull(),
                                             
-                                        Forms\Components\SpatieMediaLibraryFileUpload::make('documents')
+                                        SpatieMediaLibraryFileUpload::make('documents')
                                             ->label('Property Documents')
                                             ->collection('documents')
                                             ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
@@ -351,13 +372,13 @@ class PropertyResource extends Resource
                             ]),
 
                         // Sidebar (spans 1 column)
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Pricing & Listing Details - Sidebar
-                                Forms\Components\Section::make('Pricing & Listing')
+                                Section::make('Pricing & Listing')
                                     ->description('Property pricing and listing information')
                                     ->schema([
-                                        Forms\Components\Select::make('listing_type')
+                                        Select::make('listing_type')
                                             ->options([
                                                 'sale' => 'For Sale',
                                                 'rent' => 'For Rent',
@@ -367,12 +388,12 @@ class PropertyResource extends Resource
                                             ->required()
                                             ->live(),
 
-                                        Forms\Components\TextInput::make('price')
+                                        TextInput::make('price')
                                             ->numeric()
                                             ->prefix('₦')
                                             ->required(),
 
-                                        Forms\Components\Select::make('price_period')
+                                        Select::make('price_period')
                                             ->label('Price Period')
                                             ->options([
                                                 'per_month' => 'Per Month',
@@ -382,48 +403,48 @@ class PropertyResource extends Resource
                                             ])
                                             ->visible(fn(Get $get): bool => in_array($get('listing_type'), ['rent', 'lease', 'shortlet'])),
 
-                                        Forms\Components\Select::make('status')
+                                        Select::make('status')
                                             ->options(PropertyStatus::class)
                                             ->required()
                                             ->default('available'),
                                     ])->columns(1)->collapsible(),
 
                                 // Property Features - Sidebar
-                                Forms\Components\Section::make('Property Features')
+                                Section::make('Property Features')
                                     ->description('Physical characteristics and specifications')
                                     ->schema([
-                                        Forms\Components\TextInput::make('bedrooms')
+                                        TextInput::make('bedrooms')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
                                             ->required(fn (Get $get): bool => static::isFieldRequired('bedrooms', $get))
                                             ->visible(fn (Get $get): bool => static::isFieldVisible('bedrooms', $get)),
 
-                                        Forms\Components\TextInput::make('bathrooms')
+                                        TextInput::make('bathrooms')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
                                             ->required(fn (Get $get): bool => static::isFieldRequired('bathrooms', $get))
                                             ->visible(fn (Get $get): bool => static::isFieldVisible('bathrooms', $get)),
 
-                                        Forms\Components\TextInput::make('toilets')
+                                        TextInput::make('toilets')
                                             ->numeric()
                                             ->minValue(0)
                                             ->maxValue(20)
                                             ->visible(fn (Get $get): bool => static::isFieldVisible('toilets', $get)),
 
-                                        Forms\Components\TextInput::make('parking_spaces')
+                                        TextInput::make('parking_spaces')
                                             ->numeric()
                                             ->minValue(0)
                                             ->default(0)
                                             ->visible(fn (Get $get): bool => static::isFieldVisible('parking_spaces', $get)),
 
-                                        Forms\Components\TextInput::make('size_sqm')
+                                        TextInput::make('size_sqm')
                                             ->label('Size (sqm)')
                                             ->numeric()
                                             ->suffix('sqm'),
 
-                                        Forms\Components\Select::make('furnishing_status')
+                                        Select::make('furnishing_status')
                                             ->options([
                                                 'unfurnished' => 'Unfurnished',
                                                 'semi_furnished' => 'Semi Furnished',
@@ -434,10 +455,10 @@ class PropertyResource extends Resource
                                     ])->columns(1)->collapsible(),
 
                                 // Property Management - Sidebar (Landlord Context)
-                                Forms\Components\Section::make('Property Management')
+                                Section::make('Property Management')
                                     ->description('Additional property management settings')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('owner_info')
+                                        Placeholder::make('owner_info')
                                             ->label('Property Owner')
                                             ->content('You are the owner of this property')
                                             ->helperText('As a landlord, you are automatically set as the owner of properties you create')
@@ -445,10 +466,10 @@ class PropertyResource extends Resource
                                     ])->columns(1)->collapsible(),
 
                                 // Status & Settings - Sidebar
-                                Forms\Components\Section::make('Property Settings')
+                                Section::make('Property Settings')
                                     ->description('Property status and visibility settings')
                                     ->schema([
-                                        Forms\Components\Toggle::make('is_published')
+                                        Toggle::make('is_published')
                                             ->label('Published Listing')
                                             ->helperText('Make this property visible to the public')
                                             ->default(true),
@@ -467,12 +488,12 @@ class PropertyResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->label('Property Title')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('listing_type')
+                TextColumn::make('listing_type')
                     ->badge()
                     ->label('Listing Type')
                     ->colors([
@@ -483,7 +504,7 @@ class PropertyResource extends Resource
                     ])
                     ->formatStateUsing(fn(string $state): string => ucwords(str_replace('_', ' ', $state))),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => PropertyStatus::from($state)->getLabel())
                     ->color(fn (string $state): string => PropertyStatus::from($state)->getColor())
@@ -491,26 +512,26 @@ class PropertyResource extends Resource
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('price')
+                TextColumn::make('price')
                     ->prefix('₦')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('price_period')
+                TextColumn::make('price_period')
                     ->label('Period')
                     ->formatStateUsing(fn(string $state): string => ucwords(str_replace('_', ' ', $state))),
 
-                Tables\Columns\TextColumn::make('bedrooms')
+                TextColumn::make('bedrooms')
                     ->label('Beds')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('bathrooms')
+                TextColumn::make('bathrooms')
                     ->label('Baths')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('propertyType.name')
+                TextColumn::make('propertyType.name')
                     ->label('Type')
                     ->sortable(),
 
@@ -524,34 +545,34 @@ class PropertyResource extends Resource
                 //     })
                 //     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('state.name')
+                TextColumn::make('state.name')
                     ->label('State')
                     ->sortable()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('city.name')
+                TextColumn::make('city.name')
                     ->label('City')
                     ->sortable()
                     ->toggleable(),
 
-                Tables\Columns\IconColumn::make('is_featured')
+                IconColumn::make('is_featured')
                     ->label('Featured')
                     ->boolean()
                     ->toggleable(),
 
-                Tables\Columns\IconColumn::make('is_published')
+                IconColumn::make('is_published')
                     ->label('Published')
                     ->boolean()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('listing_type')
+                SelectFilter::make('listing_type')
                     ->options([
                         'sale' => 'For Sale',
                         'rent' => 'For Rent',
@@ -559,36 +580,36 @@ class PropertyResource extends Resource
                         'shortlet' => 'Shortlet',
                     ]),
 
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options(PropertyStatus::class),
 
-                Tables\Filters\SelectFilter::make('property_type_id')
+                SelectFilter::make('property_type_id')
                     ->label('Property Type')
                     ->relationship('propertyType', 'name'),
 
-                Tables\Filters\SelectFilter::make('state_id')
+                SelectFilter::make('state_id')
                     ->label('State')
                     ->relationship('state', 'name'),
 
-                Tables\Filters\Filter::make('is_featured')
+                Filter::make('is_featured')
                     ->query(fn(Builder $query): Builder => $query->where('is_featured', true))
                     ->label('Featured Only'),
 
-                Tables\Filters\Filter::make('is_published')
+                Filter::make('is_published')
                     ->query(fn(Builder $query): Builder => $query->where('is_published', true))
                     ->label('Published Only'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
 
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('change_status')
+                ActionGroup::make([
+                    Action::make('change_status')
                         ->label('Change Status')
                         ->icon('heroicon-o-arrow-path')
                         ->color('info')
-                        ->form([
-                            Forms\Components\Select::make('status')
+                        ->schema([
+                            Select::make('status')
                                 ->options(PropertyStatus::class)
                                 ->required(),
                         ])
@@ -596,7 +617,7 @@ class PropertyResource extends Resource
                             $record->update(['status' => $data['status']]);
                         }),
 
-                    Tables\Actions\Action::make('mark_sold')
+                    Action::make('mark_sold')
                         ->label('Mark Sold')
                         ->icon('heroicon-o-banknotes')
                         ->color('danger')
@@ -604,7 +625,7 @@ class PropertyResource extends Resource
                         ->requiresConfirmation()
                         ->visible(fn ($record) => $record->status !== PropertyStatus::SOLD->value),
 
-                    Tables\Actions\Action::make('mark_off_market')
+                    Action::make('mark_off_market')
                         ->label('Take Off Market')
                         ->icon('heroicon-o-eye-slash')
                         ->color('gray')
@@ -613,11 +634,11 @@ class PropertyResource extends Resource
                         ->visible(fn ($record) => $record->status !== PropertyStatus::OFF_MARKET->value),
                 ])->label('Status')->icon('heroicon-o-ellipsis-vertical')->color('info'),
 
-                Tables\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -641,9 +662,9 @@ class PropertyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProperties::route('/'),
-            'create' => Pages\CreateProperty::route('/create'),
-            'edit' => Pages\EditProperty::route('/{record}/edit'),
+            'index' => ListProperties::route('/'),
+            'create' => CreateProperty::route('/create'),
+            'edit' => EditProperty::route('/{record}/edit'),
         ];
     }
 

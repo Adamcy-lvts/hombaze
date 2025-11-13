@@ -2,6 +2,12 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Landlord\Pages\Auth\Register;
+use App\Filament\Landlord\Pages\Dashboard;
+use App\Filament\Landlord\Widgets\LandlordAccountWidget;
+use App\Filament\Landlord\Widgets\PropertyOwnerProfileWidget;
+use App\Filament\Landlord\Widgets\LandlordInfoWidget;
+use App\Http\Middleware\RequireProfileCompletion;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -27,7 +33,7 @@ class LandlordPanelProvider extends PanelProvider
             ->id('landlord')
             ->path('landlord')
             ->login()
-            ->registration(\App\Filament\Landlord\Pages\Auth\Register::class)
+            ->registration(Register::class)
             ->colors([
                 'primary' => Color::Green,
             ])
@@ -36,13 +42,13 @@ class LandlordPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Landlord/Resources'), for: 'App\\Filament\\Landlord\\Resources')
             ->discoverPages(in: app_path('Filament/Landlord/Pages'), for: 'App\\Filament\\Landlord\\Pages')
             ->pages([
-                \App\Filament\Landlord\Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Landlord/Widgets'), for: 'App\\Filament\\Landlord\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                \App\Filament\Landlord\Widgets\PropertyOwnerProfileWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                LandlordAccountWidget::class,
+                PropertyOwnerProfileWidget::class,
+                LandlordInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -57,7 +63,7 @@ class LandlordPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\RequireProfileCompletion::class,
+                RequireProfileCompletion::class,
             ])
             ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'));
     }

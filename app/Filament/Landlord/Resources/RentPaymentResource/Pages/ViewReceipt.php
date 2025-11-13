@@ -20,7 +20,7 @@ class ViewReceipt extends Page
 {
     protected static string $resource = RentPaymentResource::class;
 
-    protected static string $view = 'filament.landlord.resources.rent-payment-resource.pages.view-receipt';
+    protected string $view = 'filament.landlord.resources.rent-payment-resource.pages.view-receipt';
 
     public $receipt;
     public $amountInWords;
@@ -37,7 +37,7 @@ class ViewReceipt extends Page
         try {
             // Convert amount to words
             $this->amountInWords = $this->convertAmountToWords($this->receipt->amount);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error converting amount to words: ' . $e->getMessage());
             $this->amountInWords = 'Amount in words not available';
         }
@@ -313,7 +313,7 @@ class ViewReceipt extends Page
         try {
             $qrData = route('receipt.view', $this->receipt->id);
             return QrCode::size(80)->encoding('UTF-8')->generate($qrData);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error generating QR code: ' . $e->getMessage());
             return null;
         }

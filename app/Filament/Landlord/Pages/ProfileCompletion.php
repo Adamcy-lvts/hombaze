@@ -2,19 +2,20 @@
 
 namespace App\Filament\Landlord\Pages;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
+use Filament\Schemas\Components\Section;
 use Filament\Pages\Page;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\DatePicker;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
@@ -26,8 +27,8 @@ class ProfileCompletion extends Page implements HasForms, HasActions
 {
     use InteractsWithForms, InteractsWithActions;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
-    protected static string $view = 'filament.landlord.pages.profile-completion';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-circle';
+    protected string $view = 'filament.landlord.pages.profile-completion';
     protected static ?string $title = 'Complete Your Profile';
     protected static bool $shouldRegisterNavigation = false;
 
@@ -57,12 +58,12 @@ class ProfileCompletion extends Page implements HasForms, HasActions
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Wizard::make([
-                    Wizard\Step::make('Personal Information')
+                    Step::make('Personal Information')
                         ->icon('heroicon-o-identification')
                         ->schema([
                             Section::make('Basic Details')
@@ -110,7 +111,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
-                    Wizard\Step::make('Address Information')
+                    Step::make('Address Information')
                         ->icon('heroicon-o-map-pin')
                         ->schema([
                             Section::make('Location Details')
@@ -164,7 +165,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
-                    Wizard\Step::make('ID Verification')
+                    Step::make('ID Verification')
                         ->icon('heroicon-o-identification')
                         ->schema([
                             Section::make('Identity Verification')
@@ -189,7 +190,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
-                    Wizard\Step::make('Profile Photo')
+                    Step::make('Profile Photo')
                         ->icon('heroicon-o-camera')
                         ->schema([
                             Section::make('Profile Photo')

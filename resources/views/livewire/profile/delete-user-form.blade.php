@@ -25,7 +25,7 @@ new class extends Component
 
 <div>
     <div class="flex items-center mb-4 sm:mb-6">
-        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-red-600 to-red-700 shadow-lg mr-3">
+        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-red-600 to-red-700 shadow-lg mr-3">
             <x-heroicon-o-trash class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Delete Account</h2>
@@ -33,7 +33,7 @@ new class extends Component
 
     <div class="p-4 bg-red-50 rounded-lg border border-red-200 mb-4">
         <div class="flex items-start">
-            <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-red-600 mt-0.5 mr-3 flex-shrink-0" />
+            <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-red-600 mt-0.5 mr-3 shrink-0" />
             <div>
                 <p class="text-sm font-medium text-red-900">Permanent Action</p>
                 <p class="text-sm text-red-700 mt-1">

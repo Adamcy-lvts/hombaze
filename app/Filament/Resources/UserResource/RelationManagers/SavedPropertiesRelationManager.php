@@ -2,8 +2,20 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,18 +26,18 @@ class SavedPropertiesRelationManager extends RelationManager
 {
     protected static string $relationship = 'savedProperties';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('property_id')
+        return $schema
+            ->components([
+                Select::make('property_id')
                     ->relationship('property', 'title')
                     ->required()
                     ->searchable()
                     ->preload()
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->title . ' - ₦' . number_format($record->price))
                     ->label('Property'),
-                Forms\Components\Textarea::make('notes')
+                Textarea::make('notes')
                     ->maxLength(65535)
                     ->placeholder('Add personal notes about this property...')
                     ->columnSpanFull(),
@@ -37,14 +49,14 @@ class SavedPropertiesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('property.title')
             ->columns([
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->sortable()
                     ->searchable()
                     ->url(fn ($record) => $record->property ? 
                         route('filament.admin.resources.properties.view', $record->property) : null)
                     ->openUrlInNewTab(),
-                Tables\Columns\TextColumn::make('property.listing_type')
+                TextColumn::make('property.listing_type')
                     ->label('Type')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -53,14 +65,14 @@ class SavedPropertiesRelationManager extends RelationManager
                         'shortlet' => 'info',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('property.price')
+                TextColumn::make('property.price')
                     ->label('Price')
                     ->money('NGN')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('property.city.name')
+                TextColumn::make('property.city.name')
                     ->label('Location')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('property.status')
+                TextColumn::make('property.status')
                     ->label('Status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -70,20 +82,20 @@ class SavedPropertiesRelationManager extends RelationManager
                         'under_offer' => 'info',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('notes')
+                TextColumn::make('notes')
                     ->limit(30)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 30 ? $state : null;
                     }),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Saved On')
                     ->dateTime()
                     ->sortable()
                     ->since(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('property.listing_type')
+                SelectFilter::make('property.listing_type')
                     ->relationship('property', 'listing_type')
                     ->options([
                         'rent' => 'Rent',
@@ -91,7 +103,7 @@ class SavedPropertiesRelationManager extends RelationManager
                         'shortlet' => 'Shortlet',
                     ])
                     ->label('Listing Type'),
-                Tables\Filters\SelectFilter::make('property.status')
+                SelectFilter::make('property.status')
                     ->relationship('property', 'status')
                     ->options([
                         'available' => 'Available',
@@ -100,29 +112,29 @@ class SavedPropertiesRelationManager extends RelationManager
                         'under_offer' => 'Under Offer',
                     ])
                     ->label('Property Status'),
-                Tables\Filters\Filter::make('available_only')
+                Filter::make('available_only')
                     ->query(fn (Builder $query): Builder => $query->available())
                     ->label('Available Properties Only'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('view_property')
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                Action::make('view_property')
                     ->icon('heroicon-o-eye')
                     ->color('info')
                     ->url(fn ($record) => $record->property ? 
                         route('filament.admin.resources.properties.view', $record->property) : null)
                     ->openUrlInNewTab()
                     ->label('View Property'),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->label('Remove from Saved'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->label('Remove from Saved'),
                 ]),
             ])

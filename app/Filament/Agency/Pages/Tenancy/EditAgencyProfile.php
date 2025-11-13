@@ -2,19 +2,20 @@
 
 namespace App\Filament\Agency\Pages\Tenancy;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
 use Filament\Pages\Tenancy\EditTenantProfile;
 
 class EditAgencyProfile extends EditTenantProfile
@@ -34,10 +35,10 @@ class EditAgencyProfile extends EditTenantProfile
         return 'heroicon-o-building-office';
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Main content area (2/3 width) and Sidebar (1/3 width)
                 Grid::make([
                     'default' => 1,
@@ -45,7 +46,7 @@ class EditAgencyProfile extends EditTenantProfile
                 ])
                     ->schema([
                         // Main Content Area (spans 2 columns)
-                        \Filament\Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Basic Agency Information
                                 Section::make('Agency Information')
@@ -199,7 +200,7 @@ class EditAgencyProfile extends EditTenantProfile
                             ->columnSpan(['lg' => 2]),
 
                         // Sidebar (1/3 width)
-                        \Filament\Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Agency Logo
                                 Section::make('Agency Branding')

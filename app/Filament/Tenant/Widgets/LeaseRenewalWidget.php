@@ -11,7 +11,7 @@ use Filament\Notifications\Notification;
 
 class LeaseRenewalWidget extends Widget
 {
-    protected static string $view = 'filament.tenant.widgets.lease-renewal-widget';
+    protected string $view = 'filament.tenant.widgets.lease-renewal-widget';
 
     protected int | string | array $columnSpan = 'full';
 

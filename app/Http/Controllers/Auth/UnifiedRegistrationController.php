@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Exception;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -138,7 +139,7 @@ class UnifiedRegistrationController extends Controller
             // Redirect to appropriate panel
             return $this->redirectToPanel($user);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             
             Log::error('Unified registration failed', [
@@ -260,7 +261,7 @@ class UnifiedRegistrationController extends Controller
             } else {
                 Log::warning("Role {$roleName} not found", ['user_id' => $user->id]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to assign role {$roleName}", [
                 'user_id' => $user->id,
                 'error' => $e->getMessage()
@@ -434,7 +435,7 @@ class UnifiedRegistrationController extends Controller
                 ]);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to assign super-admin role to agency owner', [
                 'user_id' => $user->id,
                 'agency_id' => $agency->id,
@@ -482,7 +483,7 @@ class UnifiedRegistrationController extends Controller
                 'permissions_count' => count($agentPermissions),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to create agent role for agency', [
                 'agency_id' => $agency->id,
                 'agency_name' => $agency->name,

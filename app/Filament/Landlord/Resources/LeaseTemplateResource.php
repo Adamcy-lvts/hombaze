@@ -2,10 +2,32 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Placeholder;
+use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\LeaseTemplateResource\Pages\ListLeaseTemplates;
+use App\Filament\Landlord\Resources\LeaseTemplateResource\Pages\CreateLeaseTemplate;
+use App\Filament\Landlord\Resources\LeaseTemplateResource\Pages\ViewLeaseTemplate;
+use App\Filament\Landlord\Resources\LeaseTemplateResource\Pages\EditLeaseTemplate;
 use App\Filament\Landlord\Resources\LeaseTemplateResource\Pages;
 use App\Models\LeaseTemplate;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,92 +39,92 @@ class LeaseTemplateResource extends Resource
 {
     protected static ?string $model = LeaseTemplate::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-duplicate';
 
-    protected static ?string $navigationGroup = 'Property Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Property Management';
 
     protected static ?string $navigationLabel = 'Lease Templates';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Template Information')
+        return $schema
+            ->components([
+                Section::make('Template Information')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label('Template Name')
                                     ->required()
                                     ->maxLength(255)
                                     ->placeholder('e.g., Standard Residential Lease'),
 
-                                Forms\Components\Toggle::make('is_default')
+                                Toggle::make('is_default')
                                     ->label('Set as Default Template')
                                     ->helperText('This template will be pre-selected when creating new leases'),
                             ]),
 
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->label('Description')
                             ->rows(2)
                             ->maxLength(500)
                             ->placeholder('Brief description of when to use this template'),
                     ]),
 
-                Forms\Components\Section::make('Default Lease Settings')
+                Section::make('Default Lease Settings')
                     ->description('These values will be pre-filled when creating leases from this template')
                     ->schema([
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\Select::make('default_payment_frequency')
+                                Select::make('default_payment_frequency')
                                     ->label('Payment Frequency')
                                     ->options(LeaseTemplate::getPaymentFrequencies())
                                     ->required()
                                     ->default('annually'),
 
-                                Forms\Components\TextInput::make('default_grace_period_days')
+                                TextInput::make('default_grace_period_days')
                                     ->label('Grace Period (Days)')
                                     ->numeric()
                                     ->default(0)
                                     ->minValue(0),
 
-                                Forms\Components\Toggle::make('default_renewal_option')
+                                Toggle::make('default_renewal_option')
                                     ->label('Renewal Available')
                                     ->default(true),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('default_security_deposit')
+                                TextInput::make('default_security_deposit')
                                     ->label('Security Deposit')
                                     ->numeric()
                                     ->prefix('₦')
                                     ->placeholder('Leave empty if varies by property'),
 
-                                Forms\Components\TextInput::make('default_service_charge')
+                                TextInput::make('default_service_charge')
                                     ->label('Service Charge')
                                     ->numeric()
                                     ->prefix('₦')
                                     ->placeholder('Leave empty if not applicable'),
                             ]),
 
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\TextInput::make('default_legal_fee')
+                                TextInput::make('default_legal_fee')
                                     ->label('Legal Fee')
                                     ->numeric()
                                     ->prefix('₦')
                                     ->placeholder('Leave empty if not applicable'),
 
-                                Forms\Components\TextInput::make('default_agency_fee')
+                                TextInput::make('default_agency_fee')
                                     ->label('Agency Fee')
                                     ->numeric()
                                     ->prefix('₦')
                                     ->placeholder('Leave empty if not applicable'),
 
-                                Forms\Components\TextInput::make('default_caution_deposit')
+                                TextInput::make('default_caution_deposit')
                                     ->label('Caution Deposit')
                                     ->numeric()
                                     ->prefix('₦')
@@ -110,10 +132,10 @@ class LeaseTemplateResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Template Variables')
+                Section::make('Template Variables')
                     ->description('Available variables you can use in your terms and conditions')
                     ->schema([
-                        Forms\Components\Placeholder::make('available_variables')
+                        Placeholder::make('available_variables')
                             ->label('Available Variables')
                             ->content(function () {
                                 $variables = LeaseTemplate::getAvailableVariables();
@@ -123,10 +145,10 @@ class LeaseTemplateResource extends Resource
                                     $variableList .= "• **{{" . $key . "}}** - " . $label . "\n";
                                 }
                                 
-                                return new \Illuminate\Support\HtmlString(
+                                return new HtmlString(
                                     '<div class="text-sm space-y-1">' .
                                     '<p class="font-medium text-gray-700">Use these variables in your terms and conditions:</p>' .
-                                    '<div class="bg-gray-50 p-3 rounded border max-h-40 overflow-y-auto">' .
+                                    '<div class="bg-gray-50 p-3 rounded-sm border max-h-40 overflow-y-auto">' .
                                     '<pre class="whitespace-pre-wrap text-xs">' . $variableList . '</pre>' .
                                     '</div>' .
                                     '<p class="text-xs text-gray-500 mt-2">Variables will be automatically replaced with actual values when creating leases.</p>' .
@@ -136,10 +158,10 @@ class LeaseTemplateResource extends Resource
                     ])
                     ->collapsible(),
 
-                Forms\Components\Section::make('Terms & Conditions Template')
+                Section::make('Terms & Conditions Template')
                     ->description('Write your lease terms using the variables above. They will be replaced with actual values when creating leases.')
                     ->schema([
-                        Forms\Components\RichEditor::make('terms_and_conditions')
+                        RichEditor::make('terms_and_conditions')
                             ->label('Terms & Conditions')
                             ->required()
                             ->toolbarButtons([
@@ -171,9 +193,9 @@ class LeaseTemplateResource extends Resource
                             ->helperText('Use the variables from the section above (e.g., {{property_title}}, {{tenant_name}}, {{rent_amount}}) to create dynamic templates.'),
                     ]),
 
-                Forms\Components\Section::make('Template Status')
+                Section::make('Template Status')
                     ->schema([
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->label('Template Active')
                             ->default(true)
                             ->helperText('Inactive templates cannot be used to create new leases'),
@@ -188,18 +210,18 @@ class LeaseTemplateResource extends Resource
                 return $query->where('landlord_id', Auth::id());
             })
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Template Name')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('Description')
                     ->limit(50)
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('default_payment_frequency')
+                TextColumn::make('default_payment_frequency')
                     ->label('Payment Frequency')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -210,57 +232,57 @@ class LeaseTemplateResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\IconColumn::make('default_renewal_option')
+                IconColumn::make('default_renewal_option')
                     ->label('Renewable')
                     ->boolean()
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('leases_count')
+                TextColumn::make('leases_count')
                     ->label('Used in Leases')
                     ->counts('leases')
                     ->badge()
                     ->color('info'),
 
-                Tables\Columns\IconColumn::make('is_default')
+                IconColumn::make('is_default')
                     ->label('Default')
                     ->boolean()
                     ->toggleable(),
 
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Active Templates')
                     ->boolean()
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only')
                     ->native(false),
 
-                Tables\Filters\TernaryFilter::make('is_default')
+                TernaryFilter::make('is_default')
                     ->label('Default Template')
                     ->boolean()
                     ->trueLabel('Default only')
                     ->falseLabel('Non-default only')
                     ->native(false),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('setDefault')
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                Action::make('setDefault')
                     ->label('Set Default')
                     ->icon('heroicon-o-star')
                     ->color('warning')
                     ->action(function (LeaseTemplate $record) {
                         $record->setAsDefault();
                         
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title('Default template updated')
                             ->body($record->name . ' is now your default template.')
                             ->success()
@@ -268,7 +290,7 @@ class LeaseTemplateResource extends Resource
                     })
                     ->visible(fn (LeaseTemplate $record) => !$record->is_default && $record->is_active),
                     
-                Tables\Actions\Action::make('duplicate')
+                Action::make('duplicate')
                     ->label('Duplicate')
                     ->icon('heroicon-o-document-duplicate')
                     ->color('info')
@@ -278,16 +300,16 @@ class LeaseTemplateResource extends Resource
                         $newTemplate->is_default = false;
                         $newTemplate->save();
                         
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title('Template duplicated')
                             ->body('New template created: ' . $newTemplate->name)
                             ->success()
                             ->send();
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -303,10 +325,10 @@ class LeaseTemplateResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLeaseTemplates::route('/'),
-            'create' => Pages\CreateLeaseTemplate::route('/create'),
-            'view' => Pages\ViewLeaseTemplate::route('/{record}'),
-            'edit' => Pages\EditLeaseTemplate::route('/{record}/edit'),
+            'index' => ListLeaseTemplates::route('/'),
+            'create' => CreateLeaseTemplate::route('/create'),
+            'view' => ViewLeaseTemplate::route('/{record}'),
+            'edit' => EditLeaseTemplate::route('/{record}/edit'),
         ];
     }
 

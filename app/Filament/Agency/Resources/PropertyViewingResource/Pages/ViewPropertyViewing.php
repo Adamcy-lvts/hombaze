@@ -2,6 +2,7 @@
 
 namespace App\Filament\Agency\Resources\PropertyViewingResource\Pages;
 
+use Filament\Actions\EditAction;
 use App\Filament\Agency\Resources\PropertyViewingResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
@@ -13,7 +14,7 @@ class ViewPropertyViewing extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
         ];
     }
 }

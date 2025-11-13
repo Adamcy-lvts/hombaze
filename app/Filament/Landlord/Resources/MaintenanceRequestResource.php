@@ -2,6 +2,25 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\MaintenanceRequestResource\Pages\ListMaintenanceRequests;
+use App\Filament\Landlord\Resources\MaintenanceRequestResource\Pages\CreateMaintenanceRequest;
+use App\Filament\Landlord\Resources\MaintenanceRequestResource\Pages\EditMaintenanceRequest;
 use App\Filament\Landlord\Resources\MaintenanceRequestResource\Pages;
 use App\Filament\Landlord\Resources\MaintenanceRequestResource\RelationManagers;
 use App\Models\MaintenanceRequest;
@@ -9,7 +28,6 @@ use App\Models\Property;
 use App\Models\Tenant;
 use App\Models\Lease;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,21 +39,21 @@ class MaintenanceRequestResource extends Resource
 {
     protected static ?string $model = MaintenanceRequest::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-wrench-screwdriver';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-wrench-screwdriver';
 
     protected static ?string $navigationLabel = 'Maintenance Requests';
 
     protected static ?int $navigationSort = 4;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Request Details')
+        return $schema
+            ->components([
+                Section::make('Request Details')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('property_id')
+                                Select::make('property_id')
                                     ->label('Property')
                                     ->relationship('property', 'title', function (Builder $query) {
                                         return $query->whereHas('owner', function (Builder $query) {
@@ -46,7 +64,7 @@ class MaintenanceRequestResource extends Resource
                                     ->searchable()
                                     ->preload(),
 
-                                Forms\Components\Select::make('tenant_id')
+                                Select::make('tenant_id')
                                     ->label('Tenant')
                                     ->relationship('tenant', 'first_name', function (Builder $query) {
                                         return $query->where('landlord_id', Auth::id());
@@ -56,9 +74,9 @@ class MaintenanceRequestResource extends Resource
                                     ->preload(),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('lease_id')
+                                Select::make('lease_id')
                                     ->label('Lease')
                                     ->relationship('lease', 'id', function (Builder $query) {
                                         return $query->where('landlord_id', Auth::id());
@@ -69,29 +87,29 @@ class MaintenanceRequestResource extends Resource
                                     ->searchable()
                                     ->preload(),
 
-                                Forms\Components\Select::make('priority')
+                                Select::make('priority')
                                     ->options(MaintenanceRequest::getPriorities())
                                     ->required()
                                     ->default('medium'),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Request Information')
+                Section::make('Request Information')
                     ->schema([
-                        Forms\Components\TextInput::make('title')
+                        TextInput::make('title')
                             ->required()
                             ->maxLength(255),
 
-                        Forms\Components\Textarea::make('description')
+                        Textarea::make('description')
                             ->required()
                             ->rows(4)
                             ->maxLength(2000),
 
-                        Forms\Components\Select::make('category')
+                        Select::make('category')
                             ->options(MaintenanceRequest::getCategories())
                             ->required(),
 
-                        Forms\Components\Select::make('urgency')
+                        Select::make('urgency')
                             ->options([
                                 'low' => 'Low',
                                 'normal' => 'Normal',
@@ -102,65 +120,65 @@ class MaintenanceRequestResource extends Resource
                             ->default('normal'),
                     ]),
 
-                Forms\Components\Section::make('Status & Scheduling')
+                Section::make('Status & Scheduling')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('status')
+                                Select::make('status')
                                     ->options(MaintenanceRequest::getStatuses())
                                     ->required()
                                     ->default('submitted'),
 
-                                Forms\Components\DateTimePicker::make('requested_date')
+                                DateTimePicker::make('requested_date')
                                     ->default(now())
                                     ->required(),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\DateTimePicker::make('scheduled_date'),
+                                DateTimePicker::make('scheduled_date'),
 
-                                Forms\Components\DateTimePicker::make('completed_date'),
+                                DateTimePicker::make('completed_date'),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Cost & Contact')
+                Section::make('Cost & Contact')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('estimated_cost')
+                                TextInput::make('estimated_cost')
                                     ->numeric()
                                     ->prefix('₦'),
 
-                                Forms\Components\TextInput::make('actual_cost')
+                                TextInput::make('actual_cost')
                                     ->numeric()
                                     ->prefix('₦'),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('contact_name')
+                                TextInput::make('contact_name')
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('contact_phone')
+                                TextInput::make('contact_phone')
                                     ->tel()
                                     ->maxLength(255),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Textarea::make('landlord_notes')
+                        Textarea::make('landlord_notes')
                             ->label('Landlord Notes')
                             ->rows(3)
                             ->maxLength(1000),
 
-                        Forms\Components\Textarea::make('contractor_notes')
+                        Textarea::make('contractor_notes')
                             ->label('Contractor Notes')
                             ->rows(3)
                             ->maxLength(1000),
 
-                        Forms\Components\Toggle::make('requires_tenant_access')
+                        Toggle::make('requires_tenant_access')
                             ->label('Requires Tenant Access')
                             ->default(true),
                     ]),
@@ -171,24 +189,24 @@ class MaintenanceRequestResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('title')
+                TextColumn::make('title')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tenant.name')
+                TextColumn::make('tenant.name')
                     ->label('Tenant')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('category')
+                TextColumn::make('category')
                     ->badge(),
 
-                Tables\Columns\TextColumn::make('priority')
+                TextColumn::make('priority')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'low' => 'gray',
@@ -198,7 +216,7 @@ class MaintenanceRequestResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'submitted' => 'gray',
@@ -211,7 +229,7 @@ class MaintenanceRequestResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('urgency')
+                TextColumn::make('urgency')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'low' => 'gray',
@@ -221,30 +239,30 @@ class MaintenanceRequestResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('requested_date')
+                TextColumn::make('requested_date')
                     ->dateTime()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('estimated_cost')
+                TextColumn::make('estimated_cost')
                     ->money('NGN')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options(MaintenanceRequest::getStatuses()),
 
-                Tables\Filters\SelectFilter::make('priority')
+                SelectFilter::make('priority')
                     ->options(MaintenanceRequest::getPriorities()),
 
-                Tables\Filters\SelectFilter::make('category')
+                SelectFilter::make('category')
                     ->options(MaintenanceRequest::getCategories()),
 
-                Tables\Filters\SelectFilter::make('urgency')
+                SelectFilter::make('urgency')
                     ->options([
                         'low' => 'Low',
                         'normal' => 'Normal',
@@ -252,22 +270,22 @@ class MaintenanceRequestResource extends Resource
                         'emergency' => 'Emergency',
                     ]),
 
-                Tables\Filters\Filter::make('open_requests')
+                Filter::make('open_requests')
                     ->query(fn (Builder $query): Builder => $query->whereIn('status', ['submitted', 'acknowledged', 'in_progress', 'scheduled']))
                     ->label('Open Requests'),
 
-                Tables\Filters\Filter::make('emergency')
+                Filter::make('emergency')
                     ->query(fn (Builder $query): Builder => $query->where('urgency', 'emergency'))
                     ->label('Emergency Requests'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -289,9 +307,9 @@ class MaintenanceRequestResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListMaintenanceRequests::route('/'),
-            'create' => Pages\CreateMaintenanceRequest::route('/create'),
-            'edit' => Pages\EditMaintenanceRequest::route('/{record}/edit'),
+            'index' => ListMaintenanceRequests::route('/'),
+            'create' => CreateMaintenanceRequest::route('/create'),
+            'edit' => EditMaintenanceRequest::route('/{record}/edit'),
         ];
     }
 }

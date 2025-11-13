@@ -17,9 +17,7 @@ return [
     'tenant_model' => 'App\Models\Agency',
 
 
-    'auth_provider_model' => [
-        'fqcn' => 'App\\Models\\User',
-    ],
+    'auth_provider_model' => 'App\\Models\\User',
 
     'super_admin' => [
         'enabled' => true,

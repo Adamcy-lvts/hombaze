@@ -69,7 +69,7 @@
                                id="caption"
                                wire:model.live="caption"
                                placeholder="Describe this image (e.g., 'Beautiful living room with modern furniture')"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
 
                     <div>
@@ -80,7 +80,7 @@
                                id="altText"
                                wire:model.live="altText"
                                placeholder="Brief description for screen readers"
-                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         <p class="text-xs text-gray-500 mt-1">Help visually impaired users understand this image</p>
                     </div>
                 </div>

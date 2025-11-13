@@ -2,6 +2,9 @@
 
 namespace App\Filament\Landlord\Resources\LeaseTemplateResource\Pages;
 
+use Filament\Actions\ViewAction;
+use Filament\Actions\DeleteAction;
+use App\Models\LeaseTemplate;
 use App\Filament\Landlord\Resources\LeaseTemplateResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,15 +16,15 @@ class EditLeaseTemplate extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            ViewAction::make(),
+            DeleteAction::make(),
         ];
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
         // Extract and store used variables
-        $template = new \App\Models\LeaseTemplate();
+        $template = new LeaseTemplate();
         $template->terms_and_conditions = $data['terms_and_conditions'];
         $data['available_variables'] = $template->extractUsedVariables();
         

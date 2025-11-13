@@ -2,6 +2,9 @@
 
 namespace App\Filament\Tenant\Resources\LeaseResource\Pages;
 
+use Filament\Schemas\Schema;
+use Exception;
+use Filament\Actions\Action;
 use App\Filament\Tenant\Resources\LeaseResource;
 use App\Models\LeaseTemplate;
 use App\Models\Lease;
@@ -9,7 +12,6 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists;
-use Filament\Infolists\Infolist;
 use Spatie\LaravelPdf\Facades\Pdf;
 use Spatie\Browsershot\Browsershot;
 use Illuminate\Support\Str;
@@ -22,7 +24,7 @@ class ViewLease extends ViewRecord
 {
     protected static string $resource = LeaseResource::class;
 
-    protected static string $view = 'filament.tenant.pages.lease-view';
+    protected string $view = 'filament.tenant.pages.lease-view';
 
     public ?array $data = [];
     public ?array $leaseDocument = null;
@@ -40,12 +42,11 @@ class ViewLease extends ViewRecord
         $this->autoGenerateLeaseDocument();
     }
 
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                // Empty schema - content handled in custom view
-            ]);
+        return $schema->components([
+            // Empty schema - content handled in custom view
+        ]);
     }
 
     protected function autoGenerateLeaseDocument(): void
@@ -108,7 +109,7 @@ class ViewLease extends ViewRecord
                     'generated_at' => now()
                 ];
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->leaseDocument = [
                 'error' => 'Failed to load lease document: ' . $e->getMessage()
             ];
@@ -135,7 +136,7 @@ class ViewLease extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('downloadPdf')
+            Action::make('downloadPdf')
                 ->label('Download PDF')
                 ->icon('heroicon-o-arrow-down-tray')
                 ->color('success')
@@ -206,14 +207,14 @@ class ViewLease extends ViewRecord
             $pdf->save($filePath);
 
             if (!File::exists($filePath)) {
-                throw new \Exception("PDF file was not created at: {$filePath}");
+                throw new Exception("PDF file was not created at: {$filePath}");
             }
 
             return response()->download($filePath, $fileName, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $fileName . '"'
             ])->deleteFileAfterSend(true);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Tenant PDF Download Failed', [
                 'error' => $e->getMessage(),
                 'lease_id' => $lease->id,

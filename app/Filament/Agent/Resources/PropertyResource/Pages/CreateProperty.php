@@ -2,6 +2,13 @@
 
 namespace App\Filament\Agent\Resources\PropertyResource\Pages;
 
+use Exception;
+use App\Models\PropertyType;
+use App\Models\PropertySubtype;
+use App\Models\State;
+use App\Models\City;
+use App\Models\PropertyOwner;
+use App\Models\Agent;
 use App\Filament\Agent\Resources\PropertyResource;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
@@ -47,7 +54,7 @@ class CreateProperty extends CreateRecord
         
         if (!$agentProfile) {
             Log::error('Agent profile not found for user', ['user_id' => $user->id]);
-            throw new \Exception('Cannot create property: Current user does not have an associated agent profile.');
+            throw new Exception('Cannot create property: Current user does not have an associated agent profile.');
         }
 
         // Set agent assignment - this is the key difference from agency properties
@@ -62,7 +69,7 @@ class CreateProperty extends CreateRecord
         // Handle owner_id requirement - this is mandatory
         if (!isset($data['owner_id']) || empty($data['owner_id'])) {
             Log::error('Property owner not specified', ['data_keys' => array_keys($data)]);
-            throw new \Exception('Property owner must be specified. Please select a property owner from the list or create a new owner profile.');
+            throw new Exception('Property owner must be specified. Please select a property owner from the list or create a new owner profile.');
         }
         
         Log::info('Owner ID Check', ['owner_id' => $data['owner_id']]);
@@ -171,34 +178,34 @@ class CreateProperty extends CreateRecord
     private function validateRequiredRelationships(array $data): void
     {
         // Validate property type exists
-        if (!isset($data['property_type_id']) || !\App\Models\PropertyType::find($data['property_type_id'])) {
-            throw new \Exception('Invalid property type selected.');
+        if (!isset($data['property_type_id']) || !PropertyType::find($data['property_type_id'])) {
+            throw new Exception('Invalid property type selected.');
         }
 
         // Validate property subtype exists
-        if (!isset($data['property_subtype_id']) || !\App\Models\PropertySubtype::find($data['property_subtype_id'])) {
-            throw new \Exception('Invalid property subtype selected.');
+        if (!isset($data['property_subtype_id']) || !PropertySubtype::find($data['property_subtype_id'])) {
+            throw new Exception('Invalid property subtype selected.');
         }
 
         // Validate location exists
-        if (!isset($data['state_id']) || !\App\Models\State::find($data['state_id'])) {
-            throw new \Exception('Invalid state selected.');
+        if (!isset($data['state_id']) || !State::find($data['state_id'])) {
+            throw new Exception('Invalid state selected.');
         }
 
-        if (!isset($data['city_id']) || !\App\Models\City::find($data['city_id'])) {
-            throw new \Exception('Invalid city selected.');
+        if (!isset($data['city_id']) || !City::find($data['city_id'])) {
+            throw new Exception('Invalid city selected.');
         }
 
         // Validate owner exists
-        if (!isset($data['owner_id']) || !\App\Models\PropertyOwner::find($data['owner_id'])) {
-            throw new \Exception('Invalid property owner selected.');
+        if (!isset($data['owner_id']) || !PropertyOwner::find($data['owner_id'])) {
+            throw new Exception('Invalid property owner selected.');
         }
 
         // Validate agent profile exists and belongs to current user
         if (isset($data['agent_id'])) {
-            $agent = \App\Models\Agent::find($data['agent_id']);
+            $agent = Agent::find($data['agent_id']);
             if (!$agent || $agent->user_id !== auth()->id()) {
-                throw new \Exception('Invalid agent assignment.');
+                throw new Exception('Invalid agent assignment.');
             }
         }
     }

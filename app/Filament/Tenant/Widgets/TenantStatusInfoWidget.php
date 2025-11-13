@@ -2,12 +2,13 @@
 
 namespace App\Filament\Tenant\Widgets;
 
+use App\Models\TenantInvitation;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
 
 class TenantStatusInfoWidget extends Widget
 {
-    protected static string $view = 'filament.tenant.widgets.tenant-status-info-widget';
+    protected string $view = 'filament.tenant.widgets.tenant-status-info-widget';
     protected static ?int $sort = -2;
     protected int | string | array $columnSpan = 1;
     
@@ -31,7 +32,7 @@ class TenantStatusInfoWidget extends Widget
     public function getInvitationProperty()
     {
         // Get the accepted invitation for this user to check if it had a property
-        return \App\Models\TenantInvitation::where('tenant_user_id', $this->user->id)
+        return TenantInvitation::where('tenant_user_id', $this->user->id)
             ->where('status', 'accepted')
             ->with('property')
             ->first()?->property;

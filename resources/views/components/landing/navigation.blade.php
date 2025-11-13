@@ -8,8 +8,8 @@
             <!-- Mobile-Optimized Premium Logo -->
             <div class="flex items-center space-x-2 md:space-x-3 group">
                 <div class="relative">
-                    <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-xl md:rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
-                    <div class="relative w-8 h-8 md:w-12 md:h-12 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500">
+                    <div class="absolute inset-0 bg-linear-to-br from-emerald-400 to-blue-500 rounded-xl md:rounded-2xl blur-xs opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
+                    <div class="relative w-8 h-8 md:w-12 md:h-12 bg-linear-to-br from-emerald-500 to-blue-600 rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-500">
                         <svg class="w-5 h-5 md:w-7 md:h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                         </svg>
@@ -55,14 +55,14 @@
                     <!-- Authenticated User Menu -->
                     <div class="relative" x-data="{ userMenuOpen: false }">
                         <button @click="userMenuOpen = !userMenuOpen" class="group relative flex items-center space-x-2 px-4 py-2 md:px-6 md:py-2.5 text-white/90 hover:text-white font-semibold transition-all duration-300 overflow-hidden text-sm md:text-base">
-                            <div class="w-8 h-8 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-linear-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center">
                                 <span class="text-white font-bold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
                             </div>
                             <span class="relative z-10">{{ auth()->user()->name }}</span>
                             <svg class="w-4 h-4 transition-transform duration-300" :class="{ 'rotate-180': userMenuOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
-                            <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 rounded-lg scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                            <div class="absolute inset-0 bg-linear-to-r from-white/10 to-white/20 rounded-lg scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                         </button>
 
                         <!-- User Dropdown Menu -->
@@ -140,16 +140,16 @@
                     <!-- Guest User Buttons -->
                     <a href="{{ route('login') }}" class="group relative px-4 py-2 md:px-6 md:py-2.5 text-white/90 hover:text-white font-semibold transition-all duration-300 overflow-hidden text-sm md:text-base">
                         <span class="relative z-10">Sign In</span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-white/10 to-white/20 rounded-lg scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+                        <div class="absolute inset-0 bg-linear-to-r from-white/10 to-white/20 rounded-lg scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
                     </a>
-                    <a href="{{ route('register') }}" class="nav-cta group relative px-4 py-2 md:px-8 md:py-3 bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg md:rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 text-sm md:text-base">
+                    <a href="{{ route('register') }}" class="nav-cta group relative px-4 py-2 md:px-8 md:py-3 bg-linear-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg md:rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 text-sm md:text-base">
                         <span class="relative z-10 flex items-center">
                             Get Started
                             <svg class="w-3 h-3 md:w-4 md:h-4 ml-1 md:ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                             </svg>
                         </span>
-                        <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
+                        <div class="absolute inset-0 bg-linear-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
                         <div class="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                     </a>
                 @endauth
@@ -178,7 +178,7 @@
          x-transition:leave="transition ease-in duration-300"
          x-transition:leave-start="opacity-1 transform translate-y-0 scale-100"
          x-transition:leave-end="opacity-0 transform -translate-y-full scale-95"
-         class="lg:hidden fixed top-20 left-0 right-0 z-[999] bg-slate-900/90 backdrop-blur-xl border-t border-white/10 shadow-2xl">
+         class="lg:hidden fixed top-20 left-0 right-0 z-999 bg-slate-900/90 backdrop-blur-xl border-t border-white/10 shadow-2xl">
         <div class="px-6 py-8 space-y-6">
             <!-- Mobile Navigation Links -->
             <div class="space-y-2">
@@ -220,7 +220,7 @@
                     <!-- Authenticated User Mobile Menu -->
                     <div class="text-center pb-3">
                         <div class="flex items-center justify-center space-x-3 mb-3">
-                            <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center">
+                            <div class="w-10 h-10 bg-linear-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center">
                                 <span class="text-white font-bold">{{ substr(auth()->user()->name, 0, 1) }}</span>
                             </div>
                             <div class="text-left">
@@ -238,15 +238,15 @@
                         <a href="{{ route('dashboard') }}" class="block w-full py-3 text-center text-white font-semibold border-2 border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-sm">
                             My Dashboard
                         </a>
-                        <a href="{{ route('properties.search') }}" class="block w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
+                        <a href="{{ route('properties.search') }}" class="block w-full py-3 text-center bg-linear-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
                             Saved Properties
                         </a>
                     @elseif(auth()->user()->isAgent())
-                        <a href="{{ route('filament.agent.pages.dashboard') }}" class="block w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
+                        <a href="{{ route('filament.agent.pages.dashboard') }}" class="block w-full py-3 text-center bg-linear-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
                             Agent Dashboard
                         </a>
                     @elseif(auth()->user()->isPropertyOwner())
-                        <a href="{{ route('filament.landlord.pages.dashboard') }}" class="block w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
+                        <a href="{{ route('filament.landlord.pages.dashboard') }}" class="block w-full py-3 text-center bg-linear-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
                             Landlord Dashboard
                         </a>
                     @endif
@@ -262,7 +262,7 @@
                     <a href="{{ route('login') }}" class="block w-full py-3 text-center text-white font-semibold border-2 border-white/20 rounded-lg hover:bg-white/10 hover:border-white/30 transition-all duration-300 text-sm">
                         Sign In
                     </a>
-                    <a href="{{ route('register') }}" class="block w-full py-3 text-center bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
+                    <a href="{{ route('register') }}" class="block w-full py-3 text-center bg-linear-to-r from-emerald-500 to-blue-500 text-white font-bold rounded-lg hover:from-emerald-600 hover:to-blue-600 transition-all duration-300 shadow-lg hover:shadow-xl text-sm">
                         Get Started
                     </a>
                 @endauth

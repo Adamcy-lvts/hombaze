@@ -16,15 +16,15 @@
             </nav>
 
             <!-- Agent Profile Header -->
-            <div class="flex flex-col lg:flex-row lg:items-start lg:space-x-8 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:space-x-8 gap-8 mb-8">
                 <!-- Agent Avatar & Basic Info -->
-                <div class="flex-shrink-0 text-center mb-6 lg:mb-0 lg:text-left">
+                <div class="shrink-0 text-center mb-6 lg:mb-0 lg:text-left">
                     @if($agentProfile->profile_photo_url)
                         <img src="{{ \Illuminate\Support\Facades\Storage::url($agentProfile->profile_photo_url) }}"
                              alt="{{ $agent->name }}"
                              class="w-32 h-32 lg:w-40 lg:h-40 rounded-full border-4 border-white shadow-lg object-cover mx-auto lg:mx-0">
                     @else
-                        <div class="w-32 h-32 lg:w-40 lg:h-40 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg mx-auto lg:mx-0">
+                        <div class="w-32 h-32 lg:w-40 lg:h-40 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg mx-auto lg:mx-0">
                             <span class="text-white font-bold text-4xl lg:text-5xl">{{ substr($agent->name, 0, 1) }}</span>
                         </div>
                     @endif
@@ -41,10 +41,10 @@
 
                 <!-- Agent Details -->
                 <div class="flex-1 text-center lg:text-left">
-                    <div class="flex items-center justify-center lg:justify-start space-x-3 mb-2">
-                        <h1 class="text-3xl lg:text-4xl font-bold text-gray-900">{{ $agent->name }}</h1>
+                    <div class="flex items-center justify-center lg:justify-start gap-3 mb-3">
+                        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">{{ $agent->name }}</h1>
                         @if($agentProfile->is_verified)
-                            <div class="flex items-center space-x-1 bg-blue-100/90 border border-blue-300/50 text-blue-700 px-3 py-1.5 rounded-lg font-bold text-sm shadow-lg">
+                            <div class="inline-flex items-center gap-1 bg-blue-100/90 border border-blue-300/50 text-blue-700 px-3 py-1.5 rounded-lg font-semibold text-xs sm:text-sm shadow-xs">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                 </svg>
@@ -60,9 +60,9 @@
                     @endif
 
                     <!-- Rating & Stats Row -->
-                    <div class="flex flex-wrap items-center justify-center lg:justify-start gap-6 mb-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <!-- Rating Display -->
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center justify-center sm:justify-start gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3">
                             <div class="flex items-center">
                                 @for($i = 1; $i <= 5; $i++)
                                     <svg class="w-5 h-5 {{ $i <= $reviewStats['average_rating'] ? 'text-yellow-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
@@ -75,7 +75,7 @@
                         </div>
 
                         <!-- Experience -->
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center justify-center sm:justify-start gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3">
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H8a2 2 0 01-2-2V8a2 2 0 012-2h8zM8 14v.01M12 14v.01M16 14v.01"></path>
                             </svg>
@@ -83,7 +83,7 @@
                         </div>
 
                         <!-- Properties -->
-                        <div class="flex items-center space-x-2">
+                        <div class="flex items-center justify-center sm:justify-start gap-2 bg-white border border-gray-200 rounded-xl px-4 py-3">
                             <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                             </svg>
@@ -111,9 +111,9 @@
                     @endif
 
                     <!-- Contact & Review Actions -->
-                    <div class="flex flex-wrap justify-center lg:justify-start gap-4">
+                    <div class="flex flex-col sm:flex-row sm:flex-wrap justify-center lg:justify-start gap-3 sm:gap-4">
                         @if($agentProfile->user->phone)
-                            <a href="tel:{{ $agentProfile->phone }}" class="inline-flex items-center space-x-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                            <a href="tel:{{ $agentProfile->phone }}" class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors w-full sm:w-auto">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                                 </svg>
@@ -124,7 +124,7 @@
                         @if($agentProfile->user->phone)
                             <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $agentProfile->phone) }}?text=Hi, I'm interested in your property listings on HomeBaze"
                                target="_blank"
-                               class="inline-flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+                               class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors w-full sm:w-auto">
                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-2.462-.96-4.779-2.705-6.526-1.746-1.746-4.065-2.707-6.526-2.709-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.092-.638zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51-.173-.008-.372-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413z"/>
                                 </svg>
@@ -144,7 +144,7 @@
             <div class="lg:col-span-2 space-y-8">
                 <!-- Review Statistics -->
                 @if($reviewStats['total_reviews'] > 0)
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-6">
                         <h2 class="text-xl font-bold text-gray-900 mb-6">Review Statistics</h2>
 
                         <!-- Rating Distribution -->
@@ -169,7 +169,7 @@
                 @endif
 
                 <!-- Reviews Filters & Sorting -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <!-- Filters -->
                         <div class="flex items-center space-x-4">
@@ -200,7 +200,7 @@
                 <!-- Reviews List -->
                 <div class="space-y-6">
                     @forelse($reviews as $review)
-                        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                        <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-6">
                             <!-- Review Header -->
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center space-x-3">
@@ -261,14 +261,14 @@
             <!-- Sidebar -->
             <div class="space-y-8">
                 <!-- Write Review Section -->
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-6">
                     <h3 class="text-lg font-bold text-gray-900 mb-4">Review This Agent</h3>
                     @livewire('agent-rating-form', ['agent' => $agent])
                 </div>
 
                 <!-- Recent Properties -->
                 @if($recentProperties->count() > 0)
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+                    <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-6">
                         <h3 class="text-lg font-bold text-gray-900 mb-6">Recent Listings</h3>
                         <div class="space-y-4">
                             @foreach($recentProperties as $property)

@@ -16,7 +16,7 @@
 
         <!-- Receipt - Premium Horizontal Layout -->
         <div id="receipt-container"
-            class="bg-gradient-to-r from-slate-50 to-slate-100 p-8 shadow-2xl rounded-lg border border-gray-200 max-w-7xl mx-auto relative overflow-hidden">
+            class="bg-linear-to-r from-slate-50 to-slate-100 p-8 shadow-2xl rounded-lg border border-gray-200 max-w-7xl mx-auto relative overflow-hidden">
             <!-- Premium subtle background pattern -->
             <div class="absolute inset-0 opacity-5 pattern-diagonal-lines pattern-gray-700 pattern-size-2 pattern-bg-transparent"></div>
 
@@ -135,7 +135,7 @@
 
                 <!-- Right: Receipt Number (Always at far right) -->
                 <div class="text-right">
-                    <div class="bg-indigo-100 px-3 py-2 rounded shadow-sm border border-indigo-200">
+                    <div class="bg-indigo-100 px-3 py-2 rounded-sm shadow-xs border border-indigo-200">
                         <p class="text-xs text-gray-600">Receipt No:</p>
                         <p class="text-sm font-bold text-indigo-700">{{ $receipt->receipt_number }}</p>
                     </div>
@@ -145,19 +145,19 @@
             <!-- Main Content Area - Optimized Layout -->
             <!-- Top Row: Basic Information (4 columns) -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Received From:</p>
                     <p class="text-lg text-gray-800 font-medium">{{ $receipt->tenant->name ?? 'N/A' }}</p>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Payment Date:</p>
                     <p class="text-lg text-gray-800 font-medium">{{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}</p>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Payment For:</p>
                     <p class="text-lg text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
                 </div>
-                <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg shadow-sm border-2 border-indigo-200">
+                <div class="bg-linear-to-r from-indigo-50 to-blue-50 p-4 rounded-lg shadow-xs border-2 border-indigo-200">
                     <p class="text-sm font-semibold text-indigo-700 mb-2">Total Amount</p>
                     <p class="text-2xl font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
                 </div>
@@ -165,7 +165,7 @@
 
             <!-- Second Row: Property Information (Full Width) -->
             @if($receipt->lease && $receipt->lease->property)
-            <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 shadow-sm mb-6">
+            <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 shadow-xs mb-6">
                 <p class="font-semibold text-blue-700 mb-2">Property Details</p>
                 <p class="text-gray-800 font-medium text-lg">{{ $receipt->lease->property->title }}</p>
                 @if($receipt->lease->property->address)
@@ -193,20 +193,20 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <!-- Lease Start Date -->
                 @if($receipt->lease)
-                <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-sm">
+                <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-xs">
                     <p class="font-semibold text-green-700 mb-2">Lease Start</p>
                     <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</p>
                 </div>
 
                 <!-- Lease End Date -->
-                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 shadow-sm">
+                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 shadow-xs">
                     <p class="font-semibold text-red-700 mb-2">Lease End</p>
                     <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</p>
                 </div>
                 @endif
 
                 <!-- Payment Breakdown -->
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="font-semibold text-gray-700 mb-2">Payment Breakdown</p>
                     <div class="space-y-2 text-sm">
                         @if($receipt->late_fee > 0)
@@ -249,17 +249,17 @@
             <!-- Fourth Row: Amount in Words & Payment Method -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <!-- Amount in Words (spans 2 columns) -->
-                <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="md:col-span-2 bg-gray-50 p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="font-semibold text-gray-600 mb-2">Amount in Words:</p>
                     <p class="text-gray-800 italic font-medium">{{ $amountInWords }}</p>
                 </div>
 
                 <!-- Payment Method -->
-                <div class="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="font-semibold text-gray-700 mb-2">Payment Method</p>
                     <div class="grid grid-cols-2 gap-2">
                         <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'cash' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-sm flex items-center justify-center {{ $receipt->payment_method == 'cash' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'cash' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
                                 @if($receipt->payment_method == 'cash')
                                 <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -269,7 +269,7 @@
                             <span>Cash</span>
                         </div>
                         <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'transfer' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-sm flex items-center justify-center {{ $receipt->payment_method == 'transfer' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'transfer' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
                                 @if($receipt->payment_method == 'transfer')
                                 <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -279,7 +279,7 @@
                             <span>Transfer</span>
                         </div>
                         <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'pos' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-sm flex items-center justify-center {{ $receipt->payment_method == 'pos' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'pos' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
                                 @if($receipt->payment_method == 'pos')
                                 <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -289,7 +289,7 @@
                             <span>POS</span>
                         </div>
                         <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'card' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-sm flex items-center justify-center {{ $receipt->payment_method == 'card' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'card' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
                                 @if($receipt->payment_method == 'card')
                                 <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -305,7 +305,7 @@
 
             <!-- Notes Section (if exists) -->
             @if($receipt->notes)
-            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 shadow-sm mb-6">
+            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 shadow-xs mb-6">
                 <p class="font-semibold text-yellow-700 mb-2">Additional Notes:</p>
                 <p class="text-gray-800">{{ $receipt->notes }}</p>
             </div>
@@ -314,7 +314,7 @@
             <!-- QR Code positioned at bottom right -->
             <div class="relative">
                 <div class="absolute bottom-0 right-0 mb-4">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-300 inline-block">
+                    <div class="bg-white p-3 rounded-lg shadow-xs border border-gray-300 inline-block">
                         @php
                             $qrCode = $this->generateQrCode();
                         @endphp

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Support\Str;
 use Spatie\Image\Enums\Fit;
 use Spatie\MediaLibrary\HasMedia;
@@ -585,7 +586,7 @@ class Property extends Model implements HasMedia
         if ($conversion) {
             try {
                 return $media->getUrl($conversion);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // If conversion doesn't exist, return original
                 return $media->getUrl();
             }
@@ -606,7 +607,7 @@ class Property extends Model implements HasMedia
             if ($conversion) {
                 try {
                     $url = $media->getUrl($conversion);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // If conversion doesn't exist, use original
                     $url = $media->getUrl();
                 }

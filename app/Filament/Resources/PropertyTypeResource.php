@@ -2,11 +2,29 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PropertyTypeResource\Pages\ListPropertyTypes;
+use App\Filament\Resources\PropertyTypeResource\Pages\CreatePropertyType;
+use App\Filament\Resources\PropertyTypeResource\Pages\ViewPropertyType;
+use App\Filament\Resources\PropertyTypeResource\Pages\EditPropertyType;
 use App\Filament\Resources\PropertyTypeResource\Pages;
 use App\Filament\Resources\PropertyTypeResource\RelationManagers;
 use App\Models\PropertyType;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,30 +35,30 @@ class PropertyTypeResource extends Resource
 {
     protected static ?string $model = PropertyType::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-library';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-library';
 
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Content Management';
 
     protected static ?int $navigationSort = 4;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Grid::make(['default' => 1, 'lg' => 4])
+        return $schema
+            ->components([
+                Grid::make(['default' => 1, 'lg' => 4])
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('Property Type Information')
+                                Section::make('Property Type Information')
                                     ->description('Define the property type details and settings')
                                     ->schema([
-                                        Forms\Components\Grid::make(['default' => 1, 'lg' => 2])
+                                        Grid::make(['default' => 1, 'lg' => 2])
                                             ->schema([
-                                                Forms\Components\TextInput::make('name')
+                                                TextInput::make('name')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->helperText('e.g., Residential, Commercial, Industrial'),
-                                                Forms\Components\TextInput::make('slug')
+                                                TextInput::make('slug')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->helperText('URL-friendly version (auto-generated)')
@@ -48,11 +66,11 @@ class PropertyTypeResource extends Resource
                                                     ->dehydrated(),
                                             ]),
                                         
-                                        Forms\Components\Textarea::make('description')
+                                        Textarea::make('description')
                                             ->rows(4)
                                             ->helperText('Detailed description of this property type'),
                                         
-                                        Forms\Components\TextInput::make('icon')
+                                        TextInput::make('icon')
                                             ->maxLength(255)
                                             ->helperText('Heroicon or custom icon class (e.g., heroicon-o-home)'),
                                     ])
@@ -60,21 +78,21 @@ class PropertyTypeResource extends Resource
                             ])
                             ->columnSpan(['default' => 1, 'lg' => 3]),
                         
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('Configuration')
+                                Section::make('Configuration')
                                     ->schema([
-                                        Forms\Components\Fieldset::make('Status')
+                                        Fieldset::make('Status')
                                             ->schema([
-                                                Forms\Components\Toggle::make('is_active')
+                                                Toggle::make('is_active')
                                                     ->required()
                                                     ->default(true)
                                                     ->helperText('Show in property forms'),
                                             ]),
                                         
-                                        Forms\Components\Fieldset::make('Display Order')
+                                        Fieldset::make('Display Order')
                                             ->schema([
-                                                Forms\Components\TextInput::make('sort_order')
+                                                TextInput::make('sort_order')
                                                     ->required()
                                                     ->numeric()
                                                     ->default(0)
@@ -83,11 +101,11 @@ class PropertyTypeResource extends Resource
                                     ])
                                     ->collapsible(),
                                 
-                                Forms\Components\Section::make('Statistics')
+                                Section::make('Statistics')
                                     ->schema([
-                                        Forms\Components\Fieldset::make('Usage Count')
+                                        Fieldset::make('Usage Count')
                                             ->schema([
-                                                Forms\Components\Placeholder::make('properties_count')
+                                                Placeholder::make('properties_count')
                                                     ->label('Properties Using This Type')
                                                     ->content(fn ($record): string => $record?->properties_count ?? '0'),
                                             ]),
@@ -95,14 +113,14 @@ class PropertyTypeResource extends Resource
                                     ->collapsible()
                                     ->hidden(fn (string $operation): bool => $operation === 'create'),
                                 
-                                Forms\Components\Section::make('System Info')
+                                Section::make('System Info')
                                     ->schema([
-                                        Forms\Components\Fieldset::make('Record Details')
+                                        Fieldset::make('Record Details')
                                             ->schema([
-                                                Forms\Components\Placeholder::make('created_at')
+                                                Placeholder::make('created_at')
                                                     ->label('Created')
                                                     ->content(fn ($record): string => $record?->created_at?->diffForHumans() ?? 'Not created yet'),
-                                                Forms\Components\Placeholder::make('updated_at')
+                                                Placeholder::make('updated_at')
                                                     ->label('Last Modified')
                                                     ->content(fn ($record): string => $record?->updated_at?->diffForHumans() ?? 'Not modified yet'),
                                             ]),
@@ -119,22 +137,22 @@ class PropertyTypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('icon')
+                TextColumn::make('icon')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('sort_order')
+                TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -142,13 +160,13 @@ class PropertyTypeResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -163,10 +181,10 @@ class PropertyTypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyTypes::route('/'),
-            'create' => Pages\CreatePropertyType::route('/create'),
-            'view' => Pages\ViewPropertyType::route('/{record}'),
-            'edit' => Pages\EditPropertyType::route('/{record}/edit'),
+            'index' => ListPropertyTypes::route('/'),
+            'create' => CreatePropertyType::route('/create'),
+            'view' => ViewPropertyType::route('/{record}'),
+            'edit' => EditPropertyType::route('/{record}/edit'),
         ];
     }
 }

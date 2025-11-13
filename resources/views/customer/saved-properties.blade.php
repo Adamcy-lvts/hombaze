@@ -4,11 +4,11 @@
 
 @section('content')
 <!-- Enhanced Saved Properties Page with Property Page Aesthetic -->
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
     <!-- Subtle Background Elements -->
     <div class="absolute inset-0 opacity-30">
-        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-purple-400/8 to-pink-500/6 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-purple-400/8 to-pink-500/6 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
     </div>
 
     <!-- Main Content -->
@@ -29,7 +29,7 @@
 
                     <!-- Separator -->
                     <div class="flex items-center">
-                        <div class="w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <div class="w-8 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
                         <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
@@ -37,7 +37,7 @@
 
                     <!-- Current Page -->
                     <div class="flex items-center">
-                        <div class="p-2 rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg">
+                        <div class="p-2 rounded-xl bg-linear-to-br from-purple-500 to-pink-600 shadow-lg">
                             <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                             </svg>
@@ -123,7 +123,7 @@
                                          alt="{{ $property->title }}"
                                          class="w-full h-48 lg:h-56 object-cover group-hover:scale-110 transition-transform duration-500">
                                 @else
-                                    <div class="w-full h-48 lg:h-56 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                    <div class="w-full h-48 lg:h-56 bg-linear-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                         <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                         </svg>
@@ -132,14 +132,14 @@
 
                                 <!-- Status Badge -->
                                 <div class="absolute top-3 left-3">
-                                    <span class="px-3 py-1 bg-gradient-to-r {{ $property->listing_type === 'rent' ? 'from-emerald-500 to-teal-500' : 'from-blue-500 to-indigo-500' }} text-white text-xs font-bold rounded-full shadow-lg">
+                                    <span class="px-3 py-1 bg-linear-to-r {{ $property->listing_type === 'rent' ? 'from-emerald-500 to-teal-500' : 'from-blue-500 to-indigo-500' }} text-white text-xs font-bold rounded-full shadow-lg">
                                         {{ ucfirst($property->listing_type) }}
                                     </span>
                                 </div>
 
                                 <!-- Save/Unsave Button -->
                                 <div class="absolute top-3 right-3">
-                                    <button class="bg-white/90 backdrop-blur-sm hover:bg-white p-2 rounded-full transition-all duration-300 group">
+                                    <button class="bg-white/90 backdrop-blur-xs hover:bg-white p-2 rounded-full transition-all duration-300 group">
                                         <svg class="w-4 h-4 text-red-500 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                         </svg>
@@ -148,7 +148,7 @@
 
                                 <!-- Date Saved -->
                                 <div class="absolute bottom-3 left-3">
-                                    <span class="bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-medium text-gray-700">
+                                    <span class="bg-white/90 backdrop-blur-xs px-2 py-1 rounded-lg text-xs font-medium text-gray-700">
                                         Saved {{ $savedProperty->created_at->diffForHumans() }}
                                     </span>
                                 </div>
@@ -169,7 +169,7 @@
                                     <span>{{ $property->area->name ?? $property->city->name }}, {{ $property->city->name }}</span>
                                 </div>
 
-                                <p class="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+                                <p class="text-2xl font-bold bg-linear-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
                                     ₦{{ number_format($property->price) }}{{ $property->listing_type === 'rent' ? '/year' : '' }}
                                 </p>
 
@@ -185,7 +185,7 @@
 
                                 <div class="flex items-center space-x-2">
                                     <a href="{{ route('property.show', $property->slug) }}"
-                                       class="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-2 px-3 rounded-xl font-medium transition-all duration-300 text-center shadow-lg hover:shadow-xl">
+                                       class="flex-1 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-2 px-3 rounded-xl font-medium transition-all duration-300 text-center shadow-lg hover:shadow-xl">
                                         View Details
                                     </a>
                                     <button class="bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-xl transition-all duration-300 hover:scale-110">
@@ -220,7 +220,7 @@
                 <!-- Premium Empty State -->
                 <div class="text-center py-16 lg:py-24">
                     <div class="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/40 p-12 lg:p-16 max-w-2xl mx-auto">
-                        <div class="w-24 h-24 mx-auto mb-8 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
+                        <div class="w-24 h-24 mx-auto mb-8 bg-linear-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center">
                             <svg class="w-12 h-12 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                             </svg>
@@ -230,7 +230,7 @@
                             Start building your dream property collection! Browse our listings and save the properties that catch your eye.
                         </p>
                         <a href="{{ route('properties.search') }}"
-                           class="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
+                           class="inline-flex items-center space-x-2 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-4 rounded-2xl font-bold transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>

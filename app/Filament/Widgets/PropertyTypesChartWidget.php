@@ -8,7 +8,7 @@ use App\Models\PropertyType;
 
 class PropertyTypesChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Property Types Distribution';
+    protected ?string $heading = 'Property Types Distribution';
     
     protected static ?int $sort = 4;
 

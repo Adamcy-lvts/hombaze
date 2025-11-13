@@ -2,6 +2,7 @@
 
 namespace App\Filament\Landlord\Resources\LeaseTemplateResource\Pages;
 
+use App\Models\LeaseTemplate;
 use App\Filament\Landlord\Resources\LeaseTemplateResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +16,7 @@ class CreateLeaseTemplate extends CreateRecord
         $data['landlord_id'] = Auth::id();
         
         // Extract and store used variables
-        $template = new \App\Models\LeaseTemplate();
+        $template = new LeaseTemplate();
         $template->terms_and_conditions = $data['terms_and_conditions'];
         $data['available_variables'] = $template->extractUsedVariables();
         

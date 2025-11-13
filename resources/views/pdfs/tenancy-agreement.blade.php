@@ -161,7 +161,7 @@
     <div class="bg-white border border-gray-300 overflow-hidden">
 
         <!-- Header Section -->
-        <div class="bg-gradient-to-r from-gray-800 to-gray-900 text-white p-3 text-center">
+        <div class="bg-linear-to-r from-gray-800 to-gray-900 text-white p-3 text-center">
             <h1 class="text-lg font-bold mb-2 tracking-wide">TENANCY AGREEMENT</h1>
             <div class="w-12 h-0.5 bg-white bg-opacity-60 mx-auto"></div>
         </div>
@@ -178,7 +178,7 @@
 
                 <div class="grid grid-cols-2 gap-2">
                     <!-- Landlord -->
-                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                    <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                         <h3 class="text-xs font-bold text-gray-700 mb-1 flex items-center dot-accent">
                             LANDLORD
                         </h3>
@@ -188,7 +188,7 @@
                     </div>
 
                     <!-- Tenant -->
-                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                    <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                         <h3 class="text-xs font-bold text-gray-700 mb-1 flex items-center dot-accent">
                             TENANT
                         </h3>
@@ -206,30 +206,30 @@
                     PROPERTY DETAILS
                 </h2>
 
-                <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                     <div class="grid grid-cols-2 gap-2">
                         <div class="space-y-1">
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Property:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Property:</span>
                                 <span
                                     class="text-xs text-gray-800 font-medium">{{ $record->property->title ?? '[Property Title]' }}</span>
                             </div>
                             @if ($record->property->address)
                                 <div class="flex items-start">
-                                    <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Address:</span>
+                                    <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Address:</span>
                                     <span class="text-xs text-gray-800">{{ $record->property->address }}</span>
                                 </div>
                             @endif
                         </div>
                         <div class="space-y-1">
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Type:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Type:</span>
                                 <span
                                     class="text-xs text-gray-800">{{ $record->property->propertyType->name ?? 'N/A' }}</span>
                             </div>
                             @if ($record->property->propertySubtype)
                                 <div class="flex items-start">
-                                    <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Subtype:</span>
+                                    <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Subtype:</span>
                                     <span
                                         class="text-xs text-gray-800">{{ $record->property->propertySubtype->name }}</span>
                                 </div>
@@ -246,7 +246,7 @@
                     LEASE TERMS & FINANCIAL DETAILS
                 </h2>
 
-                <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                     <div class="grid grid-cols-6 gap-2 text-xs">
                         <!-- Start Date -->
                         <div class="text-center">
@@ -326,7 +326,7 @@
                     TERMS & CONDITIONS
                 </h2>
 
-                <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                     <div class="text-md text-gray-800 leading-tight prose prose-xs max-w-none">
                         @if ($record->terms_and_conditions)
                             {!! $record->terms_and_conditions !!}
@@ -374,7 +374,7 @@
                         ADDITIONAL NOTES
                     </h2>
 
-                    <div class="bg-gray-50 p-2 rounded border border-gray-200">
+                    <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                         <p class="text-xs text-gray-800 leading-tight">{{ $record->notes }}</p>
                     </div>
                 </section>
@@ -389,7 +389,7 @@
 
                 <div class="grid grid-cols-2 gap-2">
                     <!-- Landlord Signature -->
-                    <div class="bg-gray-50 p-2 rounded border border-gray-200 text-center">
+                    <div class="bg-gray-50 p-2 rounded-sm border border-gray-200 text-center">
                         <h3 class="text-xs font-bold text-gray-700 mb-1 flex items-center justify-center dot-accent">
                             LANDLORD SIGNATURE
                         </h3>
@@ -408,7 +408,7 @@
                     </div>
 
                     <!-- Tenant Signature -->
-                    <div class="bg-gray-50 p-2 rounded border border-gray-200 text-center">
+                    <div class="bg-gray-50 p-2 rounded-sm border border-gray-200 text-center">
                         <h3 class="text-xs font-bold text-gray-700 mb-1 flex items-center justify-center dot-accent">
                             TENANT SIGNATURE
                         </h3>
@@ -430,7 +430,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="bg-gradient-to-r from-gray-100 to-gray-200 border-t border-gray-300 p-3 text-center">
+        <div class="bg-linear-to-r from-gray-100 to-gray-200 border-t border-gray-300 p-3 text-center">
             <p class="text-xs text-gray-600 font-medium mb-1">
                 Document generated on {{ now()->format('F j, Y \\a\\t g:i A') }}
             </p>

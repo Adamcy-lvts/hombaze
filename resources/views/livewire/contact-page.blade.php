@@ -63,7 +63,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
             
             <!-- Contact Form -->
-            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
                 <div class="flex items-center mb-6">
                     <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-3">
                         <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -160,7 +160,7 @@
                     <button 
                         type="submit"
                         wire:loading.attr="disabled"
-                        class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
+                        class="w-full bg-linear-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 disabled:from-gray-400 disabled:to-gray-500 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                     >
                         <span wire:loading.remove>Send Message</span>
                         <span wire:loading class="flex items-center justify-center">
@@ -177,7 +177,7 @@
             <!-- Contact Information -->
             <div class="space-y-6">
                 <!-- Quick Contact -->
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
                     <div class="flex items-center mb-6">
                         <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,7 +233,7 @@
                 <!-- Social Media -->
                 <div class="bg-white/80 backdrop-blur-2xl border border-gray-200/40 rounded-3xl p-8 shadow-2xl">
                     <div class="flex items-center mb-6">
-                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
+                        <div class="w-12 h-12 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mr-4">
                             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 4v10a2 2 0 002 2h6a2 2 0 002-2V8M7 8H5a2 2 0 00-2 2v8a2 2 0 002 2h2m0-12h10m-5 4v4"></path>
                             </svg>
@@ -288,7 +288,7 @@
                 @foreach($officeLocations as $office)
                     <div class="bg-white/60 backdrop-blur-xl border border-gray-200/40 rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
                         <div class="flex items-center mb-4">
-                            <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
+                            <div class="w-10 h-10 bg-linear-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center mr-3">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>

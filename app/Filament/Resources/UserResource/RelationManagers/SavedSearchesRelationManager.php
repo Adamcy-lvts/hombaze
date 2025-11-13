@@ -2,8 +2,24 @@
 
 namespace App\Filament\Resources\UserResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,21 +30,21 @@ class SavedSearchesRelationManager extends RelationManager
 {
     protected static string $relationship = 'savedSearches';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255)
                     ->placeholder('e.g., 2-Bedroom Apartments in Lekki'),
-                Forms\Components\KeyValue::make('search_criteria')
+                KeyValue::make('search_criteria')
                     ->label('Search Criteria')
                     ->keyLabel('Criteria')
                     ->valueLabel('Value')
                     ->default([])
                     ->columnSpanFull(),
-                Forms\Components\Select::make('alert_frequency')
+                Select::make('alert_frequency')
                     ->options([
                         'instant' => 'Instant',
                         'daily' => 'Daily',
@@ -37,7 +53,7 @@ class SavedSearchesRelationManager extends RelationManager
                     ])
                     ->default('daily')
                     ->required(),
-                Forms\Components\Toggle::make('is_active')
+                Toggle::make('is_active')
                     ->label('Active')
                     ->default(true),
             ]);
@@ -48,17 +64,17 @@ class SavedSearchesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('readable_criteria')
+                TextColumn::make('readable_criteria')
                     ->label('Search Criteria')
                     ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 50 ? $state : null;
                     }),
-                Tables\Columns\TextColumn::make('alert_frequency')
+                TextColumn::make('alert_frequency')
                     ->label('Alert Frequency')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -69,17 +85,17 @@ class SavedSearchesRelationManager extends RelationManager
                         default => 'gray',
                     })
                     ->sortable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->label('Active')
                     ->boolean()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('last_alerted_at')
+                TextColumn::make('last_alerted_at')
                     ->label('Last Alert')
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->placeholder('Never'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
@@ -87,46 +103,46 @@ class SavedSearchesRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('alert_frequency')
+                SelectFilter::make('alert_frequency')
                     ->options([
                         'instant' => 'Instant',
                         'daily' => 'Daily',
                         'weekly' => 'Weekly',
                         'monthly' => 'Monthly',
                     ]),
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Active Status')
                     ->placeholder('All searches')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
-                Tables\Filters\Filter::make('needs_alert')
+                Filter::make('needs_alert')
                     ->query(fn (Builder $query): Builder => $query->needsAlert())
                     ->label('Needs Alert'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('toggle_active')
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                Action::make('toggle_active')
                     ->icon(fn ($record) => $record->is_active ? 'heroicon-o-pause' : 'heroicon-o-play')
                     ->color(fn ($record) => $record->is_active ? 'warning' : 'success')
                     ->label(fn ($record) => $record->is_active ? 'Deactivate' : 'Activate')
                     ->requiresConfirmation()
                     ->action(fn ($record) => $record->update(['is_active' => !$record->is_active])),
-                Tables\Actions\Action::make('send_alert')
+                Action::make('send_alert')
                     ->icon('heroicon-o-bell')
                     ->color('info')
                     ->requiresConfirmation()
                     ->action(fn ($record) => $record->markAsAlerted())
                     ->visible(fn ($record) => $record->is_active)
                     ->label('Send Alert Now'),
-                Tables\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');

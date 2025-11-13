@@ -2,17 +2,23 @@
 
 namespace App\Filament\Agent\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use App\Filament\Agent\Resources\PropertyViewingResource\Pages\ListPropertyViewings;
+use App\Filament\Agent\Resources\PropertyViewingResource\Pages\CreatePropertyViewing;
+use App\Filament\Agent\Resources\PropertyViewingResource\Pages\EditPropertyViewing;
 use App\Filament\Agent\Resources\PropertyViewingResource\Pages;
 use App\Filament\Agent\Resources\PropertyViewingResource\RelationManagers;
 use App\Models\PropertyViewing;
 use App\Models\Property;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\TimePicker;
@@ -21,7 +27,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -29,7 +34,7 @@ class PropertyViewingResource extends Resource
 {
     protected static ?string $model = PropertyViewing::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar-days';
     
     protected static ?string $navigationLabel = 'Property Viewings';
     
@@ -53,10 +58,10 @@ class PropertyViewingResource extends Resource
             });
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Viewing Details')
                     ->schema([
                         Grid::make(2)
@@ -117,7 +122,7 @@ class PropertyViewingResource extends Resource
                         TextInput::make('cancellation_reason')
                             ->label('Cancellation Reason')
                             ->maxLength(255)
-                            ->visible(fn (Forms\Get $get) => $get('status') === 'cancelled')
+                            ->visible(fn (Get $get) => $get('status') === 'cancelled')
                             ->columnSpanFull(),
                     ]),
             ]);
@@ -194,7 +199,7 @@ class PropertyViewingResource extends Resource
                             ->pluck('title', 'id');
                     }),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('confirm')
                     ->label('Confirm')
                     ->icon('heroicon-o-check-circle')
@@ -216,9 +221,9 @@ class PropertyViewingResource extends Resource
                     })
                     ->visible(fn (PropertyViewing $record) => in_array($record->status, ['scheduled', 'confirmed'])),
                 
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions for viewings
             ])
             ->defaultSort('scheduled_date', 'asc');
@@ -234,9 +239,9 @@ class PropertyViewingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyViewings::route('/'),
-            'create' => Pages\CreatePropertyViewing::route('/create'),
-            'edit' => Pages\EditPropertyViewing::route('/{record}/edit'),
+            'index' => ListPropertyViewings::route('/'),
+            'create' => CreatePropertyViewing::route('/create'),
+            'edit' => EditPropertyViewing::route('/{record}/edit'),
         ];
     }
 }

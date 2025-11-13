@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Validation\Rules\Password;
 use App\Models\TenantInvitation;
 use App\Models\User;
 use App\Models\Lease;
@@ -68,7 +69,7 @@ class TenantInvitationController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         // Check if phone is already taken by another user

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Forms;
 
+use Exception;
 use Livewire\Form;
 use App\Models\CustomerProfile;
 use Livewire\Attributes\Validate;
@@ -136,7 +137,7 @@ class CustomerPreferencesForm extends Form
         if ($this->customerProfile) {
             try {
                 $this->store();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error('Auto-save preferences failed', ['error' => $e->getMessage()]);
             }
         }

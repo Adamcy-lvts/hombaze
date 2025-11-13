@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Events\SavedSearchJobStarted;
+use App\Events\SavedSearchJobProgress;
+use App\Events\SavedSearchJobCompleted;
 use App\Models\User;
 use App\Models\SavedSearch;
 use App\Jobs\ProcessSavedSearchMatches;
@@ -38,7 +41,7 @@ class TestRealTimeSearch extends Command
         $this->newLine();
 
         $this->info("📡 Broadcasting started event...");
-        \App\Events\SavedSearchJobStarted::dispatch(
+        SavedSearchJobStarted::dispatch(
             $user->id,
             $search->id,
             'manual_test',
@@ -50,7 +53,7 @@ class TestRealTimeSearch extends Command
         $this->info("📊 Broadcasting progress events...");
 
         // Stage 1: Analyzing
-        \App\Events\SavedSearchJobProgress::dispatch(
+        SavedSearchJobProgress::dispatch(
             $user->id,
             $search->id,
             'searching',
@@ -61,7 +64,7 @@ class TestRealTimeSearch extends Command
         sleep(1);
 
         // Stage 2: Searching
-        \App\Events\SavedSearchJobProgress::dispatch(
+        SavedSearchJobProgress::dispatch(
             $user->id,
             $search->id,
             'searching',
@@ -72,7 +75,7 @@ class TestRealTimeSearch extends Command
         sleep(1);
 
         // Stage 3: Matching
-        \App\Events\SavedSearchJobProgress::dispatch(
+        SavedSearchJobProgress::dispatch(
             $user->id,
             $search->id,
             'matching',
@@ -83,7 +86,7 @@ class TestRealTimeSearch extends Command
         sleep(1);
 
         // Stage 4: Notifying
-        \App\Events\SavedSearchJobProgress::dispatch(
+        SavedSearchJobProgress::dispatch(
             $user->id,
             $search->id,
             'notifying',
@@ -94,7 +97,7 @@ class TestRealTimeSearch extends Command
         sleep(1);
 
         $this->info("✅ Broadcasting completion event...");
-        \App\Events\SavedSearchJobCompleted::dispatch(
+        SavedSearchJobCompleted::dispatch(
             $user->id,
             $search->id,
             true,

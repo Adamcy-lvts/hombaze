@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Customer;
 
+use Exception;
+use Log;
 use App\Models\SavedProperty;
 use App\Models\PropertyInquiry;
 use App\Models\PropertyViewing;
@@ -94,8 +96,8 @@ class Dashboard extends Component
         try {
             $engine = new SimpleRecommendationEngine();
             return $engine->getRecommendationsForUser(auth()->user(), 6);
-        } catch (\Exception $e) {
-            \Log::error('Dashboard recommendation error: ' . $e->getMessage(), [
+        } catch (Exception $e) {
+            Log::error('Dashboard recommendation error: ' . $e->getMessage(), [
                 'user_id' => auth()->id()
             ]);
 

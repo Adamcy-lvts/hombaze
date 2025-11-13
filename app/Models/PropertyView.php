@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -177,7 +179,7 @@ class PropertyView extends Model
                 'platform' => self::detectPlatform($userAgent),
                 'viewed_at' => now(),
             ]);
-        } catch (\Illuminate\Database\QueryException $e) {
+        } catch (QueryException $e) {
             // Handle race condition where duplicate fingerprint is inserted
             if ($e->getCode() == 23000) { // Integrity constraint violation
                 return null;
@@ -211,7 +213,7 @@ class PropertyView extends Model
     /**
      * Get trending properties
      */
-    public static function getTrendingProperties(int $days = 7, int $limit = 10): \Illuminate\Support\Collection
+    public static function getTrendingProperties(int $days = 7, int $limit = 10): Collection
     {
         return self::select('property_id', DB::raw('COUNT(*) as view_count'))
                   ->where('viewed_at', '>=', now()->subDays($days))

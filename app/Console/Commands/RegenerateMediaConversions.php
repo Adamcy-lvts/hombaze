@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Spatie\MediaLibrary\Conversions\FileManipulator;
+use Exception;
 use App\Models\Property;
 use Illuminate\Console\Command;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -54,11 +56,11 @@ class RegenerateMediaConversions extends Command
                 if (!$hasConversions || $force) {
                     // Regenerate conversions using the FileManipulator
                     try {
-                        app(\Spatie\MediaLibrary\Conversions\FileManipulator::class)
+                        app(FileManipulator::class)
                             ->createDerivedFiles($media);
 
                         $processed++;
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         $this->newLine();
                         $this->warn("Failed to generate conversions for media {$media->id}: {$e->getMessage()}");
                     }
@@ -66,7 +68,7 @@ class RegenerateMediaConversions extends Command
 
                 $progressBar->advance();
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errors++;
                 $this->newLine();
                 $this->error("Error processing media {$media->id}: {$e->getMessage()}");

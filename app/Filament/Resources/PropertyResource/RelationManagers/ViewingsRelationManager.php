@@ -2,8 +2,25 @@
 
 namespace App\Filament\Resources\PropertyResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TimePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,29 +31,29 @@ class ViewingsRelationManager extends RelationManager
 {
     protected static string $relationship = 'viewings';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('inquirer_id')
+        return $schema
+            ->components([
+                Select::make('inquirer_id')
                     ->relationship('inquirer', 'name')
                     ->required()
                     ->searchable()
                     ->preload()
                     ->label('Inquirer'),
-                Forms\Components\Select::make('agent_id')
+                Select::make('agent_id')
                     ->relationship('agent', 'name')
                     ->nullable()
                     ->searchable()
                     ->preload()
                     ->label('Agent'),
-                Forms\Components\DatePicker::make('scheduled_date')
+                DatePicker::make('scheduled_date')
                     ->required()
                     ->label('Scheduled Date'),
-                Forms\Components\TimePicker::make('scheduled_time')
+                TimePicker::make('scheduled_time')
                     ->required()
                     ->label('Scheduled Time'),
-                Forms\Components\Select::make('status')
+                Select::make('status')
                     ->options([
                         'scheduled' => 'Scheduled',
                         'confirmed' => 'Confirmed',
@@ -46,19 +63,19 @@ class ViewingsRelationManager extends RelationManager
                     ])
                     ->default('scheduled')
                     ->required(),
-                Forms\Components\Textarea::make('notes')
+                Textarea::make('notes')
                     ->maxLength(65535)
                     ->columnSpanFull(),
-                Forms\Components\DateTimePicker::make('completed_at')
+                DateTimePicker::make('completed_at')
                     ->label('Completed At')
-                    ->visible(fn (Forms\Get $get): bool => $get('status') === 'completed'),
-                Forms\Components\DateTimePicker::make('cancelled_at')
+                    ->visible(fn (Get $get): bool => $get('status') === 'completed'),
+                DateTimePicker::make('cancelled_at')
                     ->label('Cancelled At')
-                    ->visible(fn (Forms\Get $get): bool => $get('status') === 'cancelled'),
-                Forms\Components\TextInput::make('cancellation_reason')
+                    ->visible(fn (Get $get): bool => $get('status') === 'cancelled'),
+                TextInput::make('cancellation_reason')
                     ->maxLength(255)
                     ->label('Cancellation Reason')
-                    ->visible(fn (Forms\Get $get): bool => $get('status') === 'cancelled'),
+                    ->visible(fn (Get $get): bool => $get('status') === 'cancelled'),
             ]);
     }
 
@@ -67,24 +84,24 @@ class ViewingsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('inquirer.name')
             ->columns([
-                Tables\Columns\TextColumn::make('inquirer.name')
+                TextColumn::make('inquirer.name')
                     ->label('Inquirer')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('agent.name')
+                TextColumn::make('agent.name')
                     ->label('Agent')
                     ->default('Not Assigned')
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('scheduled_date')
+                TextColumn::make('scheduled_date')
                     ->label('Date')
                     ->date()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('scheduled_time')
+                TextColumn::make('scheduled_time')
                     ->label('Time')
                     ->time()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'scheduled' => 'warning',
@@ -95,13 +112,13 @@ class ViewingsRelationManager extends RelationManager
                         default => 'gray',
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('notes')
+                TextColumn::make('notes')
                     ->limit(30)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 30 ? $state : null;
                     }),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Requested')
                     ->dateTime()
                     ->sortable()
@@ -109,7 +126,7 @@ class ViewingsRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'scheduled' => 'Scheduled',
                         'confirmed' => 'Confirmed',
@@ -117,26 +134,26 @@ class ViewingsRelationManager extends RelationManager
                         'cancelled' => 'Cancelled',
                         'no_show' => 'No Show',
                     ]),
-                Tables\Filters\Filter::make('upcoming')
+                Filter::make('upcoming')
                     ->query(fn (Builder $query): Builder => $query->upcoming())
                     ->label('Upcoming Only'),
-                Tables\Filters\Filter::make('past')
+                Filter::make('past')
                     ->query(fn (Builder $query): Builder => $query->past())
                     ->label('Past Viewings'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('confirm')
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                Action::make('confirm')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
                     ->action(fn ($record) => $record->update(['status' => 'confirmed']))
                     ->visible(fn ($record) => $record->status === 'scheduled'),
-                Tables\Actions\Action::make('complete')
+                Action::make('complete')
                     ->icon('heroicon-o-check-badge')
                     ->color('success')
                     ->requiresConfirmation()
@@ -145,11 +162,11 @@ class ViewingsRelationManager extends RelationManager
                         'completed_at' => now()
                     ]))
                     ->visible(fn ($record) => in_array($record->status, ['scheduled', 'confirmed'])),
-                Tables\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('scheduled_date', 'desc');

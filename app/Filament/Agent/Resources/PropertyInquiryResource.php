@@ -2,17 +2,23 @@
 
 namespace App\Filament\Agent\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Actions\Action;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Agent\Resources\PropertyInquiryResource\Pages\ListPropertyInquiries;
+use App\Filament\Agent\Resources\PropertyInquiryResource\Pages\EditPropertyInquiry;
 use App\Filament\Agent\Resources\PropertyInquiryResource\Pages;
 use App\Filament\Agent\Resources\PropertyInquiryResource\RelationManagers;
 use App\Models\PropertyInquiry;
 use App\Models\Property;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
@@ -20,7 +26,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Actions\Action;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -28,7 +33,7 @@ class PropertyInquiryResource extends Resource
 {
     protected static ?string $model = PropertyInquiry::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
     
     protected static ?string $navigationLabel = 'Property Inquiries';
     
@@ -52,10 +57,10 @@ class PropertyInquiryResource extends Resource
             });
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Inquiry Details')
                     ->description('Information about the property inquiry')
                     ->schema([
@@ -202,12 +207,12 @@ class PropertyInquiryResource extends Resource
                     ->relationship('property', 'title')
                     ->searchable(),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('quick_response')
                     ->label('Quick Response')
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->color('primary')
-                    ->form([
+                    ->schema([
                         Textarea::make('response_message')
                             ->label('Response Message')
                             ->required()
@@ -228,11 +233,11 @@ class PropertyInquiryResource extends Resource
                     })
                     ->visible(fn (PropertyInquiry $record) => $record->status === 'pending'),
                 
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -248,8 +253,8 @@ class PropertyInquiryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyInquiries::route('/'),
-            'edit' => Pages\EditPropertyInquiry::route('/{record}/edit'),
+            'index' => ListPropertyInquiries::route('/'),
+            'edit' => EditPropertyInquiry::route('/{record}/edit'),
         ];
     }
 }

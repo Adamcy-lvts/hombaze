@@ -2,10 +2,29 @@
 
 namespace App\Filament\Resources\AgencyResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
 use App\Models\Agent;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,13 +37,13 @@ class AgentsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'user.name';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Agent Information')
+        return $schema
+            ->components([
+                Section::make('Agent Information')
                     ->schema([
-                        Forms\Components\Select::make('user_id')
+                        Select::make('user_id')
                             ->label('User')
                             ->relationship('user', 'name')
                             ->searchable()
@@ -32,17 +51,17 @@ class AgentsRelationManager extends RelationManager
                             ->required()
                             ->placeholder('Select a user to make an agent')
                             ->createOptionForm([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->required()
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('email')
+                                TextInput::make('email')
                                     ->email()
                                     ->required()
                                     ->unique(User::class),
-                                Forms\Components\TextInput::make('phone')
+                                TextInput::make('phone')
                                     ->tel()
                                     ->required(),
-                                Forms\Components\Select::make('user_type')
+                                Select::make('user_type')
                                     ->options([
                                         'agent' => 'Agent',
                                     ])
@@ -54,28 +73,28 @@ class AgentsRelationManager extends RelationManager
                                 return $user->id;
                             }),
                         
-                        Forms\Components\TextInput::make('license_number')
+                        TextInput::make('license_number')
                             ->label('License Number')
                             ->maxLength(255),
                         
-                        Forms\Components\DatePicker::make('license_expiry_date')
+                        DatePicker::make('license_expiry_date')
                             ->label('License Expiry Date'),
                         
-                        Forms\Components\Textarea::make('bio')
+                        Textarea::make('bio')
                             ->label('Biography')
                             ->rows(3)
                             ->maxLength(1000),
                     ]),
                 
-                Forms\Components\Section::make('Professional Details')
+                Section::make('Professional Details')
                     ->schema([
-                        Forms\Components\TextInput::make('years_experience')
+                        TextInput::make('years_experience')
                             ->label('Years of Experience')
                             ->numeric()
                             ->minValue(0)
                             ->maxValue(50),
                         
-                        Forms\Components\TextInput::make('commission_rate')
+                        TextInput::make('commission_rate')
                             ->label('Commission Rate (%)')
                             ->numeric()
                             ->minValue(0)
@@ -83,31 +102,31 @@ class AgentsRelationManager extends RelationManager
                             ->step(0.01)
                             ->suffix('%'),
                         
-                        Forms\Components\TagsInput::make('languages')
+                        TagsInput::make('languages')
                             ->label('Languages Spoken')
                             ->placeholder('Add languages...'),
                         
-                        Forms\Components\TextInput::make('specializations')
+                        TextInput::make('specializations')
                             ->label('Specializations')
                             ->placeholder('e.g., Residential, Commercial, Luxury Properties')
                             ->maxLength(500),
                     ]),
                 
-                Forms\Components\Section::make('Status & Settings')
+                Section::make('Status & Settings')
                     ->schema([
-                        Forms\Components\Toggle::make('is_available')
+                        Toggle::make('is_available')
                             ->label('Available for New Clients')
                             ->default(true),
                         
-                        Forms\Components\Toggle::make('is_verified')
+                        Toggle::make('is_verified')
                             ->label('Verified Agent')
                             ->default(false),
                         
-                        Forms\Components\Toggle::make('is_featured')
+                        Toggle::make('is_featured')
                             ->label('Featured Agent')
                             ->default(false),
                         
-                        Forms\Components\Toggle::make('accepts_new_clients')
+                        Toggle::make('accepts_new_clients')
                             ->label('Accepting New Clients')
                             ->default(true),
                     ]),
@@ -119,42 +138,42 @@ class AgentsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('user.name')
             ->columns([
-                Tables\Columns\ImageColumn::make('user.avatar')
+                ImageColumn::make('user.avatar')
                     ->label('Avatar')
                     ->circular()
                     ->defaultImageUrl('/images/default-avatar.png'),
-                
-                Tables\Columns\TextColumn::make('user.name')
+
+                TextColumn::make('user.name')
                     ->label('Agent Name')
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
-                
-                Tables\Columns\TextColumn::make('user.email')
+
+                TextColumn::make('user.email')
                     ->label('Email')
                     ->searchable()
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
-                
-                Tables\Columns\TextColumn::make('user.phone')
+
+                TextColumn::make('user.phone')
                     ->label('Phone')
                     ->searchable()
                     ->copyable()
                     ->icon('heroicon-o-phone'),
-                
-                Tables\Columns\TextColumn::make('license_number')
+
+                TextColumn::make('license_number')
                     ->label('License')
                     ->searchable()
                     ->copyable()
                     ->placeholder('Not set'),
-                
-                Tables\Columns\TextColumn::make('years_experience')
+
+                TextColumn::make('years_experience')
                     ->label('Experience')
                     ->suffix(' years')
                     ->sortable()
                     ->placeholder('Not set'),
-                
-                Tables\Columns\TextColumn::make('rating')
+
+                TextColumn::make('rating')
                     ->label('Rating')
                     ->badge()
                     ->color(fn ($state) => match (true) {
@@ -164,38 +183,38 @@ class AgentsRelationManager extends RelationManager
                         default => 'danger',
                     })
                     ->formatStateUsing(fn ($state) => $state ? number_format($state, 1) . '/5.0' : 'No rating'),
-                
-                Tables\Columns\TextColumn::make('total_properties')
+
+                TextColumn::make('total_properties')
                     ->label('Properties')
                     ->sortable()
                     ->badge()
                     ->color('gray'),
-                
-                Tables\Columns\IconColumn::make('is_available')
+
+                IconColumn::make('is_available')
                     ->label('Available')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger'),
-                
-                Tables\Columns\IconColumn::make('is_verified')
+
+                IconColumn::make('is_verified')
                     ->label('Verified')
                     ->boolean()
                     ->trueIcon('heroicon-o-shield-check')
                     ->falseIcon('heroicon-o-shield-exclamation')
                     ->trueColor('success')
                     ->falseColor('warning'),
-                
-                Tables\Columns\IconColumn::make('accepts_new_clients')
+
+                IconColumn::make('accepts_new_clients')
                     ->label('New Clients')
                     ->boolean()
                     ->trueIcon('heroicon-o-user-plus')
                     ->falseIcon('heroicon-o-user-minus')
                     ->trueColor('success')
                     ->falseColor('gray'),
-                
-                Tables\Columns\TextColumn::make('last_active_at')
+
+                TextColumn::make('last_active_at')
                     ->label('Last Active')
                     ->dateTime()
                     ->sortable()
@@ -203,54 +222,54 @@ class AgentsRelationManager extends RelationManager
                     ->placeholder('Never'),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('is_verified')
+                TernaryFilter::make('is_verified')
                     ->label('Verification Status')
                     ->trueLabel('Verified Only')
                     ->falseLabel('Unverified Only')
                     ->placeholder('All Agents'),
-                
-                Tables\Filters\TernaryFilter::make('is_available')
+
+                TernaryFilter::make('is_available')
                     ->label('Availability')
                     ->trueLabel('Available Only')
                     ->falseLabel('Unavailable Only')
                     ->placeholder('All Agents'),
-                
-                Tables\Filters\TernaryFilter::make('accepts_new_clients')
+
+                TernaryFilter::make('accepts_new_clients')
                     ->label('Accepting Clients')
                     ->trueLabel('Accepting Only')
                     ->falseLabel('Not Accepting Only')
                     ->placeholder('All Agents'),
-                
-                Tables\Filters\Filter::make('experienced')
+
+                Filter::make('experienced')
                     ->query(fn (Builder $query): Builder => $query->where('years_experience', '>=', 5))
                     ->label('Experienced (5+ years)'),
-                
-                Tables\Filters\Filter::make('high_rated')
+
+                Filter::make('high_rated')
                     ->query(fn (Builder $query): Builder => $query->where('rating', '>=', 4.0))
                     ->label('Highly Rated (4.0+)'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make()
+                CreateAction::make()
                     ->label('Add Agent')
                     ->icon('heroicon-o-user-plus')
                     ->modalHeading('Add New Agent to Agency')
                     ->successNotificationTitle('Agent added successfully!')
-                    ->mutateFormDataUsing(function (array $data): array {
+                    ->mutateDataUsing(function (array $data): array {
                         // Ensure the agent is associated with this agency
                         $data['agency_id'] = $this->ownerRecord->id;
                         return $data;
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->label('View')
                     ->icon('heroicon-o-eye'),
-                
-                Tables\Actions\EditAction::make()
+
+                EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square'),
-                
-                Tables\Actions\Action::make('toggle_availability')
+
+                Action::make('toggle_availability')
                     ->label(fn (Agent $record): string => $record->is_available ? 'Mark Unavailable' : 'Mark Available')
                     ->icon(fn (Agent $record): string => $record->is_available ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
                     ->color(fn (Agent $record): string => $record->is_available ? 'danger' : 'success')
@@ -260,8 +279,8 @@ class AgentsRelationManager extends RelationManager
                     })
                     ->requiresConfirmation()
                     ->modalDescription('Are you sure you want to change this agent\'s availability status?'),
-                
-                Tables\Actions\DeleteAction::make()
+
+                DeleteAction::make()
                     ->label('Remove')
                     ->icon('heroicon-o-trash')
                     ->modalHeading('Remove Agent from Agency')
@@ -273,9 +292,9 @@ class AgentsRelationManager extends RelationManager
                         return false; // Prevent actual deletion
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('mark_available')
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('mark_available')
                         ->label('Mark Available')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
@@ -284,8 +303,8 @@ class AgentsRelationManager extends RelationManager
                         })
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                    
-                    Tables\Actions\BulkAction::make('mark_unavailable')
+
+                    BulkAction::make('mark_unavailable')
                         ->label('Mark Unavailable')
                         ->icon('heroicon-o-x-circle')
                         ->color('danger')
@@ -294,8 +313,8 @@ class AgentsRelationManager extends RelationManager
                         })
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                    
-                    Tables\Actions\BulkAction::make('remove_from_agency')
+
+                    BulkAction::make('remove_from_agency')
                         ->label('Remove from Agency')
                         ->icon('heroicon-o-user-minus')
                         ->color('warning')

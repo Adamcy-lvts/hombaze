@@ -2,15 +2,20 @@
 
 namespace App\Filament\Agent\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use App\Filament\Agent\Resources\ReviewResource\Pages\ListReviews;
+use App\Filament\Agent\Resources\ReviewResource\Pages\ViewReview;
+use App\Filament\Agent\Resources\ReviewResource\Pages\EditReview;
 use App\Filament\Agent\Resources\ReviewResource\Pages;
 use App\Filament\Agent\Resources\ReviewResource\RelationManagers;
 use App\Models\Review;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -25,7 +30,7 @@ class ReviewResource extends Resource
 {
     protected static ?string $model = Review::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-star';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-star';
     
     protected static ?string $navigationLabel = 'Reviews';
     
@@ -47,10 +52,10 @@ class ReviewResource extends Resource
             ->where('reviewable_id', $user->id);
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Review Details')
                     ->schema([
                         TextInput::make('reviewer_name')
@@ -162,12 +167,12 @@ class ReviewResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make()
                     ->label('Respond'),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions for reviews
             ])
             ->defaultSort('created_at', 'desc');
@@ -183,9 +188,9 @@ class ReviewResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListReviews::route('/'),
-            'view' => Pages\ViewReview::route('/{record}'),
-            'edit' => Pages\EditReview::route('/{record}/edit'),
+            'index' => ListReviews::route('/'),
+            'view' => ViewReview::route('/{record}'),
+            'edit' => EditReview::route('/{record}/edit'),
         ];
     }
 }

@@ -1,9 +1,9 @@
 <x-app-layout>
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
+    <div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
         <!-- Subtle Background Elements -->
         <div class="absolute inset-0 opacity-30">
-            <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-            <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+            <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
+            <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
         </div>
 
         <div class="relative z-30 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

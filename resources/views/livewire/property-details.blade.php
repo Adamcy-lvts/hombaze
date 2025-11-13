@@ -1,5 +1,5 @@
 <!-- Enhanced Property Details Page -->
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
     <!-- Flash Messages -->
     @if (session()->has('message'))
         <div class="fixed top-4 right-4 z-50 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg"
@@ -18,10 +18,10 @@
     <!-- Subtle Background Elements -->
     <div class="absolute inset-0 opacity-30">
         <div
-            class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl">
+            class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl">
         </div>
         <div
-            class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl">
+            class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl">
         </div>
     </div>
 
@@ -29,85 +29,67 @@
     <div class="relative z-30 pt-20 lg:pt-24">
         <!-- Premium Breadcrumb Navigation -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6 lg:mb-8">
-            <nav class="flex items-center" aria-label="Breadcrumb">
-                <div
-                    class="flex items-center space-x-2 lg:space-x-3 bg-white/70 backdrop-blur-xl rounded-2xl px-3 py-3 lg:px-5 lg:py-4 shadow-xl border border-white/40 overflow-x-auto">
-                    <!-- Home -->
-                    <a href="{{ route('landing') }}"
-                        class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300 flex-shrink-0">
-                        <div
-                            class="p-1.5 lg:p-2 rounded-xl bg-emerald-50 group-hover:bg-emerald-100 group-hover:scale-105 transition-all duration-300">
-                            <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-emerald-600" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
+            <nav aria-label="Breadcrumb">
+                <ol
+                    class="flex items-center gap-2 text-xs sm:text-sm text-gray-500 overflow-x-auto whitespace-nowrap px-3 py-2 border border-gray-200 rounded-xl bg-white shadow-xs shadow-gray-200/70 w-full">
+                    <li>
+                        <a href="{{ route('landing') }}"
+                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:text-emerald-600 hover:border-emerald-300 transition">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                 </path>
                             </svg>
-                        </div>
-                        <span
-                            class="ml-1.5 lg:ml-2 text-xs lg:text-sm xl:text-base font-medium hidden sm:inline">Home</span>
-                    </a>
-
-                    <!-- Separator -->
-                    <div class="flex items-center flex-shrink-0">
-                        <div class="w-4 lg:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
-                        <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-gray-400 -ml-1" fill="none"
+                            <span class="font-medium">Home</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center shrink-0">
+                        <div class="w-8 sm:w-12 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 -ml-1" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                             </path>
                         </svg>
-                    </div>
-
-                    <!-- Properties -->
-                    <a href="{{ route('properties.search') }}"
-                        class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300 flex-shrink-0">
-                        <div
-                            class="p-1.5 lg:p-2 rounded-xl bg-blue-50 group-hover:bg-blue-100 group-hover:scale-105 transition-all duration-300">
-                            <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-blue-600" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                        <span
-                            class="ml-1.5 lg:ml-2 text-xs lg:text-sm xl:text-base font-medium hidden sm:inline">Properties</span>
-                    </a>
-
-                    <!-- Separator -->
-                    <div class="flex items-center flex-shrink-0">
-                        <div class="w-4 lg:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
-                        <svg class="w-3 h-3 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-gray-400 -ml-1" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
-                            </path>
-                        </svg>
-                    </div>
-
-                    <!-- Location -->
-                    <div class="flex items-center flex-shrink-0">
-                        <div class="p-1.5 lg:p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
-                            <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor"
+                    </li>
+                    <li>
+                        <a href="{{ route('properties.search') }}"
+                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-transparent text-gray-600 hover:text-emerald-600 hover:border-emerald-300 transition">
+                            <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
                                 </path>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
-                        </div>
-                        <div class="ml-2">
-                            <span
-                                class="text-sm lg:text-base font-bold text-gray-900">{{ $property->city?->name ?? 'Unknown City' }}</span>
-                            <div class="text-xs text-gray-500">{{ $property->state?->name ?? 'Unknown State' }}</div>
-                        </div>
-                    </div>
-                </div>
+                            <span class="font-medium">Properties</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center shrink-0">
+                        <div class="w-8 sm:w-12 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 -ml-1" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                            </path>
+                        </svg>
+                    </li>
+                    <li class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                            </path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span class="font-semibold">{{ $property->city?->name ?? 'Unknown City' }}</span>
+                        <span class="text-gray-500">, {{ $property->state?->name ?? 'Unknown State' }}</span>
+                    </li>
+                </ol>
+            </nav>
 
-                <!-- Property Status Indicator -->
-                <div class="ml-4 flex items-center space-x-2">
+            <div class="flex flex-wrap items-center gap-2 mt-4">
                     {{-- @if ($property->is_featured)
                         <div
-                            class="px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-full shadow-lg">
+                            class="px-3 py-1.5 bg-linear-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-full shadow-lg">
                             <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path
                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
@@ -118,7 +100,7 @@
                     @endif --}}
                     @if ($property->is_verified)
                         <div
-                            class="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-full shadow-lg">
+                            class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200">
                             <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd"
                                     d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -394,7 +376,7 @@ if (empty($mediaLibraryImages)) {
 
                                 <!-- Image Overlay -->
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                                    class="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                                 </div>
 
                                 <!-- Main Image Navigation -->
@@ -423,7 +405,7 @@ if (empty($mediaLibraryImages)) {
                                 <div
                                     class="absolute inset-0 bg-emerald-600/0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                                     <div
-                                        class="bg-white/80 backdrop-blur-sm rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                                        class="bg-white/80 backdrop-blur-xs rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600"
                                             fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -436,7 +418,7 @@ if (empty($mediaLibraryImages)) {
                                 <div class="absolute top-3 lg:top-4 left-3 lg:left-4 flex flex-wrap gap-2">
                                     @if ($property->is_featured)
                                         <span
-                                            class="px-2 py-1 lg:px-3 lg:py-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
+                                            class="px-2 py-1 lg:px-3 lg:py-1.5 bg-linear-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
                                             <svg class="w-2.5 h-2.5 lg:w-3 lg:h-3 inline mr-1" fill="currentColor"
                                                 viewBox="0 0 20 20">
                                                 <path
@@ -447,7 +429,7 @@ if (empty($mediaLibraryImages)) {
                                     @endif
                                     @if ($property->is_verified)
                                         <span
-                                            class="px-2 py-1 lg:px-3 lg:py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
+                                            class="px-2 py-1 lg:px-3 lg:py-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
                                             <svg class="w-2.5 h-2.5 lg:w-3 lg:h-3 inline mr-1" fill="currentColor"
                                                 viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
@@ -477,7 +459,7 @@ if (empty($mediaLibraryImages)) {
                                             class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
 
                                         <div x-show="image.caption"
-                                            class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                                            class="absolute inset-0 bg-linear-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                                             <p x-text="image.caption" class="text-white text-sm"></p>
                                         </div>
 
@@ -485,7 +467,7 @@ if (empty($mediaLibraryImages)) {
                                         <div
                                             class="absolute inset-0 bg-emerald-600/0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
                                             <div
-                                                class="bg-white/80 backdrop-blur-sm rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                                                class="bg-white/80 backdrop-blur-xs rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     class="h-6 w-6 text-emerald-600" fill="none"
                                                     viewBox="0 0 24 24" stroke="currentColor">
@@ -504,7 +486,7 @@ if (empty($mediaLibraryImages)) {
                                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
                                 x-transition:leave="transition ease-in duration-200"
                                 x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
-                                class="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm"
+                                class="fixed inset-0 z-50 bg-black/95 backdrop-blur-xs"
                                 style="display: none; width: 100vw; height: 100vh; top: 0; left: 0;"
                                 @click.self="closeLightbox()">
 
@@ -534,10 +516,10 @@ if (empty($mediaLibraryImages)) {
                                 </div>
 
                                 <!-- Controls -->
-                                <div class="fixed top-20 right-8 z-[60] flex items-center space-x-4">
+                                <div class="fixed top-20 right-8 z-60 flex items-center space-x-4">
                                     <!-- Zoom controls -->
                                     <div
-                                        class="bg-black/50 backdrop-blur-sm rounded-lg flex items-center p-1 shadow-lg">
+                                        class="bg-black/50 backdrop-blur-xs rounded-lg flex items-center p-1 shadow-lg">
                                         <button @click="zoomOut()"
                                             class="text-white p-2 hover:bg-white/20 rounded-l-lg transition-colors"
                                             x-bind:disabled="zoom <= 1"
@@ -566,7 +548,7 @@ if (empty($mediaLibraryImages)) {
 
                                     <!-- Close button -->
                                     <button @click="closeLightbox()"
-                                        class="text-white bg-black/50 backdrop-blur-sm p-3 rounded-lg hover:bg-black/70 transition-colors shadow-lg">
+                                        class="text-white bg-black/50 backdrop-blur-xs p-3 rounded-lg hover:bg-black/70 transition-colors shadow-lg">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -578,7 +560,7 @@ if (empty($mediaLibraryImages)) {
 
                                 <!-- Navigation buttons -->
                                 <button @click.stop="prev()"
-                                    class="fixed left-8 top-1/2 transform -translate-y-1/2 bg-black/50 backdrop-blur-sm hover:bg-black/70 p-3 rounded-full text-white transition-all duration-300 z-[60] shadow-lg"
+                                    class="fixed left-8 top-1/2 transform -translate-y-1/2 bg-black/50 backdrop-blur-xs hover:bg-black/70 p-3 rounded-full text-white transition-all duration-300 z-60 shadow-lg"
                                     x-show="images.length > 1" x-transition:enter="transition ease-out duration-200"
                                     x-transition:enter-start="opacity-0 -translate-x-4"
                                     x-transition:enter-end="opacity-100 translate-x-0">
@@ -590,7 +572,7 @@ if (empty($mediaLibraryImages)) {
                                 </button>
 
                                 <button @click.stop="next()"
-                                    class="fixed right-8 top-1/2 transform -translate-y-1/2 bg-black/50 backdrop-blur-sm hover:bg-black/70 p-3 rounded-full text-white transition-all duration-300 z-[60] shadow-lg"
+                                    class="fixed right-8 top-1/2 transform -translate-y-1/2 bg-black/50 backdrop-blur-xs hover:bg-black/70 p-3 rounded-full text-white transition-all duration-300 z-60 shadow-lg"
                                     x-show="images.length > 1" x-transition:enter="transition ease-out duration-200"
                                     x-transition:enter-start="opacity-0 translate-x-4"
                                     x-transition:enter-end="opacity-100 translate-x-0">
@@ -606,17 +588,17 @@ if (empty($mediaLibraryImages)) {
                                     x-transition:enter="transition ease-out duration-300"
                                     x-transition:enter-start="opacity-0 translate-y-4"
                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                    class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-sm text-white text-sm rounded-lg px-4 py-3 z-[60] shadow-lg max-w-2xl text-center">
+                                    class="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-black/80 backdrop-blur-xs text-white text-sm rounded-lg px-4 py-3 z-60 shadow-lg max-w-2xl text-center">
                                     <p x-text="images[currentImageIndex]?.caption" class="font-medium"></p>
                                 </div>
 
                                 <!-- Help text -->
                                 <div
-                                    class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-sm text-white text-sm rounded-lg px-4 py-2 opacity-80 pointer-events-none z-[60] shadow-lg">
+                                    class="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-black/60 backdrop-blur-xs text-white text-sm rounded-lg px-4 py-2 opacity-80 pointer-events-none z-60 shadow-lg">
                                     <div class="flex items-center space-x-4 text-xs">
-                                        <span>Zoom: <kbd class="font-mono bg-white/20 px-1 rounded">+/-</kbd></span>
-                                        <span>Navigate: <kbd class="font-mono bg-white/20 px-1 rounded">←→</kbd></span>
-                                        <span>Close: <kbd class="font-mono bg-white/20 px-1 rounded">ESC</kbd></span>
+                                        <span>Zoom: <kbd class="font-mono bg-white/20 px-1 rounded-sm">+/-</kbd></span>
+                                        <span>Navigate: <kbd class="font-mono bg-white/20 px-1 rounded-sm">←→</kbd></span>
+                                        <span>Close: <kbd class="font-mono bg-white/20 px-1 rounded-sm">ESC</kbd></span>
                                         <span>Double-click to zoom</span>
                                     </div>
                                 </div>
@@ -644,11 +626,11 @@ if (empty($mediaLibraryImages)) {
                 <div class="lg:col-span-1">
                     <!-- Price Card -->
                     <div
-                        class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6 mb-4 lg:mb-6 sticky top-20 lg:top-24">
+                        class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6 mb-4 lg:mb-6 sticky top-20 lg:top-24">
                         <!-- Price -->
                         <div class="mb-4 lg:mb-6">
                             <h2
-                                class="text-2xl lg:text-3xl font-black bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent mb-2">
+                                class="text-2xl lg:text-3xl font-black bg-linear-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent mb-2">
                                 {{ $property->formatted_price }}
                                 @if ($property->price_period && $property->price_period !== 'total')
                                     <span class="text-base lg:text-lg font-normal text-gray-500">
@@ -673,7 +655,7 @@ if (empty($mediaLibraryImages)) {
                         {{-- Address --}}
                         {{-- <div class="mb-4 lg:mb-6 p-3 bg-gray-50 rounded-xl border border-gray-200">
                             <div class="flex items-start text-gray-600">
-                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 mt-0.5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2 mt-0.5 text-emerald-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 616 0z"></path>
                                 </svg>
@@ -783,7 +765,7 @@ if (empty($mediaLibraryImages)) {
                         <div class="space-y-2 lg:space-y-3">
                             @if ($this->getAgentPhoneNumber())
                                 <a href="tel:{{ $this->getAgentPhoneNumber() }}"
-                                    class="w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm lg:text-base">
+                                    class="w-full bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm lg:text-base">
                                     <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -875,9 +857,9 @@ if (empty($mediaLibraryImages)) {
                                 <div class="space-y-4">
                                     <!-- Agency Info (smaller) -->
                                     <div
-                                        class="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                        class="flex items-center space-x-3 p-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
                                         <div
-                                            class="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xs shadow-md">
+                                            class="w-8 h-8 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xs shadow-md">
                                             {{ substr($property->agency->name, 0, 1) }}
                                         </div>
                                         <div class="flex-1 min-w-0">
@@ -890,7 +872,7 @@ if (empty($mediaLibraryImages)) {
                                     <!-- Agent Info (prominent) -->
                                     <div class="text-center">
                                         <div
-                                            class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                            class="w-16 h-16 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                             {{ substr($property->agent->full_name ?? 'Agent', 0, 1) }}
                                         </div>
                                         <h4 class="font-bold text-gray-900 text-lg mb-1">
@@ -928,7 +910,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Independent Agent -->
                                 <div class="text-center">
                                     <div
-                                        class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                        class="w-16 h-16 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                         {{ substr($property->agent->full_name ?? 'Agent', 0, 1) }}
                                     </div>
                                     <h4 class="font-bold text-gray-900 text-lg mb-1">
@@ -966,7 +948,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Property Owner -->
                                 <div class="text-center">
                                     <div
-                                        class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                        class="w-16 h-16 bg-linear-to-br from-purple-500 to-pink-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                         @if ($property->owner->user)
                                             {{ substr($property->owner->user->name, 0, 1) }}
                                         @else
@@ -987,7 +969,7 @@ if (empty($mediaLibraryImages)) {
                                 @if ($property->creator)
                                     <div class="text-center">
                                         <div
-                                            class="w-16 h-16 bg-gradient-to-br from-gray-500 to-gray-700 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                            class="w-16 h-16 bg-linear-to-br from-gray-500 to-gray-700 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                             {{ substr($property->creator->name, 0, 1) }}
                                         </div>
                                         <h4 class="font-bold text-gray-900 text-lg mb-1">
@@ -1011,7 +993,7 @@ if (empty($mediaLibraryImages)) {
                     <!-- Property Description -->
                     @if ($property->description)
                         <div
-                            class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
+                            class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                             <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Property Description
                             </h2>
                             <div class="prose prose-gray max-w-none">
@@ -1032,7 +1014,7 @@ if (empty($mediaLibraryImages)) {
                                 $property->area->shopping_facilities ||
                                 $property->area->security_rating))
                         <div
-                            class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
+                            class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                             <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Neighborhood Overview
                             </h2>
 
@@ -1041,7 +1023,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Education Card - Only show if data exists -->
                                 @if ($property->area && $property->area->education_facilities)
                                     <div
-                                        class="bg-white rounded-xl border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-blue-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1073,7 +1055,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Healthcare Card - Only show if data exists -->
                                 @if ($property->area && $property->area->healthcare_facilities)
                                     <div
-                                        class="bg-white rounded-xl border border-red-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-red-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1105,7 +1087,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Transport Card - Only show if data exists -->
                                 @if ($property->area && $property->area->transport_facilities)
                                     <div
-                                        class="bg-white rounded-xl border border-green-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-green-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1137,7 +1119,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Electricity Card - Only show if data exists -->
                                 @if ($property->area && $property->area->electricity_supply)
                                     <div
-                                        class="bg-white rounded-xl border border-yellow-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-yellow-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1176,7 +1158,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Water Card - Only show if data exists -->
                                 @if ($property->area && $property->area->water_supply)
                                     <div
-                                        class="bg-white rounded-xl border border-cyan-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-cyan-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1216,7 +1198,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Shopping Card - Only show if data exists -->
                                 @if ($property->area && $property->area->shopping_facilities)
                                     <div
-                                        class="bg-white rounded-xl border border-purple-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-purple-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1248,7 +1230,7 @@ if (empty($mediaLibraryImages)) {
                                 <!-- Security Card - Only show if data exists -->
                                 @if ($property->area && ($property->area->security_rating || $property->area->security_features))
                                     <div
-                                        class="bg-white rounded-xl border border-emerald-200 shadow-sm hover:shadow-md transition-shadow duration-300">
+                                        class="bg-white rounded-xl border border-emerald-200 shadow-xs hover:shadow-md transition-shadow duration-300">
                                         <div class="p-4">
                                             <div class="flex items-center space-x-3 mb-4">
                                                 <div
@@ -1310,13 +1292,13 @@ if (empty($mediaLibraryImages)) {
                     <!-- Features & Amenities -->
                     @if ($property->features && $property->features->count() > 0)
                         <div
-                            class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                            class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                             <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Features &
                                 Amenities</h3>
                             <div class="space-y-2">
                                 @foreach ($property->features as $feature)
                                     <div class="flex items-center space-x-2 py-1">
-                                        <div class="flex-shrink-0">
+                                        <div class="shrink-0">
                                             <svg class="w-3 h-3 text-emerald-600" fill="currentColor"
                                                 viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
@@ -1342,7 +1324,7 @@ if (empty($mediaLibraryImages)) {
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 lg:pb-12">
                     <div class="mb-6 lg:mb-8">
                         <div class="flex items-center space-x-3 mb-2">
-                            <div class="p-2 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-xl">
+                            <div class="p-2 bg-linear-to-r from-emerald-500 to-teal-600 rounded-xl">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor"
                                     viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -1358,11 +1340,11 @@ if (empty($mediaLibraryImages)) {
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                         @foreach ($recommendedProperties as $recommendedProperty)
                             <a href="{{ route('property.show', $recommendedProperty->slug ?? $recommendedProperty->id) }}"
-                                class="group bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-lg border border-emerald-200/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105 relative">
+                                class="group bg-white/95 backdrop-blur-xs rounded-xl lg:rounded-2xl shadow-lg border border-emerald-200/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105 relative">
                                 <!-- Recommendation Score Badge -->
                                 @if ($recommendedProperty->recommendation_score && $recommendedProperty->recommendation_score > 0.7)
                                     <div
-                                        class="absolute top-3 right-3 z-10 bg-gradient-to-r from-emerald-500 to-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-lg">
+                                        class="absolute top-3 right-3 z-10 bg-linear-to-r from-emerald-500 to-teal-600 text-white text-xs font-semibold px-2 py-1 rounded-full shadow-lg">
                                         {{ round($recommendedProperty->recommendation_score * 100) }}% Match
                                     </div>
                                 @endif
@@ -1410,7 +1392,7 @@ if (empty($mediaLibraryImages)) {
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                     @foreach ($relatedProperties as $relatedProperty)
                         <a href="{{ route('property.show', $relatedProperty->slug ?? $relatedProperty->id) }}"
-                            class="group bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-lg border border-gray-300/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105">
+                            class="group bg-white/95 backdrop-blur-xs rounded-xl lg:rounded-2xl shadow-lg border border-gray-300/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105">
                             <div class="relative h-40 lg:h-48 overflow-hidden">
                                 <img src="{{ $relatedProperty->getFeaturedImageUrl('preview') }}"
                                     alt="{{ $relatedProperty->title }}"
@@ -1539,8 +1521,20 @@ if (empty($mediaLibraryImages)) {
     });
 </script>
 
-@push('styles')
+@push('head')
     <style>
+        /* Hide global navigation for property details view */
+        #navbar,
+        #navbar + .h-20 {
+            display: none !important;
+        }
+
+        #navbar::before,
+        #navbar .absolute.inset-0 {
+            content: none !important;
+            display: none !important;
+        }
+
         /* Floating elements animation */
         .floating-element {
             animation: float 6s ease-in-out infinite;

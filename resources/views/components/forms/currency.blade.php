@@ -36,7 +36,7 @@
             type="text"
             id="{{ $inputId }}"
             {{ $attributes->merge([
-                'class' => 'block w-full pl-10 pr-4 py-3 text-gray-900 placeholder-gray-500 border border-gray-300/60 rounded-xl shadow-sm bg-white/95 backdrop-blur-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 hover:border-gray-400/60 hover:shadow-md disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed' .
+                'class' => 'block w-full pl-10 pr-4 py-3 text-gray-900 placeholder-gray-500 border border-gray-300/60 rounded-xl shadow-xs bg-white/95 backdrop-blur-xl transition-all duration-300 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 hover:border-gray-400/60 hover:shadow-md disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed' .
                     ($error ? ' border-red-300 focus:border-red-500 focus:ring-red-500/50' : ''),
                 'placeholder' => $placeholder,
                 'required' => $required,

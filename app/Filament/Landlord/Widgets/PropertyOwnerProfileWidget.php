@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PropertyOwnerProfileWidget extends Widget
 {
-    protected static string $view = 'filament.landlord.widgets.property-owner-profile-widget';
+    protected string $view = 'filament.landlord.widgets.property-owner-profile-widget';
 
     protected int | string | array $columnSpan = 'full';
 

@@ -2,11 +2,33 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\AgencyResource\RelationManagers\AgentsRelationManager;
+use App\Filament\Resources\AgencyResource\Pages\ListAgencies;
+use App\Filament\Resources\AgencyResource\Pages\CreateAgency;
+use App\Filament\Resources\AgencyResource\Pages\EditAgency;
 use App\Filament\Resources\AgencyResource\Pages;
 use App\Filament\Resources\AgencyResource\RelationManagers;
 use App\Models\Agency;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,75 +39,75 @@ class AgencyResource extends Resource
 {
     protected static ?string $model = Agency::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-office';
 
-    protected static ?string $navigationGroup = 'Business Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Business Management';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Main content area (2/3 width) and Sidebar (1/3 width)
-                Forms\Components\Grid::make([
+                Grid::make([
                     'default' => 1,
                     'lg' => 3,
                 ])
                     ->schema([
                         // Main Content Area (spans 2 columns)
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Basic Agency Information
-                                Forms\Components\Section::make('Agency Information')
+                                Section::make('Agency Information')
                                     ->description('Basic details about the real estate agency')
                                     ->schema([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->required()
                                             ->maxLength(255)
                                             ->columnSpan(2),
-                                        Forms\Components\TextInput::make('slug')
+                                        TextInput::make('slug')
                                             ->required()
                                             ->maxLength(255)
                                             ->columnSpan(2),
-                                        Forms\Components\Textarea::make('description')
+                                        Textarea::make('description')
                                             ->rows(3)
                                             ->columnSpanFull(),
-                                        Forms\Components\TextInput::make('license_number')
+                                        TextInput::make('license_number')
                                             ->label('License Number')
                                             ->maxLength(255),
-                                        Forms\Components\DatePicker::make('license_expiry_date')
+                                        DatePicker::make('license_expiry_date')
                                             ->label('License Expiry'),
-                                        Forms\Components\TextInput::make('years_in_business')
+                                        TextInput::make('years_in_business')
                                             ->required()
                                             ->numeric()
                                             ->default(0)
                                             ->minValue(0),
-                                        Forms\Components\TextInput::make('logo')
+                                        TextInput::make('logo')
                                             ->label('Logo URL')
                                             ->url()
                                             ->maxLength(255),
                                     ])->columns(4)->collapsible(),
 
                                 // Contact Information
-                                Forms\Components\Section::make('Contact Details')
+                                Section::make('Contact Details')
                                     ->description('How to reach this agency')
                                     ->schema([
-                                        Forms\Components\Grid::make(3)
+                                        Grid::make(3)
                                             ->schema([
-                                                Forms\Components\TextInput::make('email')
+                                                TextInput::make('email')
                                                     ->email()
                                                     ->required()
                                                     ->maxLength(255),
-                                                Forms\Components\TextInput::make('phone')
+                                                TextInput::make('phone')
                                                     ->tel()
                                                     ->required()
                                                     ->maxLength(255),
-                                                Forms\Components\TextInput::make('website')
+                                                TextInput::make('website')
                                                     ->url()
                                                     ->maxLength(255),
                                             ]),
-                                        Forms\Components\Textarea::make('social_media')
+                                        Textarea::make('social_media')
                                             ->label('Social Media Links')
                                             ->placeholder('Enter social media URLs (one per line)')
                                             ->rows(3)
@@ -93,30 +115,30 @@ class AgencyResource extends Resource
                                     ])->collapsible(),
 
                                 // Location Information
-                                Forms\Components\Section::make('Location Details')
+                                Section::make('Location Details')
                                     ->description('Agency location and service areas')
                                     ->schema([
-                                        Forms\Components\Grid::make(3)
+                                        Grid::make(3)
                                             ->schema([
-                                                Forms\Components\Select::make('state_id')
+                                                Select::make('state_id')
                                                     ->label('State')
                                                     ->relationship('state', 'name')
                                                     ->required()
                                                     ->reactive(),
-                                                Forms\Components\Select::make('city_id')
+                                                Select::make('city_id')
                                                     ->label('City')
                                                     ->relationship('city', 'name')
                                                     ->required()
                                                     ->reactive(),
-                                                Forms\Components\Select::make('area_id')
+                                                Select::make('area_id')
                                                     ->label('Area')
                                                     ->relationship('area', 'name'),
                                             ]),
-                                        Forms\Components\Textarea::make('address')
+                                        Textarea::make('address')
                                             ->required()
                                             ->rows(3)
                                             ->columnSpanFull(),
-                                        Forms\Components\TagsInput::make('service_areas')
+                                        TagsInput::make('service_areas')
                                             ->label('Service Areas')
                                             ->placeholder('e.g., Lagos Island, Victoria Island')
                                             ->separator(',')
@@ -129,21 +151,21 @@ class AgencyResource extends Resource
                             ]),
 
                         // Sidebar (spans 1 column)
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Business Profile - Sidebar
-                                Forms\Components\Section::make('Business Profile')
+                                Section::make('Business Profile')
                                     ->description('Business specializations and services')
                                     ->schema([
-                                        Forms\Components\TagsInput::make('specializations')
+                                        TagsInput::make('specializations')
                                             ->label('Specializations')
                                             ->placeholder('e.g., Residential, Commercial, Luxury')
                                             ->separator(','),
-                                        Forms\Components\TagsInput::make('services')
+                                        TagsInput::make('services')
                                             ->label('Services Offered')
                                             ->placeholder('e.g., Sales, Rentals, Property Management')
                                             ->separator(','),
-                                        Forms\Components\TextInput::make('commission_rate')
+                                        TextInput::make('commission_rate')
                                             ->label('Commission Rate (%)')
                                             ->numeric()
                                             ->step(0.1)
@@ -151,30 +173,30 @@ class AgencyResource extends Resource
                                     ])->columns(1)->collapsible(),
 
                                 // Performance Metrics - Sidebar
-                                Forms\Components\Section::make('Performance Metrics')
+                                Section::make('Performance Metrics')
                                     ->description('Agency performance and statistics')
                                     ->schema([
-                                        Forms\Components\Fieldset::make('Property Statistics')
+                                        Fieldset::make('Property Statistics')
                                             ->schema([
-                                                Forms\Components\TextInput::make('total_properties')
+                                                TextInput::make('total_properties')
                                                     ->label('Total Properties')
                                                     ->numeric()
                                                     ->default(0)
                                                     ->disabled(),
-                                                Forms\Components\TextInput::make('active_listings')
+                                                TextInput::make('active_listings')
                                                     ->label('Active Listings')
                                                     ->numeric()
                                                     ->default(0)
                                                     ->disabled(),
-                                                Forms\Components\TextInput::make('total_agents')
+                                                TextInput::make('total_agents')
                                                     ->label('Total Agents')
                                                     ->numeric()
                                                     ->default(0)
                                                     ->disabled(),
                                             ])->columns(1),
-                                        Forms\Components\Fieldset::make('Reviews & Rating')
+                                        Fieldset::make('Reviews & Rating')
                                             ->schema([
-                                                Forms\Components\TextInput::make('rating')
+                                                TextInput::make('rating')
                                                     ->label('Average Rating')
                                                     ->numeric()
                                                     ->step(0.1)
@@ -183,7 +205,7 @@ class AgencyResource extends Resource
                                                     ->default(0.00)
                                                     ->disabled()
                                                     ->suffix('/5'),
-                                                Forms\Components\TextInput::make('total_reviews')
+                                                TextInput::make('total_reviews')
                                                     ->label('Total Reviews')
                                                     ->numeric()
                                                     ->default(0)
@@ -192,25 +214,25 @@ class AgencyResource extends Resource
                                     ])->collapsible(),
 
                                 // Status & Verification - Sidebar
-                                Forms\Components\Section::make('Status & Verification')
+                                Section::make('Status & Verification')
                                     ->description('Agency status and verification settings')
                                     ->schema([
-                                        Forms\Components\Toggle::make('is_active')
+                                        Toggle::make('is_active')
                                             ->label('Active')
                                             ->default(true),
-                                        Forms\Components\Toggle::make('is_verified')
+                                        Toggle::make('is_verified')
                                             ->label('Verified')
                                             ->default(false),
-                                        Forms\Components\Toggle::make('is_featured')
+                                        Toggle::make('is_featured')
                                             ->label('Featured')
                                             ->default(false),
-                                        Forms\Components\Toggle::make('accepts_new_properties')
+                                        Toggle::make('accepts_new_properties')
                                             ->label('Accepting New Properties')
                                             ->default(true),
-                                        Forms\Components\DateTimePicker::make('verified_at')
+                                        DateTimePicker::make('verified_at')
                                             ->label('Verified At')
                                             ->disabled(),
-                                        Forms\Components\DateTimePicker::make('featured_until')
+                                        DateTimePicker::make('featured_until')
                                             ->label('Featured Until'),
                                     ])->columns(1)->collapsible(),
                             ])
@@ -226,44 +248,44 @@ class AgencyResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable()
                     ->sortable()
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->searchable()
                     ->sortable()
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('state.name')
+                TextColumn::make('state.name')
                     ->label('State')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('city.name')
+                TextColumn::make('city.name')
                     ->label('City')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('area.name')
+                TextColumn::make('area.name')
                     ->label('Area')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('years_in_business')
+                TextColumn::make('years_in_business')
                     ->label('Years in Business')
                     ->numeric()
                     ->sortable()
                     ->suffix(' years'),
 
-                Tables\Columns\TextColumn::make('rating')
+                TextColumn::make('rating')
                     ->label('Rating')
                     ->numeric(decimalPlaces: 1)
                     ->sortable()
@@ -275,23 +297,23 @@ class AgencyResource extends Resource
                         default => 'danger',
                     }),
 
-                Tables\Columns\TextColumn::make('total_properties')
+                TextColumn::make('total_properties')
                     ->label('Properties')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('total_agents')
+                TextColumn::make('total_agents')
                     ->label('Agents')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('total_reviews')
+                TextColumn::make('total_reviews')
                     ->label('Reviews')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('is_verified')
+                TextColumn::make('is_verified')
                     ->badge()
                     ->label('Verified')
                     ->colors([
@@ -300,7 +322,7 @@ class AgencyResource extends Resource
                     ])
                     ->formatStateUsing(fn($state) => $state ? 'Verified' : 'Unverified'),
 
-                Tables\Columns\TextColumn::make('is_featured')
+                TextColumn::make('is_featured')
                     ->badge()
                     ->label('Featured')
                     ->colors([
@@ -310,7 +332,7 @@ class AgencyResource extends Resource
                     ->formatStateUsing(fn($state) => $state ? 'Featured' : 'Standard')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('is_active')
+                TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
                     ->colors([
@@ -319,93 +341,93 @@ class AgencyResource extends Resource
                     ])
                     ->formatStateUsing(fn($state) => $state ? 'Active' : 'Inactive'),
 
-                Tables\Columns\TextColumn::make('license_number')
+                TextColumn::make('license_number')
                     ->label('License')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('license_expiry_date')
+                TextColumn::make('license_expiry_date')
                     ->label('License Expiry')
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('website')
+                TextColumn::make('website')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->url(fn($record) => $record->website)
                     ->openUrlInNewTab(),
 
-                Tables\Columns\TextColumn::make('verified_at')
+                TextColumn::make('verified_at')
                     ->label('Verified At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('owner.name')
+                TextColumn::make('owner.name')
                     ->label('Owner')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('state_id')
+                SelectFilter::make('state_id')
                     ->label('State')
                     ->relationship('state', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('city_id')
+                SelectFilter::make('city_id')
                     ->label('City')
                     ->relationship('city', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('area_id')
+                SelectFilter::make('area_id')
                     ->label('Area')
                     ->relationship('area', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Active Status')
                     ->trueLabel('Active Only')
                     ->falseLabel('Inactive Only')
                     ->native(false),
 
-                Tables\Filters\TernaryFilter::make('is_verified')
+                TernaryFilter::make('is_verified')
                     ->label('Verification Status')
                     ->trueLabel('Verified Only')
                     ->falseLabel('Unverified Only')
                     ->native(false),
 
-                Tables\Filters\TernaryFilter::make('is_featured')
+                TernaryFilter::make('is_featured')
                     ->label('Featured Status')
                     ->trueLabel('Featured Only')
                     ->falseLabel('Non-Featured Only')
                     ->native(false),
 
-                Tables\Filters\Filter::make('years_in_business')
-                    ->form([
-                        Forms\Components\Grid::make(2)
+                Filter::make('years_in_business')
+                    ->schema([
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('years_from')
+                                TextInput::make('years_from')
                                     ->numeric()
                                     ->label('Years from')
                                     ->placeholder('Min years'),
-                                Forms\Components\TextInput::make('years_to')
+                                TextInput::make('years_to')
                                     ->numeric()
                                     ->label('Years to')
                                     ->placeholder('Max years'),
@@ -423,18 +445,18 @@ class AgencyResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('rating_range')
-                    ->form([
-                        Forms\Components\Grid::make(2)
+                Filter::make('rating_range')
+                    ->schema([
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('rating_from')
+                                TextInput::make('rating_from')
                                     ->numeric()
                                     ->step(0.1)
                                     ->minValue(0)
                                     ->maxValue(5)
                                     ->label('Rating from')
                                     ->placeholder('Min rating'),
-                                Forms\Components\TextInput::make('rating_to')
+                                TextInput::make('rating_to')
                                     ->numeric()
                                     ->step(0.1)
                                     ->minValue(0)
@@ -455,11 +477,11 @@ class AgencyResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('created_from')
                             ->label('Created from'),
-                        Forms\Components\DatePicker::make('created_until')
+                        DatePicker::make('created_until')
                             ->label('Created until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -474,17 +496,17 @@ class AgencyResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('high_performance')
+                Filter::make('high_performance')
                     ->label('High Performance Agencies')
                     ->query(fn(Builder $query): Builder => $query->where('rating', '>=', 4.0)->where('total_properties', '>=', 50))
                     ->toggle(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -492,16 +514,16 @@ class AgencyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\AgentsRelationManager::class,
+            AgentsRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListAgencies::route('/'),
-            'create' => Pages\CreateAgency::route('/create'),
-            'edit' => Pages\EditAgency::route('/{record}/edit'),
+            'index' => ListAgencies::route('/'),
+            'create' => CreateAgency::route('/create'),
+            'edit' => EditAgency::route('/{record}/edit'),
         ];
     }
 }

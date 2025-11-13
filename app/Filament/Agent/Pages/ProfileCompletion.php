@@ -2,22 +2,25 @@
 
 namespace App\Filament\Agent\Pages;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
+use Filament\Schemas\Components\Section;
+use App\Models\Area;
+use Exception;
 use Filament\Pages\Page;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Resources\Pages\Concerns\InteractsWithRecord;
-use Filament\Forms\Form;
 use Filament\Actions\Action;
 use Filament\Actions\Concerns\InteractsWithActions;
 use Filament\Actions\Contracts\HasActions;
-use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Section;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -26,8 +29,8 @@ class ProfileCompletion extends Page implements HasForms, HasActions
 {
     use InteractsWithForms, InteractsWithActions;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-circle';
-    protected static string $view = 'filament.agent.pages.profile-completion';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-circle';
+    protected string $view = 'filament.agent.pages.profile-completion';
     protected static ?string $title = 'Complete Your Profile';
     protected static bool $shouldRegisterNavigation = false;
 
@@ -55,13 +58,13 @@ class ProfileCompletion extends Page implements HasForms, HasActions
         ]);
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->model($this->record)
-            ->schema([
+            ->components([
                 Wizard::make([
-                    Wizard\Step::make('Professional Details')
+                    Step::make('Professional Details')
                         ->icon('heroicon-o-briefcase')
                         ->schema([
                             Section::make('Professional Information')
@@ -96,7 +99,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
-                    Wizard\Step::make('Service Areas')
+                    Step::make('Service Areas')
                         ->icon('heroicon-o-map-pin')
                         ->schema([
                             Section::make('Service Areas')
@@ -106,7 +109,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                         ->label('Service Areas')
                                         ->multiple()
                                         ->required()
-                                        ->options(\App\Models\Area::pluck('name', 'id'))
+                                        ->options(Area::pluck('name', 'id'))
                                         ->searchable()
                                         ->preload(),
                                     
@@ -125,7 +128,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
-                    Wizard\Step::make('Certifications')
+                    Step::make('Certifications')
                         ->icon('heroicon-o-academic-cap')
                         ->schema([
                             Section::make('Professional Certifications')
@@ -141,7 +144,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
-                    Wizard\Step::make('Profile Photo')
+                    Step::make('Profile Photo')
                         ->icon('heroicon-o-camera')
                         ->schema([
                             Section::make('Profile Photo')
@@ -215,7 +218,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
             // Redirect to dashboard
             $this->redirect(route('filament.agent.pages.dashboard'));
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title('Error updating profile')
                 ->body('There was an error updating your profile: ' . $e->getMessage())

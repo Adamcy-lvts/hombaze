@@ -50,8 +50,8 @@ $classes = $sizeClasses[$size] ?? $sizeClasses['default'];
         <button
             type="button"
             {{ $attributes->except(['label', 'description', 'checked', 'disabled', 'error', 'size'])->merge([
-                'class' => "relative inline-flex flex-shrink-0 border-2 border-transparent rounded-full cursor-pointer transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 {$classes['switch']}" .
-                    ($checked ? ' bg-gradient-to-r from-emerald-500 to-teal-500' : ' bg-gray-200'),
+                'class' => "relative inline-flex shrink-0 border-2 border-transparent rounded-full cursor-pointer transition-all duration-300 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 {$classes['switch']}" .
+                    ($checked ? ' bg-linear-to-r from-emerald-500 to-teal-500' : ' bg-gray-200'),
                 'disabled' => $disabled,
                 'aria-pressed' => $checked ? 'true' : 'false',
                 'role' => 'switch',

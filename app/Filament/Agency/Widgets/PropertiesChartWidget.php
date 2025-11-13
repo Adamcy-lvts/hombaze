@@ -10,15 +10,15 @@ use Illuminate\Support\Facades\DB;
 
 class PropertiesChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Properties Overview';
+    protected ?string $heading = 'Properties Overview';
     
-    protected static ?string $description = 'Property listings by type and status';
+    protected ?string $description = 'Property listings by type and status';
     
     protected static ?int $sort = 2;
     
     protected int | string | array $columnSpan = 'full';
     
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     /**
      * Only show this widget to agency owners and super admins

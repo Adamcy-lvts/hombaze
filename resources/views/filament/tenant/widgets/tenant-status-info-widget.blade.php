@@ -72,7 +72,7 @@
 @endphp
 
 <x-filament-widgets::widget class="fi-filament-info-widget">
-    <x-filament::section class="bg-white dark:bg-gray-800 rounded-lg shadow">
+    <x-filament::section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         <div class="flex flex-col gap-0.5">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">

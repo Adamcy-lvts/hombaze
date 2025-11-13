@@ -2,11 +2,25 @@
 
 namespace App\Filament\Tenant\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use App\Models\LeaseRenewalRequest;
+use Filament\Notifications\Notification;
+use App\Filament\Tenant\Resources\LeaseResource\Pages\ListLeases;
+use App\Filament\Tenant\Resources\LeaseResource\Pages\ViewLease;
 use App\Filament\Tenant\Resources\LeaseResource\Pages;
 use App\Filament\Tenant\Resources\LeaseResource\RelationManagers;
 use App\Models\Lease;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,7 +33,7 @@ class LeaseResource extends Resource
 {
     protected static ?string $model = Lease::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
 
     protected static ?string $navigationLabel = 'My Leases';
 
@@ -27,46 +41,46 @@ class LeaseResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Lease Agreements';
 
-    protected static ?string $navigationGroup = 'My Tenancy';
+    protected static string | \UnitEnum | null $navigationGroup = 'My Tenancy';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Lease Agreement Details')
+        return $schema
+            ->components([
+                Section::make('Lease Agreement Details')
                     ->description('Your lease agreement information')
                     ->schema([
-                        Forms\Components\Grid::make([
+                        Grid::make([
                             'default' => 1,
                             'sm' => 2,
                         ])
                             ->schema([
-                                Forms\Components\TextInput::make('property.title')
+                                TextInput::make('property.title')
                                     ->label('Property')
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('status')
+                                TextInput::make('status')
                                     ->disabled(),
                                     
-                                Forms\Components\DatePicker::make('start_date')
+                                DatePicker::make('start_date')
                                     ->label('Lease Start Date')
                                     ->disabled()
                                     ->native(false),
                                     
-                                Forms\Components\DatePicker::make('end_date')
+                                DatePicker::make('end_date')
                                     ->label('Lease End Date')
                                     ->disabled()
                                     ->native(false),
                                     
-                                Forms\Components\TextInput::make('yearly_rent')
+                                TextInput::make('yearly_rent')
                                     ->label('Annual Rent')
                                     ->prefix('₦')
                                     ->numeric()
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('security_deposit')
+                                TextInput::make('security_deposit')
                                     ->label('Security Deposit')
                                     ->prefix('₦')
                                     ->numeric()
@@ -74,15 +88,15 @@ class LeaseResource extends Resource
                             ]),
                     ])->collapsible(),
 
-                Forms\Components\Section::make('Payment Information')
+                Section::make('Payment Information')
                     ->description('Payment terms and conditions')
                     ->schema([
-                        Forms\Components\Grid::make([
+                        Grid::make([
                             'default' => 1,
                             'sm' => 2,
                         ])
                             ->schema([
-                                Forms\Components\Select::make('payment_frequency')
+                                Select::make('payment_frequency')
                                     ->options([
                                         'monthly' => 'Monthly',
                                         'quarterly' => 'Quarterly',
@@ -91,7 +105,7 @@ class LeaseResource extends Resource
                                     ])
                                     ->disabled(),
                                     
-                                Forms\Components\Select::make('payment_method')
+                                Select::make('payment_method')
                                     ->options([
                                         'bank_transfer' => 'Bank Transfer',
                                         'cash' => 'Cash',
@@ -100,28 +114,28 @@ class LeaseResource extends Resource
                                     ])
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('late_fee_amount')
+                                TextInput::make('late_fee_amount')
                                     ->label('Late Fee')
                                     ->prefix('₦')
                                     ->numeric()
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('grace_period_days')
+                                TextInput::make('grace_period_days')
                                     ->label('Grace Period (Days)')
                                     ->numeric()
                                     ->disabled(),
                             ]),
                     ])->collapsible(),
 
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Textarea::make('terms_and_conditions')
+                        Textarea::make('terms_and_conditions')
                             ->label('Terms and Conditions')
                             ->rows(4)
                             ->disabled()
                             ->columnSpanFull(),
                             
-                        Forms\Components\Textarea::make('special_clauses')
+                        Textarea::make('special_clauses')
                             ->label('Special Clauses')
                             ->rows(3)
                             ->disabled()
@@ -134,12 +148,12 @@ class LeaseResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->colors([
                         'success' => 'active',
@@ -149,23 +163,23 @@ class LeaseResource extends Resource
                     ])
                     ->formatStateUsing(fn (string $state): string => ucwords($state)),
 
-                Tables\Columns\TextColumn::make('start_date')
+                TextColumn::make('start_date')
                     ->label('Start Date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('end_date')
+                TextColumn::make('end_date')
                     ->label('End Date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('yearly_rent')
+                TextColumn::make('yearly_rent')
                     ->label('Monthly Rent')
                     ->prefix('₦')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('days_remaining')
+                TextColumn::make('days_remaining')
                     ->label('Days Remaining')
                     ->getStateUsing(function (Lease $record): string {
                         if ($record->end_date) {
@@ -188,13 +202,13 @@ class LeaseResource extends Resource
                         default => 'success'
                     }),
 
-                Tables\Columns\TextColumn::make('payment_frequency')
+                TextColumn::make('payment_frequency')
                     ->label('Payment')
                     ->formatStateUsing(fn (string $state): string => ucwords(str_replace('_', ' ', $state)))
                     ->toggleable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'active' => 'Active',
                         'pending' => 'Pending',
@@ -202,10 +216,10 @@ class LeaseResource extends Resource
                         'terminated' => 'Terminated',
                     ]),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->label('View Lease Agreement'),
-                Tables\Actions\Action::make('request_renewal')
+                Action::make('request_renewal')
                     ->label('Request Renewal')
                     ->icon('heroicon-o-arrow-path')
                     ->color('primary')
@@ -213,7 +227,7 @@ class LeaseResource extends Resource
                         $record->status === 'active' && 
                         $record->end_date && 
                         now()->diffInDays($record->end_date, false) <= 90 &&
-                        !\App\Models\LeaseRenewalRequest::where('lease_id', $record->id)
+                        !LeaseRenewalRequest::where('lease_id', $record->id)
                             ->where('tenant_id', Auth::user()->tenant->id ?? 0)
                             ->where('status', 'pending')
                             ->exists()
@@ -223,7 +237,7 @@ class LeaseResource extends Resource
                         $tenant = $user->tenant;
 
                         if (!$tenant) {
-                            \Filament\Notifications\Notification::make()
+                            Notification::make()
                                 ->title('Error')
                                 ->body('Tenant profile not found.')
                                 ->danger()
@@ -232,7 +246,7 @@ class LeaseResource extends Resource
                         }
 
                         // Create renewal request
-                        \App\Models\LeaseRenewalRequest::create([
+                        LeaseRenewalRequest::create([
                             'lease_id' => $record->id,
                             'tenant_id' => $tenant->id,
                             'landlord_id' => $tenant->landlord_id,
@@ -243,14 +257,14 @@ class LeaseResource extends Resource
                             'tenant_message' => 'I would like to renew my lease for another term.',
                         ]);
 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title('Renewal Request Submitted')
                             ->body('Your lease renewal request has been submitted successfully.')
                             ->success()
                             ->send();
                     }),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions for tenant lease view
             ])
             ->defaultSort('start_date', 'desc');
@@ -282,8 +296,8 @@ class LeaseResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLeases::route('/'),
-            'view' => Pages\ViewLease::route('/{record}'),
+            'index' => ListLeases::route('/'),
+            'view' => ViewLease::route('/{record}'),
         ];
     }
 

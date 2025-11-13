@@ -2,6 +2,8 @@
 
 namespace App\Filament\Agency\Resources\AgentResource\Pages;
 
+use Filament\Facades\Filament;
+use Exception;
 use App\Filament\Agency\Resources\AgentResource;
 use App\Models\Agent;
 use App\Models\User;
@@ -26,25 +28,25 @@ class CreateAgent extends CreateRecord
     {
         return DB::transaction(function () use ($data) {
             // Get the current tenant (agency) from Filament
-            $agency = \Filament\Facades\Filament::getTenant();
+            $agency = Filament::getTenant();
             
             if (!$agency) {
-                throw new \Exception('Cannot create agent: No agency context found.');
+                throw new Exception('Cannot create agent: No agency context found.');
             }
 
             // Validate required user data
             if (!isset($data['name']) || !$data['name']) {
-                throw new \Exception('Agent name is required.');
+                throw new Exception('Agent name is required.');
             }
             
             if (!isset($data['email']) || !$data['email']) {
-                throw new \Exception('Agent email is required.');
+                throw new Exception('Agent email is required.');
             }
 
             // Check if user with this email already exists
             $existingUser = User::where('email', $data['email'])->first();
             if ($existingUser) {
-                throw new \Exception('A user with this email already exists.');
+                throw new Exception('A user with this email already exists.');
             }
 
             // Create the user first
@@ -56,7 +58,7 @@ class CreateAgent extends CreateRecord
                                 ->first();
             
             if ($existingAgent) {
-                throw new \Exception('User is already an agent in this agency.');
+                throw new Exception('User is already an agent in this agency.');
             }
 
             // Ensure user profile exists with comprehensive agent details
@@ -71,7 +73,7 @@ class CreateAgent extends CreateRecord
             // Handle Filament tenancy association
             if (
                 static::getResource()::isScopedToTenant() &&
-                ($tenant = \Filament\Facades\Filament::getTenant())
+                ($tenant = Filament::getTenant())
             ) {
                 $agent = $this->associateRecordWithTenant($record, $tenant);
             } else {
@@ -217,7 +219,7 @@ class CreateAgent extends CreateRecord
         // - Creating default agent settings
         // - Setting up agent dashboard preferences
         // - Logging the creation activity
-        
+
         // Example: Log the creation activity (if you have an activity log system)
         // activity()
         //     ->causedBy(auth()->user())
@@ -259,7 +261,7 @@ class CreateAgent extends CreateRecord
         $user = User::create($userData);
         
         // Ensure agent role exists for this agency before assigning it
-        $agency = \Filament\Facades\Filament::getTenant();
+        $agency = Filament::getTenant();
         if ($agency) {
             $this->ensureAgentRoleExists($agency);
             
@@ -323,7 +325,7 @@ class CreateAgent extends CreateRecord
 
                 Log::info("Created 'agent' role for agency: {$agency->name} (ID: {$agency->id}) with " . $permissions->count() . " permissions");
                 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error("Failed to create agent role for agency {$agency->name}: " . $e->getMessage());
                 
                 // Try to find any existing agent role for this agency as fallback
@@ -340,7 +342,7 @@ class CreateAgent extends CreateRecord
                 }
                 
                 if (!$agentRole) {
-                    throw new \Exception("Could not create or find agent role for agency: {$agency->name}. Error: " . $e->getMessage());
+                    throw new Exception("Could not create or find agent role for agency: {$agency->name}. Error: " . $e->getMessage());
                 }
                 
                 Log::info("Using fallback agent role for agency: {$agency->name}");

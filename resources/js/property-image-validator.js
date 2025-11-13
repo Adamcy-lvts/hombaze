@@ -175,12 +175,12 @@ class PropertyImageValidator {
 
         // Create a more prominent error display
         const errorContainer = document.createElement('div');
-        errorContainer.className = 'property-image-validation-errors mt-2 p-4 bg-red-50 border-2 border-red-300 rounded-lg shadow-sm';
+        errorContainer.className = 'property-image-validation-errors mt-2 p-4 bg-red-50 border-2 border-red-300 rounded-lg shadow-xs';
         errorContainer.style.animation = 'shake 0.6s ease-in-out';
 
         errorContainer.innerHTML = `
             <div class="flex items-start">
-                <div class="text-red-500 flex-shrink-0 mr-3">
+                <div class="text-red-500 shrink-0 mr-3">
                     <svg class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                     </svg>
@@ -190,7 +190,7 @@ class PropertyImageValidator {
                     <ul class="text-sm text-red-700 space-y-2">
                         ${errors.map(error => `<li class="flex items-start"><span class="text-red-400 mr-2">•</span><span>${error}</span></li>`).join('')}
                     </ul>
-                    <div class="mt-3 p-2 bg-red-100 rounded text-xs text-red-600">
+                    <div class="mt-3 p-2 bg-red-100 rounded-sm text-xs text-red-600">
                         <strong>💡 Quick Fix:</strong> Use images at least ${this.config.minWidth}×${this.config.minHeight}px, under ${this.config.maxFileSizeMB}MB, in JPEG/PNG/WebP format.
                     </div>
                 </div>

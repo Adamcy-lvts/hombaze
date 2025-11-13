@@ -2,11 +2,30 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\TenantResource\Pages\ListTenants;
+use App\Filament\Landlord\Resources\TenantResource\Pages\CreateTenant;
+use App\Filament\Landlord\Resources\TenantResource\Pages\EditTenant;
 use App\Filament\Landlord\Resources\TenantResource\Pages;
 use App\Filament\Landlord\Resources\TenantResource\RelationManagers;
 use App\Models\Tenant;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -18,54 +37,54 @@ class TenantResource extends Resource
 {
     protected static ?string $model = Tenant::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationLabel = 'Tenants';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Personal Information')
+        return $schema
+            ->components([
+                Section::make('Personal Information')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('first_name')
+                                TextInput::make('first_name')
                                     ->required()
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('last_name')
+                                TextInput::make('last_name')
                                     ->required()
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('email')
+                                TextInput::make('email')
                                     ->email()
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('phone')
+                                TextInput::make('phone')
                                     ->tel()
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\DatePicker::make('date_of_birth'),
+                                DatePicker::make('date_of_birth'),
 
-                                Forms\Components\TextInput::make('nationality')
+                                TextInput::make('nationality')
                                     ->maxLength(255),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Employment Information')
+                Section::make('Employment Information')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('employment_status')
+                                Select::make('employment_status')
                                     ->options([
                                         'employed' => 'Employed',
                                         'self_employed' => 'Self Employed',
@@ -74,26 +93,26 @@ class TenantResource extends Resource
                                         'student' => 'Student',
                                     ]),
 
-                                Forms\Components\TextInput::make('employer_name')
+                                TextInput::make('employer_name')
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('occupation')
+                                TextInput::make('occupation')
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('monthly_income')
+                                TextInput::make('monthly_income')
                                     ->numeric()
                                     ->prefix('₦'),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Identification & Emergency Contact')
+                Section::make('Identification & Emergency Contact')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('identification_type')
+                                Select::make('identification_type')
                                     ->options([
                                         'national_id' => 'National ID',
                                         'international_passport' => 'International Passport',
@@ -101,45 +120,45 @@ class TenantResource extends Resource
                                         'voters_card' => 'Voter\'s Card',
                                     ]),
 
-                                Forms\Components\TextInput::make('identification_number')
+                                TextInput::make('identification_number')
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('emergency_contact_name')
+                                TextInput::make('emergency_contact_name')
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('emergency_contact_phone')
+                                TextInput::make('emergency_contact_phone')
                                     ->tel()
                                     ->maxLength(255),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Guarantor Information')
+                Section::make('Guarantor Information')
                     ->schema([
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\TextInput::make('guarantor_name')
+                                TextInput::make('guarantor_name')
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('guarantor_phone')
+                                TextInput::make('guarantor_phone')
                                     ->tel()
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('guarantor_email')
+                                TextInput::make('guarantor_email')
                                     ->email()
                                     ->maxLength(255),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Textarea::make('notes')
+                        Textarea::make('notes')
                             ->rows(3)
                             ->maxLength(1000),
 
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->default(true),
                     ]),
             ]);
@@ -149,20 +168,20 @@ class TenantResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Name')
                     ->searchable(['first_name', 'last_name'])
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->searchable()
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->searchable()
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('employment_status')
+                TextColumn::make('employment_status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'employed' => 'success',
@@ -173,20 +192,20 @@ class TenantResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('monthly_income')
+                TextColumn::make('monthly_income')
                     ->money('NGN')
                     ->sortable(),
 
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('employment_status')
+                SelectFilter::make('employment_status')
                     ->options([
                         'employed' => 'Employed',
                         'self_employed' => 'Self Employed',
@@ -195,17 +214,17 @@ class TenantResource extends Resource
                         'student' => 'Student',
                     ]),
 
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Active Status'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -227,9 +246,9 @@ class TenantResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTenants::route('/'),
-            'create' => Pages\CreateTenant::route('/create'),
-            'edit' => Pages\EditTenant::route('/{record}/edit'),
+            'index' => ListTenants::route('/'),
+            'create' => CreateTenant::route('/create'),
+            'edit' => EditTenant::route('/{record}/edit'),
         ];
     }
 }

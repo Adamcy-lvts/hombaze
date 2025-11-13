@@ -1,11 +1,11 @@
 <!-- Premium How It Works Section - Mobile First -->
-<section class="relative min-h-screen py-16 lg:py-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden" x-data="premiumHowItWorksComponent()">
+<section class="relative min-h-screen py-16 lg:py-24 bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 overflow-hidden" x-data="premiumHowItWorksComponent()">
     <!-- Dynamic Background Elements -->
     <div class="absolute inset-0 overflow-hidden">
         <!-- Animated Gradient Mesh -->
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-500/30 to-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-500/25 to-indigo-500/15 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gradient-to-br from-purple-500/20 to-pink-500/10 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-emerald-500/30 to-teal-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-linear-to-br from-blue-500/25 to-indigo-500/15 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-linear-to-br from-purple-500/20 to-pink-500/10 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
         
         <!-- Floating Particles -->
         <div class="floating-particles">
@@ -24,7 +24,7 @@
         <div class="text-center mb-16 lg:mb-24" x-intersect.once="$el.classList.add('animate-fade-up')">
             <!-- Premium Badge -->
             <div class="inline-flex items-center space-x-3 bg-white/5 backdrop-blur-2xl border border-white/10 text-white px-6 py-3 rounded-2xl text-sm font-semibold mb-8 shadow-2xl">
-                <div class="w-6 h-6 bg-gradient-to-r from-emerald-400 to-teal-400 rounded-full flex items-center justify-center">
+                <div class="w-6 h-6 bg-linear-to-r from-emerald-400 to-teal-400 rounded-full flex items-center justify-center">
                     <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                     </svg>
@@ -37,8 +37,8 @@
             <h2 class="text-4xl sm:text-5xl lg:text-7xl font-black text-white mb-6 lg:mb-8 leading-tight">
                 How 
                 <span class="relative inline-block">
-                    <span class="bg-gradient-to-r from-emerald-400 via-teal-300 to-blue-400 bg-clip-text text-transparent">HomeBaze</span>
-                    <div class="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-emerald-400 to-blue-400 rounded-full transform scale-x-0 animate-scale-x"></div>
+                    <span class="bg-linear-to-r from-emerald-400 via-teal-300 to-blue-400 bg-clip-text text-transparent">HomeBaze</span>
+                    <div class="absolute -bottom-2 left-0 right-0 h-1 bg-linear-to-r from-emerald-400 to-blue-400 rounded-full transform scale-x-0 animate-scale-x"></div>
                 </span>
                 <br class="hidden sm:block">
                 <span class="text-slate-300 font-light">Works</span>
@@ -92,13 +92,13 @@
                     <!-- Glass Card -->
                     <div class="relative p-6 lg:p-8 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:bg-white/10 hover:border-emerald-400/30 hover:scale-105">
                         <!-- Step Number Floating -->
-                        <div class="absolute -top-6 left-6 w-12 h-12 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white/20 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute -top-6 left-6 w-12 h-12 bg-linear-to-br from-emerald-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white/20 group-hover:scale-110 transition-transform duration-500">
                             <span class="text-white text-lg font-black">1</span>
                         </div>
                         
                         <!-- Premium Icon Container -->
                         <div class="mb-8 mt-4">
-                            <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 shadow-2xl border border-emerald-400/20">
+                            <div class="w-20 h-20 lg:w-24 lg:h-24 bg-linear-to-br from-emerald-500/20 to-emerald-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 shadow-2xl border border-emerald-400/20">
                                 <svg class="w-10 h-10 lg:w-12 lg:h-12 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
@@ -116,7 +116,7 @@
                         </div>
                         
                         <!-- Hover Glow Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-emerald-600/0 group-hover:from-emerald-500/5 group-hover:to-emerald-600/5 rounded-3xl transition-all duration-700"></div>
+                        <div class="absolute inset-0 bg-linear-to-br from-emerald-500/0 to-emerald-600/0 group-hover:from-emerald-500/5 group-hover:to-emerald-600/5 rounded-3xl transition-all duration-700"></div>
                     </div>
                 </div>
 
@@ -125,13 +125,13 @@
                     <!-- Glass Card -->
                     <div class="relative p-6 lg:p-8 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:bg-white/10 hover:border-blue-400/30 hover:scale-105">
                         <!-- Step Number Floating -->
-                        <div class="absolute -top-6 left-6 w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white/20 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute -top-6 left-6 w-12 h-12 bg-linear-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white/20 group-hover:scale-110 transition-transform duration-500">
                             <span class="text-white text-lg font-black">2</span>
                         </div>
                         
                         <!-- Premium Icon Container -->
                         <div class="mb-8 mt-4">
-                            <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 shadow-2xl border border-blue-400/20">
+                            <div class="w-20 h-20 lg:w-24 lg:h-24 bg-linear-to-br from-blue-500/20 to-blue-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 shadow-2xl border border-blue-400/20">
                                 <svg class="w-10 h-10 lg:w-12 lg:h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
                                 </svg>
@@ -149,7 +149,7 @@
                         </div>
                         
                         <!-- Hover Glow Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500/0 to-blue-600/0 group-hover:from-blue-500/5 group-hover:to-blue-600/5 rounded-3xl transition-all duration-700"></div>
+                        <div class="absolute inset-0 bg-linear-to-br from-blue-500/0 to-blue-600/0 group-hover:from-blue-500/5 group-hover:to-blue-600/5 rounded-3xl transition-all duration-700"></div>
                     </div>
                 </div>
 
@@ -158,13 +158,13 @@
                     <!-- Glass Card -->
                     <div class="relative p-6 lg:p-8 bg-white/5 backdrop-blur-2xl rounded-3xl border border-white/10 shadow-2xl hover:shadow-3xl transition-all duration-700 hover:bg-white/10 hover:border-purple-400/30 hover:scale-105">
                         <!-- Step Number Floating -->
-                        <div class="absolute -top-6 left-6 w-12 h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white/20 group-hover:scale-110 transition-transform duration-500">
+                        <div class="absolute -top-6 left-6 w-12 h-12 bg-linear-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white/20 group-hover:scale-110 transition-transform duration-500">
                             <span class="text-white text-lg font-black">3</span>
                         </div>
                         
                         <!-- Premium Icon Container -->
                         <div class="mb-8 mt-4">
-                            <div class="w-20 h-20 lg:w-24 lg:h-24 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 shadow-2xl border border-purple-400/20">
+                            <div class="w-20 h-20 lg:w-24 lg:h-24 bg-linear-to-br from-purple-500/20 to-purple-600/10 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-700 shadow-2xl border border-purple-400/20">
                                 <svg class="w-10 h-10 lg:w-12 lg:h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
                                 </svg>
@@ -182,7 +182,7 @@
                         </div>
                         
                         <!-- Hover Glow Effect -->
-                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/0 to-purple-600/0 group-hover:from-purple-500/5 group-hover:to-purple-600/5 rounded-3xl transition-all duration-700"></div>
+                        <div class="absolute inset-0 bg-linear-to-br from-purple-500/0 to-purple-600/0 group-hover:from-purple-500/5 group-hover:to-purple-600/5 rounded-3xl transition-all duration-700"></div>
                     </div>
                 </div>
             </div>
@@ -193,7 +193,7 @@
             <!-- Verified Properties -->
             <a href="#property-verification" class="group block p-4 lg:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-xl hover:shadow-2xl hover:bg-white/10 hover:border-emerald-400/30 transition-all duration-500 hover:scale-105">
                 <div class="text-center">
-                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-emerald-400/20">
+                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-linear-to-br from-emerald-500/20 to-emerald-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-emerald-400/20">
                         <svg class="w-6 h-6 lg:w-8 lg:h-8 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"/>
                         </svg>
@@ -206,7 +206,7 @@
             <!-- Trusted Agents -->
             <a href="#agent-verification" class="group block p-4 lg:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-xl hover:shadow-2xl hover:bg-white/10 hover:border-blue-400/30 transition-all duration-500 hover:scale-105">
                 <div class="text-center">
-                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-500/20 to-blue-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-blue-400/20">
+                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-linear-to-br from-blue-500/20 to-blue-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-blue-400/20">
                         <svg class="w-6 h-6 lg:w-8 lg:h-8 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 6L13.5 7.5C13.1 7.9 12.6 8 12 8S10.9 7.9 10.5 7.5L9 6L3 7V9H5V20H7V13H9V20H11V9H13V20H15V13H17V20H19V9H21Z"/>
                         </svg>
@@ -219,7 +219,7 @@
             <!-- Secure Transactions -->
             <div class="group p-4 lg:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-xl hover:shadow-2xl hover:bg-white/10 hover:border-amber-400/30 transition-all duration-500 hover:scale-105">
                 <div class="text-center">
-                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-amber-500/20 to-amber-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-amber-400/20">
+                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-linear-to-br from-amber-500/20 to-amber-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-amber-400/20">
                         <svg class="w-6 h-6 lg:w-8 lg:h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
@@ -232,7 +232,7 @@
             <!-- 24/7 Support -->
             <div class="group p-4 lg:p-6 bg-white/5 backdrop-blur-2xl rounded-2xl border border-white/10 shadow-xl hover:shadow-2xl hover:bg-white/10 hover:border-purple-400/30 transition-all duration-500 hover:scale-105">
                 <div class="text-center">
-                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-purple-400/20">
+                    <div class="w-12 h-12 lg:w-16 lg:h-16 bg-linear-to-br from-purple-500/20 to-purple-600/10 rounded-2xl flex items-center justify-center mx-auto mb-3 lg:mb-4 group-hover:scale-110 transition-transform duration-500 border border-purple-400/20">
                         <svg class="w-6 h-6 lg:w-8 lg:h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
@@ -248,7 +248,7 @@
             <div class="max-w-3xl mx-auto">
                 <h3 class="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-6">
                     Ready to Find Your 
-                    <span class="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">Dream Home?</span>
+                    <span class="bg-linear-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">Dream Home?</span>
                 </h3>
                 <p class="text-lg lg:text-xl text-slate-300 mb-10 leading-relaxed">
                     Join thousands of satisfied clients who found their perfect home through our premium platform
@@ -257,7 +257,7 @@
                 <!-- Premium Action Buttons -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-center mb-8">
                     <a href="{{ route('properties.search') }}" 
-                       class="group inline-flex items-center justify-center space-x-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 px-8 lg:px-10 rounded-2xl transition-all duration-500 shadow-2xl hover:shadow-3xl hover:scale-105 border border-emerald-400/20">
+                       class="group inline-flex items-center justify-center space-x-3 bg-linear-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 px-8 lg:px-10 rounded-2xl transition-all duration-500 shadow-2xl hover:shadow-3xl hover:scale-105 border border-emerald-400/20">
                         <span class="text-lg">Browse Properties</span>
                         <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>

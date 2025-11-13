@@ -5,11 +5,11 @@
         }
     </style>
 
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
+    <div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
         <!-- Subtle Background Elements -->
         <div class="absolute inset-0 opacity-30">
-            <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-            <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+            <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
+            <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
         </div>
 
         <div class="relative z-30 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -35,7 +35,7 @@
                 </div>
 
                 <div class="w-full bg-gray-200 rounded-full h-2 mb-4">
-                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500"
+                    <div class="bg-linear-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-500"
                          :style="`width: ${progress}%`"></div>
                 </div>
 
@@ -78,7 +78,7 @@
             <!-- Preferences Form -->
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-6">
-                    <div class="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mr-3">
+                    <div class="p-3 rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg mr-3">
                         <x-heroicon-o-cog-6-tooth class="w-6 h-6 text-white" />
                     </div>
                     <h2 class="text-xl font-semibold text-gray-900">Your Preferences</h2>
@@ -89,7 +89,7 @@
                     @if ($errors->any())
                         <div class="bg-red-50 border border-red-200 rounded-lg p-4">
                             <div class="flex">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                                     </svg>
@@ -108,9 +108,9 @@
 
                     <!-- Stage 1: User Interests -->
                     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                        <div class="px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
+                        <div class="px-6 py-4 bg-linear-to-r from-blue-50 to-indigo-50 border-b border-gray-200">
                             <div class="flex items-center space-x-3">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <div class="w-8 h-8 flex items-center justify-center bg-blue-100 rounded-lg">
                                         <span class="text-blue-600 font-semibold">1</span>
                                     </div>
@@ -124,7 +124,7 @@
                         <div class="p-6">
                             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 @foreach(['buying' => ['title' => 'Buying', 'description' => 'Looking to purchase property'], 'renting' => ['title' => 'Renting', 'description' => 'Looking for long-term rental'], 'shortlet' => ['title' => 'Short Let', 'description' => 'Looking for short-term rental']] as $value => $option)
-                                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus-within:ring-2 focus-within:ring-blue-500 transition-all duration-200 hover:border-blue-400 hover:shadow-md @if (in_array($value, $form->interested_in ?? [])) border-blue-500 bg-blue-50 @endif">
+                                    <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-xs focus-within:ring-2 focus-within:ring-blue-500 transition-all duration-200 hover:border-blue-400 hover:shadow-md @if (in_array($value, $form->interested_in ?? [])) border-blue-500 bg-blue-50 @endif">
                                         <input type="checkbox" wire:model.live="form.interested_in" value="{{ $value }}" class="sr-only">
                                         <span class="flex flex-1">
                                             <span class="flex flex-col">
@@ -148,9 +148,9 @@
                     <!-- Stage 2: Property Categories (shown when interests are selected) -->
                     <div x-data="categorySelection" x-cloak>
                         <div x-show="showPropertyCategorySelection" x-transition class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                            <div class="px-6 py-4 bg-gradient-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
+                            <div class="px-6 py-4 bg-linear-to-r from-indigo-50 to-purple-50 border-b border-gray-200">
                                 <div class="flex items-center space-x-3">
-                                    <div class="flex-shrink-0">
+                                    <div class="shrink-0">
                                         <div class="w-8 h-8 flex items-center justify-center bg-indigo-100 rounded-lg">
                                             <span class="text-indigo-600 font-semibold">2</span>
                                         </div>
@@ -164,7 +164,7 @@
                             <div class="p-6">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     @foreach($availablePropertyCategories as $category)
-                                        <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500 transition-all duration-200 hover:border-indigo-400 hover:shadow-md"
+                                        <label class="relative flex cursor-pointer rounded-lg border border-gray-300 bg-white p-4 shadow-xs focus-within:ring-2 focus-within:ring-indigo-500 transition-all duration-200 hover:border-indigo-400 hover:shadow-md"
                                                :class="(Array.isArray(propertyCategories) ? propertyCategories : []).includes('{{ $category['value'] }}') ? 'border-indigo-500 bg-indigo-50' : ''">
                                             <input type="checkbox" value="{{ $category['value'] }}" wire:model.live="form.property_categories" class="sr-only">
                                             <span class="flex flex-1">
@@ -199,9 +199,9 @@
 
                             <!-- House/Apartment Options -->
                             <div x-show="showHouseOptions" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                <div class="px-6 py-4 bg-gradient-to-r from-green-50 to-emerald-50 border-b border-gray-200">
+                                <div class="px-6 py-4 bg-linear-to-r from-green-50 to-emerald-50 border-b border-gray-200">
                                     <div class="flex items-center space-x-3">
-                                        <div class="flex-shrink-0">
+                                        <div class="shrink-0">
                                             <div class="w-8 h-8 flex items-center justify-center bg-green-100 rounded-lg">
                                                 <span class="text-green-600 font-semibold">3</span>
                                             </div>
@@ -219,7 +219,7 @@
                                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                                             @foreach ($apartmentSubtypes as $subtype)
                                                 <label class="flex items-center space-x-2 cursor-pointer">
-                                                    <input type="checkbox" value="{{ $subtype['id'] }}" wire:model.live="form.apartment_subtypes" class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                                                    <input type="checkbox" value="{{ $subtype['id'] }}" wire:model.live="form.apartment_subtypes" class="rounded-sm border-gray-300 text-blue-600 shadow-xs focus:ring-blue-500">
                                                     <span class="text-sm text-gray-700">{{ $subtype['name'] }}</span>
                                                 </label>
                                             @endforeach
@@ -232,7 +232,7 @@
                                         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
                                             @foreach ($houseSubtypes as $subtype)
                                                 <label class="flex items-center space-x-2 cursor-pointer">
-                                                    <input type="checkbox" value="{{ $subtype['id'] }}" wire:model.live="form.house_subtypes" class="rounded border-gray-300 text-blue-600 shadow-sm focus:ring-blue-500">
+                                                    <input type="checkbox" value="{{ $subtype['id'] }}" wire:model.live="form.house_subtypes" class="rounded-sm border-gray-300 text-blue-600 shadow-xs focus:ring-blue-500">
                                                     <span class="text-sm text-gray-700">{{ $subtype['name'] }}</span>
                                                 </label>
                                             @endforeach
@@ -243,9 +243,9 @@
 
                             <!-- Land Options -->
                             <div x-show="showLandOptions" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                <div class="px-6 py-4 bg-gradient-to-r from-yellow-50 to-amber-50 border-b border-gray-200">
+                                <div class="px-6 py-4 bg-linear-to-r from-yellow-50 to-amber-50 border-b border-gray-200">
                                     <div class="flex items-center space-x-3">
-                                        <div class="flex-shrink-0">
+                                        <div class="shrink-0">
                                             <div class="w-8 h-8 flex items-center justify-center bg-yellow-100 rounded-lg">
                                                 <span class="text-yellow-600 font-semibold">3</span>
                                             </div>
@@ -260,7 +260,7 @@
                                     <div class="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                         @foreach ($landSizes as $size)
                                             <label class="flex items-center space-x-2 cursor-pointer">
-                                                <input type="checkbox" value="{{ $size['id'] }}" wire:model.live="form.land_sizes" class="rounded border-gray-300 text-green-600 shadow-sm focus:ring-green-500">
+                                                <input type="checkbox" value="{{ $size['id'] }}" wire:model.live="form.land_sizes" class="rounded-sm border-gray-300 text-green-600 shadow-xs focus:ring-green-500">
                                                 <span class="text-sm text-gray-700">{{ $size['name'] }}</span>
                                             </label>
                                         @endforeach
@@ -270,9 +270,9 @@
 
                             <!-- Shop Options -->
                             <div x-show="showShopOptions" class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                                <div class="px-6 py-4 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-200">
+                                <div class="px-6 py-4 bg-linear-to-r from-purple-50 to-pink-50 border-b border-gray-200">
                                     <div class="flex items-center space-x-3">
-                                        <div class="flex-shrink-0">
+                                        <div class="shrink-0">
                                             <div class="w-8 h-8 flex items-center justify-center bg-purple-100 rounded-lg">
                                                 <span class="text-purple-600 font-semibold">3</span>
                                             </div>
@@ -285,7 +285,7 @@
                                 </div>
                                 <div class="p-6">
                                     <label class="flex items-center space-x-3 cursor-pointer">
-                                        <input type="checkbox" wire:model.live="form.shop_selected" class="rounded border-gray-300 text-purple-600 shadow-sm focus:ring-purple-500">
+                                        <input type="checkbox" wire:model.live="form.shop_selected" class="rounded-sm border-gray-300 text-purple-600 shadow-xs focus:ring-purple-500">
                                         <span class="text-sm text-gray-700">Yes, I'm interested in commercial shops and retail spaces</span>
                                     </label>
                                 </div>
@@ -296,9 +296,9 @@
                     <!-- Stage 4: Budget Ranges (shown when options are selected) -->
                     <div x-data="budgetOptions" x-cloak>
                         <div x-show="showBudgets" x-transition class="bg-white rounded-xl border border-gray-200 overflow-hidden">
-                            <div class="px-6 py-4 bg-gradient-to-r from-rose-50 to-red-50 border-b border-gray-200">
+                            <div class="px-6 py-4 bg-linear-to-r from-rose-50 to-red-50 border-b border-gray-200">
                                 <div class="flex items-center space-x-3">
-                                    <div class="flex-shrink-0">
+                                    <div class="shrink-0">
                                         <div class="w-8 h-8 flex items-center justify-center bg-rose-100 rounded-lg">
                                             <span class="text-rose-600 font-semibold">4</span>
                                         </div>
@@ -314,7 +314,7 @@
                                 <!-- This is a simplified version - you can expand with specific budget sections for each category -->
                                 <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                     <div class="flex">
-                                        <div class="flex-shrink-0">
+                                        <div class="shrink-0">
                                             <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
                                             </svg>
@@ -333,7 +333,7 @@
                     <div class="bg-white rounded-xl border border-gray-200 overflow-visible">
                         <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                             <div class="flex items-center space-x-3">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -381,7 +381,7 @@
                     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
                         <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
                             <div class="flex items-center space-x-3">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5z" />
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -426,7 +426,7 @@
                             Back to Settings
                         </a>
                         <button type="submit"
-                                class="inline-flex items-center justify-center px-8 py-3 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg">
+                                class="inline-flex items-center justify-center px-8 py-3 bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                             </svg>

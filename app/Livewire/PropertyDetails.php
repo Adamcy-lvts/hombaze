@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Exception;
 use App\Models\Property;
 use App\Services\SimpleRecommendationEngine;
 use App\Services\PropertyCommunicationService;
@@ -128,7 +129,7 @@ class PropertyDetails extends Component
             session()->flash('message', 'Your inquiry has been sent successfully! We\'ll get back to you soon.');
             $this->reset(['inquiryName', 'inquiryEmail', 'inquiryPhone', 'inquiryMessage']);
             $this->showContactForm = false;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             session()->flash('error', 'Failed to send inquiry. Please try again.');
         }
     }
@@ -211,7 +212,7 @@ class PropertyDetails extends Component
                 }
                 session()->flash('error', 'Failed to send WhatsApp message. Please try again or contact the property directly.');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Fallback to WhatsApp web link
             $whatsappUrl = $this->getScheduleViewingWhatsAppUrl();
             if ($whatsappUrl) {
@@ -276,7 +277,7 @@ class PropertyDetails extends Component
                 }
                 session()->flash('error', 'Failed to send WhatsApp message. Please try again or contact the property directly.');
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Fallback to WhatsApp web link
             $whatsappUrl = PropertyCommunicationService::getWhatsAppUrl($this->property);
             if ($whatsappUrl) {
@@ -357,7 +358,7 @@ class PropertyDetails extends Component
                 SimpleRecommendationEngine::trackPropertyView(auth()->id(), $this->property->id);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Silent fail for analytics
             logger()->warning('Failed to track property view', [
                 'property_id' => $this->property->id,

@@ -137,7 +137,7 @@ class SavedSearch extends Model
             } elseif ($location['area_selection_type'] === 'all') {
                 $parts[] = 'All areas';
             } elseif ($location['area_selection_type'] === 'specific' && isset($location['selected_areas']) && !empty($location['selected_areas'])) {
-                $areas = \App\Models\Area::whereIn('id', $location['selected_areas'])->pluck('name')->toArray();
+                $areas = Area::whereIn('id', $location['selected_areas'])->pluck('name')->toArray();
                 if (count($areas) > 3) {
                     $displayAreas = array_slice($areas, 0, 3);
                     $parts[] = implode(', ', $displayAreas) . ' +' . (count($areas) - 3) . ' more';
@@ -149,18 +149,18 @@ class SavedSearch extends Model
 
         // Fallback for old single area selection (backward compatibility)
         elseif (isset($location['area']) && $location['area']) {
-            $area = \App\Models\Area::find($location['area']);
+            $area = Area::find($location['area']);
             if ($area) $parts[] = $area->name;
         }
 
         // Add city and state
         if (isset($location['city']) && $location['city']) {
-            $city = \App\Models\City::find($location['city']);
+            $city = City::find($location['city']);
             if ($city) $parts[] = $city->name;
         }
 
         if (isset($location['state']) && $location['state']) {
-            $state = \App\Models\State::find($location['state']);
+            $state = State::find($location['state']);
             if ($state) $parts[] = $state->name;
         }
 
@@ -171,7 +171,7 @@ class SavedSearch extends Model
     {
         // Priority 1: Use new property type system
         if ($this->selected_property_type) {
-            $propertyType = \App\Models\PropertyType::find($this->selected_property_type);
+            $propertyType = PropertyType::find($this->selected_property_type);
             if ($propertyType) {
                 return $propertyType->name;
             }

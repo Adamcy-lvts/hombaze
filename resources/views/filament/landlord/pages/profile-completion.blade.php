@@ -1,7 +1,7 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         <!-- Profile Completion Progress -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+        <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
             <div class="flex items-center justify-between mb-4">
                 <div>
                     <h3 class="text-lg font-semibold text-gray-900">Profile Completion</h3>
@@ -15,7 +15,7 @@
             
             <!-- Progress Bar -->
             <div class="w-full bg-gray-200 rounded-full h-3">
-                <div class="bg-gradient-to-r from-primary-500 to-primary-600 h-3 rounded-full transition-all duration-500 ease-out" 
+                <div class="bg-linear-to-r from-primary-500 to-primary-600 h-3 rounded-full transition-all duration-500 ease-out" 
                      style="width: {{ auth()->user()->profile_completion_percentage }}%"></div>
             </div>
             
@@ -36,7 +36,7 @@
         </div>
 
         <!-- Profile Completion Form -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <div class="bg-white rounded-xl shadow-xs border border-gray-200">
             {{ $this->form }}
         </div>
     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Exception;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use App\Models\User;
@@ -105,7 +106,7 @@ class AgentRatingForm extends Component
             $this->showForm = false;
             $this->dispatch('reviewSubmitted');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             session()->flash('error', 'There was an error submitting your review. Please try again.');
         } finally {
             $this->isSubmitting = false;

@@ -2,6 +2,15 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Pages\Dashboard;
+use App\Filament\Widgets\AdminStatsWidget;
+use App\Filament\Widgets\RevenueStatsWidget;
+use App\Filament\Widgets\PlatformOverviewWidget;
+use App\Filament\Widgets\PropertyTypesChartWidget;
+use App\Filament\Widgets\UserActivityChartWidget;
+use App\Filament\Widgets\GeographicDistributionWidget;
+use App\Filament\Widgets\InquiryTrendsWidget;
+use App\Filament\Widgets\RecentUsersWidget;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -35,18 +44,18 @@ class AdminPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
-                \App\Filament\Widgets\AdminStatsWidget::class,
-                \App\Filament\Widgets\RevenueStatsWidget::class,
-                \App\Filament\Widgets\PlatformOverviewWidget::class,
-                \App\Filament\Widgets\PropertyTypesChartWidget::class,
-                \App\Filament\Widgets\UserActivityChartWidget::class,
-                \App\Filament\Widgets\GeographicDistributionWidget::class,
-                \App\Filament\Widgets\InquiryTrendsWidget::class,
-                \App\Filament\Widgets\RecentUsersWidget::class,
+                AdminStatsWidget::class,
+                RevenueStatsWidget::class,
+                PlatformOverviewWidget::class,
+                PropertyTypesChartWidget::class,
+                UserActivityChartWidget::class,
+                GeographicDistributionWidget::class,
+                InquiryTrendsWidget::class,
+                RecentUsersWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

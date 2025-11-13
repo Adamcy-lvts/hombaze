@@ -2,8 +2,21 @@
 
 namespace App\Filament\Resources\PropertyResource\RelationManagers;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\CreateAction;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -14,43 +27,43 @@ class ViewsRelationManager extends RelationManager
 {
     protected static string $relationship = 'views';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('user_id')
+        return $schema
+            ->components([
+                Select::make('user_id')
                     ->relationship('user', 'name')
                     ->nullable()
                     ->searchable()
                     ->preload(),
-                Forms\Components\TextInput::make('ip_address')
+                TextInput::make('ip_address')
                     ->required()
                     ->maxLength(45)
                     ->label('IP Address'),
-                Forms\Components\Textarea::make('user_agent')
+                Textarea::make('user_agent')
                     ->maxLength(65535)
                     ->label('User Agent'),
-                Forms\Components\TextInput::make('session_id')
+                TextInput::make('session_id')
                     ->maxLength(255)
                     ->label('Session ID'),
-                Forms\Components\TextInput::make('referrer')
+                TextInput::make('referrer')
                     ->maxLength(255),
-                Forms\Components\Select::make('device_type')
+                Select::make('device_type')
                     ->options([
                         'desktop' => 'Desktop',
                         'mobile' => 'Mobile',
                         'tablet' => 'Tablet',
                     ])
                     ->default('desktop'),
-                Forms\Components\TextInput::make('browser')
+                TextInput::make('browser')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('platform')
+                TextInput::make('platform')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('country')
+                TextInput::make('country')
                     ->maxLength(255),
-                Forms\Components\TextInput::make('city')
+                TextInput::make('city')
                     ->maxLength(255),
-                Forms\Components\DateTimePicker::make('viewed_at')
+                DateTimePicker::make('viewed_at')
                     ->required()
                     ->default(now()),
             ]);
@@ -61,14 +74,14 @@ class ViewsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('ip_address')
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                TextColumn::make('user.name')
                     ->label('User')
                     ->default('Anonymous')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('ip_address')
+                TextColumn::make('ip_address')
                     ->label('IP Address')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('device_type')
+                TextColumn::make('device_type')
                     ->label('Device')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -78,49 +91,49 @@ class ViewsRelationManager extends RelationManager
                         default => 'gray',
                     })
                     ->sortable(),
-                Tables\Columns\TextColumn::make('browser')
+                TextColumn::make('browser')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('platform')
+                TextColumn::make('platform')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('country')
+                TextColumn::make('country')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('referrer')
+                TextColumn::make('referrer')
                     ->limit(30)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         return strlen($state) > 30 ? $state : null;
                     }),
-                Tables\Columns\TextColumn::make('viewed_at')
+                TextColumn::make('viewed_at')
                     ->label('Viewed At')
                     ->dateTime()
                     ->sortable()
                     ->since(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('device_type')
+                SelectFilter::make('device_type')
                     ->options([
                         'desktop' => 'Desktop',
                         'mobile' => 'Mobile',
                         'tablet' => 'Tablet',
                     ]),
-                Tables\Filters\Filter::make('authenticated')
+                Filter::make('authenticated')
                     ->query(fn (Builder $query): Builder => $query->whereNotNull('user_id'))
                     ->label('Authenticated Users Only'),
-                Tables\Filters\Filter::make('anonymous')
+                Filter::make('anonymous')
                     ->query(fn (Builder $query): Builder => $query->whereNull('user_id'))
                     ->label('Anonymous Views Only'),
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                CreateAction::make(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('viewed_at', 'desc');

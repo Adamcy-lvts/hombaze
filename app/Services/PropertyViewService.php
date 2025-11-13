@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Collection;
 use App\Models\Property;
 use App\Models\PropertyView;
 use App\Jobs\UpdatePropertyViewCountJob;
@@ -156,7 +157,7 @@ class PropertyViewService
     /**
      * Get trending properties based on recent views
      */
-    public function getTrendingProperties(int $days = 7, int $limit = 10): \Illuminate\Support\Collection
+    public function getTrendingProperties(int $days = 7, int $limit = 10): Collection
     {
         return PropertyView::getTrendingProperties($days, $limit);
     }

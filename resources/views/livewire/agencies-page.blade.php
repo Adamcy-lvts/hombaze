@@ -3,16 +3,37 @@
     <section class="relative bg-white border-b border-gray-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <!-- Breadcrumb -->
-            <nav class="flex items-center space-x-2 text-sm text-gray-600 mb-6">
-                <a href="{{ route('landing') }}" wire:navigate class="hover:text-emerald-600 transition-colors duration-200">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                    </svg>
-                </a>
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                </svg>
-                <span class="font-medium text-gray-900">Real Estate Agencies</span>
+            <nav aria-label="Breadcrumb" class="mb-6">
+                <ol
+                    class="flex items-center gap-2 text-xs sm:text-sm text-gray-500 overflow-x-auto whitespace-nowrap px-3 py-2 border border-gray-200 rounded-xl bg-white shadow-xs shadow-gray-200/70 w-full">
+                    <li>
+                        <a href="{{ route('landing') }}" wire:navigate
+                           class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:text-emerald-600 hover:border-emerald-300 transition">
+                            <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor"
+                                 viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                                </path>
+                            </svg>
+                            <span class="font-medium">Home</span>
+                        </a>
+                    </li>
+                    <li class="flex items-center shrink-0">
+                        <div class="w-8 sm:w-12 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 -ml-1" fill="none"
+                             stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </li>
+                    <li class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-100">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M3 7h18M3 12h18M3 17h18"></path>
+                        </svg>
+                        <span class="font-semibold">Real Estate Agencies</span>
+                    </li>
+                </ol>
             </nav>
 
             <!-- Clean Header -->
@@ -55,7 +76,7 @@
             </div>
 
             <!-- Clean Filters -->
-            <div class="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-3 mb-4 shadow-sm">
+            <div class="bg-white/90 backdrop-blur-xs border border-gray-200/50 rounded-xl p-3 mb-4 shadow-xs">
                 <!-- Filter Controls -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <!-- Filter Toggle -->
@@ -128,15 +149,15 @@
                        class="group block transition-all duration-200 hover:scale-105">
 
                         <!-- Agency Card -->
-                        <div class="relative bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="relative bg-white rounded-xl shadow-xs border border-gray-200 overflow-hidden">
                             <!-- Agency Logo/Header -->
-                            <div class="relative h-48 bg-gradient-to-br from-emerald-50 to-blue-50 flex items-center justify-center">
+                            <div class="relative h-48 bg-linear-to-br from-emerald-50 to-blue-50 flex items-center justify-center">
                                 @if($agency->logo)
                                     <img src="{{ Storage::url($agency->logo) }}"
                                          alt="{{ $agency->name }}"
                                          class="w-24 h-24 rounded-full border-4 border-white shadow-lg object-cover">
                                 @else
-                                    <div class="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                                    <div class="w-24 h-24 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
                                         <span class="text-white font-bold text-2xl">{{ substr($agency->name, 0, 1) }}</span>
                                     </div>
                                 @endif
@@ -144,7 +165,7 @@
                                 <!-- Verified Badge -->
                                 @if($agency->is_verified)
                                     <div class="absolute top-3 right-3">
-                                        <div class="inline-flex items-center space-x-1 bg-blue-100/90 backdrop-blur-sm border border-blue-300/50 text-blue-700 px-2 py-1 rounded-lg font-bold text-xs shadow-lg">
+                                        <div class="inline-flex items-center space-x-1 bg-blue-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 px-2 py-1 rounded-lg font-bold text-xs shadow-lg">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                                             </svg>
@@ -224,7 +245,7 @@
                                 </span>
                             @else
                                 <a href="{{ $agencies->previousPageUrl() }}"
-                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                     </svg>
@@ -234,12 +255,12 @@
                             {{-- Pagination Elements --}}
                             @foreach ($agencies->getUrlRange(1, $agencies->lastPage()) as $page => $url)
                                 @if ($page == $agencies->currentPage())
-                                    <span class="flex items-center justify-center w-10 h-10 text-white font-semibold bg-gradient-to-r from-emerald-500 to-blue-500 rounded-xl shadow-md">
+                                    <span class="flex items-center justify-center w-10 h-10 text-white font-semibold bg-linear-to-r from-emerald-500 to-blue-500 rounded-xl shadow-md">
                                         {{ $page }}
                                     </span>
                                 @else
                                     <a href="{{ $url }}"
-                                       class="flex items-center justify-center w-10 h-10 text-gray-700 font-medium bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                       class="flex items-center justify-center w-10 h-10 text-gray-700 font-medium bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                         {{ $page }}
                                     </a>
                                 @endif
@@ -248,7 +269,7 @@
                             {{-- Next Page Link --}}
                             @if ($agencies->hasMorePages())
                                 <a href="{{ $agencies->nextPageUrl() }}"
-                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>

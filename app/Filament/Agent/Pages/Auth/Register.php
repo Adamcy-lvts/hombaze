@@ -2,14 +2,15 @@
 
 namespace App\Filament\Agent\Pages\Auth;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Exception;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Form;
-use Filament\Pages\Auth\Register as BaseRegister;
 use App\Models\User;
 use App\Models\Agent;
 use App\Models\State;
@@ -20,17 +21,17 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
-class Register extends BaseRegister
+class Register extends \Filament\Auth\Pages\Register
 {
-    protected static string $view = 'filament.agent.pages.auth.register';
+    protected string $view = 'filament.agent.pages.auth.register';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Tabs::make('Registration')
                     ->tabs([
-                        Tabs\Tab::make('Account')
+                        Tab::make('Account')
                             ->icon('heroicon-o-user')
                             ->schema([
                                 Section::make('Login Credentials')
@@ -55,7 +56,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Professional')
+                        Tab::make('Professional')
                             ->icon('heroicon-o-briefcase')
                             ->schema([
                                 Section::make('Professional Information')
@@ -114,7 +115,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Location')
+                        Tab::make('Location')
                             ->icon('heroicon-o-map-pin')
                             ->schema([
                                 Section::make('Service Area')
@@ -140,7 +141,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Additional')
+                        Tab::make('Additional')
                             ->icon('heroicon-o-plus-circle')
                             ->schema([
                                 Section::make('Optional Information')
@@ -246,7 +247,7 @@ class Register extends BaseRegister
             
             Log::info("Assigned Independent Agent role to user: {$user->email}");
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to assign Independent Agent role to user {$user->email}: " . $e->getMessage());
             // Don't fail registration if role assignment fails
         }
@@ -255,16 +256,16 @@ class Register extends BaseRegister
     /**
      * Ensure the Independent Agent role exists with proper permissions
      */
-    private function ensureIndependentAgentRoleExists(): \Spatie\Permission\Models\Role
+    private function ensureIndependentAgentRoleExists(): Role
     {
         // Check if the role already exists (using Spatie models)
-        $role = \Spatie\Permission\Models\Role::where('name', 'independent_agent')
+        $role = Role::where('name', 'independent_agent')
             ->where('guard_name', 'web')
             ->first();
 
         if (!$role) {
             // Create the role using Spatie model
-            $role = \Spatie\Permission\Models\Role::create([
+            $role = Role::create([
                 'name' => 'independent_agent',
                 'guard_name' => 'web',
             ]);
@@ -307,7 +308,7 @@ class Register extends BaseRegister
 
             // Get existing permissions and assign them to the role (using Spatie models)
             $permissions = collect($independentAgentPermissions)->map(function ($permissionName) {
-                return \Spatie\Permission\Models\Permission::where('name', $permissionName)
+                return Permission::where('name', $permissionName)
                     ->where('guard_name', 'web')
                     ->first();
             })->filter(); // Remove any null permissions

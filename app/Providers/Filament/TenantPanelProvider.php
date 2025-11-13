@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use Filament\Pages\Dashboard;
+use Filament\Widgets\AccountWidget;
+use App\Http\Middleware\RequireLandlordAssociation;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -42,13 +45,13 @@ class TenantPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Tenant/Resources'), for: 'App\\Filament\\Tenant\\Resources')
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\\Filament\\Tenant\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets'), for: 'App\\Filament\\Tenant\\Widgets')
             ->widgets([
                 TenantStatusInfoWidget::class,
                 TenantOverview::class,
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
 
             ])
             ->middleware([
@@ -64,7 +67,7 @@ class TenantPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\RequireLandlordAssociation::class,
+                RequireLandlordAssociation::class,
             ])
             ->login()
             ->passwordReset()

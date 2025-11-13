@@ -1,15 +1,15 @@
 <!-- Clean Featured Properties Section -->
 <section class="hidden md:block relative py-32 overflow-hidden" id="featured-properties">
     <!-- Sophisticated Background -->
-    <div class="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50/30"></div>
+    <div class="absolute inset-0 bg-linear-to-br from-gray-50 via-white to-blue-50/30"></div>
 
     <!-- Floating Elements -->
     <div
-        class="absolute top-20 left-10 w-72 h-72 bg-gradient-to-br from-blue-500/10 to-emerald-500/10 rounded-full blur-3xl floating-element">
+        class="absolute top-20 left-10 w-72 h-72 bg-linear-to-br from-blue-500/10 to-emerald-500/10 rounded-full blur-3xl floating-element">
     </div>
-    <div class="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-tl from-emerald-500/8 to-blue-500/8 rounded-full blur-3xl floating-element"
+    <div class="absolute bottom-20 right-10 w-96 h-96 bg-linear-to-tl from-emerald-500/8 to-blue-500/8 rounded-full blur-3xl floating-element"
         style="animation-delay: 1s;"></div>
-    <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 floating-element"
+    <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-linear-to-r from-purple-500/5 to-pink-500/5 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 floating-element"
         style="animation-delay: 2s;"></div>
 
     <!-- Grid Pattern -->
@@ -24,7 +24,7 @@
         <div class="text-center mb-6" data-animate="header">
             <!-- Section Badge -->
             <div
-                class="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-blue-500/10 to-emerald-500/10 border border-blue-200/30 backdrop-blur-sm mb-6">
+                class="inline-flex items-center px-4 py-2 rounded-full bg-linear-to-r from-blue-500/10 to-emerald-500/10 border border-blue-200/30 backdrop-blur-xs mb-6">
                 <svg class="w-4 h-4 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z">
@@ -35,11 +35,11 @@
 
             <!-- Main Heading -->
             <h2 class="text-5xl md:text-6xl font-bold mb-6 leading-tight">
-                <span class="bg-gradient-to-r from-gray-900 via-blue-900 to-emerald-900 bg-clip-text text-transparent">
+                <span class="bg-linear-to-r from-gray-900 via-blue-900 to-emerald-900 bg-clip-text text-transparent">
                     Featured
                 </span>
                 <br>
-                <span class="bg-gradient-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
+                <span class="bg-linear-to-r from-blue-600 to-emerald-600 bg-clip-text text-transparent">
                     Properties
                 </span>
             </h2>
@@ -52,9 +52,9 @@
 
             <!-- Decorative Line -->
             <div class="flex items-center justify-center mt-8">
-                <div class="h-px w-24 bg-gradient-to-r from-transparent to-blue-300"></div>
+                <div class="h-px w-24 bg-linear-to-r from-transparent to-blue-300"></div>
                 <div class="w-2 h-2 rounded-full bg-blue-500 mx-4"></div>
-                <div class="h-px w-24 bg-gradient-to-l from-transparent to-emerald-300"></div>
+                <div class="h-px w-24 bg-linear-to-l from-transparent to-emerald-300"></div>
             </div>
         </div>
 
@@ -64,24 +64,24 @@
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div class="relative w-[600px] h-[700px]">
                     <!-- Main dark cloud effect -->
-                    <div class="absolute inset-0 bg-gradient-to-br from-gray-900/15 via-slate-800/10 to-gray-900/15 rounded-[50%] blur-[120px] opacity-70"></div>
+                    <div class="absolute inset-0 bg-linear-to-br from-gray-900/15 via-slate-800/10 to-gray-900/15 rounded-[50%] blur-[120px] opacity-70"></div>
                     <!-- Secondary cloud layers for depth -->
-                    <div class="absolute top-10 left-10 w-96 h-96 bg-gradient-to-br from-gray-800/12 to-slate-900/8 rounded-full blur-[100px] opacity-60"></div>
-                    <div class="absolute bottom-10 right-10 w-80 h-80 bg-gradient-to-tl from-slate-700/10 to-gray-800/12 rounded-full blur-[90px] opacity-50"></div>
+                    <div class="absolute top-10 left-10 w-96 h-96 bg-linear-to-br from-gray-800/12 to-slate-900/8 rounded-full blur-[100px] opacity-60"></div>
+                    <div class="absolute bottom-10 right-10 w-80 h-80 bg-linear-to-tl from-slate-700/10 to-gray-800/12 rounded-full blur-[90px] opacity-50"></div>
                     <!-- Center focus cloud -->
-                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-r from-gray-900/8 via-slate-800/12 to-gray-900/8 rounded-full blur-[80px] opacity-40"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-linear-to-r from-gray-900/8 via-slate-800/12 to-gray-900/8 rounded-full blur-[80px] opacity-40"></div>
                 </div>
             </div>
 
             <!-- Left Navigation Button -->
             <button id="carousel-prev"
-                class="group relative p-4 bg-white/90 backdrop-blur-sm border border-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex-shrink-0">
+                class="group relative p-4 bg-white/90 backdrop-blur-xs border border-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 shrink-0">
                 <svg class="w-6 h-6 text-gray-600 group-hover:text-blue-600 transition-colors duration-300"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
                 </svg>
                 <div
-                    class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    class="absolute inset-0 bg-linear-to-br from-white/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 </div>
             </button>
 
@@ -95,26 +95,26 @@
                         data-index="0">
                         <!-- Enhanced Glassmorphism Effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
                         </div>
                         <div
-                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
                         </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
-                            class="relative h-60 bg-gradient-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
+                            class="relative h-60 bg-linear-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
                             <img src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=500&h=300&fit=crop"
                                 alt="Modern 2BR Apartment"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
 
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
 
                             <div class="absolute top-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs border border-white/50 shadow-lg">
                                     <div class="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>
                                     <span class="text-xs font-semibold text-gray-700">Apartment</span>
                                 </div>
@@ -122,14 +122,14 @@
 
                             <div class="absolute top-4 right-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-linear-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
                                     <span class="text-sm font-bold">₦450,000</span>
                                 </div>
                             </div>
 
                             <div class="absolute bottom-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-sm">
+                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-xs">
                                     <svg class="w-3 h-3 text-yellow-800 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                         <path
                                             d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -142,7 +142,7 @@
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
                             <div
-                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-xs rounded-xl border border-white/20">
                                 <div class="relative">
                                     <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"
                                         alt="Agent"
@@ -175,7 +175,7 @@
 
                             <div class="flex items-center text-gray-600 mb-4">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
+                                    class="w-5 h-5 rounded-full bg-linear-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -218,7 +218,7 @@
                             </div>
 
                             <a href="/properties"
-                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
+                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
                                 <div class="absolute inset-0 bg-white/20 rounded-xl"></div>
                                 <span class="relative z-10">View Details</span>
                                 <svg class="relative z-10 w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -227,7 +227,7 @@
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                                 <div
-                                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
+                                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
                                 </div>
                             </a>
                         </div>
@@ -238,26 +238,26 @@
                         data-index="1">
                         <!-- Enhanced Glassmorphism Effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
                         </div>
                         <div
-                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
                         </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
-                            class="relative h-60 bg-gradient-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
+                            class="relative h-60 bg-linear-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
                             <img src="https://images.unsplash.com/photo-1570129477492-45c003edd2be?w=500&h=300&fit=crop"
                                 alt="Luxury 3BR House"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
 
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
 
                             <div class="absolute top-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs border border-white/50 shadow-lg">
                                     <div class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></div>
                                     <span class="text-xs font-semibold text-gray-700">House</span>
                                 </div>
@@ -265,14 +265,14 @@
 
                             <div class="absolute top-4 right-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-linear-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
                                     <span class="text-sm font-bold">₦850,000</span>
                                 </div>
                             </div>
 
                             <div class="absolute bottom-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-sm">
+                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-xs">
                                     <svg class="w-3 h-3 text-yellow-800 mr-1" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path
@@ -286,7 +286,7 @@
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
                             <div
-                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-xs rounded-xl border border-white/20">
                                 <div class="relative">
                                     <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face"
                                         alt="Agent"
@@ -319,7 +319,7 @@
 
                             <div class="flex items-center text-gray-600 mb-4">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
+                                    class="w-5 h-5 rounded-full bg-linear-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -362,7 +362,7 @@
                             </div>
 
                             <a href="/properties"
-                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
+                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
                                 <div class="absolute inset-0 bg-white/20 rounded-xl"></div>
                                 <span class="relative z-10">View Details</span>
                                 <svg class="relative z-10 w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -371,7 +371,7 @@
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                                 <div
-                                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
+                                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
                                 </div>
                             </a>
                         </div>
@@ -382,26 +382,26 @@
                         data-index="2">
                         <!-- Enhanced Glassmorphism Effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
                         </div>
                         <div
-                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
                         </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
-                            class="relative h-60 bg-gradient-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
+                            class="relative h-60 bg-linear-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
                             <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=500&h=300&fit=crop"
                                 alt="Executive Duplex"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
 
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
 
                             <div class="absolute top-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs border border-white/50 shadow-lg">
                                     <div class="w-2 h-2 rounded-full bg-purple-500 mr-2"></div>
                                     <span class="text-xs font-semibold text-gray-700">Duplex</span>
                                 </div>
@@ -409,14 +409,14 @@
 
                             <div class="absolute top-4 right-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-linear-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
                                     <span class="text-sm font-bold">₦1,200,000</span>
                                 </div>
                             </div>
 
                             <div class="absolute bottom-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-sm">
+                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-xs">
                                     <svg class="w-3 h-3 text-yellow-800 mr-1" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path
@@ -430,7 +430,7 @@
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
                             <div
-                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-xs rounded-xl border border-white/20">
                                 <div class="relative">
                                     <img src="https://images.unsplash.com/photo-1494790108755-2616b612b77c?w=40&h=40&fit=crop&crop=face"
                                         alt="Agent"
@@ -463,7 +463,7 @@
 
                             <div class="flex items-center text-gray-600 mb-4">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
+                                    class="w-5 h-5 rounded-full bg-linear-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -506,7 +506,7 @@
                             </div>
 
                             <a href="/properties"
-                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
+                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
                                 <div class="absolute inset-0 bg-white/20 rounded-xl"></div>
                                 <span class="relative z-10">View Details</span>
                                 <svg class="relative z-10 w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -515,7 +515,7 @@
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                                 <div
-                                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
+                                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
                                 </div>
                             </a>
                         </div>
@@ -526,26 +526,26 @@
                         data-index="3">
                         <!-- Enhanced Glassmorphism Effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
                         </div>
                         <div
-                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
                         </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
-                            class="relative h-60 bg-gradient-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
+                            class="relative h-60 bg-linear-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
                             <img src="https://images.unsplash.com/photo-1513584684374-8bab748fbf90?w=500&h=300&fit=crop"
                                 alt="Luxury Penthouse"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
 
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
 
                             <div class="absolute top-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs border border-white/50 shadow-lg">
                                     <div class="w-2 h-2 rounded-full bg-orange-500 mr-2"></div>
                                     <span class="text-xs font-semibold text-gray-700">Penthouse</span>
                                 </div>
@@ -553,14 +553,14 @@
 
                             <div class="absolute top-4 right-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-linear-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
                                     <span class="text-sm font-bold">₦2,500,000</span>
                                 </div>
                             </div>
 
                             <div class="absolute bottom-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-sm">
+                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-xs">
                                     <svg class="w-3 h-3 text-yellow-800 mr-1" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path
@@ -574,7 +574,7 @@
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
                             <div
-                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-xs rounded-xl border border-white/20">
                                 <div class="relative">
                                     <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=40&h=40&fit=crop&crop=face"
                                         alt="Agent"
@@ -607,7 +607,7 @@
 
                             <div class="flex items-center text-gray-600 mb-4">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
+                                    class="w-5 h-5 rounded-full bg-linear-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -650,7 +650,7 @@
                             </div>
 
                             <a href="/properties"
-                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
+                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
                                 <div class="absolute inset-0 bg-white/20 rounded-xl"></div>
                                 <span class="relative z-10">View Details</span>
                                 <svg class="relative z-10 w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -659,7 +659,7 @@
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                                 <div
-                                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
+                                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
                                 </div>
                             </a>
                         </div>
@@ -670,26 +670,26 @@
                         data-index="4">
                         <!-- Enhanced Glassmorphism Effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
                         </div>
                         <div
-                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
                         </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
-                            class="relative h-60 bg-gradient-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
+                            class="relative h-60 bg-linear-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
                             <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=300&fit=crop"
                                 alt="Modern Studio"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
 
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
 
                             <div class="absolute top-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs border border-white/50 shadow-lg">
                                     <div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
                                     <span class="text-xs font-semibold text-gray-700">Studio</span>
                                 </div>
@@ -697,14 +697,14 @@
 
                             <div class="absolute top-4 right-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-linear-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
                                     <span class="text-sm font-bold">₦300,000</span>
                                 </div>
                             </div>
 
                             <div class="absolute bottom-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-sm">
+                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-xs">
                                     <svg class="w-3 h-3 text-yellow-800 mr-1" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path
@@ -718,7 +718,7 @@
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
                             <div
-                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-xs rounded-xl border border-white/20">
                                 <div class="relative">
                                     <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=40&h=40&fit=crop&crop=face"
                                         alt="Agent"
@@ -751,7 +751,7 @@
 
                             <div class="flex items-center text-gray-600 mb-4">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
+                                    class="w-5 h-5 rounded-full bg-linear-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -794,7 +794,7 @@
                             </div>
 
                             <a href="/properties"
-                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
+                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
                                 <div class="absolute inset-0 bg-white/20 rounded-xl"></div>
                                 <span class="relative z-10">View Details</span>
                                 <svg class="relative z-10 w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -803,7 +803,7 @@
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                                 <div
-                                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
+                                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
                                 </div>
                             </a>
                         </div>
@@ -814,26 +814,26 @@
                         data-index="5">
                         <!-- Enhanced Glassmorphism Effect -->
                         <div
-                            class="absolute inset-0 bg-gradient-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-br from-white/10 via-white/5 to-transparent rounded-3xl pointer-events-none">
                         </div>
                         <div
-                            class="absolute inset-0 bg-gradient-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
+                            class="absolute inset-0 bg-linear-to-tl from-blue-500/5 via-transparent to-emerald-500/5 rounded-3xl pointer-events-none">
                         </div>
                         <div class="absolute inset-0 border border-white/20 rounded-3xl pointer-events-none"></div>
 
                         <div
-                            class="relative h-60 bg-gradient-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
+                            class="relative h-60 bg-linear-to-br from-blue-50 to-emerald-50 overflow-hidden rounded-t-2xl">
                             <img src="https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=500&h=300&fit=crop"
                                 alt="Family Townhouse"
                                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
 
                             <div
-                                class="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                class="absolute inset-0 bg-linear-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                             </div>
 
                             <div class="absolute top-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-sm border border-white/50 shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-xs border border-white/50 shadow-lg">
                                     <div class="w-2 h-2 rounded-full bg-red-500 mr-2"></div>
                                     <span class="text-xs font-semibold text-gray-700">Townhouse</span>
                                 </div>
@@ -841,14 +841,14 @@
 
                             <div class="absolute top-4 right-4">
                                 <div
-                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
+                                    class="inline-flex items-center px-3 py-1.5 rounded-full bg-linear-to-r from-emerald-500 to-blue-500 text-white shadow-lg">
                                     <span class="text-sm font-bold">₦1,800,000</span>
                                 </div>
                             </div>
 
                             <div class="absolute bottom-4 left-4">
                                 <div
-                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-sm">
+                                    class="inline-flex items-center px-2 py-1 rounded-full bg-yellow-400/90 backdrop-blur-xs">
                                     <svg class="w-3 h-3 text-yellow-800 mr-1" fill="currentColor"
                                         viewBox="0 0 20 20">
                                         <path
@@ -862,7 +862,7 @@
                         <div class="p-6 relative">
                             <!-- Agent Profile Section -->
                             <div
-                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
+                                class="flex items-center mb-4 p-3 bg-white/10 backdrop-blur-xs rounded-xl border border-white/20">
                                 <div class="relative">
                                     <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face"
                                         alt="Agent"
@@ -895,7 +895,7 @@
 
                             <div class="flex items-center text-gray-600 mb-4">
                                 <div
-                                    class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
+                                    class="w-5 h-5 rounded-full bg-linear-to-r from-blue-500 to-emerald-500 flex items-center justify-center mr-2">
                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -938,7 +938,7 @@
                             </div>
 
                             <a href="/properties"
-                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
+                                class="group/btn relative w-full inline-flex items-center justify-center px-6 py-3 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 overflow-hidden">
                                 <div class="absolute inset-0 bg-white/20 rounded-xl"></div>
                                 <span class="relative z-10">View Details</span>
                                 <svg class="relative z-10 w-4 h-4 ml-2 transform group-hover/btn:translate-x-1 transition-transform duration-300"
@@ -947,7 +947,7 @@
                                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                                 <div
-                                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
+                                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700 rounded-xl">
                                 </div>
                             </a>
                         </div>
@@ -957,13 +957,13 @@
 
             <!-- Right Navigation Button -->
             <button id="carousel-next"
-                class="group relative p-4 bg-white/90 backdrop-blur-sm border border-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 flex-shrink-0">
+                class="group relative p-4 bg-white/90 backdrop-blur-xs border border-white/50 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 shrink-0">
                 <svg class="w-6 h-6 text-gray-600 group-hover:text-blue-600 transition-colors duration-300"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
                 <div
-                    class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    class="absolute inset-0 bg-linear-to-br from-white/20 to-transparent rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 </div>
             </button>
         </div>
@@ -980,8 +980,8 @@
     <div class="text-center mt-20" data-animate="cta">
         <div class="inline-flex flex-col items-center">
             <a href="/properties"
-                class="group relative inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-2xl shadow-xl transition-all duration-500">
-                <div class="absolute inset-0 bg-white/20 rounded-2xl backdrop-blur-sm"></div>
+                class="group relative inline-flex items-center px-8 py-4 bg-linear-to-r from-blue-600 to-emerald-600 text-white font-semibold rounded-2xl shadow-xl transition-all duration-500">
+                <div class="absolute inset-0 bg-white/20 rounded-2xl backdrop-blur-xs"></div>
                 <span class="relative z-10 text-lg">Explore All Properties</span>
                 <svg class="relative z-10 w-6 h-6 ml-3 transform group-hover:translate-x-1 transition-transform duration-300"
                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -989,7 +989,7 @@
                         d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                 </svg>
                 <div
-                    class="absolute inset-0 -top-1 -left-1 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 rounded-2xl">
+                    class="absolute inset-0 -top-1 -left-1 bg-linear-to-r from-transparent via-white/30 to-transparent skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 rounded-2xl">
                 </div>
             </a>
             <p class="text-sm text-gray-500 mt-4 font-light">

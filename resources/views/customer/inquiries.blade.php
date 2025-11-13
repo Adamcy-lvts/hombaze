@@ -17,7 +17,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <!-- Stats Overview -->
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -31,7 +31,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +45,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -59,7 +59,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6">
                     <div class="flex items-center">
                         <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,7 +75,7 @@
             </div>
 
             <!-- Filter Bar -->
-            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+            <div class="bg-white rounded-xl shadow-xs border border-gray-200 p-6 mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
                         <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Filter by Status</label>
@@ -113,7 +113,7 @@
             <!-- Inquiries List -->
             <div class="space-y-6">
                 <!-- Inquiry Item 1 -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 overflow-hidden">
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-start space-x-4">
@@ -182,7 +182,7 @@
                 </div>
 
                 <!-- Inquiry Item 2 -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 overflow-hidden">
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-start space-x-4">
@@ -245,7 +245,7 @@
                 </div>
 
                 <!-- Inquiry Item 3 -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="bg-white rounded-xl shadow-xs border border-gray-200 overflow-hidden">
                     <div class="p-6">
                         <div class="flex items-start justify-between mb-4">
                             <div class="flex items-start space-x-4">
@@ -310,7 +310,7 @@
                 <div class="text-sm text-gray-600">
                     Showing <span class="font-medium">1</span> to <span class="font-medium">3</span> of <span class="font-medium">12</span> inquiries
                 </div>
-                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
+                <nav class="relative z-0 inline-flex rounded-md shadow-xs -space-x-px">
                     <button class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
                         <span class="sr-only">Previous</span>
                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">

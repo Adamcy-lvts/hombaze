@@ -1,5 +1,5 @@
 {{-- Update your lease-terms.blade.php --}}
-<div class="bg-amber-50 border border-amber-200 rounded-sm p-2 mb-3">
+<div class="bg-amber-50 border border-amber-200 rounded-xs p-2 mb-3">
     <h3 class="text-xs font-semibold text-amber-800 mb-2 uppercase tracking-wide">Lease Terms</h3>
     <div class="grid grid-cols-2 gap-x-6 gap-y-1.5 text-xs">
         <div class="flex">

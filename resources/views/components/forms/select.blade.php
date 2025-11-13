@@ -62,7 +62,7 @@
             type="button"
             onclick="toggleDropdown('{{ $dropdownId }}')"
             @if($disabled) disabled @endif
-            class="block w-full px-4 py-3 text-left text-gray-900 border border-gray-300/60 rounded-xl shadow-sm bg-white/95 backdrop-blur-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 hover:border-gray-400/60 hover:shadow-md disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed cursor-pointer{{ $error ? ' border-red-300 focus:border-red-500 focus:ring-red-500/50' : '' }}"
+            class="block w-full px-4 py-3 text-left text-gray-900 border border-gray-300/60 rounded-xl shadow-xs bg-white/95 backdrop-blur-xl transition-all duration-300 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 hover:border-gray-400/60 hover:shadow-md disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed cursor-pointer{{ $error ? ' border-red-300 focus:border-red-500 focus:ring-red-500/50' : '' }}"
         >
             <span class="block truncate" id="{{ $dropdownId }}-selected">
                 @if($selectedLabel)
@@ -95,7 +95,7 @@
         <!-- Dropdown options -->
         <div
             id="{{ $dropdownId }}-options"
-            class="absolute z-[9999] w-full mt-1 bg-white border border-gray-300/60 rounded-xl shadow-lg max-h-60 overflow-y-auto hidden"
+            class="absolute z-9999 w-full mt-1 bg-white border border-gray-300/60 rounded-xl shadow-lg max-h-60 overflow-y-auto hidden"
         >
             <div class="py-1">
                 @if($searchable && count($optionsArray) > 5)
@@ -105,7 +105,7 @@
                             type="text"
                             id="{{ $searchId }}"
                             placeholder="Search options..."
-                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
+                            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500"
                             onkeyup="filterOptions('{{ $dropdownId }}', this.value)"
                         />
                     </div>

@@ -40,14 +40,14 @@ new class extends Component
 
 <div>
     <div class="flex items-center mb-4 sm:mb-6">
-        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg mr-3">
+        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-red-500 to-pink-600 shadow-lg mr-3">
             <x-heroicon-o-lock-closed class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Security</h2>
     </div>
 
     <!-- Loading Overlay -->
-    <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
             <div class="animate-spin h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
             <span class="text-gray-700">Updating...</span>

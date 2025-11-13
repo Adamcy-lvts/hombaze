@@ -2,10 +2,34 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\FileUpload;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\UserResource\RelationManagers\SavedPropertiesRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\SavedSearchesRelationManager;
+use App\Filament\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Resources\UserResource\Pages\ViewUser;
+use App\Filament\Resources\UserResource\Pages\EditUser;
 use Filament\Forms;
 use App\Models\User;
 use Filament\Tables;
-use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Hash;
@@ -18,21 +42,21 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'User Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'User Management';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Profile Avatar Section (Top)
-                Forms\Components\Section::make('Profile Picture')
+                Section::make('Profile Picture')
                     ->description('Upload and manage user profile picture')
                     ->schema([
-                        Forms\Components\FileUpload::make('avatar')
+                        FileUpload::make('avatar')
                             ->label('Profile Picture')
                             ->image()
                             ->directory('user-avatars')
@@ -48,31 +72,31 @@ class UserResource extends Resource
                     ->columnSpanFull(),
 
                 // Main Content Grid
-                Forms\Components\Grid::make([
+                Grid::make([
                     'default' => 1,
                     'sm' => 1,
                     'lg' => 3,
                 ])
                     ->schema([
                         // Left Column - User Information & Security
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('User Information')
+                                Section::make('User Information')
                                     ->description('Basic user account information and credentials')
                                     ->schema([
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 2,
                                         ])
                                             ->schema([
-                                                Forms\Components\TextInput::make('name')
+                                                TextInput::make('name')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->columnSpan([
                                                         'default' => 1,
                                                         'sm' => 1,
                                                     ]),
-                                                Forms\Components\TextInput::make('email')
+                                                TextInput::make('email')
                                                     ->email()
                                                     ->required()
                                                     ->maxLength(255)
@@ -80,14 +104,14 @@ class UserResource extends Resource
                                                         'default' => 1,
                                                         'sm' => 1,
                                                     ]),
-                                                Forms\Components\TextInput::make('phone')
+                                                TextInput::make('phone')
                                                     ->tel()
                                                     ->maxLength(255)
                                                     ->columnSpan([
                                                         'default' => 1,
                                                         'sm' => 1,
                                                     ]),
-                                                Forms\Components\Select::make('user_type')
+                                                Select::make('user_type')
                                                     ->required()
                                                     ->options([
                                                         'super_admin' => 'Super Admin',
@@ -104,10 +128,10 @@ class UserResource extends Resource
                                     ])
                                     ->collapsible(),
 
-                                Forms\Components\Section::make('Security')
+                                Section::make('Security')
                                     ->description('Account security and authentication settings')
                                     ->schema([
-                                        Forms\Components\TextInput::make('password')
+                                        TextInput::make('password')
                                             ->password()
                                             ->required(fn(string $operation): bool => $operation === 'create')
                                             ->maxLength(255)
@@ -125,17 +149,17 @@ class UserResource extends Resource
                             ]),
 
                         // Right Column - Status & Verification
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('Account Status')
+                                Section::make('Account Status')
                                     ->schema([
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 2,
                                             'lg' => 1,
                                         ])
                                             ->schema([
-                                                Forms\Components\Toggle::make('is_active')
+                                                Toggle::make('is_active')
                                                     ->label('Account Active')
                                                     ->helperText('Active accounts can log in')
                                                     ->columnSpan([
@@ -143,7 +167,7 @@ class UserResource extends Resource
                                                         'sm' => 1,
                                                         'lg' => 1,
                                                     ]),
-                                                Forms\Components\Toggle::make('is_verified')
+                                                Toggle::make('is_verified')
                                                     ->label('Email Verified')
                                                     ->helperText('Email address confirmed')
                                                     ->columnSpan([
@@ -155,28 +179,28 @@ class UserResource extends Resource
                                     ])
                                     ->collapsible(),
 
-                                Forms\Components\Section::make('Verification Dates')
+                                Section::make('Verification Dates')
                                     ->schema([
-                                        Forms\Components\Grid::make([
+                                        Grid::make([
                                             'default' => 1,
                                             'sm' => 1,
                                         ])
                                             ->schema([
-                                                Forms\Components\DateTimePicker::make('email_verified_at')
+                                                DateTimePicker::make('email_verified_at')
                                                     ->label('Email Verified At')
                                                     ->disabled()
                                                     ->columnSpan([
                                                         'default' => 1,
                                                         'sm' => 1,
                                                     ]),
-                                                Forms\Components\DateTimePicker::make('phone_verified_at')
+                                                DateTimePicker::make('phone_verified_at')
                                                     ->label('Phone Verified At')
                                                     ->disabled()
                                                     ->columnSpan([
                                                         'default' => 1,
                                                         'sm' => 1,
                                                     ]),
-                                                Forms\Components\DateTimePicker::make('last_login_at')
+                                                DateTimePicker::make('last_login_at')
                                                     ->label('Last Login')
                                                     ->disabled()
                                                     ->columnSpan([
@@ -200,18 +224,18 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('email')
+                TextColumn::make('email')
                     ->copyable()
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->copyable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: false),
-                Tables\Columns\TextColumn::make('user_type')
+                TextColumn::make('user_type')
                     ->badge()
                     ->colors([
                         'danger' => 'super_admin',
@@ -223,42 +247,42 @@ class UserResource extends Resource
                     ->sortable(),
 
                 // which agency the user belongs to
-                Tables\Columns\TextColumn::make('agencies.name')
+                TextColumn::make('agencies.name')
                     ->label('Agency'),
-                Tables\Columns\IconColumn::make('is_verified')
+                IconColumn::make('is_verified')
                     ->boolean()
                     ->label('Email Verified')
                     ->toggleable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('last_login_at')
+                TextColumn::make('last_login_at')
                     ->dateTime()
                     ->sortable()
                     ->label('Last Login')
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
+                TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable()
                     ->label('Email Verified At')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('phone_verified_at')
+                TextColumn::make('phone_verified_at')
                     ->dateTime()
                     ->sortable()
                     ->label('Phone Verified At')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('user_type')
+                SelectFilter::make('user_type')
                     ->options([
                         'super_admin' => 'Super Admin',
                         'agency_owner' => 'Agency Owner',
@@ -266,21 +290,21 @@ class UserResource extends Resource
                         'property_owner' => 'Property Owner',
                         'tenant' => 'Tenant',
                     ]),
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Active Status')
                     ->placeholder('All users')
                     ->trueLabel('Active users')
                     ->falseLabel('Inactive users'),
-                Tables\Filters\TernaryFilter::make('is_verified')
+                TernaryFilter::make('is_verified')
                     ->label('Email Verification')
                     ->placeholder('All users')
                     ->trueLabel('Verified users')
                     ->falseLabel('Unverified users'),
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('created_from')
                             ->label('Created from'),
-                        Forms\Components\DatePicker::make('created_until')
+                        DatePicker::make('created_until')
                             ->label('Created until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -294,11 +318,11 @@ class UserResource extends Resource
                                 fn(Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
                             );
                     }),
-                Tables\Filters\Filter::make('last_login_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('last_login_from')
+                Filter::make('last_login_at')
+                    ->schema([
+                        DatePicker::make('last_login_from')
                             ->label('Last login from'),
-                        Forms\Components\DatePicker::make('last_login_until')
+                        DatePicker::make('last_login_until')
                             ->label('Last login until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -313,13 +337,13 @@ class UserResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -327,18 +351,18 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\SavedPropertiesRelationManager::class,
-            RelationManagers\SavedSearchesRelationManager::class,
+            SavedPropertiesRelationManager::class,
+            SavedSearchesRelationManager::class,
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'view' => ViewUser::route('/{record}'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 }

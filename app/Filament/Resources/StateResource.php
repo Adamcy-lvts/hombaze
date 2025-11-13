@@ -2,11 +2,26 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\StateResource\Pages\ListStates;
+use App\Filament\Resources\StateResource\Pages\CreateState;
+use App\Filament\Resources\StateResource\Pages\ViewState;
+use App\Filament\Resources\StateResource\Pages\EditState;
 use App\Filament\Resources\StateResource\Pages;
 use App\Filament\Resources\StateResource\RelationManagers;
 use App\Models\State;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,31 +32,31 @@ class StateResource extends Resource
 {
     protected static ?string $model = State::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-map';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-map';
 
-    protected static ?string $navigationGroup = 'System Configuration';
+    protected static string | \UnitEnum | null $navigationGroup = 'System Configuration';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Grid::make(['default' => 1, 'lg' => 3])
+        return $schema
+            ->components([
+                Grid::make(['default' => 1, 'lg' => 3])
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('State Information')
+                                Section::make('State Information')
                                     ->description('Basic state details and identification')
                                     ->schema([
-                                        Forms\Components\TextInput::make('name')
+                                        TextInput::make('name')
                                             ->required()
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('code')
+                                        TextInput::make('code')
                                             ->required()
                                             ->maxLength(10)
                                             ->helperText('State abbreviation or code'),
-                                        Forms\Components\Select::make('region')
+                                        Select::make('region')
                                             ->required()
                                             ->options([
                                                 'North Central' => 'North Central',
@@ -52,7 +67,7 @@ class StateResource extends Resource
                                                 'South West' => 'South West',
                                             ])
                                             ->native(false),
-                                        Forms\Components\Select::make('status')
+                                        Select::make('status')
                                             ->required()
                                             ->options([
                                                 'active' => 'Active',
@@ -66,14 +81,14 @@ class StateResource extends Resource
                             ])
                             ->columnSpan(['default' => 1, 'lg' => 2]),
                         
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('System Info')
+                                Section::make('System Info')
                                     ->schema([
-                                        Forms\Components\Placeholder::make('created_at')
+                                        Placeholder::make('created_at')
                                             ->label('Created')
                                             ->content(fn ($record): string => $record?->created_at?->diffForHumans() ?? 'Not created yet'),
-                                        Forms\Components\Placeholder::make('updated_at')
+                                        Placeholder::make('updated_at')
                                             ->label('Last Modified')
                                             ->content(fn ($record): string => $record?->updated_at?->diffForHumans() ?? 'Not modified yet'),
                                     ])
@@ -89,17 +104,17 @@ class StateResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('code')
+                TextColumn::make('code')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('region'),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('region'),
+                TextColumn::make('status'),
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -107,13 +122,13 @@ class StateResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -128,10 +143,10 @@ class StateResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListStates::route('/'),
-            'create' => Pages\CreateState::route('/create'),
-            'view' => Pages\ViewState::route('/{record}'),
-            'edit' => Pages\EditState::route('/{record}/edit'),
+            'index' => ListStates::route('/'),
+            'create' => CreateState::route('/create'),
+            'view' => ViewState::route('/{record}'),
+            'edit' => EditState::route('/{record}/edit'),
         ];
     }
 }

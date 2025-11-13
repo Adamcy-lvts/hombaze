@@ -38,7 +38,7 @@
 
 <body class="font-inter antialiased bg-gray-900 overflow-x-hidden">
     <!-- Navigation Component (same as landing page) -->
-    @include('components.landing.navigation')
+    <!-- @include('components.landing.navigation') -->
 
     <!-- Main Content -->
     <main class="min-h-screen">
@@ -46,7 +46,7 @@
     </main>
 
     <!-- Footer -->
-    @include('components.landing.footer')
+    <!-- @include('components.landing.footer') -->
 
     <!-- Custom CSS -->
     <style>

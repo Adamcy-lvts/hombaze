@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Lease;
@@ -13,6 +12,12 @@ use App\Observers\LeaseObserver;
 use App\Observers\RentPaymentObserver;
 use App\Observers\PropertyObserver;
 use App\Observers\SavedSearchObserver;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Tables\Table;
+use Illuminate\Support\ServiceProvider;
+use Spatie\Permission\PermissionRegistrar;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        app(\Spatie\Permission\PermissionRegistrar::class)
+        app(PermissionRegistrar::class)
             ->setPermissionClass(Permission::class)
             ->setRoleClass(Role::class);
 
@@ -38,5 +43,11 @@ class AppServiceProvider extends ServiceProvider
         RentPayment::observe(RentPaymentObserver::class);
         Property::observe(PropertyObserver::class);
         SavedSearch::observe(SavedSearchObserver::class);
+
+        Section::configureUsing(fn (Section $section) => $section->columnSpanFull());
+        Grid::configureUsing(fn (Grid $grid) => $grid->columnSpanFull());
+        Fieldset::configureUsing(fn (Fieldset $fieldset) => $fieldset->columnSpanFull());
+
+        Table::configureUsing(fn (Table $table) => $table->deferFilters(false));
     }
 }

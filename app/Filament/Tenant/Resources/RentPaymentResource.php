@@ -2,11 +2,24 @@
 
 namespace App\Filament\Tenant\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use App\Filament\Tenant\Resources\RentPaymentResource\Pages\ListRentPayments;
+use App\Filament\Tenant\Resources\RentPaymentResource\Pages\ViewRentPayment;
+use App\Filament\Tenant\Resources\RentPaymentResource\Pages\ViewReceipt;
 use App\Filament\Tenant\Resources\RentPaymentResource\Pages;
 use App\Filament\Tenant\Resources\RentPaymentResource\RelationManagers;
 use App\Models\RentPayment;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,7 +32,7 @@ class RentPaymentResource extends Resource
 {
     protected static ?string $model = RentPayment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-credit-card';
 
     protected static ?string $navigationLabel = 'Payment History';
 
@@ -27,53 +40,52 @@ class RentPaymentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Payment History';
 
-    protected static ?string $navigationGroup = 'My Tenancy';
+    protected static string | \UnitEnum | null $navigationGroup = 'My Tenancy';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Payment Details')
+        return $schema
+            ->components([
+                Section::make('Payment Details')
                     ->description('Payment information and receipt details')
                     ->schema([
-                        Forms\Components\Grid::make([
+                        Grid::make([
                             'default' => 1,
                             'sm' => 2,
                         ])
                             ->schema([
-                                Forms\Components\TextInput::make('receipt_number')
+                                TextInput::make('receipt_number')
                                     ->label('Receipt Number')
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('amount')
+                                TextInput::make('amount')
                                     ->label('Amount Paid')
                                     ->prefix('₦')
                                     ->numeric()
                                     ->disabled(),
                                     
-                                Forms\Components\DatePicker::make('payment_date')
+                                DatePicker::make('payment_date')
                                     ->label('Payment Date')
                                     ->disabled(),
                                     
-                                Forms\Components\DatePicker::make('due_date')
+                                DatePicker::make('due_date')
                                     ->label('Due Date')
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('payment_method')
+                                TextInput::make('payment_method')
                                     ->label('Payment Method')
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('payment_reference')
+                                TextInput::make('payment_reference')
                                     ->label('Payment Reference')
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('status')
-                                    ->badge()
+                                TextInput::make('status')
                                     ->disabled(),
                                     
-                                Forms\Components\TextInput::make('late_fee')
+                                TextInput::make('late_fee')
                                     ->label('Late Fee')
                                     ->prefix('₦')
                                     ->numeric()
@@ -82,26 +94,26 @@ class RentPaymentResource extends Resource
                             ]),
                     ])->collapsible(),
 
-                Forms\Components\Section::make('Property Information')
+                Section::make('Property Information')
                     ->schema([
-                        Forms\Components\TextInput::make('property.title')
+                        TextInput::make('property.title')
                             ->label('Property')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('lease.yearly_rent')
+                        TextInput::make('lease.yearly_rent')
                             ->label('Annual Rent')
                             ->prefix('₦')
                             ->numeric()
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('payment_for_period')
+                        TextInput::make('payment_for_period')
                             ->label('Payment Period')
                             ->disabled(),
                     ])->collapsible(),
 
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Textarea::make('notes')
+                        Textarea::make('notes')
                             ->label('Payment Notes')
                             ->rows(3)
                             ->disabled()
@@ -114,27 +126,27 @@ class RentPaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('receipt_number')
+                TextColumn::make('receipt_number')
                     ->label('Receipt #')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('payment_date')
+                TextColumn::make('payment_date')
                     ->label('Payment Date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->label('Amount')
                     ->prefix('₦')
                     ->numeric()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('payment_for_period')
+                TextColumn::make('payment_for_period')
                     ->label('Period')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->colors([
                         'success' => 'paid',
@@ -145,30 +157,30 @@ class RentPaymentResource extends Resource
                     ])
                     ->formatStateUsing(fn (string $state): string => ucwords($state)),
 
-                Tables\Columns\TextColumn::make('payment_method')
+                TextColumn::make('payment_method')
                     ->label('Method')
                     ->formatStateUsing(fn (string $state): string => ucwords(str_replace('_', ' ', $state)))
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('late_fee')
+                TextColumn::make('late_fee')
                     ->label('Late Fee')
                     ->prefix('₦')
                     ->numeric()
                     ->toggleable()
                     ->visible(fn ($record) => $record && $record->late_fee > 0),
 
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('due_date')
+                TextColumn::make('due_date')
                     ->label('Due Date')
                     ->date()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'paid' => 'Paid',
                         'partial' => 'Partial',
@@ -177,7 +189,7 @@ class RentPaymentResource extends Resource
                         'cancelled' => 'Cancelled',
                     ]),
 
-                Tables\Filters\SelectFilter::make('payment_method')
+                SelectFilter::make('payment_method')
                     ->label('Payment Method')
                     ->options([
                         'bank_transfer' => 'Bank Transfer',
@@ -187,11 +199,11 @@ class RentPaymentResource extends Resource
                         'card' => 'Card Payment',
                     ]),
 
-                Tables\Filters\Filter::make('payment_date')
-                    ->form([
-                        Forms\Components\DatePicker::make('from')
+                Filter::make('payment_date')
+                    ->schema([
+                        DatePicker::make('from')
                             ->label('From Date'),
-                        Forms\Components\DatePicker::make('until')
+                        DatePicker::make('until')
                             ->label('Until Date'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -206,17 +218,17 @@ class RentPaymentResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->label('View Payment Details'),
-                Tables\Actions\Action::make('view_receipt')
+                Action::make('view_receipt')
                     ->label('View Receipt')
                     ->icon('heroicon-o-receipt-percent')
                     ->color('primary')
                     ->url(fn (RentPayment $record) => route('filament.tenant.resources.rent-payments.view-receipt', $record))
                     ->openUrlInNewTab(true)
                     ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
-                Tables\Actions\Action::make('download_receipt')
+                Action::make('download_receipt')
                     ->label('Download PDF')
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
@@ -224,7 +236,7 @@ class RentPaymentResource extends Resource
                     ->openUrlInNewTab(false)
                     ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 // No bulk actions for tenant payment view
             ])
             ->defaultSort('payment_date', 'desc');
@@ -256,9 +268,9 @@ class RentPaymentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRentPayments::route('/'),
-            'view' => Pages\ViewRentPayment::route('/{record}'),
-            'view-receipt' => Pages\ViewReceipt::route('/{record}/receipt'),
+            'index' => ListRentPayments::route('/'),
+            'view' => ViewRentPayment::route('/{record}'),
+            'view-receipt' => ViewReceipt::route('/{record}/receipt'),
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Agent\Resources\TenantInvitationResource\Pages;
 
+use Filament\Actions\DeleteAction;
 use App\Filament\Agent\Resources\TenantInvitationResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -13,7 +14,7 @@ class EditTenantInvitation extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

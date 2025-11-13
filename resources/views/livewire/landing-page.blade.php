@@ -48,7 +48,7 @@
                                 wire:click="selectSuggestion({{ json_encode($suggestion) }})"
                                 class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0"
                             >
-                                <div class="flex-shrink-0 w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
+                                <div class="shrink-0 w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
                                     @if($suggestion['icon'] === 'location-dot')
                                         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
@@ -71,7 +71,7 @@
             </div>
 
             <!-- Enhanced Quick Filters -->
-            <div class="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-3 mb-4 shadow-sm">
+            <div class="bg-white/90 backdrop-blur-xs border border-gray-200/50 rounded-xl p-3 mb-4 shadow-xs">
                 <!-- Listing Type Filters (Always Visible) -->
                 <div class="mb-3">
                     <div class="flex flex-wrap items-center justify-center gap-2">
@@ -108,7 +108,7 @@
                             @foreach($filterOptions['bedrooms'] as $bedroom)
                                 <button
                                     wire:click="updateFilter('bedrooms', '{{ $bedroom['value'] }}')"
-                                    class="px-2 py-1 rounded text-xs font-medium transition-all duration-200 {{ $selectedBedrooms === $bedroom['value'] ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100' }}"
+                                    class="px-2 py-1 rounded-sm text-xs font-medium transition-all duration-200 {{ $selectedBedrooms === $bedroom['value'] ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100' }}"
                                 >
                                     @if($bedroom['value'] === '1')
                                         1BR
@@ -133,7 +133,7 @@
                         <label class="block text-xs font-medium text-gray-600 mb-1">Property Type</label>
                         <select
                             wire:model.live="selectedPropertyType"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                         >
                             <option value="">All Types</option>
                             @foreach($filterOptions['property_types'] as $type)
@@ -147,7 +147,7 @@
                         <label class="block text-xs font-medium text-gray-600 mb-1">State</label>
                         <select
                             wire:model.live="selectedState"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                         >
                             <option value="">All States</option>
                             @foreach($filterOptions['states'] as $state)
@@ -161,7 +161,7 @@
                         <label class="block text-xs font-medium text-gray-600 mb-1">City</label>
                         <select
                             wire:model.live="selectedCity"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                             {{ !$selectedState ? 'disabled' : '' }}
                         >
                             <option value="">{{ $selectedState ? 'All Cities' : 'Select State' }}</option>
@@ -178,7 +178,7 @@
                         <label class="block text-xs font-medium text-gray-600 mb-1">Area</label>
                         <select
                             wire:model.live="selectedArea"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                             {{ !$selectedCity ? 'disabled' : '' }}
                         >
                             <option value="">{{ $selectedCity ? 'All Areas' : 'Select City' }}</option>
@@ -205,7 +205,7 @@
                                 min="0"
                                 max="100000000"
                                 step="5000000"
-                                class="w-full h-1 bg-gray-200 rounded appearance-none cursor-pointer slider"
+                                class="w-full h-1 bg-gray-200 rounded-sm appearance-none cursor-pointer slider"
                             >
                             <div class="text-center">
                                 <span class="text-xs font-medium text-gray-700">
@@ -269,7 +269,7 @@
                                 <!-- Verified Badge -->
                                 @if($property->is_verified)
                                     <div class="absolute top-3 left-3">
-                                        <div class="inline-flex items-center space-x-1.5 bg-blue-100/90 backdrop-blur-sm border border-blue-300/50 text-blue-700 px-2.5 py-1 rounded-lg font-bold text-xs shadow-lg">
+                                        <div class="inline-flex items-center space-x-1.5 bg-blue-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 px-2.5 py-1 rounded-lg font-bold text-xs shadow-lg">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                             </svg>
@@ -281,28 +281,28 @@
                                 <!-- Listing Type Badge -->
                                 <div class="absolute top-3 right-3">
                                     @if($property->listing_type === 'rent')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-emerald-100/90 to-green-100/90 backdrop-blur-sm border border-emerald-300/50 text-emerald-700 text-xs font-bold rounded-lg shadow-lg">
+                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-emerald-100/90 to-green-100/90 backdrop-blur-xs border border-emerald-300/50 text-emerald-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
                                             </svg>
                                             <span>For Rent</span>
                                         </div>
                                     @elseif($property->listing_type === 'sale')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-blue-100/90 to-indigo-100/90 backdrop-blur-sm border border-blue-300/50 text-blue-700 text-xs font-bold rounded-lg shadow-lg">
+                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-blue-100/90 to-indigo-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                             </svg>
                                             <span>For Sale</span>
                                         </div>
                                     @elseif($property->listing_type === 'lease')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-purple-100/90 to-pink-100/90 backdrop-blur-sm border border-purple-300/50 text-purple-700 text-xs font-bold rounded-lg shadow-lg">
+                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-purple-100/90 to-pink-100/90 backdrop-blur-xs border border-purple-300/50 text-purple-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                             </svg>
                                             <span>For Lease</span>
                                         </div>
                                     @elseif($property->listing_type === 'shortlet')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-yellow-100/90 to-orange-100/90 backdrop-blur-sm border border-yellow-300/50 text-yellow-700 text-xs font-bold rounded-lg shadow-lg">
+                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-yellow-100/90 to-orange-100/90 backdrop-blur-xs border border-yellow-300/50 text-yellow-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 2L3 7v11a2 2 0 002 2h4v-6h2v6h4a2 2 0 002-2V7l-7-5z"/>
                                             </svg>
@@ -333,7 +333,7 @@
                             </div>
 
                             <!-- Property Details (compact stool-like info) -->
-                            <div class="relative -mt-2 bg-white/95 backdrop-blur-sm border border-gray-100/80 rounded-xl shadow-sm px-3 py-2 space-y-1">
+                            <div class="relative -mt-2 bg-white/95 backdrop-blur-xs border border-gray-100/80 rounded-xl shadow-xs px-3 py-2 space-y-1">
                                 <!-- Location (compact) -->
                                 <div class="text-xs text-gray-600 font-medium truncate">
                                     {{ $property->city->name ?? 'Unknown' }}, {{ $property->state->name ?? 'Unknown' }}
@@ -353,7 +353,7 @@
 
                                 <!-- Price (compact but prominent) -->
                                 <div class="flex items-baseline justify-between pt-1">
-                                    <span class="text-lg font-bold text-gray-900 bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                                    <span class="text-lg font-bold text-gray-900 bg-linear-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
                                         ₦{{ number_format($property->price) }}
                                     </span>
                                     @if($property->listing_type === 'rent')
@@ -378,7 +378,7 @@
                                 </span>
                             @else
                                 <a href="{{ $properties->previousPageUrl() }}"
-                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
                                     </svg>
@@ -388,12 +388,12 @@
                             {{-- Pagination Elements --}}
                             @foreach ($properties->getUrlRange(1, $properties->lastPage()) as $page => $url)
                                 @if ($page == $properties->currentPage())
-                                    <span class="flex items-center justify-center w-10 h-10 text-white font-semibold bg-gradient-to-r from-emerald-500 to-blue-500 rounded-xl shadow-md">
+                                    <span class="flex items-center justify-center w-10 h-10 text-white font-semibold bg-linear-to-r from-emerald-500 to-blue-500 rounded-xl shadow-md">
                                         {{ $page }}
                                     </span>
                                 @else
                                     <a href="{{ $url }}"
-                                       class="flex items-center justify-center w-10 h-10 text-gray-700 font-medium bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                       class="flex items-center justify-center w-10 h-10 text-gray-700 font-medium bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                         {{ $page }}
                                     </a>
                                 @endif
@@ -402,7 +402,7 @@
                             {{-- Next Page Link --}}
                             @if ($properties->hasMorePages())
                                 <a href="{{ $properties->nextPageUrl() }}"
-                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                   class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                                     </svg>
@@ -510,13 +510,13 @@ document.addEventListener('livewire:initialized', () => {
 
         toast.className = `flex items-center space-x-3 ${bgColor} text-white px-6 py-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300`;
         toast.innerHTML = `
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
             <span class="font-medium">${message}</span>
-            <button onclick="this.parentElement.remove()" class="flex-shrink-0 ml-4 hover:bg-white/20 rounded p-1 transition-colors">
+            <button onclick="this.parentElement.remove()" class="shrink-0 ml-4 hover:bg-white/20 rounded-sm p-1 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>

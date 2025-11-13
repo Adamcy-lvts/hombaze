@@ -2,13 +2,21 @@
 
 namespace App\Filament\Agency\Pages\Auth;
 
+use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
+use Filament\Auth\Events\Registered;
+use Exception;
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Components\Utilities\Get;
+use App\Models\Agent;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\FileUpload;
@@ -16,10 +24,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Validation\Rules\Password;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Pages\Auth\Register as BaseRegister;
 use App\Models\User;
 use App\Models\Agency;
 use App\Models\State;
@@ -33,16 +37,14 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
-use Filament\Events\Auth\Registered;
 use Filament\Facades\Filament;
-use Filament\Http\Responses\Auth\Contracts\RegistrationResponse;
 use Filament\Notifications\Notification;
 
-class Register extends BaseRegister
+class Register extends \Filament\Auth\Pages\Register
 {
     use WithRateLimiting;
     
-    protected static string $view = 'filament.agency.pages.auth.register';
+    protected string $view = 'filament.agency.pages.auth.register';
 
     public ?array $data = [];
 
@@ -124,7 +126,7 @@ class Register extends BaseRegister
                 // Redirect to agency dashboard with proper tenant context
                 return $this->redirectToAgencyDashboard($user, $agency);
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error('Agency registration error:', [
                     'message' => $e->getMessage(),
                     'trace' => $e->getTraceAsString(),
@@ -134,7 +136,7 @@ class Register extends BaseRegister
                 
                 // Clean up uploaded files if any
                 if (isset($data['logo'])) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($data['logo']);
+                    Storage::disk('public')->delete($data['logo']);
                 }
                 throw $e;
             }
@@ -153,7 +155,7 @@ class Register extends BaseRegister
                 ->send();
 
             return null;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->title('Registration failed')
                 ->body($e->getMessage())
@@ -164,13 +166,13 @@ class Register extends BaseRegister
         }
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Tabs::make('Agency Registration')
                     ->tabs([
-                        Tabs\Tab::make('Super Admin Details')
+                        Tab::make('Super Admin Details')
                             ->icon('heroicon-o-user')
                             ->schema([
                                 Section::make('Agency Super Admin Information')
@@ -230,7 +232,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Agency Details')
+                        Tab::make('Agency Details')
                             ->icon('heroicon-o-building-office')
                             ->schema([
                                 Section::make('Agency Information')
@@ -298,7 +300,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Location')
+                        Tab::make('Location')
                             ->icon('heroicon-o-map-pin')
                             ->schema([
                                 Section::make('Agency Location')
@@ -351,7 +353,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Business Details')
+                        Tab::make('Business Details')
                             ->icon('heroicon-o-briefcase')
                             ->schema([
                                 Section::make('Business Information')
@@ -404,7 +406,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Online Presence')
+                        Tab::make('Online Presence')
                             ->icon('heroicon-o-globe-alt')
                             ->schema([
                                 Section::make('Social Media & Online Presence')
@@ -545,9 +547,9 @@ class Register extends BaseRegister
     /**
      * Create agent profile for the agency owner
      */
-    protected function createAgentProfile(User $user, Agency $agency): \App\Models\Agent
+    protected function createAgentProfile(User $user, Agency $agency): Agent
     {
-        $agent = \App\Models\Agent::create([
+        $agent = Agent::create([
             'user_id' => $user->id,
             'agency_id' => $agency->id,
             'first_name' => explode(' ', $user->name)[0],
@@ -599,7 +601,7 @@ class Register extends BaseRegister
             // Create agent role for this agency
             $this->ensureAgentRoleExists($agency);
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to assign super_admin role to agency owner {$user->email}: " . $e->getMessage());
             // Don't fail registration if role assignment fails
         }
@@ -639,7 +641,7 @@ class Register extends BaseRegister
 
             Log::info("Created 'agent' role for agency: {$agency->name} (ID: {$agency->id}) with " . count($agentPermissions) . " permissions");
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to create agent role for agency {$agency->name}: " . $e->getMessage());
             throw $e; // Re-throw since this is critical for a new agency
         }
@@ -648,9 +650,9 @@ class Register extends BaseRegister
     /**
      * Get the login action for the registration form
      */
-    public function loginAction(): \Filament\Actions\Action
+    public function loginAction(): Action
     {
-        return \Filament\Actions\Action::make('login')
+        return Action::make('login')
             ->link()
             ->label(__('filament-panels::pages/auth/register.actions.login.label'))
             ->url(filament()->getLoginUrl());

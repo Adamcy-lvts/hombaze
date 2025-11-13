@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Customer;
 
+use Exception;
+use Filament\Actions\Action;
 use App\Livewire\Forms\CustomerPreferencesForm;
 use App\Models\PropertySubtype;
 use App\Models\State;
@@ -155,7 +157,7 @@ class SettingsPreferences extends Component
             $this->dispatch('preferences-updated');
             $this->dispatch('preferences-saved');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Notification::make()
                 ->danger()
                 ->title('Error Saving Preferences')
@@ -206,7 +208,7 @@ class SettingsPreferences extends Component
             ->body($message)
             ->persistent()
             ->actions([
-                \Filament\Notifications\Actions\Action::make('view_recommendations')
+                Action::make('view_recommendations')
                     ->button()
                     ->url(route('dashboard'))
                     ->label('View Recommendations'),

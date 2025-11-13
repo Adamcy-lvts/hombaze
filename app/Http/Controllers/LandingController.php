@@ -3,6 +3,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Property;
 use App\Models\User;
 use App\Models\Agency;
@@ -307,7 +308,7 @@ class LandingController extends Controller
                 'user_agent' => $request->userAgent(),
                 'created_at' => now(),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Silent fail for analytics
             logger()->warning('Failed to track search analytics', [
                 'error' => $e->getMessage(),
@@ -408,7 +409,7 @@ class LandingController extends Controller
                 'referrer' => request()->header('referer'),
                 'viewed_at' => now(),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Silent fail for analytics
             logger()->warning('Failed to track property view', [
                 'property_id' => $property->id,
@@ -443,7 +444,7 @@ class LandingController extends Controller
                 'success' => true,
                 'message' => 'Thank you for subscribing to our newsletter!'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             logger()->error('Newsletter subscription failed', [
                 'email' => $request->email,
                 'error' => $e->getMessage()

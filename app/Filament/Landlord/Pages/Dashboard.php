@@ -2,17 +2,15 @@
 
 namespace App\Filament\Landlord\Pages;
 
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
+use App\Filament\Landlord\Widgets\LandlordAccountWidget;
+use App\Filament\Landlord\Widgets\LandlordInfoWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use App\Filament\Landlord\Widgets\LandlordStatsWidget;
-use App\Filament\Landlord\Widgets\RentCollectionWidget;
-use App\Filament\Landlord\Widgets\PaymentStatsWidget;
 use App\Filament\Landlord\Widgets\RecentPaymentsWidget;
 
 class Dashboard extends BaseDashboard
 {
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
 
     protected static ?string $title = 'Landlord Dashboard';
 
@@ -21,12 +19,10 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            AccountWidget::class,
+            LandlordAccountWidget::class,
+            LandlordInfoWidget::class,
             LandlordStatsWidget::class,
-            PaymentStatsWidget::class,
-            RentCollectionWidget::class,
             RecentPaymentsWidget::class,
-            FilamentInfoWidget::class,
         ];
     }
 

@@ -2,11 +2,23 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PropertySubtypeResource\Pages\ListPropertySubtypes;
+use App\Filament\Resources\PropertySubtypeResource\Pages\CreatePropertySubtype;
+use App\Filament\Resources\PropertySubtypeResource\Pages\EditPropertySubtype;
 use App\Filament\Resources\PropertySubtypeResource\Pages;
 use App\Filament\Resources\PropertySubtypeResource\RelationManagers;
 use App\Models\PropertySubtype;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,39 +29,39 @@ class PropertySubtypeResource extends Resource
 {
     protected static ?string $model = PropertySubtype::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Content Management';
 
     protected static ?int $navigationSort = 6;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('slug')
+                TextInput::make('slug')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('property_type_id')
+                Select::make('property_type_id')
                     ->relationship('propertyType', 'name')
                     ->required(),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('icon')
+                TextInput::make('icon')
                     ->maxLength(255),
-                Forms\Components\Toggle::make('is_active')
+                Toggle::make('is_active')
                     ->required(),
-                Forms\Components\TextInput::make('sort_order')
+                TextInput::make('sort_order')
                     ->required()
                     ->numeric()
                     ->default(0),
-                Forms\Components\TextInput::make('typical_features'),
-                Forms\Components\TextInput::make('typical_price_min')
+                TextInput::make('typical_features'),
+                TextInput::make('typical_price_min')
                     ->numeric(),
-                Forms\Components\TextInput::make('typical_price_max')
+                TextInput::make('typical_price_max')
                     ->numeric(),
             ]);
     }
@@ -58,31 +70,31 @@ class PropertySubtypeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('propertyType.name')
+                TextColumn::make('propertyType.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('icon')
+                TextColumn::make('icon')
                     ->searchable(),
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('sort_order')
+                TextColumn::make('sort_order')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('typical_price_min')
+                TextColumn::make('typical_price_min')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('typical_price_max')
+                TextColumn::make('typical_price_max')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -90,12 +102,12 @@ class PropertySubtypeResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -110,9 +122,9 @@ class PropertySubtypeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertySubtypes::route('/'),
-            'create' => Pages\CreatePropertySubtype::route('/create'),
-            'edit' => Pages\EditPropertySubtype::route('/{record}/edit'),
+            'index' => ListPropertySubtypes::route('/'),
+            'create' => CreatePropertySubtype::route('/create'),
+            'edit' => EditPropertySubtype::route('/{record}/edit'),
         ];
     }
 }

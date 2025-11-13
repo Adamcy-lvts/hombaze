@@ -93,7 +93,7 @@
     @endif
 
     {{-- Legal Notice --}}
-    <div class="mt-3 p-1.5 bg-gray-50 border border-gray-200 rounded-sm">
+    <div class="mt-3 p-1.5 bg-gray-50 border border-gray-200 rounded-xs">
         <div class="text-xs text-gray-600 text-center">
             <div class="font-medium mb-0.5 text-xs">Legal Notice</div>
             <div class="leading-relaxed text-xs">

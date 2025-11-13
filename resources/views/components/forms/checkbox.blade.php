@@ -23,7 +23,7 @@ $checkboxSize = $sizeClasses[$size] ?? $sizeClasses['default'];
             <input
                 type="checkbox"
                 {{ $attributes->except(['label', 'description', 'checked', 'disabled', 'error', 'size'])->merge([
-                    'class' => "rounded border-gray-300/60 bg-white/95 backdrop-blur-xl shadow-sm transition-all duration-300 text-emerald-600 focus:ring-emerald-500/50 focus:ring-2 focus:border-emerald-500 hover:border-emerald-400 disabled:bg-gray-50 disabled:border-gray-200 disabled:cursor-not-allowed {$checkboxSize}" .
+                    'class' => "rounded-sm border-gray-300/60 bg-white/95 backdrop-blur-xl shadow-xs transition-all duration-300 text-emerald-600 focus:ring-emerald-500/50 focus:ring-2 focus:border-emerald-500 hover:border-emerald-400 disabled:bg-gray-50 disabled:border-gray-200 disabled:cursor-not-allowed {$checkboxSize}" .
                         ($error ? ' border-red-300 focus:border-red-500 focus:ring-red-500/50' : ''),
                     'checked' => $checked,
                     'disabled' => $disabled,

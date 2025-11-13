@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class InquiryTrendsWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Inquiry Trends (Last 7 Days)';
+    protected ?string $heading = 'Inquiry Trends (Last 7 Days)';
     
     protected static ?int $sort = 8;
 

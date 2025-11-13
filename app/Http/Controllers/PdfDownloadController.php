@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use App\Models\Lease;
 use App\Models\LeaseTemplate;
 use App\Models\RentPayment;
@@ -81,7 +82,7 @@ class PdfDownloadController extends Controller
             $pdf->save($filePath);
 
             if (!File::exists($filePath)) {
-                throw new \Exception("PDF file was not created at: {$filePath}");
+                throw new Exception("PDF file was not created at: {$filePath}");
             }
 
             Log::info('PDF Generated Successfully', [
@@ -96,7 +97,7 @@ class PdfDownloadController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . $fileName . '"'
             ])->deleteFileAfterSend(true);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('PDF Download Failed', [
                 'error' => $e->getMessage(),
                 'lease_id' => $lease->id,
@@ -234,7 +235,7 @@ class PdfDownloadController extends Controller
             $pdf->save($filePath);
 
             if (!File::exists($filePath)) {
-                throw new \Exception("PDF file was not created at: {$filePath}");
+                throw new Exception("PDF file was not created at: {$filePath}");
             }
 
             Log::info('Receipt PDF Generated Successfully', [
@@ -248,7 +249,7 @@ class PdfDownloadController extends Controller
                 'Content-Disposition' => 'attachment; filename="' . $fileName . '"'
             ])->deleteFileAfterSend(true);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Receipt PDF Download Failed', [
                 'error' => $e->getMessage(),
                 'payment_id' => $payment->id,

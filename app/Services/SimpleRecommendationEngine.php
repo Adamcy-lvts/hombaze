@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\User;
 use App\Models\Property;
 use App\Models\PropertyInteraction;
@@ -361,7 +362,7 @@ class SimpleRecommendationEngine
             Cache::forget("simple_recommendations_user_{$userId}_6");
             Cache::forget("simple_recommendations_user_{$userId}_4");
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning("Failed to track property view: {$e->getMessage()}");
         }
     }
@@ -385,7 +386,7 @@ class SimpleRecommendationEngine
             Cache::forget("simple_recommendations_user_{$userId}_6");
             Cache::forget("simple_recommendations_user_{$userId}_4");
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::warning("Failed to track property inquiry: {$e->getMessage()}");
         }
     }

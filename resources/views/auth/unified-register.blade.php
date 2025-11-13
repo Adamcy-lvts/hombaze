@@ -101,7 +101,7 @@
         <!-- Left Section - Branding -->
         <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
             <!-- Darker overlay for better text readability -->
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-blue-900/75 to-indigo-900/85"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-slate-900/85 via-blue-900/75 to-indigo-900/85"></div>
             
             <!-- Premium Glass Border -->
             <div class="absolute inset-0 border-r border-white/20"></div>
@@ -112,8 +112,8 @@
                 <div class="mb-12">
                     <div class="flex items-center space-x-4 mb-6">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-3xl blur-md opacity-75"></div>
-                            <div class="relative w-16 h-16 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl">
+                            <div class="absolute inset-0 bg-linear-to-br from-emerald-400 to-blue-500 rounded-3xl blur-md opacity-75"></div>
+                            <div class="relative w-16 h-16 bg-linear-to-br from-emerald-500 to-blue-600 rounded-3xl flex items-center justify-center shadow-2xl">
                                 <svg class="w-9 h-9 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                                 </svg>
@@ -129,9 +129,9 @@
 
                 <!-- Premium Features List -->
                 <div class="space-y-8 mb-12">
-                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-sm bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-xs bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
+                        <div class="shrink-0">
+                            <div class="w-12 h-12 bg-linear-to-br from-emerald-500/20 to-blue-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                 </svg>
@@ -143,9 +143,9 @@
                         </div>
                     </div>
 
-                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-sm bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-xs bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
+                        <div class="shrink-0">
+                            <div class="w-12 h-12 bg-linear-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 </svg>
@@ -157,9 +157,9 @@
                         </div>
                     </div>
 
-                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-sm bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-xs bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
+                        <div class="shrink-0">
+                            <div class="w-12 h-12 bg-linear-to-br from-purple-500/20 to-pink-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -172,9 +172,9 @@
                         </div>
                     </div>
 
-                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-sm bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
-                        <div class="flex-shrink-0">
-                            <div class="w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <div class="group flex items-start space-x-5 p-4 rounded-2xl backdrop-blur-xs bg-white/10 border border-white/10 hover:bg-white/15 transition-all duration-300">
+                        <div class="shrink-0">
+                            <div class="w-12 h-12 bg-linear-to-br from-orange-500/20 to-red-500/20 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                                 <svg class="w-6 h-6 text-orange-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
@@ -188,7 +188,7 @@
                 </div>
 
                 <!-- Premium Bottom Text -->
-                <div class="backdrop-blur-sm bg-white/10 rounded-2xl border border-white/10 p-6">
+                <div class="backdrop-blur-xs bg-white/10 rounded-2xl border border-white/10 p-6">
                     <p class="text-white/80 text-lg leading-relaxed text-center">
                         <span class="font-semibold text-white">Join thousands</span> of property professionals and owners on Nigeria's most trusted real estate platform.
                     </p>
@@ -199,7 +199,7 @@
         <!-- Right Section - Registration Form -->
         <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24 relative overflow-hidden">
             <!-- Darker overlay for better text readability -->
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-slate-900/90 via-slate-800/80 to-slate-900/90"></div>
             
             <!-- Premium Background Effects -->
             <div class="absolute inset-0">
@@ -213,8 +213,8 @@
                 <div class="text-center mb-8 lg:hidden">
                     <div class="flex items-center justify-center space-x-3 mb-4">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-sm opacity-75"></div>
-                            <div class="relative w-12 h-12 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <div class="absolute inset-0 bg-linear-to-br from-emerald-400 to-blue-500 rounded-2xl blur-xs opacity-75"></div>
+                            <div class="relative w-12 h-12 bg-linear-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg">
                                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                                 </svg>
@@ -230,7 +230,7 @@
                 <!-- Glass Morphism Form Container -->
                 <div class="backdrop-blur-xl bg-white/10 rounded-3xl border border-white/20 shadow-2xl p-8 lg:p-12 xl:p-16 relative overflow-hidden">
                     <!-- Subtle Inner Glow -->
-                    <div class="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-3xl"></div>
+                    <div class="absolute inset-0 bg-linear-to-br from-white/5 to-transparent rounded-3xl"></div>
                     
                     <div class="relative z-10">
                         <!-- Form Header -->
@@ -263,11 +263,11 @@
                                         <label for="user_type_{{ $type }}"
                                                class="flex flex-col items-center p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/20 peer-checked:bg-white/10 peer-checked:border-blue-400 peer-checked:ring-2 peer-checked:ring-blue-400/50 transition-all duration-300 group h-full min-h-[85px]">
                                             @if(isset($config['popular']) && $config['popular'])
-                                                <div class="absolute -top-2 -right-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                                                <div class="absolute -top-2 -right-2 bg-linear-to-r from-green-500 to-emerald-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                                                     Popular
                                                 </div>
                                             @endif
-                                            <div class="w-8 h-8 bg-gradient-to-br from-white/10 to-white/5 rounded-lg flex items-center justify-center peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 group-hover:scale-105 mb-2">
+                                            <div class="w-8 h-8 bg-linear-to-br from-white/10 to-white/5 rounded-lg flex items-center justify-center peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 group-hover:scale-105 mb-2">
                                                 <svg class="w-4 h-4 text-white/70 peer-checked:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     @if($type === 'customer')
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
@@ -301,7 +301,7 @@
                                                {{ old('user_type') === $type ? 'checked' : '' }}>
                                         <label for="user_type_mobile_{{ $type }}" 
                                                class="flex items-center p-3 backdrop-blur-md bg-white/5 border border-white/10 rounded-lg cursor-pointer hover:bg-white/10 hover:border-white/20 peer-checked:bg-white/10 peer-checked:border-blue-400 peer-checked:ring-2 peer-checked:ring-blue-400/50 transition-all duration-300 group">
-                                            <div class="w-8 h-8 bg-gradient-to-br from-white/10 to-white/5 rounded-lg flex items-center justify-center peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 mr-3 flex-shrink-0">
+                                            <div class="w-8 h-8 bg-linear-to-br from-white/10 to-white/5 rounded-lg flex items-center justify-center peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 mr-3 shrink-0">
                                                 <svg class="w-4 h-4 text-white/70 peer-checked:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     @if($type === 'agent')
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -316,8 +316,8 @@
                                                 <div class="font-medium text-white text-sm">{{ $config['label'] }}</div>
                                                 <div class="text-xs text-white/60 leading-tight mt-0.5">{{ $config['description'] }}</div>
                                             </div>
-                                            <div class="flex-shrink-0 ml-3">
-                                                <div class="w-4 h-4 border-2 border-white/30 rounded-full peer-checked:border-blue-400 peer-checked:bg-gradient-to-br peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 relative">
+                                            <div class="shrink-0 ml-3">
+                                                <div class="w-4 h-4 border-2 border-white/30 rounded-full peer-checked:border-blue-400 peer-checked:bg-linear-to-br peer-checked:from-blue-500 peer-checked:to-purple-600 transition-all duration-300 relative">
                                                     <div class="absolute inset-0.5 bg-white/10 rounded-full peer-checked:bg-white opacity-0 peer-checked:opacity-100 transition-opacity duration-300"></div>
                                                 </div>
                                             </div>
@@ -328,7 +328,7 @@
 
                                 @error('user_type')
                                     <div class="mt-3 flex items-center space-x-2 text-red-300">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-sm">{{ $message }}</p>
@@ -337,9 +337,9 @@
                             </div>
 
                             <!-- Customer Welcome Message (shown when customer is selected) -->
-                            <div id="customerWelcome" class="lg:col-span-2 p-4 backdrop-blur-md bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/20 rounded-xl" style="display: none;">
+                            <div id="customerWelcome" class="lg:col-span-2 p-4 backdrop-blur-md bg-linear-to-r from-blue-500/10 to-purple-500/10 border border-blue-400/20 rounded-xl" style="display: none;">
                                 <div class="flex items-center space-x-3">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                    <div class="w-10 h-10 bg-linear-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
                                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
                                         </svg>
@@ -356,11 +356,11 @@
                                 <label for="name" class="block text-sm font-medium text-white/90 mb-2">Full Name</label>
                                 <input id="name" name="name" type="text" required 
                                        value="{{ old('name') }}"
-                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
                                        placeholder="Enter your full name">
                                 @error('name')
                                     <div class="mt-2 flex items-center space-x-2 text-red-300">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-sm">{{ $message }}</p>
@@ -373,11 +373,11 @@
                                 <label for="email" class="block text-sm font-medium text-white/90 mb-2">Email Address</label>
                                 <input id="email" name="email" type="email" required 
                                        value="{{ old('email') }}"
-                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
                                        placeholder="Enter your email address">
                                 @error('email')
                                     <div class="mt-2 flex items-center space-x-2 text-red-300">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-sm">{{ $message }}</p>
@@ -390,11 +390,11 @@
                                 <label for="phone" class="block text-sm font-medium text-white/90 mb-2">Phone Number</label>
                                 <input id="phone" name="phone" type="tel" required 
                                        value="{{ old('phone') }}"
-                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
                                        placeholder="Enter your phone number">
                                 @error('phone')
                                     <div class="mt-2 flex items-center space-x-2 text-red-300">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-sm">{{ $message }}</p>
@@ -407,7 +407,7 @@
                                 <label for="password" class="block text-sm font-medium text-white/90 mb-2">Password</label>
                                 <div class="relative">
                                     <input id="password" name="password" type="password" required 
-                                           class="w-full px-4 py-3 pr-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                           class="w-full px-4 py-3 pr-12 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
                                            placeholder="Create a secure password">
                                     <button type="button" id="togglePassword" 
                                             class="absolute inset-y-0 right-0 pr-4 flex items-center hover:scale-110 transition-transform duration-200">
@@ -422,7 +422,7 @@
                                 </div>
                                 @error('password')
                                     <div class="mt-2 flex items-center space-x-2 text-red-300">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-sm">{{ $message }}</p>
@@ -434,11 +434,11 @@
                             <div>
                                 <label for="password_confirmation" class="block text-sm font-medium text-white/90 mb-2">Confirm Password</label>
                                 <input id="password_confirmation" name="password_confirmation" type="password" required 
-                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
+                                       class="w-full px-4 py-3 backdrop-blur-md bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/50 focus:outline-hidden focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-300"
                                        placeholder="Confirm your password">
                                 @error('password_confirmation')
                                     <div class="mt-2 flex items-center space-x-2 text-red-300">
-                                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                         </svg>
                                         <p class="text-sm">{{ $message }}</p>
@@ -450,7 +450,7 @@
                             @error('registration')
                                 <div class="col-span-full backdrop-blur-md bg-red-500/20 border border-red-400/30 rounded-xl p-4">
                                     <div class="flex items-center space-x-2 text-red-200">
-                                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                         </svg>
                                         <p class="text-sm font-medium">{{ $message }}</p>
@@ -461,14 +461,14 @@
                             <!-- Submit Button -->
                             <div class="col-span-full">
                                 <button type="submit" 
-                                        class="w-full relative py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-500/50 transition-all duration-300 group overflow-hidden">
+                                        class="w-full relative py-4 px-6 bg-linear-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl focus:outline-hidden focus:ring-4 focus:ring-blue-500/50 transition-all duration-300 group overflow-hidden">
                                     <span class="relative z-10 flex items-center justify-center">
                                         Create Account
                                         <svg class="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                         </svg>
                                     </span>
-                                    <div class="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-700 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
+                                    <div class="absolute inset-0 bg-linear-to-r from-blue-600 to-purple-700 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
                                 </button>
                             </div>
 

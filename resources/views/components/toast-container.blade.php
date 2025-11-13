@@ -1,5 +1,5 @@
 <!-- Toast Container for Session Messages -->
-<div id="toast-container" class="fixed top-4 right-4 z-[9999] space-y-2">
+<div id="toast-container" class="fixed top-4 right-4 z-9999 space-y-2">
     <!-- Success Messages -->
     @if(session('success'))
         <x-toast type="success" :message="session('success')" title="Success!" />
@@ -84,7 +84,7 @@ function showToast(type, message, title = '') {
         <div id="${toastId}" class="max-w-sm w-full transform transition-all duration-300 ease-in-out translate-x-full opacity-0">
             <div class="rounded-lg border shadow-lg ${config.bg} p-4">
                 <div class="flex">
-                    <div class="flex-shrink-0">
+                    <div class="shrink-0">
                         <svg class="h-5 w-5 ${config.icon}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${config.iconPath}" />
                         </svg>
@@ -95,10 +95,10 @@ function showToast(type, message, title = '') {
                             ${message}
                         </div>
                     </div>
-                    <div class="ml-4 flex-shrink-0 flex">
+                    <div class="ml-4 shrink-0 flex">
                         <button
                             onclick="dismissToast('${toastId}')"
-                            class="inline-flex rounded-md ${config.bg} ${config.text} hover:opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                            class="inline-flex rounded-md ${config.bg} ${config.text} hover:opacity-75 focus:outline-hidden focus:ring-2 focus:ring-offset-2"
                         >
                             <span class="sr-only">Dismiss</span>
                             <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">

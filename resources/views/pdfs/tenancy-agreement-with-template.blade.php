@@ -63,7 +63,7 @@
         }
 
         /* Smooth borders and rounded corners for PDF */
-        .rounded-sm {
+        .rounded-xs {
             border-radius: 2px;
         }
 

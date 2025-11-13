@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use App\Models\Property;
 use App\Models\PropertyView;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -39,7 +40,7 @@ class UpdatePropertyViewCountJob implements ShouldQueue
 
             Log::info("Updated view count for property {$this->propertyId}: {$viewCount} views");
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to update view count for property {$this->propertyId}: " . $e->getMessage());
             throw $e;
         }

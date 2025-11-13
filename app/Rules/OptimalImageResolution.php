@@ -2,6 +2,7 @@
 
 namespace App\Rules;
 
+use Exception;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Http\UploadedFile;
@@ -88,7 +89,7 @@ class OptimalImageResolution implements ValidationRule
                     'aspect_ratio' => round($width / $height, 2),
                 ]);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Log error but don't fail validation to prevent blocking legitimate uploads
             Log::warning('Image validation error', [
                 'attribute' => $attribute,

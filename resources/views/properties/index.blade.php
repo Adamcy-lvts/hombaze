@@ -4,12 +4,12 @@
 
 @section('content')
 <!-- Enhanced Property Search Results with Premium Design -->
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
     <!-- Subtle Background Elements -->
     <div class="absolute inset-0 opacity-20">
-        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute top-1/2 right-1/3 w-24 h-24 bg-gradient-to-br from-amber-400/8 to-orange-500/6 rounded-full blur-2xl"></div>
+        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute top-1/2 right-1/3 w-24 h-24 bg-linear-to-br from-amber-400/8 to-orange-500/6 rounded-full blur-2xl"></div>
     </div>
 
     <!-- Main Content -->
@@ -30,7 +30,7 @@
                     
                     <!-- Separator -->
                     <div class="flex items-center">
-                        <div class="w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <div class="w-8 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
                         <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
@@ -38,7 +38,7 @@
                     
                     <!-- Current Page -->
                     <div class="flex items-center">
-                        <div class="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
+                        <div class="p-2 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg">
                             <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -60,7 +60,7 @@
                 <!-- Search Filters Sidebar -->
                 <div class="lg:col-span-1 space-y-4 lg:space-y-6">
                     <!-- Main Search Bar -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6 sticky top-20 lg:top-24">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6 sticky top-20 lg:top-24">
                         <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-3 lg:mb-4 flex items-center">
                             <svg class="w-5 h-5 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -174,13 +174,13 @@
                                     <label class="flex items-center space-x-2">
                                         <input type="checkbox" name="isFeatured" value="1" 
                                                {{ request('isFeatured') ? 'checked' : '' }}
-                                               class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                               class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500">
                                         <span class="text-sm text-gray-700">Featured Only</span>
                                     </label>
                                     <label class="flex items-center space-x-2">
                                         <input type="checkbox" name="isVerified" value="1" 
                                                {{ request('isVerified') ? 'checked' : '' }}
-                                               class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                               class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500">
                                         <span class="text-sm text-gray-700">Verified Only</span>
                                     </label>
                                 </div>
@@ -189,7 +189,7 @@
                             <!-- Search Buttons -->
                             <div class="space-y-2 pt-4 border-t border-gray-200">
                                 <button type="submit"
-                                        class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm">
+                                        class="w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-2.5 px-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm">
                                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                     </svg>
@@ -208,7 +208,7 @@
 
                     <!-- Active Filters Summary -->
                     @if(request()->hasAny(['q', 'listingType', 'propertyType', 'bedrooms', 'bathrooms', 'min_price', 'max_price']))
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                         <h3 class="text-base font-semibold text-gray-900 mb-3 flex items-center">
                             <svg class="w-4 h-4 mr-2 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z"></path>
@@ -244,7 +244,7 @@
                 <!-- Properties Results -->
                 <div class="lg:col-span-3 space-y-6 lg:space-y-8">
                     <!-- Results Header -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
                             <div>
                                 <h1 class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
@@ -275,7 +275,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
                             @foreach($properties as $property)
                                 <a href="{{ route('property.show', $property->slug ?? $property->id) }}" 
-                                   class="group relative bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 overflow-hidden hover:shadow-xl hover:shadow-emerald-500/20 transition-all duration-500 transform hover:scale-[1.01] hover:-translate-y-1">
+                                   class="group relative bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 overflow-hidden hover:shadow-xl hover:shadow-emerald-500/20 transition-all duration-500 transform hover:scale-[1.01] hover:-translate-y-1">
                                     
                                     <!-- Property Image -->
                                     <div class="relative h-48 lg:h-56 overflow-hidden">
@@ -288,7 +288,7 @@
                                                  alt="{{ $property->title }}"
                                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                                         @else
-                                            <div class="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                                            <div class="w-full h-full bg-linear-to-br from-gray-200 to-gray-300 flex items-center justify-center">
                                                 <svg class="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                                 </svg>
@@ -296,12 +296,12 @@
                                         @endif
                                         
                                         <!-- Overlay Gradient -->
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                        <div class="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                         
                                         <!-- Status Badges -->
                                         <div class="absolute top-4 left-4 flex flex-col gap-2">
                                             @if($property->is_featured)
-                                                <span class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-yellow-500 to-amber-500 text-white text-xs font-bold rounded-xl shadow-lg backdrop-blur-sm">
+                                                <span class="inline-flex items-center px-3 py-1.5 bg-linear-to-r from-yellow-500 to-amber-500 text-white text-xs font-bold rounded-xl shadow-lg backdrop-blur-xs">
                                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                                                     </svg>
@@ -309,7 +309,7 @@
                                                 </span>
                                             @endif
                                             @if($property->is_verified)
-                                                <span class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg backdrop-blur-sm">
+                                                <span class="inline-flex items-center px-3 py-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-xl shadow-lg backdrop-blur-xs">
                                                     <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                         <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                                     </svg>
@@ -331,7 +331,7 @@
                                         <!-- Price -->
                                         <div class="flex items-center justify-between mb-3">
                                             <div>
-                                                <h3 class="text-xl lg:text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                                                <h3 class="text-xl lg:text-2xl font-bold bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                                                     ₦{{ number_format($property->price) }}
                                                 </h3>
                                                 @if($property->price_period && $property->price_period !== 'total')
@@ -412,7 +412,7 @@
 
                         <!-- Enhanced Premium Pagination -->
                         <div class="mt-8 lg:mt-12">
-                            <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
+                            <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                                 {{ $properties->appends(request()->query())->links() }}
                             </div>
                         </div>
@@ -420,9 +420,9 @@
                         <!-- No Results -->
                         <div class="text-center py-12 lg:py-20">
                             <div class="relative max-w-lg mx-auto">
-                                <div class="relative bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-8 lg:p-12">
+                                <div class="relative bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-8 lg:p-12">
                                     <!-- Icon -->
-                                    <div class="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center shadow-lg">
+                                    <div class="w-20 h-20 mx-auto mb-6 bg-linear-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center shadow-lg">
                                         <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                         </svg>
@@ -437,7 +437,7 @@
                                     
                                     <div class="flex flex-col sm:flex-row gap-3 justify-center">
                                         <a href="{{ route('properties.search') }}"
-                                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/40">
+                                           class="inline-flex items-center px-6 py-3 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-emerald-500/40">
                                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                                             </svg>

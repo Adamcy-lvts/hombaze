@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use App\Models\User;
 use App\Models\SavedSearch;
@@ -97,7 +98,7 @@ class TestWhatsAppSavedSearchNotification extends Command
             $this->info("✅ WhatsApp notification sent successfully!");
             $this->info("Check the phone {$phone} for the WhatsApp message.");
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("❌ Failed to send WhatsApp notification:");
             $this->error($e->getMessage());
             return 1;

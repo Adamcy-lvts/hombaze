@@ -2,11 +2,17 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\PropertyInquiryResource\Pages\ListPropertyInquiries;
+use App\Filament\Landlord\Resources\PropertyInquiryResource\Pages\CreatePropertyInquiry;
+use App\Filament\Landlord\Resources\PropertyInquiryResource\Pages\EditPropertyInquiry;
 use App\Filament\Landlord\Resources\PropertyInquiryResource\Pages;
 use App\Filament\Landlord\Resources\PropertyInquiryResource\RelationManagers;
 use App\Models\PropertyInquiry;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,12 +23,12 @@ class PropertyInquiryResource extends Resource
 {
     protected static ?string $model = PropertyInquiry::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 //
             ]);
     }
@@ -36,12 +42,12 @@ class PropertyInquiryResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -56,9 +62,9 @@ class PropertyInquiryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyInquiries::route('/'),
-            'create' => Pages\CreatePropertyInquiry::route('/create'),
-            'edit' => Pages\EditPropertyInquiry::route('/{record}/edit'),
+            'index' => ListPropertyInquiries::route('/'),
+            'create' => CreatePropertyInquiry::route('/create'),
+            'edit' => EditPropertyInquiry::route('/{record}/edit'),
         ];
     }
 }

@@ -64,7 +64,7 @@ new class extends Component
 
 <div>
     <div class="flex items-center mb-4 sm:mb-6">
-        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
+        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
             <x-heroicon-o-user class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Profile Information</h2>
@@ -92,7 +92,7 @@ new class extends Component
     @endif
 
     <!-- Loading Overlay -->
-    <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+    <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center">
         <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
             <div class="animate-spin h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
             <span class="text-gray-700">Updating...</span>
@@ -119,7 +119,7 @@ new class extends Component
         @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
             <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
                 <div class="flex items-start">
-                    <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-yellow-600 mt-0.5 mr-3 flex-shrink-0" />
+                    <x-heroicon-o-exclamation-triangle class="w-5 h-5 text-yellow-600 mt-0.5 mr-3 shrink-0" />
                     <div>
                         <p class="text-sm font-medium text-yellow-900">Email Verification Required</p>
                         <p class="text-sm text-yellow-700 mt-1">

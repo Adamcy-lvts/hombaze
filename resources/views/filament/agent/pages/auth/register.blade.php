@@ -14,7 +14,7 @@
         }
         
         .fi-simple-page {
-            @apply bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen py-8;
+            @apply bg-linear-to-br from-primary-50 via-white to-primary-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen py-8;
         }
     
         @media (max-width: 1024px) {
@@ -145,7 +145,7 @@
     <div class="agent-form-container">
         <!-- Compact Header -->
         <div class="text-center mb-8">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl mb-4 shadow-lg">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-primary-500 to-primary-600 rounded-xl mb-4 shadow-lg">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                 </svg>
@@ -184,7 +184,7 @@
                 <div class="mt-8">
                     <x-filament::button
                         type="submit"
-                        class="w-full bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
+                        class="w-full bg-linear-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700"
                         size="lg"
                     >
                         Create Agent Account

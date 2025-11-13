@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-6 sm:py-8">
+<div class="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50 py-6 sm:py-8">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="mb-6 sm:mb-8">
@@ -15,7 +15,7 @@
         <!-- Form -->
         <form wire:submit="createSearch" class="space-y-6">
             <!-- Basic Information -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
 
                 <div class="grid grid-cols-1 gap-4">
@@ -38,7 +38,7 @@
             </div>
 
             <!-- Interest -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">What are you interested in? *</h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -59,7 +59,7 @@
 
             <!-- Property Types -->
             @if(count($availablePropertyTypes) > 0)
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Property Type *</h3>
                     <p class="text-sm text-gray-600 mb-4">Select the type of property you're interested in.</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -81,7 +81,7 @@
 
             <!-- Property Subtypes -->
             @if(count($availableSubtypes) > 0)
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Specific Property Types</h3>
                     <p class="text-sm text-gray-600 mb-4">Select specific types of properties you're interested in (optional).</p>
 
@@ -104,7 +104,7 @@
             @endif
 
             <!-- Location Preferences -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Location Preferences</h3>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -215,7 +215,7 @@
 
              <!-- Land Size Preferences (Separate Section) -->
             @if($selected_property_type == 3 && $interested_in === 'buying')
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Land Size Preferences</h3>
 
                     <!-- Predefined Plot Sizes -->
@@ -276,7 +276,7 @@
 
             <!-- Budget Preferences -->
             @if($selected_property_type)
-                <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                     <h3 class="text-lg font-medium text-gray-900 mb-4">Budget Preferences</h3>
                     <p class="text-sm text-gray-600 mb-4">Set your budget range for the selected property type.</p>
 
@@ -322,7 +322,7 @@
            
 
             <!-- Notification Settings -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Notification Settings</h3>
 
                 <div class="space-y-3">
@@ -347,7 +347,7 @@
             </div>
 
             <!-- Search Settings -->
-            <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Search Settings</h3>
 
                 <div class="space-y-3">
@@ -368,11 +368,11 @@
             <!-- Form Actions -->
             <div class="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                 <a href="{{ route('customer.searches.index') }}"
-                   class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                   class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                     Cancel
                 </a>
                 <button type="submit"
-                        class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
+                        class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
                     <x-heroicon-o-plus class="w-4 h-4 mr-2" />
                     Create Search
                 </button>

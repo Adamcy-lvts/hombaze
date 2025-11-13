@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\User;
 use App\Models\Agency;
 use App\Models\State;
 use Livewire\Component;
@@ -138,7 +139,7 @@ class AgenciesPage extends Component
                                      ->count(),
             'verified_agencies' => Agency::where('is_verified', true)->count(),
             'avg_rating' => Agency::where('is_active', true)->avg('rating'),
-            'total_agents' => \App\Models\User::whereHas('agentProfile.agency', function ($q) {
+            'total_agents' => User::whereHas('agentProfile.agency', function ($q) {
                 $q->where('is_active', true);
             })->count(),
         ];

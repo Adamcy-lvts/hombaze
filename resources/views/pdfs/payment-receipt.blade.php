@@ -90,7 +90,7 @@
     <div id="capture-area" class="bg-white border border-gray-300 overflow-hidden">
 
         <!-- Header Section -->
-        <div class="bg-gradient-to-r from-green-600 to-green-700 text-white p-4 text-center">
+        <div class="bg-linear-to-r from-green-600 to-green-700 text-white p-4 text-center">
             <h1 class="text-xl font-bold mb-2 tracking-wide">PAYMENT RECEIPT</h1>
             <div class="w-16 h-0.5 bg-white bg-opacity-60 mx-auto mb-1"></div>
             <p class="text-sm font-medium">{{ $record->receipt_number }}</p>
@@ -158,7 +158,7 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <!-- Landlord -->
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <div class="bg-gray-50 p-3 rounded-sm border border-gray-200">
                         <h3 class="text-xs font-bold text-gray-700 mb-2 flex items-center dot-accent">
                             RECEIVED BY (LANDLORD)
                         </h3>
@@ -218,7 +218,7 @@
                     </div>
 
                     <!-- Tenant -->
-                    <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <div class="bg-gray-50 p-3 rounded-sm border border-gray-200">
                         <h3 class="text-xs font-bold text-gray-700 mb-2 flex items-center dot-accent">
                             PAID BY (TENANT)
                         </h3>
@@ -234,33 +234,33 @@
                     PROPERTY INFORMATION
                 </h2>
 
-                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                <div class="bg-gray-50 p-3 rounded-sm border border-gray-200">
                     <div class="grid grid-cols-2 gap-3">
                         <div class="space-y-1">
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Property:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Property:</span>
                                 <span class="text-xs text-gray-800 font-medium">{{ $record->lease->property->title ?? 'Property Title' }}</span>
                             </div>
                             @if($record->lease->property->address)
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Address:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Address:</span>
                                 <span class="text-xs text-gray-800">{{ $record->lease->property->address }}</span>
                             </div>
                             @endif
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Type:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Type:</span>
                                 <span class="text-xs text-gray-800">{{ $record->lease->property->propertyType->name ?? 'N/A' }}</span>
                             </div>
                         </div>
                         <div class="space-y-1">
                             @if($record->payment_for_period)
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Period:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Period:</span>
                                 <span class="text-xs text-gray-800 font-medium">{{ $record->payment_for_period }}</span>
                             </div>
                             @endif
                             <div class="flex items-start">
-                                <span class="text-xs font-semibold text-gray-600 w-16 flex-shrink-0">Frequency:</span>
+                                <span class="text-xs font-semibold text-gray-600 w-16 shrink-0">Frequency:</span>
                                 <span class="text-xs text-gray-800 capitalize">{{ str_replace('_', ' ', $record->lease->payment_frequency ?? 'N/A') }}</span>
                             </div>
                         </div>
@@ -274,7 +274,7 @@
                     PAYMENT BREAKDOWN
                 </h2>
 
-                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                <div class="bg-gray-50 p-3 rounded-sm border border-gray-200">
                     <div class="space-y-2">
                         <div class="flex justify-between items-center">
                             <span class="text-sm font-semibold text-gray-700">Base Amount:</span>
@@ -331,7 +331,7 @@
             <!-- QR Code positioned at bottom right -->
             <div class="relative">
                 <div class="absolute bottom-0 right-0 mb-4">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-gray-300 inline-block">
+                    <div class="bg-white p-3 rounded-lg shadow-xs border border-gray-300 inline-block">
                         @php
                             // Generate QR code for receipt verification - use the same route as landlord receipt
                             $qrUrl = url('/receipt/' . $record->id);
@@ -343,7 +343,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="bg-gradient-to-r from-gray-100 to-gray-200 border-t border-gray-300 p-3 text-center">
+        <div class="bg-linear-to-r from-gray-100 to-gray-200 border-t border-gray-300 p-3 text-center">
             <p class="text-xs text-gray-600 font-medium mb-1">
                 Receipt generated on {{ now()->format('F j, Y \\a\\t g:i A') }}
             </p>

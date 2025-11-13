@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use Filament\Actions\ViewAction;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
@@ -48,8 +49,8 @@ class RecentUsersWidget extends BaseWidget
                     ->dateTime()
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->url(fn(User $record): string => route('filament.admin.resources.users.view', $record)),
             ]);
     }

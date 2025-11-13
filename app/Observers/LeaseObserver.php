@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use Carbon\Carbon;
 use App\Models\Lease;
 use App\Models\RentPayment;
 use Illuminate\Support\Str;
@@ -49,7 +50,7 @@ class LeaseObserver
         }
     }
 
-    private function calculateFirstDueDate(Lease $lease): \Carbon\Carbon
+    private function calculateFirstDueDate(Lease $lease): Carbon
     {
         $startDate = $lease->start_date;
 

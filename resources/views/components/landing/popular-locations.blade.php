@@ -1,5 +1,5 @@
 <!-- Popular Locations Section -->
-<section class="relative py-16 lg:py-24 bg-gradient-to-br from-slate-50 via-white to-slate-100" x-data="popularLocationsComponent()">
+<section class="relative py-16 lg:py-24 bg-linear-to-br from-slate-50 via-white to-slate-100" x-data="popularLocationsComponent()">
     <!-- Background Pattern -->
     <div class="absolute inset-0 opacity-5">
         <div class="absolute inset-0" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;><g fill=&quot;%23000000&quot; fill-opacity=&quot;0.1&quot;><circle cx=&quot;30&quot; cy=&quot;30&quot; r=&quot;1&quot;/></g></svg>'); background-size: 60px 60px;"></div>
@@ -17,7 +17,7 @@
             </div>
             <h2 class="text-3xl lg:text-5xl font-black text-gray-900 mb-4 lg:mb-6">
                 Discover Prime
-                <span class="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Locations</span>
+                <span class="bg-linear-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">Locations</span>
             </h2>
             <p class="text-lg lg:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
                 Explore Nigeria's most sought-after neighborhoods where dreams meet reality. 
@@ -39,11 +39,11 @@
                              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         
                         <!-- Gradient Overlay -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent"></div>
                         
                         <!-- Location Badge -->
                         <div class="absolute top-4 left-4">
-                            <span class="inline-flex items-center space-x-1 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-lg text-sm font-semibold">
+                            <span class="inline-flex items-center space-x-1 bg-white/90 backdrop-blur-xs text-gray-900 px-3 py-1.5 rounded-lg text-sm font-semibold">
                                 <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                 </svg>
@@ -54,7 +54,7 @@
                         <!-- Stats Badge -->
                         @if(isset($location['trending']) && $location['trending'])
                         <div class="absolute top-4 right-4">
-                            <span class="inline-flex items-center space-x-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                            <span class="inline-flex items-center space-x-1 bg-linear-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
                                 </svg>
@@ -95,7 +95,7 @@
 
                         <!-- Search Button -->
                         <a href="{{ route('properties.search', ['location' => $location['slug'] ?? strtolower(str_replace(' ', '-', $location['name'] ?? 'location'))]) }}" 
-                           class="group/btn relative w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl">
+                           class="group/btn relative w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl">
                             <span>Explore Properties</span>
                             <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
@@ -178,11 +178,11 @@
                              class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                         
                         <!-- Gradient Overlay -->
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                        <div class="absolute inset-0 bg-linear-to-t from-black/60 via-black/20 to-transparent"></div>
                         
                         <!-- Location Badge -->
                         <div class="absolute top-4 left-4">
-                            <span class="inline-flex items-center space-x-1 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1.5 rounded-lg text-sm font-semibold">
+                            <span class="inline-flex items-center space-x-1 bg-white/90 backdrop-blur-xs text-gray-900 px-3 py-1.5 rounded-lg text-sm font-semibold">
                                 <svg class="w-3 h-3 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                 </svg>
@@ -193,7 +193,7 @@
                         <!-- Trending Badge -->
                         @if($location['trending'])
                         <div class="absolute top-4 right-4">
-                            <span class="inline-flex items-center space-x-1 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
+                            <span class="inline-flex items-center space-x-1 bg-linear-to-r from-orange-500 to-red-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">
                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
                                 </svg>
@@ -228,7 +228,7 @@
 
                         <!-- Search Button -->
                         <a href="{{ route('properties.search', ['location' => strtolower(str_replace(' ', '-', $location['name']))]) }}" 
-                           class="group/btn relative w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl">
+                           class="group/btn relative w-full bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl">
                             <span>Explore Properties</span>
                             <svg class="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>

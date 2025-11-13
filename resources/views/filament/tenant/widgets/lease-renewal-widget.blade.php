@@ -21,7 +21,7 @@
                 @if($isExpired)
                     <div class="rounded-md bg-red-50 p-4 dark:bg-red-900/20">
                         <div class="flex">
-                            <div class="flex-shrink-0">
+                            <div class="shrink-0">
                                 <x-heroicon-m-exclamation-triangle class="h-5 w-5 text-red-400" />
                             </div>
                             <div class="ml-3">
@@ -37,7 +37,7 @@
                 @else
                     <div class="rounded-md bg-amber-50 p-4 dark:bg-amber-900/20">
                         <div class="flex">
-                            <div class="flex-shrink-0">
+                            <div class="shrink-0">
                                 <x-heroicon-m-clock class="h-5 w-5 text-amber-400" />
                             </div>
                             <div class="ml-3">
@@ -98,7 +98,7 @@
                     @if($hasExistingRequest)
                         <div class="rounded-md bg-blue-50 p-4 dark:bg-blue-900/20 mb-4">
                             <div class="flex">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     <x-heroicon-m-information-circle class="h-5 w-5 text-blue-400" />
                                 </div>
                                 <div class="ml-3">

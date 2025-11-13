@@ -2,16 +2,17 @@
 
 namespace App\Filament\Tenant\Pages\Auth;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Exception;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Pages\Auth\Register as BaseRegister;
 use App\Models\User;
 use App\Models\Tenant;
 use App\Models\State;
@@ -22,17 +23,17 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
-class Register extends BaseRegister
+class Register extends \Filament\Auth\Pages\Register
 {
-    protected static string $view = 'filament.tenant.pages.auth.register';
+    protected string $view = 'filament.tenant.pages.auth.register';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Tabs::make('Registration')
                     ->tabs([
-                        Tabs\Tab::make('Account')
+                        Tab::make('Account')
                             ->icon('heroicon-o-user')
                             ->schema([
                                 Section::make('Login Credentials')
@@ -57,7 +58,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Personal Information')
+                        Tab::make('Personal Information')
                             ->icon('heroicon-o-identification')
                             ->schema([
                                 Section::make('Personal Details')
@@ -111,7 +112,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Employment')
+                        Tab::make('Employment')
                             ->icon('heroicon-o-briefcase')
                             ->schema([
                                 Section::make('Employment Information')
@@ -157,7 +158,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
 
-                        Tabs\Tab::make('Preferences')
+                        Tab::make('Preferences')
                             ->icon('heroicon-o-home')
                             ->schema([
                                 Section::make('Property Preferences')
@@ -234,7 +235,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
 
-                        Tabs\Tab::make('Emergency Contact')
+                        Tab::make('Emergency Contact')
                             ->icon('heroicon-o-phone')
                             ->schema([
                                 Section::make('Emergency Contact Information')
@@ -493,7 +494,7 @@ class Register extends BaseRegister
                 Log::warning("Tenant role not found. User registered without role assignment.");
             }
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to assign Tenant role to user {$user->email}: " . $e->getMessage());
             // Don't fail registration if role assignment fails
         }

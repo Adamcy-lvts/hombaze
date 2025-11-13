@@ -2,6 +2,8 @@
 
 namespace App\Filament\Landlord\Resources\PropertyResource\Pages;
 
+use Filament\Actions\DeleteAction;
+use Illuminate\Support\Str;
 use App\Filament\Landlord\Resources\PropertyResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -15,7 +17,7 @@ class EditProperty extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 
@@ -51,7 +53,7 @@ class EditProperty extends EditRecord
     {
         // Generate slug if title changed and slug not provided
         if (isset($data['title']) && (empty($data['slug']) || $data['slug'] === $this->record->slug)) {
-            $data['slug'] = \Illuminate\Support\Str::slug($data['title']);
+            $data['slug'] = Str::slug($data['title']);
         }
 
         // Ensure boolean values are properly set

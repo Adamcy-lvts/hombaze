@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentStatsWidget extends BaseWidget
 {
+    protected string $view = 'filament.landlord.widgets.payment-stats-widget';
+
     protected function getStats(): array
     {
         $landlordId = Auth::id();
@@ -72,6 +74,20 @@ class PaymentStatsWidget extends BaseWidget
                 ->description('Total collections in ' . $thisMonth->year)
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color('info'),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    protected function getViewData(): array
+    {
+        return [
+            'heading' => $this->getHeading(),
+            'description' => $this->getDescription(),
+            'columns' => $this->getColumns(),
+            'stats' => $this->getCachedStats(),
+            'pollingInterval' => $this->getPollingInterval(),
         ];
     }
 }

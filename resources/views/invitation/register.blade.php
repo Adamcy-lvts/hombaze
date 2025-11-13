@@ -19,7 +19,7 @@
     <div class="min-h-screen relative overflow-hidden">
         <!-- Background Image with Overlay -->
         <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95 z-10"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95 z-10"></div>
             <img 
                 src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
                 alt="Modern Apartment Interior" 
@@ -29,9 +29,9 @@
 
         <!-- Premium Background Elements -->
         <div class="absolute inset-0 z-20">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-500/15 to-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-            <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-emerald-500/20 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-linear-to-br from-blue-500/15 to-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-linear-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
         </div>
 
         <!-- Main Content -->
@@ -42,8 +42,8 @@
                 <div class="mb-12">
                     <a href="{{ route('landing') }}" class="group flex items-center space-x-4 mb-8">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div class="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                            <div class="absolute inset-0 bg-linear-to-br from-emerald-400 to-blue-500 rounded-2xl blur-xs opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative w-14 h-14 bg-linear-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
                                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                                 </svg>
@@ -59,7 +59,7 @@
                     <div class="mb-8">
                         <h2 class="text-4xl lg:text-5xl font-black text-white mb-4 leading-tight">
                             Welcome to Your<br>
-                            <span class="bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
+                            <span class="bg-linear-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent">
                                 New Home Journey
                             </span>
                         </h2>
@@ -100,7 +100,7 @@
                         </div>
 
                         @if($invitation->property)
-                        <div class="bg-gradient-to-r from-emerald-500/20 to-blue-500/20 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-6 shadow-2xl">
+                        <div class="bg-linear-to-r from-emerald-500/20 to-blue-500/20 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-6 shadow-2xl">
                             <div class="flex items-center space-x-4">
                                 <div class="w-12 h-12 bg-emerald-500/30 rounded-xl flex items-center justify-center">
                                     <svg class="w-6 h-6 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +139,7 @@
                 <!-- Mobile Logo -->
                 <div class="lg:hidden mb-8 text-center">
                     <a href="{{ route('landing') }}" class="inline-flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <div class="w-12 h-12 bg-linear-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center">
                             <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                             </svg>
@@ -152,7 +152,7 @@
                 <div class="bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl shadow-2xl p-8 sm:p-10">
                     <!-- Header -->
                     <div class="text-center mb-8">
-                        <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl mb-4">
+                        <div class="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-emerald-500/20 to-blue-500/20 rounded-2xl mb-4">
                             <svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
                             </svg>
@@ -166,7 +166,7 @@
                     @if($invitation->message)
                         <div class="mb-6 bg-emerald-500/20 backdrop-blur-xl border border-emerald-400/30 rounded-2xl p-4">
                             <div class="flex items-start space-x-3">
-                                <svg class="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-emerald-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
                                 </svg>
                                 <p class="text-emerald-200 text-sm font-medium italic">"{{ $invitation->message }}"</p>
@@ -209,10 +209,10 @@
                                         required 
                                         autofocus
                                         autocomplete="name"
-                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
+                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-hidden focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
                                         placeholder="Enter your full name"
                                     >
-                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                    <div class="absolute inset-0 rounded-2xl bg-linear-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
                             </div>
 
@@ -251,10 +251,10 @@
                                         name="email"
                                         value="{{ old('email') }}"
                                         autocomplete="email"
-                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
+                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-hidden focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
                                         placeholder="Enter your email address (optional)"
                                     >
-                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                    <div class="absolute inset-0 rounded-2xl bg-linear-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
                             </div>
 
@@ -270,10 +270,10 @@
                                         name="password" 
                                         required 
                                         autocomplete="new-password"
-                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
+                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-hidden focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
                                         placeholder="Create a secure password"
                                     >
-                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                    <div class="absolute inset-0 rounded-2xl bg-linear-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
                             </div>
 
@@ -289,19 +289,19 @@
                                         name="password_confirmation" 
                                         required 
                                         autocomplete="new-password"
-                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
+                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-hidden focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
                                         placeholder="Confirm your password"
                                     >
-                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                    <div class="absolute inset-0 rounded-2xl bg-linear-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
                             </div>
 
                             <!-- Submit Button -->
                             <button 
                                 type="submit"
-                                class="w-full relative group overflow-hidden bg-gradient-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-emerald-400/50 shadow-xl hover:shadow-2xl"
+                                class="w-full relative group overflow-hidden bg-linear-to-r from-emerald-500 to-blue-600 hover:from-emerald-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-hidden focus:ring-2 focus:ring-emerald-400/50 shadow-xl hover:shadow-2xl"
                             >
-                                <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="absolute inset-0 bg-linear-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <span class="relative flex items-center justify-center space-x-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
@@ -344,19 +344,19 @@
                                         type="password" 
                                         name="password" 
                                         required
-                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-none focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
+                                        class="w-full px-4 py-4 bg-white/10 border border-white/20 rounded-2xl text-white placeholder-white/50 focus:border-emerald-400/50 focus:bg-white/20 focus:outline-hidden focus:ring-2 focus:ring-emerald-400/20 transition-all duration-300 backdrop-blur-xl"
                                         placeholder="Enter your password"
                                     >
-                                    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                                    <div class="absolute inset-0 rounded-2xl bg-linear-to-r from-emerald-500/10 to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                                 </div>
                             </div>
 
                             <!-- Login Button -->
                             <button 
                                 type="submit"
-                                class="w-full relative group overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-blue-400/50 shadow-xl hover:shadow-2xl"
+                                class="w-full relative group overflow-hidden bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] focus:outline-hidden focus:ring-2 focus:ring-blue-400/50 shadow-xl hover:shadow-2xl"
                             >
-                                <div class="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                <div class="absolute inset-0 bg-linear-to-r from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                 <span class="relative flex items-center justify-center space-x-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>

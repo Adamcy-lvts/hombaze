@@ -13,7 +13,7 @@
     <!-- Notification Bell Button -->
     <button
         wire:click="toggleDropdown"
-        class="relative p-2 text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full transition ease-in-out duration-150"
+        class="relative p-2 text-gray-500 hover:text-gray-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 rounded-full transition ease-in-out duration-150"
         :class="showDropdown ? 'text-gray-700 bg-gray-100' : ''"
     >
         <!-- Bell Icon -->
@@ -57,7 +57,7 @@
         style="display: none; z-index: 99999; position: fixed !important; top: 0 !important; right: 0 !important; height: 100vh !important; max-width: calc(100vw - 2rem);"
     >
         <!-- Panel Header -->
-        <div class="px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-emerald-50 to-teal-50">
+        <div class="px-6 py-4 border-b border-gray-200 bg-linear-to-r from-emerald-50 to-teal-50">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="p-2 bg-emerald-100 rounded-lg">
@@ -113,7 +113,7 @@
                         @if($notification['type'] === 'App\Notifications\SavedSearchMatch')
                             <div class="flex items-start space-x-3">
                                 <!-- Match Icon -->
-                                <div class="flex-shrink-0 mt-1">
+                                <div class="shrink-0 mt-1">
                                     <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                         <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
@@ -163,7 +163,7 @@
                         @else
                             <!-- Generic Notification -->
                             <div class="flex items-start space-x-3">
-                                <div class="flex-shrink-0 mt-1">
+                                <div class="shrink-0 mt-1">
                                     <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>

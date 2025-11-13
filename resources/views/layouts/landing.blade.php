@@ -64,7 +64,7 @@
     <div id="page-loader" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900">
         <div class="flex flex-col items-center space-y-4">
             <div
-                class="w-16 h-16 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-xl flex items-center justify-center animate-pulse">
+                class="w-16 h-16 bg-linear-to-br from-emerald-400 to-blue-500 rounded-xl flex items-center justify-center animate-pulse">
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path
                         d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
@@ -72,14 +72,14 @@
             </div>
             <div class="text-white font-medium">Loading HomeBaze...</div>
             <div class="w-32 h-1 bg-gray-700 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-emerald-400 to-blue-500 rounded-full animate-pulse"
+                <div class="h-full bg-linear-to-r from-emerald-400 to-blue-500 rounded-full animate-pulse"
                     style="width: 100%;"></div>
             </div>
         </div>
     </div>
 
     <!-- Navigation Component -->
-    @include('components.landing.navigation')
+    <!-- @include('components.landing.navigation') -->
 
     <!-- Main Content -->
     @hasSection('content')
@@ -89,7 +89,7 @@
     @endif
     
     <!-- Footer Section -->
-    @include('components.landing.footer')
+    <!-- @include('components.landing.footer') -->
 
     <!-- Custom CSS -->
     <style>

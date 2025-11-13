@@ -2,6 +2,7 @@
 
 namespace App\Filament\Landlord\Resources\PropertyOwnerResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Landlord\Resources\PropertyOwnerResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -18,7 +19,7 @@ class ListPropertyOwners extends ListRecords
         $hasProfile = PropertyOwner::where('user_id', Auth::id())->exists();
 
         return $hasProfile ? [] : [
-            Actions\CreateAction::make()
+            CreateAction::make()
                 ->label('Create My Profile')
                 ->icon('heroicon-o-user-plus'),
         ];

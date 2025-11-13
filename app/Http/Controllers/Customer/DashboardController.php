@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer;
 
+use Illuminate\Database\Eloquent\Collection;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\PropertyInquiry;
@@ -106,7 +107,7 @@ class DashboardController extends Controller
         return array_slice($activities, 0, 5);
     }
 
-    private function getRecommendedProperties($user): \Illuminate\Database\Eloquent\Collection
+    private function getRecommendedProperties($user): Collection
     {
         $customerProfile = $user->customerProfile;
 
@@ -165,7 +166,7 @@ class DashboardController extends Controller
         ];
     }
 
-    private function getActiveInquiries($user): \Illuminate\Database\Eloquent\Collection
+    private function getActiveInquiries($user): Collection
     {
         return PropertyInquiry::where('inquirer_id', $user->id)
             ->with(['property', 'responder'])
@@ -175,7 +176,7 @@ class DashboardController extends Controller
             ->get();
     }
 
-    private function getUpcomingViewings($user): \Illuminate\Database\Eloquent\Collection
+    private function getUpcomingViewings($user): Collection
     {
         return PropertyViewing::where('inquirer_id', $user->id)
             ->with(['property', 'agent'])

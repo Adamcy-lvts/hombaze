@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Agency\Pages\Auth\Register;
+use Filament\Widgets\AccountWidget;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -36,7 +38,7 @@ class AgencyPanelProvider extends PanelProvider
             ->path('agency')
             ->login()
             ->tenant(Agency::class, slugAttribute: 'slug')
-            ->registration(\App\Filament\Agency\Pages\Auth\Register::class)
+            ->registration(Register::class)
             ->tenantProfile(EditAgencyProfile::class)
             ->tenantMenu(fn() => auth()->user()->can('view_tenant_menu'))
             ->tenantMenuItems([
@@ -64,7 +66,7 @@ class AgencyPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Agency/Widgets'), for: 'App\\Filament\\Agency\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
+                AccountWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

@@ -2,10 +2,24 @@
 
 namespace App\Filament\Agency\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
+use App\Filament\Agency\Resources\PropertyViewingResource\Pages\ListPropertyViewings;
+use App\Filament\Agency\Resources\PropertyViewingResource\Pages\ViewPropertyViewing;
+use App\Filament\Agency\Resources\PropertyViewingResource\Pages\EditPropertyViewing;
 use App\Filament\Agency\Resources\PropertyViewingResource\Pages;
 use App\Models\PropertyViewing;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,7 +31,7 @@ class PropertyViewingResource extends Resource
 {
     protected static ?string $model = PropertyViewing::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar-days';
     
     protected static ?string $navigationLabel = 'Property Viewings';
     
@@ -37,46 +51,46 @@ class PropertyViewingResource extends Resource
         return true;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Viewing Information')
+        return $schema
+            ->components([
+                Section::make('Viewing Information')
                     ->schema([
-                        Forms\Components\Select::make('property_id')
+                        Select::make('property_id')
                             ->label('Property')
                             ->relationship('property', 'title')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('inquirer_name')
+                        TextInput::make('inquirer_name')
                             ->label('Client Name')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('inquirer_email')
+                        TextInput::make('inquirer_email')
                             ->label('Client Email')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('inquirer_phone')
+                        TextInput::make('inquirer_phone')
                             ->label('Client Phone')
                             ->disabled(),
                     ])
                     ->columns(2),
                     
-                Forms\Components\Section::make('Appointment Details')
+                Section::make('Appointment Details')
                     ->schema([
-                        Forms\Components\Select::make('agent_id')
+                        Select::make('agent_id')
                             ->label('Assigned Agent')
                             ->relationship('agent', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                             
-                        Forms\Components\DateTimePicker::make('scheduled_date')
+                        DateTimePicker::make('scheduled_date')
                             ->label('Scheduled Date & Time')
                             ->required()
                             ->minDate(now()),
                             
-                        Forms\Components\TextInput::make('duration_minutes')
+                        TextInput::make('duration_minutes')
                             ->label('Duration (minutes)')
                             ->numeric()
                             ->minValue(15)
@@ -84,7 +98,7 @@ class PropertyViewingResource extends Resource
                             ->default(60)
                             ->suffix('minutes'),
                             
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->options([
                                 'scheduled' => 'Scheduled',
                                 'confirmed' => 'Confirmed',
@@ -99,22 +113,22 @@ class PropertyViewingResource extends Resource
                     ])
                     ->columns(2),
                     
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Textarea::make('special_instructions')
+                        Textarea::make('special_instructions')
                             ->label('Special Instructions')
                             ->rows(3)
                             ->disabled(),
                             
-                        Forms\Components\Textarea::make('notes')
+                        Textarea::make('notes')
                             ->label('Agency Notes')
                             ->rows(3),
                             
-                        Forms\Components\Textarea::make('feedback')
+                        Textarea::make('feedback')
                             ->label('Client Feedback')
                             ->rows(3),
                             
-                        Forms\Components\DateTimePicker::make('completed_at')
+                        DateTimePicker::make('completed_at')
                             ->label('Completion Date')
                             ->disabled(),
                     ])
@@ -126,47 +140,47 @@ class PropertyViewingResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->searchable()
                     ->sortable()
                     ->limit(30)
                     ->weight('medium'),
                     
-                Tables\Columns\TextColumn::make('inquirer_name')
+                TextColumn::make('inquirer_name')
                     ->label('Client')
                     ->searchable()
                     ->sortable(),
                     
-                Tables\Columns\TextColumn::make('inquirer_email')
+                TextColumn::make('inquirer_email')
                     ->label('Email')
                     ->searchable()
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
                     
-                Tables\Columns\TextColumn::make('inquirer_phone')
+                TextColumn::make('inquirer_phone')
                     ->label('Phone')
                     ->copyable()
                     ->icon('heroicon-o-phone')
                     ->placeholder('Not provided'),
                     
-                Tables\Columns\TextColumn::make('agent.name')
+                TextColumn::make('agent.name')
                     ->label('Agent')
                     ->searchable()
                     ->sortable(),
                     
-                Tables\Columns\TextColumn::make('scheduled_date')
+                TextColumn::make('scheduled_date')
                     ->label('Scheduled')
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
                     ->color(fn ($record) => $record->scheduled_date < now() ? 'danger' : 'success'),
                     
-                Tables\Columns\TextColumn::make('duration_minutes')
+                TextColumn::make('duration_minutes')
                     ->label('Duration')
                     ->suffix(' min')
                     ->alignCenter(),
                     
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'scheduled' => 'warning',
@@ -179,7 +193,7 @@ class PropertyViewingResource extends Resource
                         default => 'gray',
                     }),
                     
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Requested')
                     ->dateTime()
                     ->sortable()
@@ -221,16 +235,16 @@ class PropertyViewingResource extends Resource
                         ->whereIn('status', ['scheduled', 'confirmed']))
                     ->label('Overdue Viewings'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->label('View')
                     ->icon('heroicon-o-eye'),
                 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->label('Edit')
                     ->icon('heroicon-o-pencil-square'),
                 
-                Tables\Actions\Action::make('confirm')
+                Action::make('confirm')
                     ->label('Confirm')
                     ->icon('heroicon-o-check')
                     ->color('success')
@@ -238,7 +252,7 @@ class PropertyViewingResource extends Resource
                     ->action(fn (PropertyViewing $record) => $record->update(['status' => 'confirmed']))
                     ->successNotificationTitle('Viewing confirmed'),
                 
-                Tables\Actions\Action::make('start')
+                Action::make('start')
                     ->label('Start')
                     ->icon('heroicon-o-play')
                     ->color('primary')
@@ -246,16 +260,16 @@ class PropertyViewingResource extends Resource
                     ->action(fn (PropertyViewing $record) => $record->update(['status' => 'in_progress']))
                     ->successNotificationTitle('Viewing started'),
                 
-                Tables\Actions\Action::make('complete')
+                Action::make('complete')
                     ->label('Complete')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->visible(fn (PropertyViewing $record): bool => in_array($record->status, ['confirmed', 'in_progress']))
-                    ->form([
-                        Forms\Components\Textarea::make('notes')
+                    ->schema([
+                        Textarea::make('notes')
                             ->label('Viewing Notes')
                             ->rows(3),
-                        Forms\Components\Textarea::make('feedback')
+                        Textarea::make('feedback')
                             ->label('Client Feedback')
                             ->rows(3),
                     ])
@@ -269,7 +283,7 @@ class PropertyViewingResource extends Resource
                     })
                     ->successNotificationTitle('Viewing marked as completed'),
                 
-                Tables\Actions\Action::make('cancel')
+                Action::make('cancel')
                     ->label('Cancel')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
@@ -277,13 +291,13 @@ class PropertyViewingResource extends Resource
                     ->action(fn (PropertyViewing $record) => $record->update(['status' => 'cancelled']))
                     ->requiresConfirmation(),
                 
-                Tables\Actions\Action::make('reschedule')
+                Action::make('reschedule')
                     ->label('Reschedule')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
                     ->visible(fn (PropertyViewing $record): bool => !in_array($record->status, ['completed', 'cancelled']))
-                    ->form([
-                        Forms\Components\DateTimePicker::make('scheduled_date')
+                    ->schema([
+                        DateTimePicker::make('scheduled_date')
                             ->label('New Date & Time')
                             ->required()
                             ->minDate(now()),
@@ -296,9 +310,9 @@ class PropertyViewingResource extends Resource
                     })
                     ->successNotificationTitle('Viewing rescheduled'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('confirm_viewings')
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('confirm_viewings')
                         ->label('Confirm Selected')
                         ->icon('heroicon-o-check')
                         ->color('success')
@@ -311,7 +325,7 @@ class PropertyViewingResource extends Resource
                         })
                         ->requiresConfirmation(),
                         
-                    Tables\Actions\BulkAction::make('cancel_viewings')
+                    BulkAction::make('cancel_viewings')
                         ->label('Cancel Selected')
                         ->icon('heroicon-o-x-mark')
                         ->color('danger')
@@ -339,9 +353,9 @@ class PropertyViewingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyViewings::route('/'),
-            'view' => Pages\ViewPropertyViewing::route('/{record}'),
-            'edit' => Pages\EditPropertyViewing::route('/{record}/edit'),
+            'index' => ListPropertyViewings::route('/'),
+            'view' => ViewPropertyViewing::route('/{record}'),
+            'edit' => EditPropertyViewing::route('/{record}/edit'),
         ];
     }
 }

@@ -4,11 +4,11 @@
 
 @section('content')
 <!-- Enhanced Property Details Page -->
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
     <!-- Subtle Background Elements -->
     <div class="absolute inset-0 opacity-30">
-        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
     </div>
 
     <!-- Main Content -->
@@ -29,7 +29,7 @@
                     
                     <!-- Separator -->
                     <div class="flex items-center">
-                        <div class="w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <div class="w-8 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
                         <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
@@ -47,7 +47,7 @@
                     
                     <!-- Separator -->
                     <div class="flex items-center">
-                        <div class="w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                        <div class="w-8 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
                         <svg class="w-4 h-4 lg:w-5 lg:h-5 text-gray-400 -ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
@@ -55,7 +55,7 @@
                     
                     <!-- Location -->
                     <div class="flex items-center">
-                        <div class="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
+                        <div class="p-2 rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg">
                             <svg class="w-4 h-4 lg:w-5 lg:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -71,7 +71,7 @@
                 <!-- Property Status Indicator -->
                 <div class="ml-4 flex items-center space-x-2">
                     @if($property->is_featured)
-                        <div class="px-3 py-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-full shadow-lg">
+                        <div class="px-3 py-1.5 bg-linear-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-full shadow-lg">
                             <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
                             </svg>
@@ -79,7 +79,7 @@
                         </div>
                     @endif
                     @if($property->is_verified)
-                        <div class="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-full shadow-lg">
+                        <div class="px-3 py-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-full shadow-lg">
                             <svg class="w-3 h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
@@ -287,7 +287,7 @@
                                      class="w-full h-80 lg:h-[450px] xl:h-[500px] object-cover group-hover:scale-105 transition-transform duration-700">
                                 
                                 <!-- Image Overlay -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                <div class="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                                 
                                 <!-- Main Image Navigation -->
                                 <button @click.stop="prevPreview()" class="absolute left-3 lg:left-4 top-1/2 transform -translate-y-1/2 bg-white/20 backdrop-blur-xl rounded-full p-2 lg:p-3 hover:bg-white/30 transition-all duration-300 group-hover:opacity-100 opacity-0">
@@ -304,7 +304,7 @@
 
                                 <!-- Click to expand indicator -->
                                 <div class="absolute inset-0 bg-emerald-600/0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                    <div class="bg-white/80 backdrop-blur-sm rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                                    <div class="bg-white/80 backdrop-blur-xs rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                         </svg>
@@ -314,7 +314,7 @@
                                 <!-- Status Badges -->
                                 <div class="absolute top-3 lg:top-4 left-3 lg:left-4 flex flex-wrap gap-2">
                                     @if($property->is_featured)
-                                        <span class="px-2 py-1 lg:px-3 lg:py-1.5 bg-gradient-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
+                                        <span class="px-2 py-1 lg:px-3 lg:py-1.5 bg-linear-to-r from-yellow-400 to-amber-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
                                             <svg class="w-2.5 h-2.5 lg:w-3 lg:h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                                             </svg>
@@ -322,7 +322,7 @@
                                         </span>
                                     @endif
                                     @if($property->is_verified)
-                                        <span class="px-2 py-1 lg:px-3 lg:py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
+                                        <span class="px-2 py-1 lg:px-3 lg:py-1.5 bg-linear-to-r from-emerald-500 to-teal-500 text-white text-xs font-bold rounded-lg lg:rounded-xl shadow-lg">
                                             <svg class="w-2.5 h-2.5 lg:w-3 lg:h-3 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                             </svg>
@@ -350,13 +350,13 @@
                                              class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
 
                                         <div x-show="image.caption"
-                                             class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                                             class="absolute inset-0 bg-linear-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                                             <p x-text="image.caption" class="text-white text-sm"></p>
                                         </div>
 
                                         <!-- Click indicator -->
                                         <div class="absolute inset-0 bg-emerald-600/0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                            <div class="bg-white/80 backdrop-blur-sm rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                                            <div class="bg-white/80 backdrop-blur-xs rounded-full p-3 transform scale-75 group-hover:scale-100 transition-transform duration-300">
                                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                                 </svg>
@@ -393,7 +393,7 @@
                                          x-transition:enter="transition ease-out duration-300"
                                          x-transition:enter-start="opacity-0 translate-y-4"
                                          x-transition:enter-end="opacity-100 translate-y-0"
-                                         class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent text-white text-center">
+                                         class="absolute bottom-0 left-0 right-0 p-4 bg-linear-to-t from-black/80 to-transparent text-white text-center">
                                         <p x-text="images[currentImageIndex]?.caption" class="text-sm md:text-base max-w-4xl mx-auto"></p>
                                     </div>
                                 </div>
@@ -401,7 +401,7 @@
                                 <!-- Controls -->
                                 <div class="absolute top-4 right-4 z-50 flex items-center space-x-4">
                                     <!-- Zoom controls -->
-                                    <div class="bg-black/30 backdrop-blur-sm rounded-lg flex items-center p-1">
+                                    <div class="bg-black/30 backdrop-blur-xs rounded-lg flex items-center p-1">
                                         <button @click="zoomOut()"
                                                 class="text-white p-2 hover:bg-white/10 rounded-l-lg transition-colors"
                                                 x-bind:disabled="zoom <= 1"
@@ -425,7 +425,7 @@
 
                                     <!-- Close button -->
                                     <button @click="closeLightbox()"
-                                            class="text-white bg-black/30 backdrop-blur-sm p-2 rounded-lg hover:bg-white/10 transition-colors">
+                                            class="text-white bg-black/30 backdrop-blur-xs p-2 rounded-lg hover:bg-white/10 transition-colors">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                         </svg>
@@ -434,7 +434,7 @@
 
                                 <!-- Navigation buttons -->
                                 <button @click="prev()"
-                                        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 backdrop-blur-sm hover:bg-white/10 p-2 rounded-lg text-white transition-all duration-300 z-50"
+                                        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/30 backdrop-blur-xs hover:bg-white/10 p-2 rounded-lg text-white transition-all duration-300 z-50"
                                         x-show="images.length > 1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -442,7 +442,7 @@
                                 </button>
 
                                 <button @click="next()"
-                                        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 backdrop-blur-sm hover:bg-white/10 p-2 rounded-lg text-white transition-all duration-300 z-50"
+                                        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/30 backdrop-blur-xs hover:bg-white/10 p-2 rounded-lg text-white transition-all duration-300 z-50"
                                         x-show="images.length > 1">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -450,7 +450,7 @@
                                 </button>
 
                                 <!-- Help text -->
-                                <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white text-xs rounded-full px-4 py-2 opacity-70 pointer-events-none">
+                                <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 backdrop-blur-xs text-white text-xs rounded-full px-4 py-2 opacity-70 pointer-events-none">
                                     Zoom: <span class="font-mono">+/-</span> &nbsp;•&nbsp;
                                     Navigate: <span class="font-mono">←→</span> &nbsp;•&nbsp;
                                     Close: <span class="font-mono">ESC</span> &nbsp;•&nbsp;
@@ -476,10 +476,10 @@
                 <!-- Property Info Sidebar -->
                 <div class="lg:col-span-1">
                     <!-- Price Card -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6 mb-4 lg:mb-6 sticky top-20 lg:top-24">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6 mb-4 lg:mb-6 sticky top-20 lg:top-24">
                         <!-- Price -->
                         <div class="mb-4 lg:mb-6">
-                            <h2 class="text-2xl lg:text-3xl font-black bg-gradient-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent mb-2">
+                            <h2 class="text-2xl lg:text-3xl font-black bg-linear-to-r from-emerald-500 to-teal-600 bg-clip-text text-transparent mb-2">
                                 {{ $property->formatted_price }}
                                 @if($property->price_period && $property->price_period !== 'total')
                                     <span class="text-base lg:text-lg font-normal text-gray-500">
@@ -514,7 +514,7 @@
 
                         <!-- Contact Buttons -->
                         <div class="space-y-2 lg:space-y-3">
-                            <button class="w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm lg:text-base">
+                            <button class="w-full bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40 flex items-center justify-center text-sm lg:text-base">
                                 <svg class="w-4 h-4 lg:w-5 lg:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
                                 </svg>
@@ -547,12 +547,12 @@
                 <div class="lg:col-span-2 space-y-6 lg:space-y-8">
                     <!-- Features & Amenities -->
                     @if($property->features && $property->features->count() > 0)
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                         <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Features & Amenities</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
                             @foreach($property->features as $feature)
                                 <div class="flex items-center space-x-3 py-1">
-                                    <div class="flex-shrink-0">
+                                    <div class="shrink-0">
                                         <svg class="w-4 h-4 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                         </svg>
@@ -565,7 +565,7 @@
                     @endif
 
                     <!-- Property Overview -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                         <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Property Overview</h2>
                         
                         <!-- Title and Location -->
@@ -610,7 +610,7 @@
                     </div>
 
                     <!-- Area Information -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6 lg:p-8">
                         <h2 class="text-xl lg:text-2xl font-bold text-gray-900 mb-4 lg:mb-6">Neighborhood Overview</h2>
                         
                         <!-- Area Categories Grid -->
@@ -705,7 +705,7 @@
                         </div>
 
                         <!-- Security & Safety -->
-                        <div class="mt-6 p-4 bg-gradient-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
+                        <div class="mt-6 p-4 bg-linear-to-r from-emerald-50 to-teal-50 rounded-xl border border-emerald-200">
                             <div class="flex items-center space-x-2 mb-3">
                                 <div class="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center">
                                     <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -748,21 +748,21 @@
                 <div class="lg:col-span-1 space-y-4 lg:space-y-6">
                     <!-- Agent Information Card -->
                     @if($property->agent || $property->agency)
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                         <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-4">Listed By</h3>
                         
                         @if($property->agency && $property->agent)
                             <!-- Agency with Agent -->
                             <div class="space-y-4">
                                 <!-- Agency Info -->
-                                <div class="flex items-center space-x-3 p-3 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md">
+                                <div class="flex items-center space-x-3 p-3 bg-linear-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                                    <div class="w-10 h-10 bg-linear-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-sm shadow-md">
                                         {{ substr($property->agency->name, 0, 1) }}
                                     </div>
                                     <div class="flex-1 min-w-0">
                                         <div class="flex items-center space-x-1 mb-1">
                                             <h4 class="font-semibold text-gray-900 text-sm truncate">{{ $property->agency->name }}</h4>
-                                            <svg class="w-3 h-3 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                            <svg class="w-3 h-3 text-blue-600 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
                                             </svg>
                                         </div>
@@ -772,7 +772,7 @@
 
                                 <!-- Agent Info -->
                                 <div class="text-center">
-                                    <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                    <div class="w-20 h-20 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                         {{ substr($property->agent->name ?? 'Agent', 0, 1) }}
                                     </div>
                                     <div class="flex items-center justify-center space-x-1 mb-2">
@@ -817,7 +817,7 @@
                         @elseif($property->agent)
                             <!-- Independent Agent -->
                             <div class="text-center">
-                                <div class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                                <div class="w-20 h-20 bg-linear-to-br from-emerald-500 to-teal-600 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                     {{ substr($property->agent->name ?? 'Agent', 0, 1) }}
                                 </div>
                                 <h4 class="font-semibold text-gray-900 text-base mb-2">{{ $property->agent->name ?? 'Licensed Agent' }}</h4>
@@ -855,7 +855,7 @@
                     @endif
 
                     <!-- Map Placeholder -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                         <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Location</h3>
                         <div class="h-40 lg:h-48 bg-gray-200 rounded-xl lg:rounded-2xl flex items-center justify-center">
                             <span class="text-gray-500 text-sm lg:text-base">Interactive Map Coming Soon</span>
@@ -863,7 +863,7 @@
                     </div>
 
                     <!-- Property ID and Stats -->
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                         <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Property Details</h3>
                         <div class="space-y-2 lg:space-y-3">
                             <div class="flex justify-between">
@@ -891,7 +891,7 @@
 
                     <!-- Additional Property Info -->
                     @if($property->agency_fee || $property->legal_fee || $property->caution_deposit)
-                    <div class="bg-white/95 backdrop-blur-sm rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
+                    <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-4 lg:p-6">
                         <h3 class="text-base lg:text-lg font-semibold text-gray-900 mb-3 lg:mb-4">Additional Costs</h3>
                         <div class="space-y-2 lg:space-y-3">
                             @if($property->agency_fee)
@@ -930,7 +930,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                 @foreach($relatedProperties as $relatedProperty)
                     <a href="{{ route('property.show', $relatedProperty->slug ?? $relatedProperty->id) }}" 
-                       class="group bg-white/95 backdrop-blur-sm rounded-xl lg:rounded-2xl shadow-lg border border-gray-300/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105">
+                       class="group bg-white/95 backdrop-blur-xs rounded-xl lg:rounded-2xl shadow-lg border border-gray-300/60 overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-500 hover:scale-105">
                         <div class="relative h-40 lg:h-48 overflow-hidden">
                             <img src="{{ $relatedProperty->getFeaturedImageUrl('preview') }}" 
                                  alt="{{ $relatedProperty->title }}"

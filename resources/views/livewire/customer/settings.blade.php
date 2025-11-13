@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
     <!-- Subtle Background Elements -->
     <div class="absolute inset-0 opacity-30">
-        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
     </div>
 
     <div class="relative z-30 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,7 +41,7 @@
         @endif
 
         <!-- Loading Overlay -->
-        <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
                 <div class="animate-spin h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
                 <span class="text-gray-700">Updating...</span>
@@ -52,7 +52,7 @@
             <!-- Profile Information -->
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
                         <x-heroicon-o-user class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Profile Information</h2>
@@ -106,13 +106,13 @@
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center justify-between mb-4 sm:mb-6">
                     <div class="flex items-center">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg mr-3">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg mr-3">
                             <x-heroicon-o-magnifying-glass class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Search Preferences</h2>
                     </div>
                     <a href="{{ route('customer.preferences') }}"
-                       class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
+                       class="inline-flex items-center px-4 py-2 bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
                         <x-heroicon-o-sparkles class="w-4 h-4 mr-2" />
                         Enhanced Preferences
                     </a>
@@ -120,7 +120,7 @@
 
                 <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
                     <div class="flex items-start">
-                        <x-heroicon-o-sparkles class="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+                        <x-heroicon-o-sparkles class="w-5 h-5 text-blue-600 mt-0.5 mr-3 shrink-0" />
                         <div>
                             <p class="text-sm font-medium text-blue-900">Try our Enhanced Preferences!</p>
                             <p class="text-sm text-blue-700 mt-1">Get better property recommendations with our improved preference system featuring smart filtering and instant notifications.</p>
@@ -227,7 +227,7 @@
             <!-- Notification Settings -->
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 shadow-lg mr-3">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-yellow-500 to-orange-500 shadow-lg mr-3">
                         <x-heroicon-o-bell class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Notification Settings</h2>
@@ -282,7 +282,7 @@
             <!-- Security -->
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-red-500 to-pink-600 shadow-lg mr-3">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-red-500 to-pink-600 shadow-lg mr-3">
                         <x-heroicon-o-lock-closed class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Security</h2>

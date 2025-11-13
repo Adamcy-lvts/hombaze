@@ -2,6 +2,10 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Agent\Pages\Auth\Register;
+use Filament\Pages\Dashboard;
+use App\Filament\Agent\Pages\Auth\EditProfile;
+use App\Http\Middleware\RequireProfileCompletion;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -28,7 +32,7 @@ class AgentPanelProvider extends PanelProvider
             ->id('agent')
             ->path('agent')
             ->login()
-            ->registration(\App\Filament\Agent\Pages\Auth\Register::class)
+            ->registration(Register::class)
             ->brandName('HomeBaze Agent')
             ->colors([
                 'primary' => Color::Orange,
@@ -39,10 +43,10 @@ class AgentPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Agent/Resources'), for: 'App\\Filament\\Agent\\Resources')
             ->discoverPages(in: app_path('Filament/Agent/Pages'), for: 'App\\Filament\\Agent\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Agent/Widgets'), for: 'App\\Filament\\Agent\\Widgets')
-            ->profile(\App\Filament\Agent\Pages\Auth\EditProfile::class)
+            ->profile(EditProfile::class)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -56,7 +60,7 @@ class AgentPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-                \App\Http\Middleware\RequireProfileCompletion::class,
+                RequireProfileCompletion::class,
             ]);
     }
 

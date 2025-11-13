@@ -8,7 +8,7 @@ use Carbon\Carbon;
 
 class UserActivityChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'User Registrations (Last 30 Days)';
+    protected ?string $heading = 'User Registrations (Last 30 Days)';
     
     protected static ?int $sort = 5;
 

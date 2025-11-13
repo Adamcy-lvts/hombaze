@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Property;
 use App\Models\User;
 use App\Models\Agent;
 use App\Models\State;
@@ -269,7 +270,7 @@ class AgentsPage extends Component
                 $q->where('is_verified', true);
             })->count(),
             'avg_experience' => Agent::where('is_verified', true)->avg('years_experience'),
-            'total_properties' => \App\Models\Property::whereHas('agent')->count(),
+            'total_properties' => Property::whereHas('agent')->count(),
         ];
     }
 

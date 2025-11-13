@@ -2,14 +2,15 @@
 
 namespace App\Filament\Landlord\Pages\Auth;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Exception;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Tabs;
-use Filament\Forms\Form;
-use Filament\Pages\Auth\Register as BaseRegister;
 use App\Models\User;
 use App\Models\PropertyOwner;
 use App\Models\State;
@@ -20,17 +21,17 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 
-class Register extends BaseRegister
+class Register extends \Filament\Auth\Pages\Register
 {
-    protected static string $view = 'filament.landlord.pages.auth.register';
+    protected string $view = 'filament.landlord.pages.auth.register';
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Tabs::make('Registration')
                     ->tabs([
-                        Tabs\Tab::make('Account')
+                        Tab::make('Account')
                             ->icon('heroicon-o-user')
                             ->schema([
                                 Section::make('Login Credentials')
@@ -55,7 +56,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Property Owner')
+                        Tab::make('Property Owner')
                             ->icon('heroicon-o-home')
                             ->schema([
                                 Section::make('Property Owner Information')
@@ -125,7 +126,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Location')
+                        Tab::make('Location')
                             ->icon('heroicon-o-map-pin')
                             ->schema([
                                 Section::make('Property Locations')
@@ -164,7 +165,7 @@ class Register extends BaseRegister
                                     ->compact(),
                             ]),
                         
-                        Tabs\Tab::make('Preferences')
+                        Tab::make('Preferences')
                             ->icon('heroicon-o-cog-6-tooth')
                             ->schema([
                                 Section::make('Management Preferences')
@@ -312,7 +313,7 @@ class Register extends BaseRegister
                 Log::error("Landlord role not found. Please run LandlordRoleSeeder.");
             }
             
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error("Failed to assign Landlord role to user {$user->email}: " . $e->getMessage());
             // Don't fail registration if role assignment fails
         }

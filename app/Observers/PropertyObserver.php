@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use Exception;
 use App\Models\Property;
 use App\Models\SavedSearch;
 use App\Jobs\ProcessSavedSearchMatches;
@@ -95,7 +96,7 @@ class PropertyObserver
                 'method' => $clearedCaches > 100 ? 'pattern_based' : 'individual_keys'
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('❌ Failed to clear saved search match cache after property deletion', [
                 'property_id' => $property->id,
                 'error' => $e->getMessage(),
@@ -120,7 +121,7 @@ class PropertyObserver
                     return count($keys);
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Silently fail and fall back to individual clearing
             Log::debug('Pattern-based cache clearing failed, falling back to individual clearing', [
                 'error' => $e->getMessage()

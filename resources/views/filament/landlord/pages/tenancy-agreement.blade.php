@@ -11,7 +11,7 @@
 @else
 <x-filament-panels::page>
 @endif
-    <div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
+    <div class="min-h-screen bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-8 px-4">
         <div class="max-w-5xl mx-auto">
             
             @if(!isset($isPdfMode) || !$isPdfMode)
@@ -23,7 +23,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="flex-1">
                         <label for="template-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Choose Template:</label>
-                        <select id="template-select" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200" onchange="updateLinks()">
+                        <select id="template-select" class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200" onchange="updateLinks()">
                             <option value="">Default Template</option>
                             @php
                                 $templates = \App\Models\LeaseTemplate::where('landlord_id', auth()->id())
@@ -58,7 +58,7 @@
             <div class="bg-white dark:bg-gray-800 shadow-xl rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
                 
                 <!-- Header Section -->
-                <div class="bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 text-white p-8 text-center">
+                <div class="bg-linear-to-r from-gray-800 to-gray-900 dark:from-gray-700 dark:to-gray-800 text-white p-8 text-center">
                     <h1 class="text-xl md:text-2xl font-bold mb-3 tracking-wide">TENANCY AGREEMENT</h1>
                     <div class="w-24 h-0.5 bg-white/60 mx-auto mb-3"></div>
                     <p class="text-sm text-white/80 font-medium">Republic of Nigeria</p>
@@ -76,7 +76,7 @@
                         
                         <div class="grid md:grid-cols-2 gap-4">
                             <!-- Landlord -->
-                            <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                            <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                                 <h3 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                                     <div class="w-1.5 h-1.5 bg-gray-600 rounded-full mr-1.5"></div>
                                     LANDLORD
@@ -86,7 +86,7 @@
                             </div>
 
                             <!-- Tenant -->
-                            <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                            <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                                 <h3 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                                     <div class="w-1.5 h-1.5 bg-gray-600 rounded-full mr-1.5"></div>
                                     TENANT
@@ -104,28 +104,28 @@
                             PROPERTY DETAILS
                         </h2>
                         
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                        <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                             <div class="grid md:grid-cols-2 gap-4">
                                 <div class="space-y-2">
                                     <div class="flex items-start">
-                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Property:</span>
+                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 shrink-0">Property:</span>
                                         <span class="text-xs text-gray-800 dark:text-gray-200 font-medium">{{ $record->property->title ?? 'Property Title' }}</span>
                                     </div>
                                     @if($record->property->address)
                                     <div class="flex items-start">
-                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Address:</span>
+                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 shrink-0">Address:</span>
                                         <span class="text-xs text-gray-800 dark:text-gray-200">{{ $record->property->address }}</span>
                                     </div>
                                     @endif
                                 </div>
                                 <div class="space-y-2">
                                     <div class="flex items-start">
-                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Type:</span>
+                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 shrink-0">Type:</span>
                                         <span class="text-xs text-gray-800 dark:text-gray-200">{{ $record->property->propertyType->name ?? 'N/A' }}</span>
                                     </div>
                                     @if($record->property->propertySubtype)
                                     <div class="flex items-start">
-                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 flex-shrink-0">Subtype:</span>
+                                        <span class="text-xs font-semibold text-gray-600 dark:text-gray-400 w-20 shrink-0">Subtype:</span>
                                         <span class="text-xs text-gray-800 dark:text-gray-200">{{ $record->property->propertySubtype->name }}</span>
                                     </div>
                                     @endif
@@ -141,7 +141,7 @@
                             LEASE TERMS & FINANCIAL DETAILS
                         </h2>
                         
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-3 rounded border border-gray-200 dark:border-gray-600">
+                        <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
                             <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 text-xs">
                                 <!-- Start Date -->
                                 <div class="text-center">
@@ -213,7 +213,7 @@
                             TERMS & CONDITIONS
                         </h2>
                         
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                        <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                             @if($record->terms_and_conditions)
                                 <div class="prose prose-sm max-w-none text-gray-800 dark:text-gray-200">
                                     {!! $record->terms_and_conditions !!}
@@ -221,43 +221,43 @@
                             @else
                                 <!-- Default Terms -->
                                 <ol class="space-y-2 text-xs text-gray-800 dark:text-gray-200 leading-relaxed">
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">1</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">1</span>
                                         <span class="text-xs">The tenant agrees to pay rent <strong>{{ $record->payment_frequency }}</strong> as specified in the financial terms above.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">2</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">2</span>
                                         <span class="text-xs">The tenant shall use the premises <strong>solely for residential purposes</strong> and shall not conduct any business activities without prior written consent from the landlord.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">3</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">3</span>
                                         <span class="text-xs">The tenant shall <strong>maintain the premises in good condition</strong> and shall be responsible for any damages beyond normal wear and tear.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">4</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">4</span>
                                         <span class="text-xs">The tenant shall <strong>not sublease, assign, or transfer</strong> any rights under this agreement without written consent from the landlord.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">5</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">5</span>
                                         <span class="text-xs">The tenant shall <strong>comply with all applicable laws, regulations, and community rules</strong> and shall not engage in any illegal activities on the premises.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">6</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">6</span>
                                         <span class="text-xs">The landlord shall <strong>maintain the structural integrity</strong> of the property and ensure all major systems (plumbing, electrical, etc.) are in working order.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">7</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">7</span>
                                         <span class="text-xs">Either party may <strong>terminate this agreement with 30 days written notice</strong>, subject to applicable local laws and regulations.</span>
                                     </li>
 
-                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
-                                        <span class="flex-shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">8</span>
+                                    <li class="flex items-start bg-white dark:bg-gray-800 p-3 rounded-sm border border-gray-200 dark:border-gray-600">
+                                        <span class="shrink-0 w-5 h-5 bg-gray-600 text-white text-xs font-bold rounded-full flex items-center justify-center mr-3 mt-0.5">8</span>
                                         <span class="text-xs">
                                             @if($record->renewal_option)
                                                 This lease <strong>may be renewed upon mutual agreement</strong> of both parties before the expiration date.
@@ -279,7 +279,7 @@
                             ADDITIONAL NOTES
                         </h2>
                         
-                        <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                        <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                             <p class="text-xs text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">{{ $record->notes }}</p>
                         </div>
                     </section>
@@ -294,7 +294,7 @@
                         
                         <div class="grid md:grid-cols-2 gap-4">
                             <!-- Landlord Signature -->
-                            <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                            <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                                 <div class="text-center">
                                     <h3 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center justify-center">
                                         <div class="w-1.5 h-1.5 bg-gray-600 rounded-full mr-1.5"></div>
@@ -317,7 +317,7 @@
                             </div>
 
                             <!-- Tenant Signature -->
-                            <div class="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded border border-gray-200 dark:border-gray-600">
+                            <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                                 <div class="text-center">
                                     <h3 class="text-xs font-bold text-gray-700 dark:text-gray-300 mb-4 flex items-center justify-center">
                                         <div class="w-1.5 h-1.5 bg-gray-600 rounded-full mr-1.5"></div>
@@ -343,7 +343,7 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-t border-gray-300 dark:border-gray-600 p-6">
+                <div class="bg-linear-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 border-t border-gray-300 dark:border-gray-600 p-6">
                     <div class="text-center">
                         <p class="text-xs text-gray-600 dark:text-gray-400 font-medium">
                             Document generated on {{ now()->format('F j, Y \a\t g:i A') }}
@@ -367,13 +367,13 @@
             <!-- Action Buttons -->
             @if(!isset($isPdfMode) || !$isPdfMode)
             <div class="flex justify-center space-x-4 mt-8 no-print">
-                <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                <button onclick="window.print()" class="inline-flex items-center px-6 py-3 bg-linear-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
                     </svg>
                     Print Agreement
                 </button>
-                <button onclick="window.history.back()" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                <button onclick="window.history.back()" class="inline-flex items-center px-6 py-3 bg-linear-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white text-sm font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
                     <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
                     </svg>
@@ -395,7 +395,7 @@
         }
         
         .bg-gradient-to-br,
-        .bg-gradient-to-r {
+        .bg-linear-to-r {
             background: white !important;
             border: 1px solid #d1d5db !important;
         }

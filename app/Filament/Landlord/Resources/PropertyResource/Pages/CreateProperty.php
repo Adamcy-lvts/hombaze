@@ -2,6 +2,11 @@
 
 namespace App\Filament\Landlord\Resources\PropertyResource\Pages;
 
+use Exception;
+use App\Models\PropertyType;
+use App\Models\PropertySubtype;
+use App\Models\State;
+use App\Models\City;
 use App\Filament\Landlord\Resources\PropertyResource;
 use App\Models\PropertyOwner;
 use Filament\Actions;
@@ -30,14 +35,14 @@ class CreateProperty extends CreateRecord
         $user = Auth::user();
         
         if (!$user) {
-            throw new \Exception('Cannot create property: User not authenticated.');
+            throw new Exception('Cannot create property: User not authenticated.');
         }
 
         // Find the PropertyOwner record for this user
         $propertyOwner = PropertyOwner::where('user_id', $user->id)->first();
         
         if (!$propertyOwner) {
-            throw new \Exception('Cannot create property: No PropertyOwner record found for this user. Please contact support.');
+            throw new Exception('Cannot create property: No PropertyOwner record found for this user. Please contact support.');
         }
 
         // No agency or agent assignment needed for landlord context
@@ -147,22 +152,22 @@ class CreateProperty extends CreateRecord
     private function validateRequiredRelationships(array $data): void
     {
         // Validate property type exists
-        if (!isset($data['property_type_id']) || !\App\Models\PropertyType::find($data['property_type_id'])) {
-            throw new \Exception('Invalid property type selected.');
+        if (!isset($data['property_type_id']) || !PropertyType::find($data['property_type_id'])) {
+            throw new Exception('Invalid property type selected.');
         }
 
         // Validate property subtype exists
-        if (!isset($data['property_subtype_id']) || !\App\Models\PropertySubtype::find($data['property_subtype_id'])) {
-            throw new \Exception('Invalid property subtype selected.');
+        if (!isset($data['property_subtype_id']) || !PropertySubtype::find($data['property_subtype_id'])) {
+            throw new Exception('Invalid property subtype selected.');
         }
 
         // Validate location exists
-        if (!isset($data['state_id']) || !\App\Models\State::find($data['state_id'])) {
-            throw new \Exception('Invalid state selected.');
+        if (!isset($data['state_id']) || !State::find($data['state_id'])) {
+            throw new Exception('Invalid state selected.');
         }
 
-        if (!isset($data['city_id']) || !\App\Models\City::find($data['city_id'])) {
-            throw new \Exception('Invalid city selected.');
+        if (!isset($data['city_id']) || !City::find($data['city_id'])) {
+            throw new Exception('Invalid city selected.');
         }
 
         // Note: owner_id is automatically handled in handleRecordCreation method

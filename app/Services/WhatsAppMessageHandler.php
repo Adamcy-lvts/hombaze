@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Exception;
 use App\Models\Property;
 use App\Models\PropertyInquiry;
 use App\Models\PropertyViewing;
@@ -45,7 +46,7 @@ class WhatsAppMessageHandler
             // Process message based on content
             $this->processMessageContent($phoneNumber, $messageBody, $contact);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error handling WhatsApp message', [
                 'error' => $e->getMessage(),
                 'message' => $message
@@ -268,7 +269,7 @@ class WhatsAppMessageHandler
             // Use existing WhatsApp service method (we'll enhance this later)
             $this->whatsappService->sendInvitation($fakeInvitation);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to send WhatsApp response', [
                 'phone' => $phoneNumber,
                 'error' => $e->getMessage()
@@ -291,7 +292,7 @@ class WhatsAppMessageHandler
                 'source' => 'whatsapp',
                 'status' => 'new'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to log property inquiry', [
                 'phone' => $phoneNumber,
                 'error' => $e->getMessage()
@@ -315,7 +316,7 @@ class WhatsAppMessageHandler
                 'source' => 'whatsapp',
                 'status' => 'new'
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to log viewing request', [
                 'phone' => $phoneNumber,
                 'error' => $e->getMessage()

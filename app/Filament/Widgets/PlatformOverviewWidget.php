@@ -9,7 +9,7 @@ use App\Models\PropertyInquiry;
 
 class PlatformOverviewWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Platform Activity Overview';
+    protected ?string $heading = 'Platform Activity Overview';
     
     protected static ?int $sort = 3;
 

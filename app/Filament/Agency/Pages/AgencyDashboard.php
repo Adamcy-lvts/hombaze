@@ -9,7 +9,7 @@ use App\Filament\Agency\Widgets\PropertiesChartWidget;
 
 class AgencyDashboard extends BaseDashboard
 {
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
     
     protected static ?string $navigationLabel = 'Dashboard';
     
@@ -26,7 +26,7 @@ class AgencyDashboard extends BaseDashboard
         ];
     }
     
-    public function getColumns(): int | string | array
+    public function getColumns(): int|array
     {
         return [
             'sm' => 1,

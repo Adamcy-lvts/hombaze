@@ -19,7 +19,7 @@
     <div class="min-h-screen relative overflow-hidden">
         <!-- Background Image with Overlay -->
         <div class="absolute inset-0 z-0">
-            <div class="absolute inset-0 bg-gradient-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95 z-10"></div>
+            <div class="absolute inset-0 bg-linear-to-br from-slate-900/95 via-slate-900/90 to-blue-900/95 z-10"></div>
             <img 
                 src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
                 alt="Beautiful Luxury Mansion" 
@@ -29,9 +29,9 @@
 
         <!-- Premium Background Elements -->
         <div class="absolute inset-0 z-20">
-            <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-emerald-500/20 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-blue-500/15 to-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-            <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
+            <div class="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-emerald-500/20 to-blue-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-linear-to-br from-blue-500/15 to-indigo-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+            <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-linear-to-br from-purple-500/10 to-pink-500/5 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
         </div>
 
         <!-- Main Content -->
@@ -42,8 +42,8 @@
                 <div class="mb-12">
                     <a href="{{ route('landing') }}" class="group flex items-center space-x-4 mb-8">
                         <div class="relative">
-                            <div class="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-sm opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            <div class="relative w-14 h-14 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
+                            <div class="absolute inset-0 bg-linear-to-br from-emerald-400 to-blue-500 rounded-2xl blur-xs opacity-75 group-hover:opacity-100 transition-opacity duration-500"></div>
+                            <div class="relative w-14 h-14 bg-linear-to-br from-emerald-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-500">
                                 <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                                 </svg>
@@ -138,7 +138,7 @@
                 <!-- Mobile Logo -->
                 <div class="lg:hidden mb-8 text-center">
                     <a href="{{ route('landing') }}" class="inline-flex items-center space-x-3">
-                        <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center">
+                        <div class="w-12 h-12 bg-linear-to-br from-emerald-500 to-blue-600 rounded-xl flex items-center justify-center">
                             <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                                 <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                             </svg>
@@ -263,7 +263,7 @@
                                 <input 
                                     type="checkbox" 
                                     name="remember" 
-                                    class="w-5 h-5 text-emerald-500 border-white/20 bg-white/10 rounded focus:ring-emerald-500 focus:ring-2"
+                                    class="w-5 h-5 text-emerald-500 border-white/20 bg-white/10 rounded-sm focus:ring-emerald-500 focus:ring-2"
                                 >
                                 <span class="ml-3 text-sm text-white/80 font-medium group-hover:text-white transition-colors">Remember me</span>
                             </label>
@@ -276,7 +276,7 @@
                         <!-- Submit Button -->
                         <button 
                             type="submit"
-                            class="group w-full relative bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-xl hover:shadow-2xl overflow-hidden"
+                            class="group w-full relative bg-linear-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-xl hover:shadow-2xl overflow-hidden"
                         >
                             <span class="relative z-10 flex items-center justify-center">
                                 Sign In to Dashboard
@@ -284,7 +284,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
                                 </svg>
                             </span>
-                            <div class="absolute inset-0 bg-gradient-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
+                            <div class="absolute inset-0 bg-linear-to-r from-emerald-600 to-blue-600 scale-0 group-hover:scale-100 transition-transform duration-500 origin-center"></div>
                         </button>
                     </form>
 

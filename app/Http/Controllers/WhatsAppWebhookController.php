@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
@@ -73,7 +74,7 @@ class WhatsAppWebhookController extends Controller
             }
 
             return response('OK', 200);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('WhatsApp webhook processing error', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()

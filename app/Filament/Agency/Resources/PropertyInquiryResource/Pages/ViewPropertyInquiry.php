@@ -2,6 +2,7 @@
 
 namespace App\Filament\Agency\Resources\PropertyInquiryResource\Pages;
 
+use Filament\Actions\Action;
 use App\Filament\Agency\Resources\PropertyInquiryResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
@@ -14,7 +15,7 @@ class ViewPropertyInquiry extends ViewRecord
     {
         return [
             // No edit action since inquiries are read-only
-            Actions\Action::make('respond')
+            Action::make('respond')
                 ->label('Respond to Inquiry')
                 ->icon('heroicon-o-chat-bubble-left-right')
                 ->color('success')

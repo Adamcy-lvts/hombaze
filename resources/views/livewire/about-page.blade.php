@@ -27,27 +27,27 @@
 
             <!-- Stats Section -->
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-xs">
                     <div class="text-2xl font-bold text-blue-600 mb-1">{{ number_format($stats['total_properties']) }}</div>
                     <div class="text-xs text-gray-600 font-medium">Active Properties</div>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-xs">
                     <div class="text-2xl font-bold text-emerald-600 mb-1">{{ number_format($stats['total_agencies']) }}</div>
                     <div class="text-xs text-gray-600 font-medium">Partner Agencies</div>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-xs">
                     <div class="text-2xl font-bold text-purple-600 mb-1">{{ number_format($stats['total_agents']) }}</div>
                     <div class="text-xs text-gray-600 font-medium">Verified Agents</div>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-xs">
                     <div class="text-2xl font-bold text-orange-600 mb-1">{{ number_format($stats['total_locations']) }}</div>
                     <div class="text-xs text-gray-600 font-medium">Cities Covered</div>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-xs">
                     <div class="text-2xl font-bold text-red-600 mb-1">{{ number_format($stats['verified_agencies']) }}</div>
                     <div class="text-xs text-gray-600 font-medium">Verified Agencies</div>
                 </div>
-                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-4 text-center shadow-xs">
                     <div class="text-2xl font-bold text-indigo-600 mb-1">{{ number_format($stats['total_users']) }}</div>
                     <div class="text-xs text-gray-600 font-medium">Happy Users</div>
                 </div>
@@ -62,7 +62,7 @@
             <!-- Mission & Vision Section -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
                 <!-- Mission -->
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
                     <div class="flex items-center mb-4">
                         <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -77,7 +77,7 @@
                 </div>
 
                 <!-- Vision -->
-                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+                <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-xs">
                     <div class="flex items-center mb-4">
                         <div class="w-10 h-10 bg-emerald-100 rounded-xl flex items-center justify-center mr-3">
                             <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +102,7 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Trust -->
-                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
                         <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
@@ -113,7 +113,7 @@
                     </div>
 
                     <!-- Innovation -->
-                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
                         <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
@@ -124,7 +124,7 @@
                     </div>
 
                     <!-- Excellence -->
-                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
                         <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
@@ -135,7 +135,7 @@
                     </div>
 
                     <!-- Empowerment -->
-                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-sm">
+                    <div class="text-center bg-white border border-gray-200 rounded-xl p-4 shadow-xs">
                         <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mx-auto mb-3">
                             <svg class="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
@@ -162,7 +162,7 @@
                             @if($member['image'])
                                 <img src="{{ $member['image'] }}" alt="{{ $member['name'] }}" class="w-24 h-24 rounded-full mx-auto border-4 border-white/20 shadow-xl object-cover">
                             @else
-                                <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mx-auto flex items-center justify-center border-4 border-white/20 shadow-xl">
+                                <div class="w-24 h-24 bg-linear-to-br from-blue-500 to-indigo-600 rounded-full mx-auto flex items-center justify-center border-4 border-white/20 shadow-xl">
                                     <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
@@ -203,7 +203,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Comprehensive Coverage -->
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 bg-linear-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
                         </svg>
@@ -214,7 +214,7 @@
 
                 <!-- Verified Professionals -->
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 bg-linear-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
@@ -225,7 +225,7 @@
 
                 <!-- Smart Technology -->
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <div class="w-16 h-16 bg-linear-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>

@@ -2,11 +2,32 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TagsInput;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PropertyInquiryResource\Pages\ListPropertyInquiries;
+use App\Filament\Resources\PropertyInquiryResource\Pages\CreatePropertyInquiry;
+use App\Filament\Resources\PropertyInquiryResource\Pages\EditPropertyInquiry;
 use App\Filament\Resources\PropertyInquiryResource\Pages;
 use App\Filament\Resources\PropertyInquiryResource\RelationManagers;
 use App\Models\PropertyInquiry;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,59 +38,59 @@ class PropertyInquiryResource extends Resource
 {
     protected static ?string $model = PropertyInquiry::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    protected static ?string $navigationGroup = 'Content Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Content Management';
 
     protected static ?int $navigationSort = 7;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 // Two column layout: Main content (3/4) and Sidebar (1/4)
-                Forms\Components\Grid::make([
+                Grid::make([
                     'default' => 1,
                     'lg' => 4,
                 ])
                     ->schema([
                         // Main Content Area (spans 3 columns)
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Property & Inquiry Details
-                                Forms\Components\Section::make('Inquiry Information')
+                                Section::make('Inquiry Information')
                                     ->description('Property inquiry details and inquirer information')
                                     ->schema([
-                                        Forms\Components\Select::make('property_id')
+                                        Select::make('property_id')
                                             ->label('Property')
                                             ->relationship('property', 'title')
                                             ->required()
                                             ->searchable()
                                             ->columnSpan(2),
-                                        Forms\Components\Select::make('inquirer_id')
+                                        Select::make('inquirer_id')
                                             ->label('Registered User')
                                             ->relationship('inquirer', 'name')
                                             ->searchable()
                                             ->columnSpan(2),
-                                        Forms\Components\Grid::make(3)
+                                        Grid::make(3)
                                             ->schema([
-                                                Forms\Components\TextInput::make('inquirer_name')
+                                                TextInput::make('inquirer_name')
                                                     ->label('Inquirer Name')
                                                     ->required()
                                                     ->maxLength(255),
-                                                Forms\Components\TextInput::make('inquirer_email')
+                                                TextInput::make('inquirer_email')
                                                     ->label('Email Address')
                                                     ->email()
                                                     ->required()
                                                     ->maxLength(255),
-                                                Forms\Components\TextInput::make('inquirer_phone')
+                                                TextInput::make('inquirer_phone')
                                                     ->label('Phone Number')
                                                     ->tel()
                                                     ->maxLength(255),
                                             ]),
-                                        Forms\Components\DatePicker::make('preferred_viewing_date')
+                                        DatePicker::make('preferred_viewing_date')
                                             ->label('Preferred Viewing Date'),
-                                        Forms\Components\Textarea::make('message')
+                                        Textarea::make('message')
                                             ->label('Inquiry Message')
                                             ->required()
                                             ->rows(4)
@@ -77,17 +98,17 @@ class PropertyInquiryResource extends Resource
                                     ])->columns(4)->collapsible(),
 
                                 // Response Management
-                                Forms\Components\Section::make('Response Details')
+                                Section::make('Response Details')
                                     ->description('Agent response and follow-up information')
                                     ->schema([
-                                        Forms\Components\Select::make('responded_by')
+                                        Select::make('responded_by')
                                             ->label('Responded By')
                                             ->relationship('responder', 'name')
                                             ->searchable(),
-                                        Forms\Components\DateTimePicker::make('responded_at')
+                                        DateTimePicker::make('responded_at')
                                             ->label('Response Date')
                                             ->disabled(),
-                                        Forms\Components\Textarea::make('response')
+                                        Textarea::make('response')
                                             ->label('Response Message')
                                             ->rows(4)
                                             ->columnSpanFull(),
@@ -99,13 +120,13 @@ class PropertyInquiryResource extends Resource
                             ]),
 
                         // Sidebar (spans 1 column)
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
                                 // Status Management - Sidebar
-                                Forms\Components\Section::make('Status & Priority')
+                                Section::make('Status & Priority')
                                     ->description('Inquiry status and priority settings')
                                     ->schema([
-                                        Forms\Components\Select::make('status')
+                                        Select::make('status')
                                             ->required()
                                             ->options([
                                                 'pending' => 'Pending',
@@ -115,7 +136,7 @@ class PropertyInquiryResource extends Resource
                                                 'closed' => 'Closed'
                                             ])
                                             ->default('pending'),
-                                        Forms\Components\Select::make('priority')
+                                        Select::make('priority')
                                             ->options([
                                                 'low' => 'Low',
                                                 'medium' => 'Medium',
@@ -123,40 +144,40 @@ class PropertyInquiryResource extends Resource
                                                 'urgent' => 'Urgent'
                                             ])
                                             ->default('medium'),
-                                        Forms\Components\Toggle::make('is_follow_up_required')
+                                        Toggle::make('is_follow_up_required')
                                             ->label('Follow-up Required')
                                             ->default(false),
-                                        Forms\Components\DateTimePicker::make('follow_up_date')
+                                        DateTimePicker::make('follow_up_date')
                                             ->label('Follow-up Date'),
                                     ])->columns(1)->collapsible(),
 
                                 // Activity Tracking - Sidebar
-                                Forms\Components\Section::make('Activity Tracking')
+                                Section::make('Activity Tracking')
                                     ->description('Inquiry tracking and timestamps')
                                     ->schema([
-                                        Forms\Components\DateTimePicker::make('created_at')
+                                        DateTimePicker::make('created_at')
                                             ->label('Inquiry Date')
                                             ->disabled(),
-                                        Forms\Components\DateTimePicker::make('first_response_at')
+                                        DateTimePicker::make('first_response_at')
                                             ->label('First Response')
                                             ->disabled(),
-                                        Forms\Components\DateTimePicker::make('last_activity_at')
+                                        DateTimePicker::make('last_activity_at')
                                             ->label('Last Activity')
                                             ->disabled(),
-                                        Forms\Components\TextInput::make('response_time_hours')
+                                        TextInput::make('response_time_hours')
                                             ->label('Response Time (Hours)')
                                             ->numeric()
                                             ->disabled(),
                                     ])->columns(1)->collapsible(),
 
                                 // Additional Notes - Sidebar
-                                Forms\Components\Section::make('Internal Notes')
+                                Section::make('Internal Notes')
                                     ->description('Internal notes and follow-up details')
                                     ->schema([
-                                        Forms\Components\Textarea::make('internal_notes')
+                                        Textarea::make('internal_notes')
                                             ->label('Agent Notes')
                                             ->rows(3),
-                                        Forms\Components\TagsInput::make('tags')
+                                        TagsInput::make('tags')
                                             ->label('Tags')
                                             ->placeholder('e.g., vip, urgent, callback')
                                             ->separator(','),
@@ -174,31 +195,31 @@ class PropertyInquiryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->sortable()
                     ->searchable()
                     ->limit(40)
                     ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('inquirer_name')
+                TextColumn::make('inquirer_name')
                     ->label('Inquirer')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('inquirer_email')
+                TextColumn::make('inquirer_email')
                     ->label('Email')
                     ->searchable()
                     ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('inquirer_phone')
+                TextColumn::make('inquirer_phone')
                     ->label('Phone')
                     ->searchable()
                     ->copyable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->label('Status')
                     ->colors([
@@ -209,7 +230,7 @@ class PropertyInquiryResource extends Resource
                         'gray' => 'closed',
                     ]),
 
-                Tables\Columns\TextColumn::make('priority')
+                TextColumn::make('priority')
                     ->badge()
                     ->label('Priority')
                     ->colors([
@@ -220,32 +241,32 @@ class PropertyInquiryResource extends Resource
                     ])
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('inquirer.name')
+                TextColumn::make('inquirer.name')
                     ->label('Registered User')
                     ->sortable()
                     ->searchable()
                     ->placeholder('Guest User')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('preferred_viewing_date')
+                TextColumn::make('preferred_viewing_date')
                     ->label('Viewing Date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('responder.name')
+                TextColumn::make('responder.name')
                     ->label('Responded By')
                     ->sortable()
                     ->searchable()
                     ->placeholder('Not responded'),
 
-                Tables\Columns\TextColumn::make('responded_at')
+                TextColumn::make('responded_at')
                     ->label('Response Time')
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->placeholder('Not responded'),
 
-                Tables\Columns\TextColumn::make('response_time_hours')
+                TextColumn::make('response_time_hours')
                     ->label('Response Hours')
                     ->numeric(decimalPlaces: 1)
                     ->sortable()
@@ -258,21 +279,21 @@ class PropertyInquiryResource extends Resource
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\IconColumn::make('is_follow_up_required')
+                IconColumn::make('is_follow_up_required')
                     ->label('Follow-up')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('follow_up_date')
+                TextColumn::make('follow_up_date')
                     ->label('Follow-up Date')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('message')
+                TextColumn::make('message')
                     ->label('Message')
                     ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= 50) {
                             return null;
@@ -281,34 +302,34 @@ class PropertyInquiryResource extends Resource
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('first_response_at')
+                TextColumn::make('first_response_at')
                     ->label('First Response')
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('last_activity_at')
+                TextColumn::make('last_activity_at')
                     ->label('Last Activity')
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Inquiry Date')
                     ->dateTime()
                     ->sortable()
                     ->since(),
 
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
                         'responded' => 'Responded',
@@ -318,7 +339,7 @@ class PropertyInquiryResource extends Resource
                     ])
                     ->native(false),
 
-                Tables\Filters\SelectFilter::make('priority')
+                SelectFilter::make('priority')
                     ->options([
                         'low' => 'Low',
                         'medium' => 'Medium',
@@ -327,19 +348,19 @@ class PropertyInquiryResource extends Resource
                     ])
                     ->native(false),
 
-                Tables\Filters\SelectFilter::make('property_id')
+                SelectFilter::make('property_id')
                     ->label('Property')
                     ->relationship('property', 'title')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('responded_by')
+                SelectFilter::make('responded_by')
                     ->label('Responded By')
                     ->relationship('responder', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\TernaryFilter::make('inquirer_id')
+                TernaryFilter::make('inquirer_id')
                     ->label('User Type')
                     ->trueLabel('Registered Users')
                     ->falseLabel('Guest Inquiries')
@@ -349,17 +370,17 @@ class PropertyInquiryResource extends Resource
                     )
                     ->native(false),
 
-                Tables\Filters\TernaryFilter::make('is_follow_up_required')
+                TernaryFilter::make('is_follow_up_required')
                     ->label('Follow-up Required')
                     ->trueLabel('Requires Follow-up')
                     ->falseLabel('No Follow-up Needed')
                     ->native(false),
 
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('created_from')
                             ->label('Inquiry from'),
-                        Forms\Components\DatePicker::make('created_until')
+                        DatePicker::make('created_until')
                             ->label('Inquiry until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -374,9 +395,9 @@ class PropertyInquiryResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('response_time')
-                    ->form([
-                        Forms\Components\TextInput::make('response_hours')
+                Filter::make('response_time')
+                    ->schema([
+                        TextInput::make('response_hours')
                             ->numeric()
                             ->label('Response time (hours)')
                             ->placeholder('Max response time'),
@@ -389,22 +410,22 @@ class PropertyInquiryResource extends Resource
                             );
                     }),
 
-                Tables\Filters\Filter::make('pending_inquiries')
+                Filter::make('pending_inquiries')
                     ->label('Pending Inquiries')
                     ->query(fn(Builder $query): Builder => $query->where('status', 'pending'))
                     ->toggle(),
 
-                Tables\Filters\Filter::make('urgent_inquiries')
+                Filter::make('urgent_inquiries')
                     ->label('Urgent Inquiries')
                     ->query(fn(Builder $query): Builder => $query->where('priority', 'urgent'))
                     ->toggle(),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -419,9 +440,9 @@ class PropertyInquiryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyInquiries::route('/'),
-            'create' => Pages\CreatePropertyInquiry::route('/create'),
-            'edit' => Pages\EditPropertyInquiry::route('/{record}/edit'),
+            'index' => ListPropertyInquiries::route('/'),
+            'create' => CreatePropertyInquiry::route('/create'),
+            'edit' => EditPropertyInquiry::route('/{record}/edit'),
         ];
     }
 }

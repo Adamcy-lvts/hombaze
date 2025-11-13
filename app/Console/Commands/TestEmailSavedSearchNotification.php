@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use Exception;
 use Illuminate\Console\Command;
 use App\Models\User;
 use App\Models\SavedSearch;
@@ -96,7 +97,7 @@ class TestEmailSavedSearchNotification extends Command
             $this->info("✅ Email notification sent successfully!");
             $this->info("Check the email {$email} for the notification message.");
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("❌ Failed to send email notification:");
             $this->error($e->getMessage());
             return 1;

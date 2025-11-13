@@ -2,11 +2,28 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\PlotSizeResource\Pages\ListPlotSizes;
+use App\Filament\Resources\PlotSizeResource\Pages\CreatePlotSize;
+use App\Filament\Resources\PlotSizeResource\Pages\ViewPlotSize;
+use App\Filament\Resources\PlotSizeResource\Pages\EditPlotSize;
 use App\Filament\Resources\PlotSizeResource\Pages;
 use App\Filament\Resources\PlotSizeResource\RelationManagers;
 use App\Models\PlotSize;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,9 +34,9 @@ class PlotSizeResource extends Resource
 {
     protected static ?string $model = PlotSize::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-square-3-stack-3d';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-square-3-stack-3d';
 
-    protected static ?string $navigationGroup = 'Property Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Property Management';
 
     protected static ?int $navigationSort = 8;
 
@@ -29,30 +46,30 @@ class PlotSizeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Plot Sizes';
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Plot Size Information')
+        return $schema
+            ->components([
+                Section::make('Plot Size Information')
                     ->description('Configure predefined plot/land sizes for property listings and searches')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->required()
                                     ->maxLength(255)
                                     ->placeholder('e.g., Quarter Plot, Half Plot, 1 Acre')
                                     ->helperText('Descriptive name for this plot size'),
 
-                                Forms\Components\TextInput::make('description')
+                                TextInput::make('description')
                                     ->maxLength(255)
                                     ->placeholder('e.g., 15x30m - Common small residential plot')
                                     ->helperText('Optional description with dimensions or usage'),
                             ]),
 
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\TextInput::make('size_value')
+                                TextInput::make('size_value')
                                     ->label('Size Value')
                                     ->numeric()
                                     ->required()
@@ -60,13 +77,13 @@ class PlotSizeResource extends Resource
                                     ->placeholder('e.g., 1, 0.5, 2500')
                                     ->helperText('Numeric value for the size'),
 
-                                Forms\Components\Select::make('unit')
+                                Select::make('unit')
                                     ->required()
-                                    ->options(\App\Models\PlotSize::getUnits())
+                                    ->options(PlotSize::getUnits())
                                     ->live()
                                     ->helperText('Unit of measurement'),
 
-                                Forms\Components\TextInput::make('size_in_sqm')
+                                TextInput::make('size_in_sqm')
                                     ->label('Size in Sqm')
                                     ->numeric()
                                     ->disabled()
@@ -74,21 +91,21 @@ class PlotSizeResource extends Resource
                                     ->helperText('Auto-calculated equivalent in square meters'),
                             ]),
 
-                        Forms\Components\TextInput::make('display_text')
+                        TextInput::make('display_text')
                             ->label('Custom Display Text')
                             ->maxLength(255)
                             ->placeholder('e.g., 1 Plot (1,800 sqm)')
                             ->helperText('Optional custom display text. If empty, will be auto-generated from size value and unit'),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('sort_order')
+                                TextInput::make('sort_order')
                                     ->label('Sort Order')
                                     ->numeric()
                                     ->default(0)
                                     ->helperText('Lower numbers appear first'),
 
-                                Forms\Components\Toggle::make('is_active')
+                                Toggle::make('is_active')
                                     ->label('Active')
                                     ->default(true)
                                     ->helperText('Only active plot sizes will be shown in forms'),
@@ -101,28 +118,28 @@ class PlotSizeResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->weight('medium'),
 
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->searchable()
                     ->limit(50)
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('size_value')
+                TextColumn::make('size_value')
                     ->label('Size')
                     ->alignCenter()
                     ->formatStateUsing(fn (PlotSize $record) => $record->size_value . ' ' . $record->unit),
 
-                Tables\Columns\TextColumn::make('size_in_sqm')
+                TextColumn::make('size_in_sqm')
                     ->label('Sqm Equivalent')
                     ->alignCenter()
                     ->formatStateUsing(fn ($state) => number_format($state, 0) . ' sqm')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('unit')
+                TextColumn::make('unit')
                     ->badge()
                     ->colors([
                         'primary' => 'plot',
@@ -132,44 +149,44 @@ class PlotSizeResource extends Resource
                     ])
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('display_text')
+                TextColumn::make('display_text')
                     ->label('Display')
                     ->limit(30)
                     ->toggleable(),
 
-                Tables\Columns\TextColumn::make('sort_order')
+                TextColumn::make('sort_order')
                     ->label('Order')
                     ->alignCenter()
                     ->sortable()
                     ->toggleable(),
 
-                Tables\Columns\IconColumn::make('is_active')
+                IconColumn::make('is_active')
                     ->boolean()
                     ->label('Active')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('unit')
-                    ->options(\App\Models\PlotSize::getUnits()),
+                SelectFilter::make('unit')
+                    ->options(PlotSize::getUnits()),
 
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Status')
                     ->placeholder('All plot sizes')
                     ->trueLabel('Active only')
                     ->falseLabel('Inactive only'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -184,10 +201,10 @@ class PlotSizeResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPlotSizes::route('/'),
-            'create' => Pages\CreatePlotSize::route('/create'),
-            'view' => Pages\ViewPlotSize::route('/{record}'),
-            'edit' => Pages\EditPlotSize::route('/{record}/edit'),
+            'index' => ListPlotSizes::route('/'),
+            'create' => CreatePlotSize::route('/create'),
+            'view' => ViewPlotSize::route('/{record}'),
+            'edit' => EditPlotSize::route('/{record}/edit'),
         ];
     }
 }

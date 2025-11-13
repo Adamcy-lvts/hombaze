@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/50 py-8">
+<div class="min-h-screen bg-linear-to-br from-slate-50 to-blue-50/50 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
         <div class="flex items-center justify-between mb-8">
@@ -7,7 +7,7 @@
                 <p class="text-gray-600 mt-1">Track your property inquiries and responses</p>
             </div>
             <a href="{{ route('dashboard') }}"
-               class="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-lg text-gray-700 hover:bg-white transition-all duration-200 shadow-sm">
+               class="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-xs border border-gray-200 rounded-lg text-gray-700 hover:bg-white transition-all duration-200 shadow-xs">
                 <x-heroicon-o-arrow-left class="w-4 h-4 mr-2" />
                 Back to Dashboard
             </a>
@@ -15,7 +15,7 @@
 
         <!-- Stats Overview -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-sm">
+            <div class="bg-white/70 backdrop-blur-xs rounded-xl p-6 border border-white/50 shadow-xs">
                 <div class="flex items-center">
                     <div class="p-3 rounded-lg bg-blue-500/10">
                         <x-heroicon-o-chat-bubble-left-ellipsis class="w-6 h-6 text-blue-600" />
@@ -27,7 +27,7 @@
                 </div>
             </div>
 
-            <div class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-sm">
+            <div class="bg-white/70 backdrop-blur-xs rounded-xl p-6 border border-white/50 shadow-xs">
                 <div class="flex items-center">
                     <div class="p-3 rounded-lg bg-yellow-500/10">
                         <x-heroicon-o-clock class="w-6 h-6 text-yellow-600" />
@@ -39,7 +39,7 @@
                 </div>
             </div>
 
-            <div class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-sm">
+            <div class="bg-white/70 backdrop-blur-xs rounded-xl p-6 border border-white/50 shadow-xs">
                 <div class="flex items-center">
                     <div class="p-3 rounded-lg bg-green-500/10">
                         <x-heroicon-o-check-circle class="w-6 h-6 text-green-600" />
@@ -51,7 +51,7 @@
                 </div>
             </div>
 
-            <div class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-sm">
+            <div class="bg-white/70 backdrop-blur-xs rounded-xl p-6 border border-white/50 shadow-xs">
                 <div class="flex items-center">
                     <div class="p-3 rounded-lg bg-purple-500/10">
                         <x-heroicon-o-eye class="w-6 h-6 text-purple-600" />
@@ -65,7 +65,7 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white/70 backdrop-blur-sm rounded-xl p-6 border border-white/50 shadow-sm mb-8">
+        <div class="bg-white/70 backdrop-blur-xs rounded-xl p-6 border border-white/50 shadow-xs mb-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search -->
                 <div>
@@ -106,7 +106,7 @@
         </div>
 
         <!-- Loading Overlay -->
-        <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center">
             <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
                 <div class="animate-spin h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"></div>
                 <span class="text-gray-700">Loading...</span>
@@ -117,7 +117,7 @@
         @if($inquiries->count() > 0)
             <div class="space-y-6">
                 @foreach($inquiries as $inquiry)
-                    <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-white/50 shadow-sm overflow-hidden">
+                    <div class="bg-white/70 backdrop-blur-xs rounded-xl border border-white/50 shadow-xs overflow-hidden">
                         <div class="p-6">
                             <div class="flex items-start justify-between">
                                 <div class="flex-1">
@@ -219,7 +219,7 @@
             </div>
         @else
             <!-- Empty State -->
-            <div class="bg-white/70 backdrop-blur-sm rounded-xl border border-white/50 shadow-sm p-12 text-center">
+            <div class="bg-white/70 backdrop-blur-xs rounded-xl border border-white/50 shadow-xs p-12 text-center">
                 <div class="max-w-md mx-auto">
                     <div class="w-16 h-16 mx-auto mb-4 p-3 bg-gray-100 rounded-full">
                         <x-heroicon-o-chat-bubble-left-ellipsis class="w-10 h-10 text-gray-400" />

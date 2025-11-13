@@ -2,6 +2,29 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\Select;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Actions\EditAction;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\RentPaymentResource\Pages\ListRentPayments;
+use App\Filament\Landlord\Resources\RentPaymentResource\Pages\CreateRentPayment;
+use App\Filament\Landlord\Resources\RentPaymentResource\Pages\EditRentPayment;
+use App\Filament\Landlord\Resources\RentPaymentResource\Pages\ViewReceipt;
 use App\Filament\Landlord\Resources\RentPaymentResource\Pages;
 use App\Filament\Landlord\Resources\RentPaymentResource\RelationManagers;
 use App\Models\RentPayment;
@@ -10,7 +33,6 @@ use App\Models\Tenant;
 use App\Models\Property;
 use Illuminate\Support\Str;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -22,23 +44,23 @@ class RentPaymentResource extends Resource
 {
     protected static ?string $model = RentPayment::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-banknotes';
 
-    protected static ?string $navigationGroup = 'Financial Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Financial Management';
 
     protected static ?string $navigationLabel = 'Rent Payments';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Payment Details')
+        return $schema
+            ->components([
+                Section::make('Payment Details')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('lease_id')
+                                Select::make('lease_id')
                                     ->label('Lease')
                                     ->relationship('lease', 'id', function (Builder $query) {
                                         return $query->where('landlord_id', Auth::id());
@@ -50,7 +72,7 @@ class RentPaymentResource extends Resource
                                     ->searchable()
                                     ->preload()
                                     ->live()
-                                    ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                    ->afterStateUpdated(function ($state, Set $set) {
                                         if ($state) {
                                             $lease = Lease::find($state);
                                             if ($lease) {
@@ -62,14 +84,14 @@ class RentPaymentResource extends Resource
                                         }
                                     }),
 
-                                Forms\Components\Hidden::make('landlord_id')
+                                Hidden::make('landlord_id')
                                     ->default(Auth::id())
                                     ->required(),
 
-                                Forms\Components\Hidden::make('processed_by')
+                                Hidden::make('processed_by')
                                     ->default(Auth::id()),
 
-                                Forms\Components\Select::make('tenant_id')
+                                Select::make('tenant_id')
                                     ->label('Tenant')
                                     ->relationship('tenant', 'first_name', function (Builder $query) {
                                         return $query->where('landlord_id', Auth::id());
@@ -80,9 +102,9 @@ class RentPaymentResource extends Resource
                                     ->preload(),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('property_id')
+                                Select::make('property_id')
                                     ->label('Property')
                                     ->relationship('property', 'title', function (Builder $query) {
                                         return $query->whereHas('owner', function (Builder $query) {
@@ -93,16 +115,16 @@ class RentPaymentResource extends Resource
                                     ->searchable()
                                     ->preload(),
 
-                                Forms\Components\TextInput::make('receipt_number')
+                                TextInput::make('receipt_number')
                                     ->label('Receipt Number')
                                     ->default(fn () => 'RCP-' . strtoupper(Str::random(8)))
                                     ->required()
                                     ->unique(ignoreRecord: true),
                             ]),
 
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\TextInput::make('amount')
+                                TextInput::make('amount')
                                     ->label('Payment Amount')
                                     ->required()
                                     ->numeric()
@@ -119,7 +141,7 @@ class RentPaymentResource extends Resource
                                         $set('balance_due', max(0, $balanceDue));
                                     }),
 
-                                Forms\Components\TextInput::make('late_fee')
+                                TextInput::make('late_fee')
                                     ->label('Late Fee')
                                     ->numeric()
                                     ->prefix('₦')
@@ -136,7 +158,7 @@ class RentPaymentResource extends Resource
                                         $set('balance_due', max(0, $balanceDue));
                                     }),
 
-                                Forms\Components\TextInput::make('discount')
+                                TextInput::make('discount')
                                     ->label('Discount')
                                     ->numeric()
                                     ->prefix('₦')
@@ -154,9 +176,9 @@ class RentPaymentResource extends Resource
                                     }),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('deposit')
+                                TextInput::make('deposit')
                                     ->label('Deposit')
                                     ->numeric()
                                     ->prefix('₦')
@@ -172,7 +194,7 @@ class RentPaymentResource extends Resource
                                         $set('balance_due', max(0, $balanceDue));
                                     }),
 
-                                Forms\Components\TextInput::make('balance_due')
+                                TextInput::make('balance_due')
                                     ->label('Balance Due')
                                     ->numeric()
                                     ->prefix('₦')
@@ -180,9 +202,9 @@ class RentPaymentResource extends Resource
                                     ->dehydrated(),
                             ]),
 
-                        Forms\Components\Grid::make(1)
+                        Grid::make(1)
                             ->schema([
-                                Forms\Components\TextInput::make('net_amount')
+                                TextInput::make('net_amount')
                                     ->label('Net Amount')
                                     ->numeric()
                                     ->prefix('₦')
@@ -191,29 +213,29 @@ class RentPaymentResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Payment Information')
+                Section::make('Payment Information')
                     ->schema([
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\DatePicker::make('payment_date')
+                                DatePicker::make('payment_date')
                                     ->required()
                                     ->default(now()),
 
-                                Forms\Components\DatePicker::make('due_date')
+                                DatePicker::make('due_date')
                                     ->required(),
 
-                                Forms\Components\TextInput::make('payment_for_period')
+                                TextInput::make('payment_for_period')
                                     ->label('Payment For Period')
                                     ->placeholder('e.g., January 2024, Q1 2024'),
                             ]),
 
-                        Forms\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Forms\Components\Select::make('payment_method')
+                                Select::make('payment_method')
                                     ->options(RentPayment::getPaymentMethods())
                                     ->required(),
 
-                                Forms\Components\Select::make('status')
+                                Select::make('status')
                                     ->options(RentPayment::getStatuses())
                                     ->required()
                                     ->default('pending'),
@@ -221,35 +243,35 @@ class RentPaymentResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Transaction Details')
+                Section::make('Transaction Details')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('transaction_reference')
+                                TextInput::make('transaction_reference')
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('payment_reference')
+                                TextInput::make('payment_reference')
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\DateTimePicker::make('processed_at'),
+                                DateTimePicker::make('processed_at'),
 
-                                Forms\Components\Select::make('processed_by')
+                                Select::make('processed_by')
                                     ->relationship('processedBy', 'name')
                                     ->searchable()
                                     ->preload(),
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Textarea::make('notes')
+                        Textarea::make('notes')
                             ->rows(3)
                             ->maxLength(1000),
 
-                        Forms\Components\Textarea::make('payment_proof')
+                        Textarea::make('payment_proof')
                             ->label('Payment Proof/Details')
                             ->rows(2)
                             ->maxLength(500),
@@ -261,23 +283,23 @@ class RentPaymentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('receipt_number')
+                TextColumn::make('receipt_number')
                     ->label('Receipt #')
                     ->searchable()
                     ->sortable()
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('lease.property.title')
+                TextColumn::make('lease.property.title')
                     ->label('Property')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tenant.name')
+                TextColumn::make('tenant.name')
                     ->label('Tenant')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('lease_period')
+                TextColumn::make('lease_period')
                     ->label('Lease Period')
                     ->formatStateUsing(function (RentPayment $record) {
                         if ($record->lease && $record->lease->start_date && $record->lease->end_date) {
@@ -287,35 +309,35 @@ class RentPaymentResource extends Resource
                     })
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('amount')
+                TextColumn::make('amount')
                     ->money('NGN')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('late_fee')
+                TextColumn::make('late_fee')
                     ->money('NGN')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('deposit')
+                TextColumn::make('deposit')
                     ->money('NGN')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('balance_due')
+                TextColumn::make('balance_due')
                     ->label('Balance Due')
                     ->money('NGN')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('payment_date')
+                TextColumn::make('payment_date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('due_date')
+                TextColumn::make('due_date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
@@ -326,23 +348,23 @@ class RentPaymentResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('payment_method')
+                TextColumn::make('payment_method')
                     ->badge(),
 
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options(RentPayment::getStatuses()),
 
-                Tables\Filters\SelectFilter::make('payment_method')
+                SelectFilter::make('payment_method')
                     ->options(RentPayment::getPaymentMethods()),
 
-                Tables\Filters\SelectFilter::make('payment_period')
+                SelectFilter::make('payment_period')
                     ->options([
                         'january' => 'January',
                         'february' => 'February',
@@ -358,29 +380,29 @@ class RentPaymentResource extends Resource
                         'december' => 'December',
                     ]),
 
-                Tables\Filters\Filter::make('overdue')
+                Filter::make('overdue')
                     ->query(fn (Builder $query): Builder => $query->overdue())
                     ->label('Overdue Payments'),
 
-                Tables\Filters\Filter::make('pending')
+                Filter::make('pending')
                     ->query(fn (Builder $query): Builder => $query->where('status', 'pending'))
                     ->label('Pending Payments'),
 
-                Tables\Filters\Filter::make('paid')
+                Filter::make('paid')
                     ->query(fn (Builder $query): Builder => $query->where('status', 'paid'))
                     ->label('Paid'),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('viewReceipt')
+            ->recordActions([
+                EditAction::make(),
+                ActionGroup::make([
+                    Action::make('viewReceipt')
                         ->label('View Receipt')
                         ->icon('heroicon-o-receipt-percent')
                         ->color('primary')
                         ->url(fn (RentPayment $record) => route('filament.landlord.resources.rent-payments.view-receipt', $record))
                         ->openUrlInNewTab(true)
                         ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
-                    Tables\Actions\Action::make('downloadReceipt')
+                    Action::make('downloadReceipt')
                         ->label('Download PDF')
                         ->icon('heroicon-o-document-arrow-down')
                         ->color('success')
@@ -393,11 +415,11 @@ class RentPaymentResource extends Resource
                     ->icon('heroicon-o-document-text')
                     ->color('primary')
                     ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
-                Tables\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -419,10 +441,10 @@ class RentPaymentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRentPayments::route('/'),
-            'create' => Pages\CreateRentPayment::route('/create'),
-            'edit' => Pages\EditRentPayment::route('/{record}/edit'),
-            'view-receipt' => Pages\ViewReceipt::route('/{record}/receipt'),
+            'index' => ListRentPayments::route('/'),
+            'create' => CreateRentPayment::route('/create'),
+            'edit' => EditRentPayment::route('/{record}/edit'),
+            'view-receipt' => ViewReceipt::route('/{record}/receipt'),
         ];
     }
 }

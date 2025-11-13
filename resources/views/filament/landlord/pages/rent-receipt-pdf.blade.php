@@ -268,7 +268,7 @@
             border-top-width: 0.5px;
         }
 
-        .shadow-sm {
+        .shadow-xs {
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
 
@@ -407,7 +407,7 @@
             background-color: #e0e7ff;
         }
 
-        .bg-gradient-to-r {
+        .bg-linear-to-r {
             background-image: linear-gradient(to right, var(--tw-gradient-stops));
         }
 
@@ -501,7 +501,7 @@
 </head>
 
 <body class="bg-gray-50">
-    <div id="capture-area" class="wide-layout p-4 bg-gradient-to-r from-slate-50 to-slate-100 shadow-lg rounded border border-gray-200 relative overflow-hidden">
+    <div id="capture-area" class="wide-layout p-4 bg-linear-to-r from-slate-50 to-slate-100 shadow-lg rounded-sm border border-gray-200 relative overflow-hidden">
         <!-- Background pattern -->
         <div class="absolute inset-0 opacity-5 pattern-diagonal-lines pattern-gray-700"></div>
 
@@ -620,7 +620,7 @@
 
             <!-- Right: Receipt Number (Always at far right) -->
             <div class="text-right">
-                <div class="bg-indigo-100 px-3 py-2 rounded shadow-sm border border-indigo-200">
+                <div class="bg-indigo-100 px-3 py-2 rounded-sm shadow-xs border border-indigo-200">
                     <p class="text-xs text-gray-600">Receipt No:</p>
                     <p class="text-sm font-bold text-indigo-700">{{ $receipt->receipt_number }}</p>
                 </div>
@@ -630,19 +630,19 @@
         <!-- Main Content Area - Optimized Layout -->
         <!-- Top Row: Basic Information (4 columns) -->
         <div class="grid grid-cols-4 gap-3 mb-3">
-            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+            <div class="bg-white p-2 rounded-sm shadow-xs border border-gray-200">
                 <p class="text-xs font-semibold text-gray-600 mb-1">Received From:</p>
                 <p class="text-sm text-gray-800 font-medium">{{ $receipt->tenant->name ?? 'N/A' }}</p>
             </div>
-            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+            <div class="bg-white p-2 rounded-sm shadow-xs border border-gray-200">
                 <p class="text-xs font-semibold text-gray-600 mb-1">Payment Date:</p>
                 <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}</p>
             </div>
-            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+            <div class="bg-white p-2 rounded-sm shadow-xs border border-gray-200">
                 <p class="text-xs font-semibold text-gray-600 mb-1">Payment For:</p>
                 <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
             </div>
-            <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-2 rounded shadow-sm border-2 border-indigo-200">
+            <div class="bg-linear-to-r from-indigo-50 to-blue-50 p-2 rounded-sm shadow-xs border-2 border-indigo-200">
                 <p class="text-xs font-semibold text-indigo-700 mb-1">Total Amount</p>
                 <p class="text-lg font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
             </div>
@@ -650,7 +650,7 @@
 
         <!-- Second Row: Property Information (Full Width) -->
         @if($receipt->lease && $receipt->lease->property)
-        <div class="bg-blue-50 p-3 rounded border-l-4 border-blue-500 shadow-sm mb-3">
+        <div class="bg-blue-50 p-3 rounded-sm border-l-4 border-blue-500 shadow-xs mb-3">
             <p class="font-semibold text-blue-700 mb-1 text-xs">Property Details</p>
             <p class="text-gray-800 font-medium text-sm">{{ $receipt->lease->property->title }}</p>
             @if($receipt->lease->property->address)
@@ -678,20 +678,20 @@
         <div class="grid grid-cols-3 gap-3 mb-3">
             <!-- Lease Start Date -->
             @if($receipt->lease)
-            <div class="bg-green-50 p-2 rounded border-l-4 border-green-500 shadow-sm">
+            <div class="bg-green-50 p-2 rounded-sm border-l-4 border-green-500 shadow-xs">
                 <p class="font-semibold text-green-700 text-xs mb-1">Lease Start</p>
                 <p class="text-sm font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</p>
             </div>
 
             <!-- Lease End Date -->
-            <div class="bg-red-50 p-2 rounded border-l-4 border-red-500 shadow-sm">
+            <div class="bg-red-50 p-2 rounded-sm border-l-4 border-red-500 shadow-xs">
                 <p class="font-semibold text-red-700 text-xs mb-1">Lease End</p>
                 <p class="text-sm font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</p>
             </div>
             @endif
 
             <!-- Payment Breakdown -->
-            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+            <div class="bg-white p-2 rounded-sm shadow-xs border border-gray-200">
                 <p class="font-semibold text-gray-700 mb-1 text-xs">Payment Breakdown</p>
                 <div class="space-y-1 text-xs">
                     @if($receipt->late_fee > 0)
@@ -734,13 +734,13 @@
         <!-- Fourth Row: Amount in Words & Payment Method -->
         <div class="grid grid-cols-4 gap-3 mb-3">
             <!-- Amount in Words (spans 2 columns) -->
-            <div class="col-span-2 bg-gray-50 p-2 rounded shadow-sm border border-gray-200">
+            <div class="col-span-2 bg-gray-50 p-2 rounded-sm shadow-xs border border-gray-200">
                 <p class="font-semibold text-gray-600 text-xs mb-1">Amount in Words:</p>
                 <p class="text-gray-800 text-sm italic font-medium">{{ $amountInWords }}</p>
             </div>
 
             <!-- Payment Method -->
-            <div class="bg-white p-2 rounded shadow-sm border border-gray-200">
+            <div class="bg-white p-2 rounded-sm shadow-xs border border-gray-200">
                 <p class="font-semibold text-gray-700 mb-1 text-xs">Payment Method</p>
                 <div class="grid grid-cols-2 gap-1">
                     <div class="flex items-center space-x-1 text-xs {{ $receipt->payment_method == 'cash' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
@@ -766,7 +766,7 @@
 
         <!-- Notes Section (if exists) -->
         @if($receipt->notes)
-        <div class="bg-yellow-50 p-2 rounded border-l-4 border-yellow-400 shadow-sm mb-3">
+        <div class="bg-yellow-50 p-2 rounded-sm border-l-4 border-yellow-400 shadow-xs mb-3">
             <p class="font-semibold text-yellow-700 text-xs mb-1">Additional Notes:</p>
             <p class="text-gray-800 text-sm">{{ $receipt->notes }}</p>
         </div>
@@ -775,7 +775,7 @@
         <!-- QR Code positioned at bottom right -->
         <div class="relative">
             <div class="absolute bottom-0 right-0 mb-2">
-                <div class="bg-white p-1 rounded shadow-sm border border-gray-300 inline-block">
+                <div class="bg-white p-1 rounded-sm shadow-xs border border-gray-300 inline-block">
                     @if(isset($qrCode))
                         {!! $qrCode !!}
                     @else

@@ -10,44 +10,44 @@
 
     <!-- SEO Meta Tags -->
     @if(isset($ogData))
-        <meta name="description" content="{{ $ogData['description'] }}">
-        <meta name="keywords" content="{{ $ogData['property_type'] }}, {{ $ogData['location'] }}, Nigeria real estate, HomeBaze, property for sale">
+    <meta name="description" content="{{ $ogData['description'] }}">
+    <meta name="keywords" content="{{ $ogData['property_type'] }}, {{ $ogData['location'] }}, Nigeria real estate, HomeBaze, property for sale">
     @else
-        <meta name="description" content="Find your perfect property from thousands of verified listings across Nigeria. Search by location, price, and amenities.">
-        <meta name="keywords" content="Nigeria real estate search, property finder, houses for sale, apartments Lagos, Abuja properties">
+    <meta name="description" content="Find your perfect property from thousands of verified listings across Nigeria. Search by location, price, and amenities.">
+    <meta name="keywords" content="Nigeria real estate search, property finder, houses for sale, apartments Lagos, Abuja properties">
     @endif
     <meta name="author" content="HomeBaze">
 
     <!-- Open Graph Meta Tags for WhatsApp Link Previews -->
     @if(isset($ogData))
-        <meta property="og:title" content="{{ $ogData['title'] }} - HomeBaze">
-        <meta property="og:description" content="{{ $ogData['description'] }}">
-        <meta property="og:type" content="{{ $ogData['type'] }}">
-        <meta property="og:url" content="{{ $ogData['url'] }}">
-        <meta property="og:image" content="{{ $ogData['image'] }}">
-        <meta property="og:image:width" content="1200">
-        <meta property="og:image:height" content="630">
-        <meta property="og:site_name" content="{{ $ogData['site_name'] }}">
+    <meta property="og:title" content="{{ $ogData['title'] }} - HomeBaze">
+    <meta property="og:description" content="{{ $ogData['description'] }}">
+    <meta property="og:type" content="{{ $ogData['type'] }}">
+    <meta property="og:url" content="{{ $ogData['url'] }}">
+    <meta property="og:image" content="{{ $ogData['image'] }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="{{ $ogData['site_name'] }}">
 
-        <!-- WhatsApp Specific Meta Tags -->
-        <meta property="og:image:alt" content="{{ $ogData['title'] }} - Property in {{ $ogData['location'] }}">
+    <!-- WhatsApp Specific Meta Tags -->
+    <meta property="og:image:alt" content="{{ $ogData['title'] }} - Property in {{ $ogData['location'] }}">
 
-        <!-- Property Specific Meta Tags -->
-        <meta property="product:price:amount" content="{{ $ogData['price'] }}">
-        <meta property="product:price:currency" content="{{ $ogData['currency'] }}">
-        <meta property="og:locality" content="{{ $ogData['location'] }}">
+    <!-- Property Specific Meta Tags -->
+    <meta property="product:price:amount" content="{{ $ogData['price'] }}">
+    <meta property="product:price:currency" content="{{ $ogData['currency'] }}">
+    <meta property="og:locality" content="{{ $ogData['location'] }}">
 
-        <!-- Twitter Card Tags for better social sharing -->
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="{{ $ogData['title'] }} - HomeBaze">
-        <meta name="twitter:description" content="{{ $ogData['description'] }}">
-        <meta name="twitter:image" content="{{ $ogData['image'] }}">
+    <!-- Twitter Card Tags for better social sharing -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $ogData['title'] }} - HomeBaze">
+    <meta name="twitter:description" content="{{ $ogData['description'] }}">
+    <meta name="twitter:image" content="{{ $ogData['image'] }}">
     @else
-        <meta property="og:title" content="Properties - HomeBaze">
-        <meta property="og:description" content="Discover verified properties across Nigeria's most desirable locations.">
-        <meta property="og:type" content="website">
-        <meta property="og:url" content="{{ url()->current() }}">
-        <meta property="og:image" content="{{ asset('images/homebaze-og-image.jpg') }}">
+    <meta property="og:title" content="Properties - HomeBaze">
+    <meta property="og:description" content="Discover verified properties across Nigeria's most desirable locations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ asset('images/homebaze-og-image.jpg') }}">
     @endif
 
     <!-- Fonts -->
@@ -59,22 +59,22 @@
     @livewireStyles
 
     @if (app()->environment('production'))
-        @include('components.analytics.google-tag')
+    @include('components.analytics.google-tag')
     @endif
 
     <!-- GSAP CDN -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 
-    
+
 
     <!-- Additional Head Content -->
     @stack('head')
 </head>
 
 <body class="font-inter antialiased bg-gray-900 overflow-x-hidden">
-    <!-- Navigation Component (same as landing page) -->
-    @include('components.landing.navigation')
+
+
 
     <!-- Main Content -->
     <main class="min-h-screen">
@@ -82,178 +82,9 @@
     </main>
 
 
-    <!-- Footer -->
-    @include('components.landing.footer')
 
-    <!-- Custom CSS -->
-    <style>
-        .font-inter {
-            font-family: 'Inter', sans-serif;
-        }
 
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #1f2937;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #10b981, #3b82f6);
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #059669, #2563eb);
-        }
-
-        /* Smooth scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        /* Page transition animations */
-        .page-transition {
-            opacity: 0;
-            transform: translateY(20px);
-            animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        @keyframes fadeInUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Loading states */
-        .loading-skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        /* Loading animation */
-        .animate-pulse {
-            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: .5;
-            }
-        }
-
-       
-    </style>
-
-    <!-- Custom JavaScript -->
-    <script>
-        // Register GSAP plugins
-        gsap.registerPlugin(ScrollTrigger);
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add page transition effect
-            document.body.classList.add('page-transition');
-
-            // Track property page views
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'page_view', {
-                    page_title: 'Properties',
-                    page_location: window.location.href
-                });
-            }
-
-            // Auto-focus search input if present
-            const searchInput = document.querySelector('input[name="q"]');
-            if (searchInput && !searchInput.value) {
-                setTimeout(() => searchInput.focus(), 100);
-            }
-
-            // Smooth scroll for pagination links
-            document.querySelectorAll('.pagination a').forEach(link => {
-                link.addEventListener('click', function() {
-                    setTimeout(() => {
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                    }, 100);
-                });
-            });
-        });
-
-        // Search form enhancement
-        function enhanceSearchForm() {
-            const searchForm = document.querySelector('#search-form');
-            if (searchForm) {
-                searchForm.addEventListener('submit', function() {
-                    // Add loading state to submit button
-                    const submitBtn = this.querySelector('button[type="submit"]');
-                    if (submitBtn) {
-                        submitBtn.innerHTML = '<svg class="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Searching...';
-                        submitBtn.disabled = true;
-                    }
-                });
-            }
-        }
-
-        // Initialize search form enhancements
-        document.addEventListener('DOMContentLoaded', enhanceSearchForm);
-
-        // Global error handling
-        window.addEventListener('error', function(e) {
-            console.error('JavaScript Error:', e.error);
-        });
-
-        // Performance monitoring
-        window.addEventListener('load', function() {
-            if ('performance' in window) {
-                const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
-                console.log('Page load time:', loadTime + 'ms');
-            }
-        });
-
-        // Accessibility enhancements
-        document.addEventListener('keydown', function(e) {
-            // Skip to main content with Alt+M
-            if (e.altKey && e.key === 'm') {
-                e.preventDefault();
-                document.querySelector('main').focus();
-            }
-        });
-
-        // Analytics tracking (replace with your analytics code)
-        function trackEvent(category, action, label) {
-            if (typeof gtag !== 'undefined') {
-                gtag('event', action, {
-                    event_category: category,
-                    event_label: label
-                });
-            }
-        }
-
-        // Track property interactions
-        document.addEventListener('DOMContentLoaded', function() {
-            const propertyCards = document.querySelectorAll('[data-property-id]');
-            propertyCards.forEach(card => {
-                card.addEventListener('click', function() {
-                    const propertyId = this.getAttribute('data-property-id');
-                    trackEvent('Property', 'View', propertyId);
-                });
-            });
-        });
-    </script>
+  
 
     @livewireScripts
 

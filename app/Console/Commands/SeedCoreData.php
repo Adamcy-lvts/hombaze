@@ -2,6 +2,14 @@
 
 namespace App\Console\Commands;
 
+use Database\Seeders\StateSeeder;
+use Database\Seeders\PropertyTypeSeeder;
+use Database\Seeders\PropertyFeatureSeeder;
+use Database\Seeders\ShieldSeeder;
+use Database\Seeders\CitySeeder;
+use Database\Seeders\AreaSeeder;
+use Database\Seeders\PropertySubTypeSeeder;
+use Database\Seeders\PlotSizeSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
@@ -33,20 +41,20 @@ class SeedCoreData extends Command
 
         $coreDataSeeders = [
             // Foundation data
-            \Database\Seeders\StateSeeder::class,
-            \Database\Seeders\PropertyTypeSeeder::class,
-            \Database\Seeders\PropertyFeatureSeeder::class,
+            StateSeeder::class,
+            PropertyTypeSeeder::class,
+            PropertyFeatureSeeder::class,
 
             // Roles and permissions (required for multi-tenant setup)
-            \Database\Seeders\ShieldSeeder::class,
+            ShieldSeeder::class,
 
             // Geographic data (depends on states)
-            \Database\Seeders\CitySeeder::class,
-            \Database\Seeders\AreaSeeder::class,
+            CitySeeder::class,
+            AreaSeeder::class,
 
             // Property-specific data
-            \Database\Seeders\PropertySubTypeSeeder::class,
-            \Database\Seeders\PlotSizeSeeder::class,
+            PropertySubTypeSeeder::class,
+            PlotSizeSeeder::class,
         ];
 
         // Run all core data seeders

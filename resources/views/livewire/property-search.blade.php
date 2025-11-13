@@ -4,56 +4,41 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
             <!-- Breadcrumb -->
             <!-- Premium Breadcrumb Navigation -->
-            <div class="max-w-7xl  pr-4 sm:px-6 lg:px-8 mb-6 lg:mb-8">
+            <div class="max-w-7xl pr-4 sm:px-6 lg:px-8 mb-6 lg:mb-8">
                 <nav class="flex items-center" aria-label="Breadcrumb">
-                    <div
-                        class="flex items-center space-x-2 lg:space-x-3 bg-white/70 backdrop-blur-xl rounded-2xl px-3 py-3  lg:py-4 shadow-xl border border-white/40 overflow-x-auto">
-                        <!-- Home -->
-                        <a href="{{ route('landing') }}"
-                            class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300 flex-shrink-0">
-                            <div
-                                class="p-1.5 lg:p-2 rounded-xl bg-emerald-50 group-hover:bg-emerald-100 group-hover:scale-105 transition-all duration-300">
-                                <svg class="w-5 h-5 xl:w-5 xl:h-5 text-emerald-600" fill="none"
+                    <ol class="flex items-center gap-2 text-xs sm:text-sm text-gray-500 overflow-x-auto whitespace-nowrap px-3 py-2 border border-gray-200 rounded-xl bg-white shadow-xs shadow-gray-200/70 w-full">
+                        <li>
+                            <a href="{{ route('landing') }}"
+                                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-200 text-gray-700 hover:text-emerald-600 hover:border-emerald-300 transition">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                                     </path>
                                 </svg>
-                            </div>
-                            <span
-                                class="ml-1.5 lg:ml-2 text-xs lg:text-sm xl:text-base font-medium hidden sm:inline">Home</span>
-                        </a>
-
-                        <!-- Separator -->
-                        <div class="flex items-center flex-shrink-0">
-                            <div class="w-28 lg:w-8 h-0.5 bg-gradient-to-r from-gray-300 to-gray-400 rounded-full"></div>
-                            <svg class="w-12 h-8 xl:w-10 xl:h-10 text-gray-400 -ml-1" fill="none"
+                                <span class="font-medium">Home</span>
+                            </a>
+                        </li>
+                        <li class="flex items-center shrink-0">
+                            <div class="w-8 sm:w-12 h-0.5 bg-linear-to-r from-gray-300 to-gray-400 rounded-full"></div>
+                            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 -ml-1" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
                                 </path>
                             </svg>
-                        </div>
-
-                        <!-- Properties -->
-                        <a href="{{ route('properties.search') }}"
-                            class="group flex items-center text-gray-600 hover:text-emerald-600 transition-all duration-300 flex-shrink-0">
-                            <div
-                                class="p-1.5 lg:p-2 rounded-xl bg-blue-50 group-hover:bg-blue-100 group-hover:scale-105 transition-all duration-300">
-                                <svg class="w-5 h-5 xl:w-5 xl:h-5 text-blue-600" fill="none"
+                        </li>
+                        <li>
+                            <a href="{{ route('properties.search') }}"
+                                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-transparent text-gray-600 hover:text-emerald-600 hover:border-emerald-300 transition">
+                                <svg class="w-4 h-4 text-blue-600" fill="none"
                                     stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                                 </svg>
-                            </div>
-                            <span
-                                class="ml-1.5 lg:ml-2 text-xs lg:text-sm xl:text-base font-medium hidden sm:inline">Properties</span>
-                        </a>
-
-                      
-
-                       
-                    </div>
-
+                                <span class="font-medium">Properties</span>
+                            </a>
+                        </li>
+                    </ol>
                 </nav>
             </div>
 
@@ -102,7 +87,7 @@
                             <div wire:click="selectSuggestion({{ json_encode($suggestion) }})"
                                 class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0">
                                 <div
-                                    class="flex-shrink-0 w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
+                                    class="shrink-0 w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
                                     @if ($suggestion['icon'] === 'location-dot')
                                         <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -132,7 +117,7 @@
             </div>
 
             <!-- Clean Filters (Similar to Landing Page) -->
-            <div class="bg-white/90 backdrop-blur-sm border border-gray-200/50 rounded-xl p-3 mb-4 shadow-sm">
+            <div class="bg-white/90 backdrop-blur-xs border border-gray-200/50 rounded-xl p-3 mb-4 shadow-xs">
                 <!-- Active Filters Display -->
                 @if (count($activeFilters) > 0)
                     <div class="mb-3 flex flex-wrap items-center gap-2">
@@ -202,7 +187,7 @@
                                         <label class="flex items-center">
                                             <input type="checkbox" wire:model.live="selectedListingTypes"
                                                 value="{{ $type }}"
-                                                class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                                class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500">
                                             <span class="ml-2 text-sm text-gray-700">{{ ucfirst($type) }}</span>
                                         </label>
                                     @endforeach
@@ -242,7 +227,7 @@
                                         <label class="flex items-center">
                                             <input type="checkbox" wire:model.live="selectedPriceRanges"
                                                 value="{{ $range }}"
-                                                class="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500">
+                                                class="rounded-sm border-gray-300 text-emerald-600 focus:ring-emerald-500">
                                             <span class="ml-2 text-sm text-gray-700">
                                                 @switch($range)
                                                     @case('0-500000')
@@ -308,7 +293,7 @@
                                 @if ($property->is_verified)
                                     <div class="absolute top-3 left-3">
                                         <div
-                                            class="inline-flex items-center space-x-1.5 bg-blue-100/90 backdrop-blur-sm border border-blue-300/50 text-blue-700 px-2.5 py-1 rounded-lg font-bold text-xs shadow-lg">
+                                            class="inline-flex items-center space-x-1.5 bg-blue-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 px-2.5 py-1 rounded-lg font-bold text-xs shadow-lg">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                 <path fill-rule="evenodd"
                                                     d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
@@ -323,7 +308,7 @@
                                 <div class="absolute top-3 right-3">
                                     @if ($property->listing_type === 'rent')
                                         <div
-                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-emerald-100/90 to-green-100/90 backdrop-blur-sm border border-emerald-300/50 text-emerald-700 text-xs font-bold rounded-lg shadow-lg">
+                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-emerald-100/90 to-green-100/90 backdrop-blur-xs border border-emerald-300/50 text-emerald-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -334,7 +319,7 @@
                                         </div>
                                     @elseif($property->listing_type === 'sale')
                                         <div
-                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-blue-100/90 to-indigo-100/90 backdrop-blur-sm border border-blue-300/50 text-blue-700 text-xs font-bold rounded-lg shadow-lg">
+                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-blue-100/90 to-indigo-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -345,7 +330,7 @@
                                         </div>
                                     @elseif($property->listing_type === 'lease')
                                         <div
-                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-purple-100/90 to-pink-100/90 backdrop-blur-sm border border-purple-300/50 text-purple-700 text-xs font-bold rounded-lg shadow-lg">
+                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-purple-100/90 to-pink-100/90 backdrop-blur-xs border border-purple-300/50 text-purple-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                 viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -356,7 +341,7 @@
                                         </div>
                                     @elseif($property->listing_type === 'shortlet')
                                         <div
-                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-gradient-to-r from-yellow-100/90 to-orange-100/90 backdrop-blur-sm border border-yellow-300/50 text-yellow-700 text-xs font-bold rounded-lg shadow-lg">
+                                            class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-yellow-100/90 to-orange-100/90 backdrop-blur-xs border border-yellow-300/50 text-yellow-700 text-xs font-bold rounded-lg shadow-lg">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                 <path d="M10 2L3 7v11a2 2 0 002 2h4v-6h2v6h4a2 2 0 002-2V7l-7-5z" />
                                             </svg>
@@ -392,7 +377,7 @@
 
                             <!-- Property Details -->
                             <div
-                                class="relative -mt-2 bg-white/95 backdrop-blur-sm border border-gray-100/80 rounded-xl shadow-sm px-3 py-2 space-y-1">
+                                class="relative -mt-2 bg-white/95 backdrop-blur-xs border border-gray-100/80 rounded-xl shadow-xs px-3 py-2 space-y-1">
                                 <!-- Location -->
                                 <div class="text-xs text-gray-600 font-medium truncate">
                                     {{ $property->city->name ?? 'Unknown' }},
@@ -417,7 +402,7 @@
                                 <!-- Price -->
                                 <div class="flex items-baseline justify-between pt-1">
                                     <span
-                                        class="text-lg font-bold text-gray-900 bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                                        class="text-lg font-bold text-gray-900 bg-linear-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
                                         ₦{{ number_format($property->price) }}
                                     </span>
                                     @if ($property->listing_type === 'rent')
@@ -445,7 +430,7 @@
                                 </span>
                             @else
                                 <a href="{{ $properties->previousPageUrl() }}"
-                                    class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                    class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15 19l-7-7 7-7" />
@@ -457,12 +442,12 @@
                             @foreach ($properties->getUrlRange(1, $properties->lastPage()) as $page => $url)
                                 @if ($page == $properties->currentPage())
                                     <span
-                                        class="flex items-center justify-center w-10 h-10 text-white font-semibold bg-gradient-to-r from-emerald-500 to-blue-500 rounded-xl shadow-md">
+                                        class="flex items-center justify-center w-10 h-10 text-white font-semibold bg-linear-to-r from-emerald-500 to-blue-500 rounded-xl shadow-md">
                                         {{ $page }}
                                     </span>
                                 @else
                                     <a href="{{ $url }}"
-                                        class="flex items-center justify-center w-10 h-10 text-gray-700 font-medium bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                        class="flex items-center justify-center w-10 h-10 text-gray-700 font-medium bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                         {{ $page }}
                                     </a>
                                 @endif
@@ -471,7 +456,7 @@
                             {{-- Next Page Link --}}
                             @if ($properties->hasMorePages())
                                 <a href="{{ $properties->nextPageUrl() }}"
-                                    class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-sm hover:shadow-md">
+                                    class="flex items-center justify-center w-10 h-10 text-gray-700 bg-white hover:bg-emerald-50 border border-gray-200 hover:border-emerald-300 rounded-xl transition-all duration-200 hover:scale-105 shadow-xs hover:shadow-md">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M9 5l7 7-7 7" />
@@ -549,13 +534,13 @@
                 toast.className =
                     `flex items-center space-x-3 ${bgColor} text-white px-6 py-4 rounded-xl shadow-lg transform translate-x-full transition-transform duration-300`;
                 toast.innerHTML = `
-            <div class="flex-shrink-0">
+            <div class="shrink-0">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
             <span class="font-medium">${message}</span>
-            <button onclick="this.parentElement.remove()" class="flex-shrink-0 ml-4 hover:bg-white/20 rounded p-1 transition-colors">
+            <button onclick="this.parentElement.remove()" class="shrink-0 ml-4 hover:bg-white/20 rounded-sm p-1 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>

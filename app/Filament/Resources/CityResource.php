@@ -2,11 +2,31 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Placeholder;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Resources\CityResource\Pages\ListCities;
+use App\Filament\Resources\CityResource\Pages\CreateCity;
+use App\Filament\Resources\CityResource\Pages\EditCity;
 use App\Filament\Resources\CityResource\Pages;
 use App\Filament\Resources\CityResource\RelationManagers;
 use App\Models\City;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,38 +37,38 @@ class CityResource extends Resource
 {
     protected static ?string $model = City::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-building-office-2';
 
-    protected static ?string $navigationGroup = 'System Configuration';
+    protected static string | \UnitEnum | null $navigationGroup = 'System Configuration';
 
     protected static ?int $navigationSort = 2;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Grid::make(['default' => 1, 'lg' => 4])
+        return $schema
+            ->components([
+                Grid::make(['default' => 1, 'lg' => 4])
                     ->schema([
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('City Information')
+                                Section::make('City Information')
                                     ->description('Basic city details and identification')
                                     ->schema([
-                                        Forms\Components\Grid::make(['default' => 1, 'lg' => 2])
+                                        Grid::make(['default' => 1, 'lg' => 2])
                                             ->schema([
-                                                Forms\Components\TextInput::make('name')
+                                                TextInput::make('name')
                                                     ->required()
                                                     ->maxLength(255),
-                                                Forms\Components\TextInput::make('slug')
+                                                TextInput::make('slug')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->helperText('URL-friendly version of the name'),
-                                                Forms\Components\Select::make('state_id')
+                                                Select::make('state_id')
                                                     ->relationship('state', 'name')
                                                     ->required()
                                                     ->searchable()
                                                     ->preload(),
-                                                Forms\Components\TextInput::make('type')
+                                                TextInput::make('type')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->default('city')
@@ -57,28 +77,28 @@ class CityResource extends Resource
                                     ])
                                     ->collapsible(),
 
-                                Forms\Components\Section::make('Description')
+                                Section::make('Description')
                                     ->description('Additional information about the city')
                                     ->schema([
-                                        Forms\Components\Textarea::make('description')
+                                        Textarea::make('description')
                                             ->rows(4)
                                             ->helperText('Brief description of the city'),
                                     ])
                                     ->collapsible(),
 
-                                Forms\Components\Section::make('Location Details')
+                                Section::make('Location Details')
                                     ->description('Geographic coordinates and postal information')
                                     ->schema([
-                                        Forms\Components\Grid::make(['default' => 1, 'lg' => 3])
+                                        Grid::make(['default' => 1, 'lg' => 3])
                                             ->schema([
-                                                Forms\Components\TextInput::make('postal_code')
+                                                TextInput::make('postal_code')
                                                     ->maxLength(255)
                                                     ->label('Primary Postal Code'),
-                                                Forms\Components\TextInput::make('latitude')
+                                                TextInput::make('latitude')
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->helperText('Decimal degrees'),
-                                                Forms\Components\TextInput::make('longitude')
+                                                TextInput::make('longitude')
                                                     ->numeric()
                                                     ->step(0.000001)
                                                     ->helperText('Decimal degrees'),
@@ -88,21 +108,21 @@ class CityResource extends Resource
                             ])
                             ->columnSpan(['default' => 1, 'lg' => 3]),
 
-                        Forms\Components\Group::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\Section::make('Status & Configuration')
+                                Section::make('Status & Configuration')
                                     ->schema([
-                                        Forms\Components\Fieldset::make('Visibility')
+                                        Fieldset::make('Visibility')
                                             ->schema([
-                                                Forms\Components\Toggle::make('is_active')
+                                                Toggle::make('is_active')
                                                     ->required()
                                                     ->default(true)
                                                     ->helperText('Show in public listings'),
                                             ]),
 
-                                        Forms\Components\Fieldset::make('Ordering')
+                                        Fieldset::make('Ordering')
                                             ->schema([
-                                                Forms\Components\TextInput::make('sort_order')
+                                                TextInput::make('sort_order')
                                                     ->required()
                                                     ->numeric()
                                                     ->default(0)
@@ -111,14 +131,14 @@ class CityResource extends Resource
                                     ])
                                     ->collapsible(),
 
-                                Forms\Components\Section::make('System Info')
+                                Section::make('System Info')
                                     ->schema([
-                                        Forms\Components\Fieldset::make('Record Details')
+                                        Fieldset::make('Record Details')
                                             ->schema([
-                                                Forms\Components\Placeholder::make('created_at')
+                                                Placeholder::make('created_at')
                                                     ->label('Created')
                                                     ->content(fn($record): string => $record?->created_at?->diffForHumans() ?? 'Not created yet'),
-                                                Forms\Components\Placeholder::make('updated_at')
+                                                Placeholder::make('updated_at')
                                                     ->label('Last Modified')
                                                     ->content(fn($record): string => $record?->updated_at?->diffForHumans() ?? 'Not modified yet'),
                                             ]),
@@ -135,17 +155,17 @@ class CityResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable()
                     ->weight('bold'),
 
-                Tables\Columns\TextColumn::make('state.name')
+                TextColumn::make('state.name')
                     ->label('State')
                     ->sortable()
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('type')
+                TextColumn::make('type')
                     ->badge()
                     ->label('Type')
                     ->colors([
@@ -157,13 +177,13 @@ class CityResource extends Resource
                     ])
                     ->formatStateUsing(fn($state) => ucfirst($state)),
 
-                Tables\Columns\TextColumn::make('postal_code')
+                TextColumn::make('postal_code')
                     ->label('Postal Code')
                     ->searchable()
                     ->placeholder('Not set')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('is_active')
+                TextColumn::make('is_active')
                     ->badge()
                     ->label('Status')
                     ->colors([
@@ -172,52 +192,52 @@ class CityResource extends Resource
                     ])
                     ->formatStateUsing(fn($state) => $state ? 'Active' : 'Inactive'),
 
-                Tables\Columns\TextColumn::make('sort_order')
+                TextColumn::make('sort_order')
                     ->label('Sort Order')
                     ->numeric()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('areas_count')
+                TextColumn::make('areas_count')
                     ->label('Areas')
                     ->counts('areas')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('properties_count')
+                TextColumn::make('properties_count')
                     ->label('Properties')
                     ->counts('properties')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('agencies_count')
+                TextColumn::make('agencies_count')
                     ->label('Agencies')
                     ->counts('agencies')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('latitude')
+                TextColumn::make('latitude')
                     ->label('Latitude')
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
                     ->placeholder('Not set')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('longitude')
+                TextColumn::make('longitude')
                     ->label('Longitude')
                     ->numeric(decimalPlaces: 6)
                     ->sortable()
                     ->placeholder('Not set')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('slug')
+                TextColumn::make('slug')
                     ->label('Slug')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->copyable(),
 
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('Description')
                     ->limit(50)
-                    ->tooltip(function (Tables\Columns\TextColumn $column): ?string {
+                    ->tooltip(function (TextColumn $column): ?string {
                         $state = $column->getState();
                         if (strlen($state) <= 50) {
                             return null;
@@ -226,27 +246,27 @@ class CityResource extends Resource
                     })
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime()
                     ->sortable()
                     ->since()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label('Updated')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('state_id')
+                SelectFilter::make('state_id')
                     ->label('State')
                     ->relationship('state', 'name')
                     ->searchable()
                     ->preload(),
 
-                Tables\Filters\SelectFilter::make('type')
+                SelectFilter::make('type')
                     ->options([
                         'city' => 'City',
                         'town' => 'Town',
@@ -256,27 +276,27 @@ class CityResource extends Resource
                     ])
                     ->native(false),
 
-                Tables\Filters\TernaryFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Status')
                     ->trueLabel('Active Only')
                     ->falseLabel('Inactive Only')
                     ->native(false),
 
-                Tables\Filters\Filter::make('has_coordinates')
+                Filter::make('has_coordinates')
                     ->label('Has Coordinates')
                     ->query(fn(Builder $query): Builder => $query->whereNotNull('latitude')->whereNotNull('longitude'))
                     ->toggle(),
 
-                Tables\Filters\Filter::make('has_postal_code')
+                Filter::make('has_postal_code')
                     ->label('Has Postal Code')
                     ->query(fn(Builder $query): Builder => $query->whereNotNull('postal_code'))
                     ->toggle(),
 
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from')
+                Filter::make('created_at')
+                    ->schema([
+                        DatePicker::make('created_from')
                             ->label('Created from'),
-                        Forms\Components\DatePicker::make('created_until')
+                        DatePicker::make('created_until')
                             ->label('Created until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
@@ -291,12 +311,12 @@ class CityResource extends Resource
                             );
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -311,9 +331,9 @@ class CityResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListCities::route('/'),
-            'create' => Pages\CreateCity::route('/create'),
-            'edit' => Pages\EditCity::route('/{record}/edit'),
+            'index' => ListCities::route('/'),
+            'create' => CreateCity::route('/create'),
+            'edit' => EditCity::route('/{record}/edit'),
         ];
     }
 }

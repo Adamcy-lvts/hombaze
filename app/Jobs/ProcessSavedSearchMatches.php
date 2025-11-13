@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\Property;
 use App\Models\SavedSearch;
@@ -68,7 +69,7 @@ class ProcessSavedSearchMatches implements ShouldQueue
             ]);
 
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('❌ SAVEDSEARCH MATCHING JOB FAILED', [
                 'job_type' => $this->getJobType(),
                 'error' => $e->getMessage(),
@@ -214,7 +215,7 @@ class ProcessSavedSearchMatches implements ShouldQueue
                     'unique_id' => $uniqueId
                 ]);
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $errorCount++;
                 Log::error('❌ Failed to send notification', [
                     'search_id' => $match['saved_search']->id,

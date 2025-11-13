@@ -2,12 +2,18 @@
 
 namespace App\Filament\Tenant\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Tenant\Resources\PropertyViewingResource\Pages\ListPropertyViewings;
+use App\Filament\Tenant\Resources\PropertyViewingResource\Pages\CreatePropertyViewing;
+use App\Filament\Tenant\Resources\PropertyViewingResource\Pages\EditPropertyViewing;
 use App\Filament\Tenant\Resources\PropertyViewingResource\Pages;
 use App\Filament\Tenant\Resources\PropertyViewingResource\RelationManagers;
 use App\Models\PropertyViewing;
 use App\Models\Property;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -20,7 +26,7 @@ class PropertyViewingResource extends Resource
 {
     protected static ?string $model = PropertyViewing::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-calendar-days';
 
     protected static ?string $navigationLabel = 'Property Viewings';
 
@@ -28,14 +34,14 @@ class PropertyViewingResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Property Viewings';
 
-    protected static ?string $navigationGroup = 'Property Search';
+    protected static string | \UnitEnum | null $navigationGroup = 'Property Search';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 //
             ]);
     }
@@ -49,12 +55,12 @@ class PropertyViewingResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
@@ -69,9 +75,9 @@ class PropertyViewingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyViewings::route('/'),
-            'create' => Pages\CreatePropertyViewing::route('/create'),
-            'edit' => Pages\EditPropertyViewing::route('/{record}/edit'),
+            'index' => ListPropertyViewings::route('/'),
+            'create' => CreatePropertyViewing::route('/create'),
+            'edit' => EditPropertyViewing::route('/{record}/edit'),
         ];
     }
 }

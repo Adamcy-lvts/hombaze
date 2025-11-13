@@ -8,7 +8,7 @@ use App\Models\State;
 
 class GeographicDistributionWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Properties by State';
+    protected ?string $heading = 'Properties by State';
     
     protected static ?int $sort = 7;
 

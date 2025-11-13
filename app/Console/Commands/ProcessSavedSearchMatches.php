@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use Illuminate\Database\Eloquent\Collection;
+use Exception;
 use Carbon\Carbon;
 use App\Models\Property;
 use App\Models\SavedSearch;
@@ -101,7 +103,7 @@ class ProcessSavedSearchMatches extends Command
             $this->info('❌ No matches found for this property');
             Log::info("No SavedSearch matches found for property", [
                 'property_id' => $property->id,
-                'active_searches_count' => \App\Models\SavedSearch::active()->count()
+                'active_searches_count' => SavedSearch::active()->count()
             ]);
             return Command::SUCCESS;
         }
@@ -145,7 +147,7 @@ class ProcessSavedSearchMatches extends Command
 
         // Send batch notification
         if ($this->shouldSendNotification($search)) {
-            $user->notify(new SavedSearchMatch($search, \Illuminate\Database\Eloquent\Collection::make($properties)));
+            $user->notify(new SavedSearchMatch($search, Collection::make($properties)));
             $this->info("Sent batch notification to {$user->name}");
 
             // Update last alerted timestamp
@@ -228,13 +230,13 @@ class ProcessSavedSearchMatches extends Command
                 $properties = $matches->pluck('property');
 
                 try {
-                    $user->notify(new SavedSearchMatch($search, \Illuminate\Database\Eloquent\Collection::make($properties)));
+                    $user->notify(new SavedSearchMatch($search, Collection::make($properties)));
                     $totalNotifications++;
 
                     // Update last alerted timestamp
                     $search->update(['last_alerted_at' => now()]);
 
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error("Failed to send notification for search {$search->id}: {$e->getMessage()}");
                 }
             }
@@ -271,7 +273,7 @@ class ProcessSavedSearchMatches extends Command
 
         try {
             $this->info("   📧 Attempting to send notification...");
-            $user->notify(new SavedSearchMatch($search, \Illuminate\Database\Eloquent\Collection::make([$property]), $match['score']));
+            $user->notify(new SavedSearchMatch($search, Collection::make([$property]), $match['score']));
 
             // Update last alerted timestamp
             $search->update(['last_alerted_at' => now()]);
@@ -290,7 +292,7 @@ class ProcessSavedSearchMatches extends Command
 
             return true;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("   ❌ Failed to send notification: {$e->getMessage()}");
             Log::error("SavedSearch Match Notification Failed", [
                 'search_id' => $search->id,

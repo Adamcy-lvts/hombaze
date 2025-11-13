@@ -2,6 +2,7 @@
 
 namespace App\Filament\Agent\Resources\ReviewResource\Pages;
 
+use Filament\Actions\ViewAction;
 use App\Filament\Agent\Resources\ReviewResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
@@ -14,7 +15,7 @@ class EditReview extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
+            ViewAction::make(),
         ];
     }
 

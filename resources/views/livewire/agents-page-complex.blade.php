@@ -1,9 +1,9 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-white to-gray-100 relative overflow-hidden">
     <!-- Premium Background Elements -->
     <div class="absolute inset-0">
-        <div class="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-500/10 to-indigo-500/5 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-gradient-to-br from-emerald-500/8 to-teal-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
-        <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-gradient-to-br from-purple-500/5 to-pink-500/3 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
+        <div class="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-blue-500/10 to-indigo-500/5 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-linear-to-br from-emerald-500/8 to-teal-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 1s;"></div>
+        <div class="absolute top-1/2 right-1/4 w-64 h-64 bg-linear-to-br from-purple-500/5 to-pink-500/3 rounded-full blur-2xl animate-pulse" style="animation-delay: 2s;"></div>
     </div>
 
     <!-- Premium Header Section -->
@@ -12,7 +12,7 @@
             <!-- Premium Breadcrumb -->
             <nav class="flex items-center space-x-3 text-sm text-gray-600 mb-8">
                 <a href="{{ route('landing') }}" wire:navigate class="group flex items-center space-x-2 hover:text-emerald-600 transition-colors duration-300">
-                    <div class="w-8 h-8 bg-gray-100/60 backdrop-blur-sm rounded-lg flex items-center justify-center group-hover:bg-emerald-100/60 transition-all duration-300">
+                    <div class="w-8 h-8 bg-gray-100/60 backdrop-blur-xs rounded-lg flex items-center justify-center group-hover:bg-emerald-100/60 transition-all duration-300">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
@@ -30,7 +30,7 @@
                 <div>
                     <h1 class="text-3xl lg:text-4xl font-black text-gray-900 mb-3">
                         Find Your Perfect
-                        <span class="bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent">Real Estate Agent</span>
+                        <span class="bg-linear-to-r from-blue-600 via-indigo-500 to-purple-600 bg-clip-text text-transparent">Real Estate Agent</span>
                     </h1>
                     <p class="text-gray-600 text-lg leading-relaxed">Connect with verified, experienced agents across Nigeria</p>
                 </div>
@@ -59,7 +59,7 @@
     </div>
 
     <!-- Search & Filter Section -->
-    <div class="relative z-[100] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+    <div class="relative z-100 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         <!-- Premium Search Bar -->
         <div class="relative mb-8">
             <div class="relative group">
@@ -71,7 +71,7 @@
                     autocomplete="off"
                 >
                 <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                    <div class="w-8 h-8 bg-blue-100/60 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                    <div class="w-8 h-8 bg-blue-100/60 backdrop-blur-xs rounded-xl flex items-center justify-center">
                         <svg wire:loading.remove wire:target="searchQuery" class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
@@ -175,7 +175,7 @@
     </div>
 
     <!-- Results Section -->
-    <div class="relative z-[1] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
+    <div class="relative z-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
         @if($agents->count() > 0)
             <!-- Agents Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
@@ -183,13 +183,13 @@
                     <a href="{{ route('agent.profile', $agent) }}" wire:navigate class="group block relative bg-white/80 backdrop-blur-2xl rounded-3xl border border-gray-200/40 overflow-hidden hover:bg-white/90 hover:border-gray-300/40 transition-all duration-700 transform hover:scale-[1.02] hover:-translate-y-2 shadow-2xl hover:shadow-3xl">
                         
                         <!-- Agent Profile Header -->
-                        <div class="relative h-64 bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                        <div class="relative h-64 bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
                             @if($agent->avatar)
                                 <img src="{{ Storage::url($agent->avatar) }}" 
                                      alt="{{ $agent->name }}"
                                      class="w-32 h-32 rounded-full border-4 border-white/20 shadow-2xl object-cover">
                             @else
-                                <div class="w-32 h-32 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center border-4 border-white/20">
+                                <div class="w-32 h-32 bg-white/20 backdrop-blur-xs rounded-full flex items-center justify-center border-4 border-white/20">
                                     <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
@@ -235,7 +235,7 @@
                             @endif
 
                             <!-- View Profile Button -->
-                            <div class="w-full bg-gradient-to-r from-blue-500 to-indigo-500 group-hover:from-blue-600 group-hover:to-indigo-600 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform group-hover:scale-105 shadow-lg group-hover:shadow-xl text-center">
+                            <div class="w-full bg-linear-to-r from-blue-500 to-indigo-500 group-hover:from-blue-600 group-hover:to-indigo-600 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform group-hover:scale-105 shadow-lg group-hover:shadow-xl text-center">
                                 View Profile & Reviews
                             </div>
                         </div>

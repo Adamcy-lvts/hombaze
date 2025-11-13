@@ -1,8 +1,8 @@
-<div class="min-h-screen bg-gradient-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
+<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden">
     <!-- Subtle Background Elements -->
     <div class="absolute inset-0 opacity-30">
-        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-gradient-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-gradient-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
+        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
     </div>
 
     <!-- Header Section -->
@@ -11,7 +11,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
                 <!-- Welcome Section -->
                 <div class="flex items-center space-x-3 sm:space-x-4">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg flex-shrink-0">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg shrink-0">
                         <x-heroicon-o-user class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                     <div class="min-w-0 flex-1">
@@ -21,18 +21,18 @@
                 </div>
 
                 <!-- Profile Completion (Desktop) -->
-                <div class="hidden lg:flex items-center space-x-4 flex-shrink-0">
+                <div class="hidden lg:flex items-center space-x-4 shrink-0">
                     <div class="text-right">
                         <p class="text-sm text-gray-600">Profile {{ $profileCompletion['percentage'] }}% complete</p>
                         <div class="w-32 bg-gray-200 rounded-full h-2 mt-1">
-                            <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-300"
+                            <div class="bg-linear-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-300"
                                  style="width: {{ $profileCompletion['percentage'] }}%"></div>
                         </div>
                     </div>
 
                     @if($profileCompletion['percentage'] < 100)
                         <a href="{{ route('customer.settings') }}"
-                           class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm whitespace-nowrap">
+                           class="inline-flex items-center px-4 py-2 bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm whitespace-nowrap">
                             Complete Profile
                         </a>
                     @else
@@ -47,7 +47,7 @@
                 <div class="hidden md:flex lg:hidden items-center justify-end">
                     @if($profileCompletion['percentage'] < 100)
                         <a href="{{ route('customer.settings') }}"
-                           class="inline-flex items-center px-3 py-2 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-lg transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
+                           class="inline-flex items-center px-3 py-2 bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-lg transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
                             <x-heroicon-o-cog-6-tooth class="w-4 h-4 mr-2" />
                             Complete Profile
                         </a>
@@ -67,7 +67,7 @@
         @if($profileCompletion['percentage'] < 100)
             <div class="md:hidden bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
                 <div class="flex items-start sm:items-center space-x-3 sm:space-x-4">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg flex-shrink-0">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg shrink-0">
                         <x-heroicon-o-chart-bar class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <div class="flex-1 min-w-0">
@@ -80,7 +80,7 @@
                                 <span class="text-xs font-medium text-gray-700">{{ $profileCompletion['percentage'] }}% complete</span>
                             </div>
                             <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-300"
+                                <div class="bg-linear-to-r from-emerald-500 to-teal-600 h-2 rounded-full transition-all duration-300"
                                      style="width: {{ $profileCompletion['percentage'] }}%"></div>
                             </div>
                         </div>
@@ -88,7 +88,7 @@
                         <!-- Action Buttons -->
                         <div class="mt-4 flex flex-col sm:flex-row gap-2 sm:gap-3">
                             <a href="{{ route('customer.settings') }}"
-                               class="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 sm:py-2 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
+                               class="flex-1 sm:flex-initial inline-flex items-center justify-center px-4 py-2.5 sm:py-2 bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
                                 <x-heroicon-o-cog-6-tooth class="w-4 h-4 mr-2" />
                                 Complete Profile
                             </a>
@@ -111,7 +111,7 @@
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{{ $stats['saved_properties']['total'] }}</p>
                         <p class="text-xs sm:text-sm text-green-600 mt-1">{{ $stats['saved_properties']['change'] }}</p>
                     </div>
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-purple-500 to-pink-600 shadow-lg">
                         <x-heroicon-o-heart class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{{ $stats['active_inquiries']['total'] }}</p>
                         <p class="text-xs sm:text-sm text-orange-600 mt-1">{{ $stats['active_inquiries']['change'] }}</p>
                     </div>
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-lg">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-orange-500 to-red-500 shadow-lg">
                         <x-heroicon-o-chat-bubble-left-ellipsis class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                 </div>
@@ -139,7 +139,7 @@
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{{ $stats['property_views']['total'] }}</p>
                         <p class="text-xs sm:text-sm text-purple-600 mt-1">{{ $stats['property_views']['change'] }}</p>
                     </div>
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-blue-500 to-purple-600 shadow-lg">
                         <x-heroicon-o-eye class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                 </div>
@@ -153,7 +153,7 @@
                         <p class="text-2xl sm:text-3xl font-bold text-gray-900 mt-1">{{ $stats['scheduled_viewings']['total'] }}</p>
                         <p class="text-xs sm:text-sm text-green-600 mt-1">{{ $stats['scheduled_viewings']['change'] }}</p>
                     </div>
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 shadow-lg">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-green-600 shadow-lg">
                         <x-heroicon-o-calendar class="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                     </div>
                 </div>
@@ -165,7 +165,7 @@
         <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
                 <div class="flex items-center justify-between mb-4 sm:mb-6">
                     <div class="flex items-center">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg mr-3">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-blue-500 to-purple-600 shadow-lg mr-3">
                             <x-heroicon-o-sparkles class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Recommended for You</h2>
@@ -212,7 +212,7 @@
                                             </p>
                                         </div>
 
-                                        <div class="text-right flex-shrink-0">
+                                        <div class="text-right shrink-0">
                                             <div class="p-2 text-gray-400 group-hover:text-emerald-600 transition-colors">
                                                 <x-heroicon-o-arrow-top-right-on-square class="w-5 h-5" />
                                             </div>
@@ -226,7 +226,7 @@
                     <!-- View More Button -->
                     <div class="mt-6 text-center">
                         <a href="{{ route('properties.search') }}"
-                           class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                           class="inline-flex items-center px-6 py-3 bg-linear-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -242,7 +242,7 @@
                         <p class="text-sm text-gray-500 mt-1">Complete your profile to get personalized recommendations</p>
                         <div class="flex flex-col sm:flex-row gap-2 mt-3">
                             <a href="{{ route('customer.preferences') }}"
-                               class="inline-flex items-center justify-center px-4 py-2 text-sm bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg">
+                               class="inline-flex items-center justify-center px-4 py-2 text-sm bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg">
                                 <x-heroicon-o-sparkles class="w-4 h-4 mr-2" />
                                 Set Preferences
                             </a>
@@ -263,7 +263,7 @@
         <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6 mb-6 sm:mb-8">
             <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center">
-                    <div class="p-2 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg mr-3">
+                    <div class="p-2 rounded-lg bg-linear-to-br from-indigo-500 to-purple-600 shadow-lg mr-3">
                         <x-heroicon-o-clock class="w-5 h-5 text-white" />
                     </div>
                     <h2 class="text-lg font-semibold text-gray-900">Recent Activity</h2>
@@ -274,7 +274,7 @@
             <div class="space-y-3">
                 @foreach($recentActivity->take(3) as $activity)
                     <div class="flex items-center space-x-3 p-3 rounded-lg bg-gray-50/50 hover:bg-gray-50 transition-colors">
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             @if($activity['icon'] === 'heart')
                                 <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
                                     <x-heroicon-o-heart class="w-4 h-4 text-purple-600" />
@@ -293,7 +293,7 @@
                             <p class="text-sm font-medium text-gray-900">{{ $activity['title'] }}</p>
                             <p class="text-sm text-gray-600 truncate">{{ $activity['description'] }}</p>
                         </div>
-                        <div class="flex-shrink-0">
+                        <div class="shrink-0">
                             <p class="text-xs text-gray-500">{{ $activity['time']->diffForHumans() }}</p>
                         </div>
                     </div>
@@ -309,7 +309,7 @@
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center justify-between mb-4 sm:mb-6">
                     <div class="flex items-center">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg mr-3">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-indigo-500 to-purple-600 shadow-lg mr-3">
                             <x-heroicon-o-clock class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Recent Activity</h2>
@@ -321,7 +321,7 @@
                     <div class="space-y-3 sm:space-y-4">
                         @foreach($recentActivity as $activity)
                             <div class="flex items-start space-x-3 sm:space-x-4 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-gray-50/50 hover:bg-gray-50 transition-all duration-300">
-                                <div class="flex-shrink-0">
+                                <div class="shrink-0">
                                     @if($activity['icon'] === 'heart')
                                         <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-purple-100 flex items-center justify-center">
                                             <x-heroicon-o-heart class="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
@@ -358,7 +358,7 @@
             <!-- Tips & Insights -->
             <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
                 <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
+                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
                         <x-heroicon-o-light-bulb class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                     </div>
                     <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Tips & Insights</h2>
@@ -381,7 +381,7 @@
         <!-- Quick Actions Section -->
         <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
             <div class="flex items-center mb-4 sm:mb-6">
-                <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-yellow-500 to-orange-500 shadow-lg mr-3">
+                <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-yellow-500 to-orange-500 shadow-lg mr-3">
                     <x-heroicon-o-bolt class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Quick Actions</h2>
@@ -392,7 +392,7 @@
                 <a href="{{ route('properties.search') }}"
                    class="group p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/95 backdrop-blur-xl hover:bg-white border border-gray-300/60 hover:border-emerald-300/60 transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-emerald-500/40 block">
                     <div class="flex items-center space-x-3">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <x-heroicon-o-magnifying-glass class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div>
@@ -406,7 +406,7 @@
                 <a href="{{ route('customer.saved-properties') }}"
                    class="group p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/95 backdrop-blur-xl hover:bg-white border border-gray-300/60 hover:border-purple-300/60 transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-purple-500/40 block">
                     <div class="flex items-center space-x-3">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-purple-500 to-pink-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-purple-500 to-pink-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <x-heroicon-o-heart class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div>
@@ -420,7 +420,7 @@
                 <a href="{{ route('customer.inquiries') }}"
                    class="group p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/95 backdrop-blur-xl hover:bg-white border border-gray-300/60 hover:border-orange-300/60 transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-orange-500/40 block">
                     <div class="flex items-center space-x-3">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-orange-500 to-red-500 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-orange-500 to-red-500 shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <x-heroicon-o-chat-bubble-left-ellipsis class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div>
@@ -434,7 +434,7 @@
                 <a href="{{ route('customer.searches.index') }}"
                    class="group p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/95 backdrop-blur-xl hover:bg-white border border-gray-300/60 hover:border-blue-300/60 transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-blue-500/40 block">
                     <div class="flex items-center space-x-3">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <x-heroicon-o-magnifying-glass-circle class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div>
@@ -448,7 +448,7 @@
                 <a href="{{ route('customer.settings') }}"
                    class="group p-3 sm:p-4 rounded-lg sm:rounded-xl bg-white/95 backdrop-blur-xl hover:bg-white border border-gray-300/60 hover:border-gray-400/60 transition-all duration-500 hover:scale-105 shadow-lg hover:shadow-gray-500/40 block">
                     <div class="flex items-center space-x-3">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br from-gray-600 to-slate-700 shadow-lg group-hover:scale-110 transition-transform duration-300">
+                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-gray-600 to-slate-700 shadow-lg group-hover:scale-110 transition-transform duration-300">
                             <x-heroicon-o-cog-6-tooth class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         <div>

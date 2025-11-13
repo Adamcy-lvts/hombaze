@@ -2,28 +2,28 @@
 
 namespace App\Filament\Agent\Pages\Auth;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\TagsInput;
-use Filament\Forms\Form;
-use Filament\Pages\Auth\EditProfile as BaseEditProfile;
 use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Model;
 
-class EditProfile extends BaseEditProfile
+class EditProfile extends \Filament\Auth\Pages\EditProfile
 {
     public function getMaxWidth(): ?string
     {
         return '5xl';
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Account Information')
                     ->description('Update your basic account details')
                     ->columns(2)
@@ -44,7 +44,7 @@ class EditProfile extends BaseEditProfile
                             ->columnSpan(1),
 
                         // Empty column to balance layout
-                        \Filament\Forms\Components\Placeholder::make('')
+                        Placeholder::make('')
                             ->columnSpan(1),
 
                         $this->getPasswordFormComponent()

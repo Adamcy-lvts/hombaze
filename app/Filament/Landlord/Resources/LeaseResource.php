@@ -2,11 +2,34 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
+use Filament\Forms\Components\Select;
+use App\Models\Property;
+use App\Models\Tenant;
+use Carbon\Carbon;
+use Filament\Schemas\Components\Actions;
+use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ViewAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\LeaseResource\Pages\ListLeases;
+use App\Filament\Landlord\Resources\LeaseResource\Pages\CreateLease;
+use App\Filament\Landlord\Resources\LeaseResource\Pages\ViewLease;
+use App\Filament\Landlord\Resources\LeaseResource\Pages\EditLease;
 use App\Filament\Landlord\Resources\LeaseResource\Pages;
 use App\Models\Lease;
 use App\Models\LeaseTemplate;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,24 +40,24 @@ class LeaseResource extends Resource
 {
     protected static ?string $model = Lease::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Property Management';
+    protected static string | \UnitEnum | null $navigationGroup = 'Property Management';
 
     protected static ?string $navigationLabel = 'Leases';
 
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Lease Template')
+        return $schema
+            ->components([
+                Section::make('Lease Template')
                     ->description('Start with a template to auto-fill terms and conditions')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('template_id')
+                                Select::make('template_id')
                                     ->label('Use Template')
                                     ->options(function () {
                                         return LeaseTemplate::where('landlord_id', Auth::id())
@@ -53,8 +76,8 @@ class LeaseResource extends Resource
                                                 $set('renewal_option', $template->default_renewal_option);
                                                 
                                                 // Generate dynamic terms and conditions
-                                                $property = \App\Models\Property::find($get('property_id'));
-                                                $tenant = \App\Models\Tenant::find($get('tenant_id'));
+                                                $property = Property::find($get('property_id'));
+                                                $tenant = Tenant::find($get('tenant_id'));
                                                 
                                                 if ($property && $tenant) {
                                                     $substitutedTerms = $template->substituteVariables([
@@ -66,9 +89,9 @@ class LeaseResource extends Resource
                                                         'landlord_email' => Auth::user()->email,
                                                         'tenant_name' => $tenant->name,
                                                         'tenant_email' => $tenant->email,
-                                                        'lease_start_date' => $get('start_date') ? \Carbon\Carbon::parse($get('start_date'))->format('F j, Y') : '',
-                                                        'lease_end_date' => $get('end_date') ? \Carbon\Carbon::parse($get('end_date'))->format('F j, Y') : '',
-                                                        'lease_duration_months' => $get('start_date') && $get('end_date') ? \Carbon\Carbon::parse($get('start_date'))->diffInMonths(\Carbon\Carbon::parse($get('end_date'))) : '',
+                                                        'lease_start_date' => $get('start_date') ? Carbon::parse($get('start_date'))->format('F j, Y') : '',
+                                                        'lease_end_date' => $get('end_date') ? Carbon::parse($get('end_date'))->format('F j, Y') : '',
+                                                        'lease_duration_months' => $get('start_date') && $get('end_date') ? Carbon::parse($get('start_date'))->diffInMonths(Carbon::parse($get('end_date'))) : '',
                                                         'rent_amount' => $get('yearly_rent'),
                                                         'payment_frequency' => $get('payment_frequency'),
                                                         'renewal_option' => $get('renewal_option'),
@@ -82,8 +105,8 @@ class LeaseResource extends Resource
                                     })
                                     ->helperText('Templates help you create consistent lease terms with automatic variable substitution'),
 
-                                Forms\Components\Actions::make([
-                                    Forms\Components\Actions\Action::make('manageTemplates')
+                                Actions::make([
+                                    Action::make('manageTemplates')
                                         ->label('Manage Templates')
                                         ->icon('heroicon-o-cog-6-tooth')
                                         ->color('gray')
@@ -96,11 +119,11 @@ class LeaseResource extends Resource
                     ->collapsible()
                     ->collapsed(false),
 
-                Forms\Components\Section::make('Basic Lease Information')
+                Section::make('Basic Lease Information')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\Select::make('property_id')
+                                Select::make('property_id')
                                     ->label('Property')
                                     ->relationship('property', 'title', function (Builder $query) {
                                         return $query->whereHas('owner', function (Builder $query) {
@@ -113,14 +136,14 @@ class LeaseResource extends Resource
                                     ->reactive()
                                     ->afterStateUpdated(function ($state, $set) {
                                         if ($state) {
-                                            $property = \App\Models\Property::find($state);
+                                            $property = Property::find($state);
                                             if ($property) {
                                                 $set('yearly_rent', $property->price);
                                             }
                                         }
                                     }),
 
-                                Forms\Components\Select::make('tenant_id')
+                                Select::make('tenant_id')
                                     ->label('Tenant')
                                     ->relationship('tenant', 'first_name', function (Builder $query) {
                                         return $query->where('landlord_id', Auth::id());
@@ -131,15 +154,15 @@ class LeaseResource extends Resource
                                     ->preload(),
                             ]),
 
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\DatePicker::make('start_date')
+                                DatePicker::make('start_date')
                                     ->label('Lease Start Date')
                                     ->required()
                                     ->native(false)
                                     ->default(now()),
 
-                                Forms\Components\DatePicker::make('end_date')
+                                DatePicker::make('end_date')
                                     ->label('Lease End Date')
                                     ->required()
                                     ->native(false)
@@ -147,11 +170,11 @@ class LeaseResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Financial Terms')
+                Section::make('Financial Terms')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('yearly_rent')
+                                TextInput::make('yearly_rent')
                                     ->label('Annual Rent')
                                     ->required()
                                     ->numeric()
@@ -160,7 +183,7 @@ class LeaseResource extends Resource
                                     ->readonly()
                                     ->helperText('Automatically populated from selected property'),
 
-                                Forms\Components\Select::make('payment_frequency')
+                                Select::make('payment_frequency')
                                     ->label('Payment Terms')
                                     ->options([
                                         'annually' => 'Annually (Full Payment)',
@@ -171,9 +194,9 @@ class LeaseResource extends Resource
                                     ->default('annually'),
                             ]),
 
-                        Forms\Components\Grid::make(1)
+                        Grid::make(1)
                             ->schema([
-                                Forms\Components\Select::make('status')
+                                Select::make('status')
                                     ->label('Agreement Status')
                                     ->options(Lease::getStatuses())
                                     ->required()
@@ -181,21 +204,21 @@ class LeaseResource extends Resource
                             ]),
                     ]),
 
-                Forms\Components\Section::make('Additional Information')
+                Section::make('Additional Information')
                     ->schema([
-                        Forms\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                Forms\Components\DatePicker::make('signed_date')
+                                DatePicker::make('signed_date')
                                     ->label('Date Signed')
                                     ->native(false),
 
-                                Forms\Components\Toggle::make('renewal_option')
+                                Toggle::make('renewal_option')
                                     ->label('Renewal Available')
                                     ->default(false)
                                     ->helperText('Can this lease be renewed?'),
                             ]),
 
-                        Forms\Components\RichEditor::make('terms_and_conditions')
+                        RichEditor::make('terms_and_conditions')
                             ->label('Terms & Conditions')
                             ->toolbarButtons([
                                 'bold',
@@ -223,7 +246,7 @@ class LeaseResource extends Resource
                             ')
                             ->helperText('Customize the terms and conditions for this lease agreement'),
 
-                        Forms\Components\Textarea::make('notes')
+                        Textarea::make('notes')
                             ->label('Additional Notes')
                             ->rows(3)
                             ->maxLength(1000),
@@ -241,32 +264,32 @@ class LeaseResource extends Resource
                 });
             })
             ->columns([
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tenant.name')
+                TextColumn::make('tenant.name')
                     ->label('Tenant')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('start_date')
+                TextColumn::make('start_date')
                     ->label('Start Date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('end_date')
+                TextColumn::make('end_date')
                     ->label('End Date')
                     ->date()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('yearly_rent')
+                TextColumn::make('yearly_rent')
                     ->label('Annual Rent')
                     ->money('NGN')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('payment_frequency')
+                TextColumn::make('payment_frequency')
                     ->label('Payment Terms')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -276,7 +299,7 @@ class LeaseResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'draft' => 'gray',
@@ -287,23 +310,23 @@ class LeaseResource extends Resource
                         default => 'gray',
                     }),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options(Lease::getStatuses()),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->label('View Agreement'),
-                Tables\Actions\EditAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -319,10 +342,10 @@ class LeaseResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListLeases::route('/'),
-            'create' => Pages\CreateLease::route('/create'),
-            'view' => Pages\ViewLease::route('/{record}'),
-            'edit' => Pages\EditLease::route('/{record}/edit'),
+            'index' => ListLeases::route('/'),
+            'create' => CreateLease::route('/create'),
+            'view' => ViewLease::route('/{record}'),
+            'edit' => EditLease::route('/{record}/edit'),
         ];
     }
 

@@ -2,11 +2,28 @@
 
 namespace App\Filament\Landlord\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\Action;
+use App\Services\Communication\WhatsAppService;
+use App\Services\Communication\SmsService;
+use Filament\Actions\EditAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use App\Filament\Landlord\Resources\TenantInvitationResource\Pages\ListTenantInvitations;
+use App\Filament\Landlord\Resources\TenantInvitationResource\Pages\CreateTenantInvitation;
+use App\Filament\Landlord\Resources\TenantInvitationResource\Pages\EditTenantInvitation;
 use App\Filament\Landlord\Resources\TenantInvitationResource\Pages;
 use App\Models\TenantInvitation;
 use App\Models\Property;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -17,19 +34,19 @@ use Filament\Notifications\Notification;
 class TenantInvitationResource extends Resource
 {
     protected static ?string $model = TenantInvitation::class;
-    protected static ?string $navigationIcon = 'heroicon-o-user-plus';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-plus';
     protected static ?string $navigationLabel = 'Tenant Invitations';
     protected static ?string $modelLabel = 'Tenant Invitation';
     protected static ?string $pluralModelLabel = 'Tenant Invitations';
     protected static ?int $navigationSort = 3;
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Invitation Details')
+        return $schema
+            ->components([
+                Section::make('Invitation Details')
                     ->schema([
-                        Forms\Components\TextInput::make('phone')
+                        TextInput::make('phone')
                             ->label('Tenant Phone Number')
                             ->tel()
                             ->required()
@@ -38,7 +55,7 @@ class TenantInvitationResource extends Resource
                             ->helperText('Enter the phone number of the person you want to invite as a tenant')
                             ->rules(['regex:/^(\+234|234|0)[789][01]\d{8}$/']),
 
-                        Forms\Components\Select::make('property_id')
+                        Select::make('property_id')
                             ->label('Property (Optional)')
                             ->options(function () {
                                 $user = Auth::user();
@@ -54,13 +71,13 @@ class TenantInvitationResource extends Resource
                             ->searchable()
                             ->helperText('Select a specific property for this invitation (optional)'),
 
-                        Forms\Components\Textarea::make('message')
+                        Textarea::make('message')
                             ->label('Personal Message')
                             ->rows(4)
                             ->maxLength(1000)
                             ->helperText('Add a personal message to include in the invitation email (optional)'),
 
-                        Forms\Components\DateTimePicker::make('expires_at')
+                        DateTimePicker::make('expires_at')
                             ->label('Expiry Date')
                             ->required()
                             ->default(now()->addDays(7))
@@ -74,18 +91,18 @@ class TenantInvitationResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('phone')
+                TextColumn::make('phone')
                     ->label('Tenant Phone')
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->searchable()
                     ->limit(30)
                     ->placeholder('Any Property'),
 
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->colors([
                         'warning' => 'pending',
@@ -100,29 +117,29 @@ class TenantInvitationResource extends Resource
                         'heroicon-o-minus-circle' => 'cancelled',
                     ]),
 
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Sent')
                     ->dateTime('M j, Y g:i A')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('expires_at')
+                TextColumn::make('expires_at')
                     ->label('Expires')
                     ->dateTime('M j, Y g:i A')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('accepted_at')
+                TextColumn::make('accepted_at')
                     ->label('Accepted')
                     ->dateTime('M j, Y g:i A')
                     ->placeholder('Not accepted')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('tenantUser.name')
+                TextColumn::make('tenantUser.name')
                     ->label('Tenant Name')
                     ->placeholder('Not registered')
                     ->searchable(),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
+                SelectFilter::make('status')
                     ->options([
                         'pending' => 'Pending',
                         'accepted' => 'Accepted',
@@ -130,14 +147,14 @@ class TenantInvitationResource extends Resource
                         'cancelled' => 'Cancelled',
                     ]),
 
-                Tables\Filters\SelectFilter::make('property_id')
+                SelectFilter::make('property_id')
                     ->label('Property')
                     ->options(fn () => Property::where('owner_id', Auth::id())->pluck('title', 'id'))
                     ->placeholder('All Properties'),
             ])
-            ->actions([
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('copy_link')
+            ->recordActions([
+                ActionGroup::make([
+                    Action::make('copy_link')
                         ->label('Copy Link')
                         ->icon('heroicon-o-link')
                         ->action(function (TenantInvitation $record) {
@@ -152,7 +169,7 @@ class TenantInvitationResource extends Resource
                                 ->success()
                                 ->persistent()
                                 ->actions([
-                                    \Filament\Notifications\Actions\Action::make('copy')
+                                    Action::make('copy')
                                         ->label('Copy to Clipboard')
                                         ->url('javascript:copyInvitationLink("' . $record->getInvitationUrl() . '")')
                                         ->openUrlInNewTab(false)
@@ -161,24 +178,24 @@ class TenantInvitationResource extends Resource
                         })
                         ->visible(fn (TenantInvitation $record) => $record->isPending()),
 
-                    Tables\Actions\Action::make('whatsapp')
+                    Action::make('whatsapp')
                         ->label('Share via WhatsApp')
                         ->icon('heroicon-o-chat-bubble-left-right')
                         ->color('success')
                         ->url(function (TenantInvitation $record) {
-                            $whatsappService = app(\App\Services\Communication\WhatsAppService::class);
+                            $whatsappService = app(WhatsAppService::class);
                             $whatsappService->trackSharing($record, 'whatsapp');
                             return $whatsappService->generateInvitationShareLink($record);
                         })
                         ->openUrlInNewTab()
                         ->visible(fn (TenantInvitation $record) => $record->isPending()),
 
-                    Tables\Actions\Action::make('copy_message')
+                    Action::make('copy_message')
                         ->label('Copy SMS Message')
                         ->icon('heroicon-o-device-phone-mobile')
                         ->color('info')
                         ->action(function (TenantInvitation $record) {
-                            $smsService = app(\App\Services\Communication\SmsService::class);
+                            $smsService = app(SmsService::class);
                             $smsService->trackSending($record);
 
                             $message = "🏠 HomeBaze Invitation\n\n";
@@ -195,7 +212,7 @@ class TenantInvitationResource extends Resource
                                 ->success()
                                 ->persistent()
                                 ->actions([
-                                    \Filament\Notifications\Actions\Action::make('copy_sms')
+                                    Action::make('copy_sms')
                                         ->label('Copy SMS Message')
                                         ->url('javascript:copySmsMessage("' . addslashes($message) . '")')
                                         ->openUrlInNewTab(false)
@@ -208,7 +225,7 @@ class TenantInvitationResource extends Resource
                     ->icon('heroicon-o-share')
                     ->visible(fn (TenantInvitation $record) => $record->isPending()),
 
-                Tables\Actions\Action::make('resend')
+                Action::make('resend')
                     ->label('Resend')
                     ->icon('heroicon-o-arrow-path')
                     ->action(function (TenantInvitation $record) {
@@ -225,7 +242,7 @@ class TenantInvitationResource extends Resource
                     })
                     ->visible(fn (TenantInvitation $record) => $record->isPending()),
 
-                Tables\Actions\Action::make('cancel')
+                Action::make('cancel')
                     ->label('Cancel')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
@@ -240,12 +257,12 @@ class TenantInvitationResource extends Resource
                     })
                     ->visible(fn (TenantInvitation $record) => $record->isPending()),
 
-                Tables\Actions\EditAction::make()
+                EditAction::make()
                     ->visible(fn (TenantInvitation $record) => $record->isPending()),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -260,9 +277,9 @@ class TenantInvitationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListTenantInvitations::route('/'),
-            'create' => Pages\CreateTenantInvitation::route('/create'),
-            'edit' => Pages\EditTenantInvitation::route('/{record}/edit'),
+            'index' => ListTenantInvitations::route('/'),
+            'create' => CreateTenantInvitation::route('/create'),
+            'edit' => EditTenantInvitation::route('/{record}/edit'),
         ];
     }
 }

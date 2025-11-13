@@ -2,6 +2,7 @@
 
 namespace App\Filament\Agent\Resources\TenantInvitationResource\Pages;
 
+use Exception;
 use App\Filament\Agent\Resources\TenantInvitationResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
@@ -16,7 +17,7 @@ class CreateTenantInvitation extends CreateRecord
         $agentProfile = $user->agentProfile;
         
         if (!$agentProfile) {
-            throw new \Exception('Agent profile not found.');
+            throw new Exception('Agent profile not found.');
         }
         
         $data['agent_id'] = $agentProfile->id;

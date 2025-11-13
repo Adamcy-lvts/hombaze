@@ -2,13 +2,26 @@
 
 namespace App\Filament\Agency\Resources;
 
+use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Section;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Actions\ViewAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\BulkAction;
+use App\Filament\Agency\Resources\PropertyInquiryResource\Pages\ListPropertyInquiries;
+use App\Filament\Agency\Resources\PropertyInquiryResource\Pages\ViewPropertyInquiry;
 use App\Filament\Agency\Resources\PropertyInquiryResource\Pages;
 use App\Filament\Agency\Resources\PropertyInquiryResource\RelationManagers;
 use App\Models\PropertyInquiry;
 use App\Models\Property;
 use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -21,7 +34,7 @@ class PropertyInquiryResource extends Resource
 {
     protected static ?string $model = PropertyInquiry::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-ellipsis';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-chat-bubble-left-ellipsis';
     
     protected static ?string $navigationLabel = 'Inquiries';
     
@@ -40,44 +53,44 @@ class PropertyInquiryResource extends Resource
         return false;
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
         // Form only used for viewing details - agencies can't create inquiries
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Inquiry Information')
+        return $schema
+            ->components([
+                Section::make('Inquiry Information')
                     ->schema([
-                        Forms\Components\TextInput::make('inquirer_name')
+                        TextInput::make('inquirer_name')
                             ->label('Inquirer Name')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('inquirer_email')
+                        TextInput::make('inquirer_email')
                             ->label('Email')
                             ->disabled(),
                             
-                        Forms\Components\TextInput::make('inquirer_phone')
+                        TextInput::make('inquirer_phone')
                             ->label('Phone')
                             ->disabled(),
 
-                        Forms\Components\Select::make('property_id')
+                        Select::make('property_id')
                             ->label('Property')
                             ->relationship('property', 'title')
                             ->disabled(),
                             
-                        Forms\Components\Textarea::make('message')
+                        Textarea::make('message')
                             ->label('Message')
                             ->disabled()
                             ->rows(3),
                             
-                        Forms\Components\DatePicker::make('preferred_viewing_date')
+                        DatePicker::make('preferred_viewing_date')
                             ->label('Preferred Viewing Date')
                             ->disabled(),
                     ])
                     ->columns(2),
                     
-                Forms\Components\Section::make('Response & Status')
+                Section::make('Response & Status')
                     ->schema([
-                        Forms\Components\Select::make('status')
+                        Select::make('status')
                             ->options([
                                 'new' => 'New',
                                 'contacted' => 'Contacted',
@@ -86,14 +99,14 @@ class PropertyInquiryResource extends Resource
                             ->required()
                             ->default('new'),
                             
-                        Forms\Components\Textarea::make('response_message')
+                        Textarea::make('response_message')
                             ->label('Response Message')
                             ->rows(4),
                             
-                        Forms\Components\DateTimePicker::make('responded_at')
+                        DateTimePicker::make('responded_at')
                             ->label('Response Date'),
                             
-                        Forms\Components\Select::make('responded_by')
+                        Select::make('responded_by')
                             ->label('Responded By')
                             ->relationship('responder', 'name')
                             ->disabled(),
@@ -106,30 +119,30 @@ class PropertyInquiryResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('property.title')
+                TextColumn::make('property.title')
                     ->label('Property')
                     ->searchable()
                     ->sortable()
                     ->limit(30)
                     ->weight('medium'),
-                    
-                Tables\Columns\TextColumn::make('inquirer_name')
+
+                TextColumn::make('inquirer_name')
                     ->label('Inquirer')
                     ->searchable()
                     ->sortable(),
-                    
-                Tables\Columns\TextColumn::make('inquirer_email')
+
+                TextColumn::make('inquirer_email')
                     ->label('Email')
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
-                    
-                Tables\Columns\TextColumn::make('inquirer_phone')
+
+                TextColumn::make('inquirer_phone')
                     ->label('Phone')
                     ->copyable()
                     ->icon('heroicon-o-phone')
                     ->placeholder('Not provided'),
-                    
-                Tables\Columns\TextColumn::make('status')
+
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'new' => 'warning',
@@ -137,26 +150,26 @@ class PropertyInquiryResource extends Resource
                         'closed' => 'gray',
                         default => 'gray',
                     }),
-                    
-                Tables\Columns\TextColumn::make('message')
+
+                TextColumn::make('message')
                     ->label('Message')
                     ->limit(50)
                     ->tooltip(function (PropertyInquiry $record): string {
                         return $record->message;
                     }),
-                    
-                Tables\Columns\TextColumn::make('preferred_viewing_date')
+
+                TextColumn::make('preferred_viewing_date')
                     ->label('Preferred Date')
                     ->date()
                     ->placeholder('Not specified'),
-                    
-                Tables\Columns\TextColumn::make('created_at')
+
+                TextColumn::make('created_at')
                     ->label('Received')
                     ->dateTime()
                     ->sortable()
                     ->since(),
-                    
-                Tables\Columns\TextColumn::make('responded_at')
+
+                TextColumn::make('responded_at')
                     ->label('Response Date')
                     ->dateTime()
                     ->sortable()
@@ -170,15 +183,15 @@ class PropertyInquiryResource extends Resource
                         'contacted' => 'Contacted',
                         'closed' => 'Closed',
                     ]),
-                    
+
                 Filter::make('unresponded')
                     ->query(fn (Builder $query): Builder => $query->whereNull('responded_at'))
                     ->label('Unresponded Inquiries'),
-                    
+
                 Filter::make('today')
                     ->query(fn (Builder $query): Builder => $query->whereDate('created_at', today()))
                     ->label('Today\'s Inquiries'),
-                    
+
                 Filter::make('this_week')
                     ->query(fn (Builder $query): Builder => $query->whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()]))
                     ->label('This Week\'s Inquiries'),
@@ -186,18 +199,18 @@ class PropertyInquiryResource extends Resource
             ->headerActions([
                 // No create action - inquiries come from users browsing properties
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->label('View Details')
                     ->icon('heroicon-o-eye'),
-                
-                Tables\Actions\Action::make('respond')
+
+                Action::make('respond')
                     ->label('Respond')
                     ->icon('heroicon-o-chat-bubble-left-right')
                     ->color('success')
                     ->visible(fn (PropertyInquiry $record): bool => !$record->responded_at)
-                    ->form([
-                        Forms\Components\Textarea::make('response_message')
+                    ->schema([
+                        Textarea::make('response_message')
                             ->label('Response Message')
                             ->required()
                             ->rows(4)
@@ -207,13 +220,13 @@ class PropertyInquiryResource extends Resource
                         $record->markAsContacted(auth()->user(), $data['response_message']);
                     })
                     ->successNotificationTitle('Response sent successfully'),
-                
-                Tables\Actions\Action::make('close')
+
+                Action::make('close')
                     ->label('Close')
                     ->icon('heroicon-o-x-mark')
                     ->color('gray')
-                    ->form([
-                        Forms\Components\Textarea::make('response_message')
+                    ->schema([
+                        Textarea::make('response_message')
                             ->label('Closing Message (Optional)')
                             ->rows(3)
                             ->placeholder('Add a closing message if needed...'),
@@ -223,9 +236,9 @@ class PropertyInquiryResource extends Resource
                     })
                     ->successNotificationTitle('Inquiry closed successfully'),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\BulkAction::make('mark_contacted')
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    BulkAction::make('mark_contacted')
                         ->label('Mark as Contacted')
                         ->icon('heroicon-o-check')
                         ->color('success')
@@ -234,8 +247,8 @@ class PropertyInquiryResource extends Resource
                         })
                         ->requiresConfirmation()
                         ->deselectRecordsAfterCompletion(),
-                        
-                    Tables\Actions\BulkAction::make('close')
+
+                    BulkAction::make('close')
                         ->label('Close Inquiries')
                         ->icon('heroicon-o-x-mark')
                         ->color('gray')
@@ -260,8 +273,8 @@ class PropertyInquiryResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPropertyInquiries::route('/'),
-            'view' => Pages\ViewPropertyInquiry::route('/{record}'),
+            'index' => ListPropertyInquiries::route('/'),
+            'view' => ViewPropertyInquiry::route('/{record}'),
         ];
     }
 }

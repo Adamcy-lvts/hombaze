@@ -2,6 +2,7 @@
 
 namespace App\Filament\Landlord\Resources\PropertyOwnerResource\Pages;
 
+use Filament\Notifications\Notification;
 use App\Filament\Landlord\Resources\PropertyOwnerResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class CreatePropertyOwner extends CreateRecord
         $record = static::getModel()::create($data);
 
         // Send notification about profile creation
-        \Filament\Notifications\Notification::make()
+        Notification::make()
             ->title('Profile Created Successfully')
             ->body('Your property owner profile has been created. You can now manage your properties.')
             ->success()

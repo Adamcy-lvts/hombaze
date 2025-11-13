@@ -2,7 +2,7 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         {{-- Template Selection Section --}}
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
             <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">Template Selection</h2>
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Choose a template to format the lease document or use default formatting</p>
             
@@ -12,7 +12,7 @@
                     <select 
                         id="template-select" 
                         wire:model.live="data.template_id"
-                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200"
+                        class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-xs focus:outline-hidden focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-gray-200"
                     >
                         <option value="">Use default template</option>
                         @php

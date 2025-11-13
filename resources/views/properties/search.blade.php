@@ -2,7 +2,7 @@
     <div class="bg-gray-50 min-h-screen py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <!-- Search Header -->
-            <div class="bg-white rounded-lg shadow-sm p-6 mb-8">
+            <div class="bg-white rounded-lg shadow-xs p-6 mb-8">
                 <h1 class="text-2xl font-bold text-gray-900 mb-4">Property Search Results</h1>
                 
                 <!-- Search Form -->
@@ -45,7 +45,7 @@
                                      alt="{{ $property->title }}" 
                                      class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                                <div class="w-full h-full bg-linear-to-br from-blue-100 to-blue-200 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                     </svg>
@@ -107,7 +107,7 @@
                         <h3 class="mt-2 text-sm font-medium text-gray-900">No properties found</h3>
                         <p class="mt-1 text-sm text-gray-500">Try adjusting your search criteria.</p>
                         <div class="mt-6">
-                            <a href="{{ route('landing') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="{{ route('landing') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-xs text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                                 Back to Search
                             </a>
                         </div>

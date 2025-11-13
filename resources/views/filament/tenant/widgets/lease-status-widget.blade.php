@@ -66,7 +66,7 @@
 @endphp
 
 <x-filament-widgets::widget class="fi-lease-status-widget">
-    <x-filament::section class="bg-white dark:bg-gray-800 rounded-lg shadow">
+    <x-filament::section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
         @if ($lease)
             {{-- Show lease details --}}
             <div class="flex flex-col gap-0.5">

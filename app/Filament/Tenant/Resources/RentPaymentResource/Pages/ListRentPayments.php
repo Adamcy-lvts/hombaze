@@ -2,6 +2,7 @@
 
 namespace App\Filament\Tenant\Resources\RentPaymentResource\Pages;
 
+use Filament\Actions\CreateAction;
 use App\Filament\Tenant\Resources\RentPaymentResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
@@ -13,7 +14,7 @@ class ListRentPayments extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
         ];
     }
 }

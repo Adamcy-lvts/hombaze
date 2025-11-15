@@ -52,6 +52,7 @@ class LeaseTemplateResource extends Resource
         return $schema
             ->components([
                 Section::make('Template Information')
+                    ->columnSpanFull()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -75,6 +76,7 @@ class LeaseTemplateResource extends Resource
 
                 Section::make('Default Lease Settings')
                     ->description('These values will be pre-filled when creating leases from this template')
+                    ->columnSpanFull()
                     ->schema([
                         Grid::make(3)
                             ->schema([
@@ -132,68 +134,67 @@ class LeaseTemplateResource extends Resource
                             ]),
                     ]),
 
-                Section::make('Template Variables')
-                    ->description('Available variables you can use in your terms and conditions')
-                    ->schema([
-                        Placeholder::make('available_variables')
-                            ->label('Available Variables')
-                            ->content(function () {
-                                $variables = LeaseTemplate::getAvailableVariables();
-                                $variableList = '';
-                                
-                                foreach ($variables as $key => $label) {
-                                    $variableList .= "• **{{" . $key . "}}** - " . $label . "\n";
-                                }
-                                
-                                return new HtmlString(
-                                    '<div class="text-sm space-y-1">' .
-                                    '<p class="font-medium text-gray-700">Use these variables in your terms and conditions:</p>' .
-                                    '<div class="bg-gray-50 p-3 rounded-sm border max-h-40 overflow-y-auto">' .
-                                    '<pre class="whitespace-pre-wrap text-xs">' . $variableList . '</pre>' .
-                                    '</div>' .
-                                    '<p class="text-xs text-gray-500 mt-2">Variables will be automatically replaced with actual values when creating leases.</p>' .
-                                    '</div>'
-                                );
-                            }),
-                    ])
-                    ->collapsible(),
 
                 Section::make('Terms & Conditions Template')
-                    ->description('Write your lease terms using the variables above. They will be replaced with actual values when creating leases.')
+                    ->description('Write your lease terms using merge tags. The merge tags panel will open automatically to help you insert dynamic variables.')
+                    ->columnSpanFull()
                     ->schema([
                         RichEditor::make('terms_and_conditions')
                             ->label('Terms & Conditions')
                             ->required()
                             ->toolbarButtons([
+                                'attachFiles',
+                                'blockquote',
                                 'bold',
-                                'italic',
-                                'underline',
                                 'bulletList',
-                                'orderedList',
+                                'codeBlock',
                                 'h2',
                                 'h3',
-                                'undo',
+                                'italic',
+                                'link',
+                                'orderedList',
                                 'redo',
+                                'strike',
+                                'underline',
+                                'undo',
                             ])
-                            ->default('
-<h3>Standard Lease Terms</h3>
-<ol>
-<li>The tenant <strong>{{tenant_name}}</strong> agrees to pay rent <strong>{{payment_frequency}}</strong> in the amount of <strong>{{rent_amount}}</strong> for the property located at <strong>{{property_address}}</strong>.</li>
-<li>The lease term shall commence on <strong>{{lease_start_date}}</strong> and terminate on <strong>{{lease_end_date}}</strong>, for a total duration of <strong>{{lease_duration_months}}</strong> months.</li>
-<li>The tenant shall use the premises <strong>solely for residential purposes</strong> and shall not conduct any business activities without prior written consent from the landlord <strong>{{landlord_name}}</strong>.</li>
-<li>The tenant shall <strong>maintain the premises in good condition</strong> and shall be responsible for any damages beyond normal wear and tear.</li>
-<li>The tenant shall <strong>not sublease, assign, or transfer</strong> any rights under this agreement without written consent from the landlord.</li>
-<li>The tenant shall <strong>comply with all applicable laws, regulations, and community rules</strong> and shall not engage in any illegal activities on the premises.</li>
-<li>The landlord shall <strong>maintain the structural integrity</strong> of the property and ensure all major systems (plumbing, electrical, etc.) are in working order.</li>
-<li>Either party may <strong>terminate this agreement with 30 days written notice</strong>, subject to applicable local laws and regulations.</li>
-<li>Renewal Option: <strong>{{renewal_option}}</strong> - This lease may be renewed upon mutual agreement of both parties before the expiration date.</li>
-<li>This agreement is executed on <strong>{{current_date}}</strong> in <strong>{{current_year}}</strong>.</li>
-</ol>
-                            ')
-                            ->helperText('Use the variables from the section above (e.g., {{property_title}}, {{tenant_name}}, {{rent_amount}}) to create dynamic templates.'),
+                            ->mergeTags([
+                                'property_title' => 'Property Title',
+                                'property_address' => 'Property Address',
+                                'property_type' => 'Property Type',
+                                'property_subtype' => 'Property Subtype',
+                                'property_area' => 'Property Area',
+                                'property_city' => 'Property City',
+                                'property_state' => 'Property State',
+                                'landlord_name' => 'Landlord Name',
+                                'landlord_email' => 'Landlord Email',
+                                'landlord_phone' => 'Landlord Phone',
+                                'tenant_name' => 'Tenant Name',
+                                'tenant_email' => 'Tenant Email',
+                                'tenant_phone' => 'Tenant Phone',
+                                'lease_start_date' => 'Lease Start Date',
+                                'lease_end_date' => 'Lease End Date',
+                                'lease_duration_months' => 'Lease Duration (Months)',
+                                'yearly_rent' => 'Rent Amount',
+                                'payment_frequency' => 'Payment Frequency',
+                                'security_deposit' => 'Security Deposit',
+                                'service_charge' => 'Service Charge',
+                                'legal_fee' => 'Legal Fee',
+                                'agency_fee' => 'Agency Fee',
+                                'caution_deposit' => 'Caution Deposit',
+                                'grace_period_days' => 'Grace Period (Days)',
+                                'renewal_option' => 'Renewal Option',
+                                'signed_date' => 'Date Signed',
+                                'current_date' => 'Current Date',
+                                'current_year' => 'Current Year',
+                                'lease_status' => 'Lease Status',
+                            ])
+                            ->activePanel('mergeTags')
+
                     ]),
 
                 Section::make('Template Status')
+                    ->columnSpanFull()
                     ->schema([
                         Toggle::make('is_active')
                             ->label('Template Active')

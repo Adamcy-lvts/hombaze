@@ -72,9 +72,11 @@ class ViewLease extends ViewRecord
                     'landlord_name' => $lease->landlord->name,
                     'landlord_email' => $lease->landlord->email,
                     'landlord_phone' => $lease->landlord->phone_number ?? '',
+                    'landlord_address' => $lease->landlord->address ?? '',
                     'tenant_name' => $lease->tenant->name,
                     'tenant_email' => $lease->tenant->email,
                     'tenant_phone' => $lease->tenant->phone_number ?? '',
+                    'tenant_address' => $lease->tenant->address ?? '',
                     'lease_start_date' => $lease->start_date ? $lease->start_date->format('F j, Y') : '',
                     'lease_end_date' => $lease->end_date ? $lease->end_date->format('F j, Y') : '',
                     'lease_duration_months' => $lease->start_date && $lease->end_date
@@ -101,10 +103,48 @@ class ViewLease extends ViewRecord
                     'generated_at' => now()
                 ];
             } else {
-                // Use default (stored terms and conditions)
+                // Use default (stored terms and conditions) but render placeholders if present
+                $data = [
+                    'property_title' => $lease->property->title,
+                    'property_address' => $lease->property->address,
+                    'property_type' => $lease->property->propertyType->name ?? '',
+                    'property_subtype' => $lease->property->propertySubtype->name ?? '',
+                    'property_area' => $lease->property->area->name ?? '',
+                    'property_city' => $lease->property->city->name ?? '',
+                    'property_state' => $lease->property->state->name ?? '',
+                    'landlord_name' => $lease->landlord->name,
+                    'landlord_email' => $lease->landlord->email,
+                    'landlord_phone' => $lease->landlord->phone_number ?? '',
+                    'landlord_address' => $lease->landlord->address ?? '',
+                    'tenant_name' => $lease->tenant->name,
+                    'tenant_email' => $lease->tenant->email,
+                    'tenant_phone' => $lease->tenant->phone_number ?? '',
+                    'tenant_address' => $lease->tenant->address ?? '',
+                    'lease_start_date' => $lease->start_date ? $lease->start_date->format('F j, Y') : '',
+                    'lease_end_date' => $lease->end_date ? $lease->end_date->format('F j, Y') : '',
+                    'lease_duration_months' => $lease->start_date && $lease->end_date
+                        ? $lease->start_date->diffInMonths($lease->end_date) : '',
+                    'rent_amount' => $lease->yearly_rent,
+                    'payment_frequency' => $lease->payment_frequency,
+                    'security_deposit' => $lease->security_deposit ?? 0,
+                    'service_charge' => $lease->service_charge ?? 0,
+                    'legal_fee' => $lease->legal_fee ?? 0,
+                    'agency_fee' => $lease->agency_fee ?? 0,
+                    'caution_deposit' => $lease->caution_deposit ?? 0,
+                    'grace_period_days' => $lease->grace_period_days ?? 30,
+                    'renewal_option' => $lease->renewal_option,
+                    'signed_date' => $lease->signed_date ? $lease->signed_date->format('F j, Y') : '',
+                    'current_date' => now()->format('F j, Y'),
+                    'current_year' => now()->year,
+                    'lease_status' => ucfirst($lease->status),
+                ];
+
+                $contentToRender = $lease->terms_and_conditions ?? $this->getDefaultLeaseContent();
+                $rendered = \App\Models\LeaseTemplate::renderWithMergeTags($contentToRender, $data);
+
                 $this->leaseDocument = [
                     'template' => null,
-                    'content' => $lease->terms_and_conditions ?? $this->getDefaultLeaseContent(),
+                    'content' => $rendered,
                     'lease' => $lease,
                     'generated_at' => now()
                 ];
@@ -181,9 +221,10 @@ class ViewLease extends ViewRecord
                     'template' => $template,
                 ]);
             } else {
-                // Use original default template
+                // Use original default template — pass the generated/record content for consistency
                 $pdf = Pdf::view('pdfs.tenancy-agreement', [
                     'record' => $lease,
+                    'content' => $this->leaseDocument['content'] ?? ($lease->terms_and_conditions ?? null),
                 ]);
             }
 

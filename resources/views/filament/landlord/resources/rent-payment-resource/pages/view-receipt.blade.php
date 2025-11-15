@@ -18,7 +18,9 @@
         <div id="receipt-container"
             class="bg-linear-to-r from-slate-50 to-slate-100 p-8 shadow-2xl rounded-lg border border-gray-200 max-w-7xl mx-auto relative overflow-hidden">
             <!-- Premium subtle background pattern -->
-            <div class="absolute inset-0 opacity-5 pattern-diagonal-lines pattern-gray-700 pattern-size-2 pattern-bg-transparent"></div>
+            <div
+                class="absolute inset-0 opacity-5 pattern-diagonal-lines pattern-gray-700 pattern-size-2 pattern-bg-transparent">
+            </div>
 
             <!-- Header Row - Improved Layout -->
             <div class="flex justify-between items-start mb-6 relative z-10">
@@ -33,7 +35,7 @@
                         // 1. Agency (if property belongs to an agency)
                         // 2. Property Owner's Company (if it's a company)
                         // 3. Independent Agent's business (if managed by independent agent)
-                        // 4. Landlord's business info (from user preferences - future)
+// 4. Landlord's business info (from user preferences - future)
                         // 5. HomeBaze fallback
 
                         // 1. Check for Agency
@@ -44,29 +46,37 @@
                                 'email' => $agency->email ?? 'support@homebaze.com',
                                 'phone' => $agency->phone ?? '+234 (0) 123-456-7890',
                                 'website' => $agency->website ?? 'www.homebaze.com',
-                                'tagline' => 'Real Estate Agency'
+                                'tagline' => 'Real Estate Agency',
                             ];
                             $businessLogo = $agency->logo ? asset('storage/' . $agency->logo) : null;
                             $businessInitials = strtoupper(substr($agency->name, 0, 2));
                         }
                         // 2. Check for Property Owner Company
-                        elseif ($receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
-                                $receipt->lease->property->owner->type === 'company' &&
-                                $receipt->lease->property->owner->company_name) {
+                        elseif (
+                            $receipt->lease &&
+                            $receipt->lease->property &&
+                            $receipt->lease->property->owner &&
+                            $receipt->lease->property->owner->type === 'company' &&
+                            $receipt->lease->property->owner->company_name
+                        ) {
                             $owner = $receipt->lease->property->owner;
                             $businessInfo = [
                                 'name' => $owner->company_name,
-                                'email' => $owner->email ?? $receipt->landlord->email ?? 'support@homebaze.com',
-                                'phone' => $owner->phone ?? $receipt->landlord->phone ?? '+234 (0) 123-456-7890',
+                                'email' => $owner->email ?? ($receipt->landlord->email ?? 'support@homebaze.com'),
+                                'phone' => $owner->phone ?? ($receipt->landlord->phone ?? '+234 (0) 123-456-7890'),
                                 'website' => $owner->website ?? null,
-                                'tagline' => null // No tagline for property owner companies
+                                'tagline' => null, // No tagline for property owner companies
                             ];
                             $businessInitials = strtoupper(substr($owner->company_name, 0, 2));
                         }
                         // 3. Check for Independent Agent's business (if property has independent agent)
-                        elseif ($receipt->lease && $receipt->lease->property && $receipt->lease->property->agent_id &&
-                                !$receipt->lease->property->agency_id) {
-                            // Independent agent - for now use agent's name as business name
+elseif (
+    $receipt->lease &&
+    $receipt->lease->property &&
+    $receipt->lease->property->agent_id &&
+    !$receipt->lease->property->agency_id
+) {
+    // Independent agent - for now use agent's name as business name
                             $agentUser = \App\Models\User::find($receipt->lease->property->agent_id);
                             if ($agentUser) {
                                 $businessInfo = [
@@ -74,7 +84,7 @@
                                     'email' => $agentUser->email,
                                     'phone' => $agentUser->phone ?? '+234 (0) 123-456-7890',
                                     'website' => 'www.homebaze.com',
-                                    'tagline' => 'Independent Real Estate Agent'
+                                    'tagline' => 'Independent Real Estate Agent',
                                 ];
                                 $businessInitials = strtoupper(substr($agentUser->name, 0, 2));
                             }
@@ -87,18 +97,22 @@
                                 'email' => 'support@homebaze.com',
                                 'phone' => '+234 (0) 123-456-7890',
                                 'website' => 'www.homebaze.com',
-                                'tagline' => 'Management System'
+                                'tagline' => 'Management System',
                             ];
                             $businessLogo = asset('img/homebaze_logo.png');
                         }
 
-                        $isPropertyOwnerCompany = $receipt->lease && $receipt->lease->property && $receipt->lease->property->owner &&
-                                                  $receipt->lease->property->owner->type === 'company' &&
-                                                  $receipt->lease->property->owner->company_name;
+                        $isPropertyOwnerCompany =
+                            $receipt->lease &&
+                            $receipt->lease->property &&
+                            $receipt->lease->property->owner &&
+                            $receipt->lease->property->owner->type === 'company' &&
+                            $receipt->lease->property->owner->company_name;
                     @endphp
 
                     @if ($businessLogo)
-                        <img src="{{ $businessLogo }}" alt="{{ $businessInfo['name'] }} Logo" class="w-20 drop-shadow-md">
+                        <img src="{{ $businessLogo }}" alt="{{ $businessInfo['name'] }} Logo"
+                            class="w-20 drop-shadow-md">
                     @else
                         <div class="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center">
                             <span class="text-lg font-bold text-indigo-600">{{ $businessInitials }}</span>
@@ -106,15 +120,15 @@
                     @endif
                     <div>
                         <h2 class="text-lg font-bold text-gray-800">{{ $businessInfo['name'] }}</h2>
-                        @if($businessInfo['tagline'])
+                        @if ($businessInfo['tagline'])
                             <p class="text-sm text-gray-600">{{ $businessInfo['tagline'] }}</p>
                         @endif
-                        @if($isPropertyOwnerCompany)
+                        @if ($isPropertyOwnerCompany)
                             <!-- Show PropertyOwner company contacts under company name -->
                             <div class="text-sm text-gray-600 mt-2 space-y-1">
                                 <p class="font-medium">{{ $businessInfo['email'] }}</p>
                                 <p>{{ $businessInfo['phone'] }}</p>
-                                @if($businessInfo['website'])
+                                @if ($businessInfo['website'])
                                     <p>{{ $businessInfo['website'] }}</p>
                                 @endif
                             </div>
@@ -123,10 +137,10 @@
                 </div>
 
                 <!-- Center: Contact Details (only for non-PropertyOwner companies) -->
-                @if(!$isPropertyOwnerCompany)
+                @if (!$isPropertyOwnerCompany)
                     <div class="text-center text-gray-600 text-sm flex-1">
                         <p class="font-semibold">{{ $businessInfo['email'] }}</p>
-                        @if($businessInfo['website'])
+                        @if ($businessInfo['website'])
                             <p>{{ $businessInfo['website'] }}</p>
                         @endif
                         <p class="text-xs">{{ $businessInfo['phone'] }}</p>
@@ -151,96 +165,93 @@
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Payment Date:</p>
-                    <p class="text-lg text-gray-800 font-medium">{{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}</p>
+                    <p class="text-lg text-gray-800 font-medium">
+                        {{ $receipt->payment_date ? \Carbon\Carbon::parse($receipt->payment_date)->format('F j, Y') : now()->format('F j, Y') }}
+                    </p>
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Payment For:</p>
                     <p class="text-lg text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
                 </div>
-                <div class="bg-linear-to-r from-indigo-50 to-blue-50 p-4 rounded-lg shadow-xs border-2 border-indigo-200">
+                <div
+                    class="bg-linear-to-r from-indigo-50 to-blue-50 p-4 rounded-lg shadow-xs border-2 border-indigo-200">
                     <p class="text-sm font-semibold text-indigo-700 mb-2">Total Amount</p>
                     <p class="text-2xl font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
                 </div>
             </div>
 
             <!-- Second Row: Property Information (Full Width) -->
-            @if($receipt->lease && $receipt->lease->property)
-            <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 shadow-xs mb-6">
-                <p class="font-semibold text-blue-700 mb-2">Property Details</p>
-                <p class="text-gray-800 font-medium text-lg">{{ $receipt->lease->property->title }}</p>
-                @if($receipt->lease->property->address)
-                    <p class="text-sm text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
-                @endif
-                @if($receipt->lease->property->city || $receipt->lease->property->state)
-                    <p class="text-sm text-gray-600">
-                        @if($receipt->lease->property->city){{ $receipt->lease->property->city->name }}@endif
-                        @if($receipt->lease->property->city && $receipt->lease->property->state), @endif
-                        @if($receipt->lease->property->state){{ $receipt->lease->property->state->name }}@endif
-                    </p>
-                @endif
-                @if($receipt->lease->property->bedrooms)
-                    <p class="text-sm text-gray-600 mt-2">
-                        <span class="font-medium">{{ $receipt->lease->property->bedrooms }} Bedroom{{ $receipt->lease->property->bedrooms > 1 ? 's' : '' }}</span>
-                        @if($receipt->lease->property->bathrooms)
-                            • {{ $receipt->lease->property->bathrooms }} Bathroom{{ $receipt->lease->property->bathrooms > 1 ? 's' : '' }}
-                        @endif
-                    </p>
-                @endif
-            </div>
+            @if ($receipt->lease && $receipt->lease->property)
+                <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500 shadow-xs mb-6">
+                    <p class="font-semibold text-blue-700 mb-2">Property Details</p>
+                    <p class="text-gray-800 font-medium text-lg">{{ $receipt->lease->property->title }}</p>
+                    @if ($receipt->lease->property->address)
+                        <p class="text-sm text-gray-600 mt-1">{{ $receipt->lease->property->address }}</p>
+                    @endif
+                    @if ($receipt->lease->property->city || $receipt->lease->property->state)
+                        <p class="text-sm text-gray-600">
+                            @if ($receipt->lease->property->city)
+                                {{ $receipt->lease->property->city->name }}
+                            @endif
+                            @if ($receipt->lease->property->city && $receipt->lease->property->state)
+                                ,
+                            @endif
+                            @if ($receipt->lease->property->state)
+                                {{ $receipt->lease->property->state->name }}
+                            @endif
+                        </p>
+                    @endif
+                    @if ($receipt->lease->property->bedrooms)
+                        <p class="text-sm text-gray-600 mt-2">
+                            <span class="font-medium">{{ $receipt->lease->property->bedrooms }}
+                                Bedroom{{ $receipt->lease->property->bedrooms > 1 ? 's' : '' }}</span>
+                            @if ($receipt->lease->property->bathrooms)
+                                • {{ $receipt->lease->property->bathrooms }}
+                                Bathroom{{ $receipt->lease->property->bathrooms > 1 ? 's' : '' }}
+                            @endif
+                        </p>
+                    @endif
+                </div>
             @endif
 
             <!-- Third Row: Lease Dates & Payment Information -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <!-- Lease Start Date -->
-                @if($receipt->lease)
-                <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-xs">
-                    <p class="font-semibold text-green-700 mb-2">Lease Start</p>
-                    <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</p>
-                </div>
+                @if ($receipt->lease)
+                    <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-xs">
+                        <p class="font-semibold text-green-700 mb-2">Lease Start</p>
+                        <p class="text-lg font-medium text-gray-800">
+                            {{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}
+                        </p>
+                    </div>
 
-                <!-- Lease End Date -->
-                <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 shadow-xs">
-                    <p class="font-semibold text-red-700 mb-2">Lease End</p>
-                    <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</p>
-                </div>
+                    <!-- Lease End Date -->
+                    <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 shadow-xs">
+                        <p class="font-semibold text-red-700 mb-2">Lease End</p>
+                        <p class="text-lg font-medium text-gray-800">
+                            {{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}
+                        </p>
+                    </div>
                 @endif
 
                 <!-- Payment Breakdown -->
                 <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="font-semibold text-gray-700 mb-2">Payment Breakdown</p>
                     <div class="space-y-2 text-sm">
-                        @if($receipt->late_fee > 0)
-                        <div class="flex justify-between text-red-600">
-                            <span>Late Fee:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->late_fee, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->discount > 0)
-                        <div class="flex justify-between text-green-600">
-                            <span>Discount:</span>
-                            <span class="font-medium">-₦{{ number_format($receipt->discount, 2) }}</span>
-                        </div>
-                        @endif
-                        @if($receipt->deposit > 0)
                         <div class="flex justify-between text-green-600">
                             <span>Deposit:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->deposit, 2) }}</span>
+                            <span class="font-medium">₦{{ number_format($receipt->deposit ?? 0, 2) }}</span>
                         </div>
-                        @endif
-                        @if($receipt->balance_due > 0)
                         <div class="flex justify-between text-red-600">
                             <span>Balance Due:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->balance_due, 2) }}</span>
+                            <span class="font-medium">₦{{ number_format($receipt->balance_due ?? 0, 2) }}</span>
                         </div>
-                        @endif
-                        @if($receipt->lease && $receipt->lease->security_deposit)
-                        <div class="flex justify-between text-yellow-600">
-                            <span>Security Deposit:</span>
-                            <span class="font-medium">₦{{ number_format($receipt->lease->security_deposit, 2) }}</span>
-                        </div>
-                        @endif
-                        @if(!$receipt->late_fee && !$receipt->discount && !$receipt->deposit && !$receipt->balance_due && (!$receipt->lease || !$receipt->lease->security_deposit))
-                        <p class="text-gray-500 text-sm italic">No additional charges</p>
+                        @if ($receipt->lease && $receipt->lease->security_deposit)
+                            <div class="flex justify-between text-yellow-600">
+                                <span>Security Deposit:</span>
+                                <span
+                                    class="font-medium">₦{{ number_format($receipt->lease->security_deposit, 2) }}</span>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -258,42 +269,58 @@
                 <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="font-semibold text-gray-700 mb-2">Payment Method</p>
                     <div class="grid grid-cols-2 gap-2">
-                        <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'cash' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'cash' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
-                                @if($receipt->payment_method == 'cash')
-                                <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                        <div
+                            class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'cash' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                            <div
+                                class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'cash' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                                @if ($receipt->payment_method == 'cash')
+                                    <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 @endif
                             </div>
                             <span>Cash</span>
                         </div>
-                        <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'transfer' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'transfer' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
-                                @if($receipt->payment_method == 'transfer')
-                                <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                        <div
+                            class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'transfer' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                            <div
+                                class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'transfer' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                                @if ($receipt->payment_method == 'transfer')
+                                    <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 @endif
                             </div>
                             <span>Transfer</span>
                         </div>
-                        <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'pos' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'pos' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
-                                @if($receipt->payment_method == 'pos')
-                                <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                        <div
+                            class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'pos' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                            <div
+                                class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'pos' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                                @if ($receipt->payment_method == 'pos')
+                                    <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 @endif
                             </div>
                             <span>POS</span>
                         </div>
-                        <div class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'card' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
-                            <div class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'card' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
-                                @if($receipt->payment_method == 'card')
-                                <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
-                                </svg>
+                        <div
+                            class="flex items-center space-x-2 text-sm {{ $receipt->payment_method == 'card' ? 'text-indigo-600 font-medium' : 'text-gray-500' }}">
+                            <div
+                                class="w-4 h-4 border-2 border-gray-500 rounded-xs flex items-center justify-center {{ $receipt->payment_method == 'card' ? 'bg-indigo-600 border-indigo-600' : 'bg-white' }}">
+                                @if ($receipt->payment_method == 'card')
+                                    <svg class="w-3 h-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
                                 @endif
                             </div>
                             <span>Card</span>
@@ -303,13 +330,6 @@
 
             </div>
 
-            <!-- Notes Section (if exists) -->
-            @if($receipt->notes)
-            <div class="bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 shadow-xs mb-6">
-                <p class="font-semibold text-yellow-700 mb-2">Additional Notes:</p>
-                <p class="text-gray-800">{{ $receipt->notes }}</p>
-            </div>
-            @endif
 
             <!-- QR Code positioned at bottom right -->
             <div class="relative">
@@ -318,16 +338,16 @@
                         @php
                             $qrCode = $this->generateQrCode();
                         @endphp
-                        @if($qrCode)
+                        @if ($qrCode)
                             {!! $qrCode !!}
                         @else
                             <svg width="80" height="80" viewBox="0 0 80 80" class="border">
-                                <rect width="80" height="80" fill="white"/>
+                                <rect width="80" height="80" fill="white" />
                                 <g fill="black">
-                                    <rect x="10" y="10" width="15" height="15"/>
-                                    <rect x="55" y="10" width="15" height="15"/>
-                                    <rect x="10" y="55" width="15" height="15"/>
-                                    <rect x="35" y="35" width="10" height="10"/>
+                                    <rect x="10" y="10" width="15" height="15" />
+                                    <rect x="55" y="10" width="15" height="15" />
+                                    <rect x="10" y="55" width="15" height="15" />
+                                    <rect x="35" y="35" width="10" height="10" />
                                 </g>
                                 <text x="40" y="45" text-anchor="middle" font-size="6" fill="black">QR</text>
                             </svg>
@@ -339,8 +359,10 @@
             <!-- Footer -->
             <div class="mt-6 pt-4 border-t border-gray-200 text-center text-gray-500 text-sm">
                 <p>Thank you for your timely payment!</p>
-                <p class="mt-1">This receipt was generated electronically and is valid without a physical signature.</p>
-                <p class="mt-1 font-semibold">Generated via HomeBaze Property Management System | <strong>Powered by DevCentric</strong></p>
+                <p class="mt-1">This receipt was generated electronically and is valid without a physical signature.
+                </p>
+                <p class="mt-1 font-semibold">Generated via HomeBaze Property Management System | <strong>Powered by
+                        DevCentric</strong></p>
             </div>
         </div>
     </div>

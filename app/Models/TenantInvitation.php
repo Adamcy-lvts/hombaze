@@ -23,6 +23,7 @@ class TenantInvitation extends Model
         'tenant_user_id',
         'link_copied_at',
         'link_copy_count',
+        'last_shared_at',
         'sent_via',
     ];
 
@@ -30,6 +31,7 @@ class TenantInvitation extends Model
         'expires_at' => 'datetime',
         'accepted_at' => 'datetime',
         'link_copied_at' => 'datetime',
+        'last_shared_at' => 'datetime',
         'sent_via' => 'array',
     ];
 

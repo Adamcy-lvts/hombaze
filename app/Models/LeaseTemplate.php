@@ -42,34 +42,40 @@ class LeaseTemplate extends Model
         'is_default' => 'boolean',
     ];
 
-    // Available template variables that can be used in terms and conditions
+    // Available template variables that can be used in terms and conditions (Filament merge tags format)
     public static function getAvailableVariables(): array
     {
         return [
-            'property_title' => 'Property Title',
-            'property_address' => 'Property Address',
-            'property_type' => 'Property Type',
-            'property_subtype' => 'Property Subtype',
-            'landlord_name' => 'Landlord Name',
-            'landlord_email' => 'Landlord Email',
-            'landlord_phone' => 'Landlord Phone',
-            'tenant_name' => 'Tenant Name',
-            'tenant_email' => 'Tenant Email',
-            'tenant_phone' => 'Tenant Phone',
-            'lease_start_date' => 'Lease Start Date',
-            'lease_end_date' => 'Lease End Date',
-            'lease_duration_months' => 'Lease Duration (Months)',
-            'rent_amount' => 'Monthly/Annual Rent Amount',
-            'payment_frequency' => 'Payment Frequency',
-            'security_deposit' => 'Security Deposit',
-            'service_charge' => 'Service Charge',
-            'legal_fee' => 'Legal Fee',
-            'agency_fee' => 'Agency Fee',
-            'caution_deposit' => 'Caution Deposit',
-            'grace_period_days' => 'Grace Period (Days)',
-            'renewal_option' => 'Renewal Option (Yes/No)',
-            'current_date' => 'Current Date',
-            'current_year' => 'Current Year',
+            'Date Signed' => 'signed_date',
+            'Property Title' => 'property_title',
+            'Property Address' => 'property_address',
+            'Property Type' => 'property_type',
+            'Property Subtype' => 'property_subtype',
+            'Property City' => 'property_city',
+            'Property State' => 'property_state',
+            'Property Area' => 'property_area',
+            'Landlord Name' => 'landlord_name',
+            'Landlord Email' => 'landlord_email',
+            'Landlord Phone' => 'landlord_phone',
+            'Landlord Address' => 'landlord_address',
+            'Tenant Name' => 'tenant_name',
+            'Tenant Email' => 'tenant_email',
+            'Tenant Phone' => 'tenant_phone',
+            'Tenant Address' => 'tenant_address',
+            'Lease Start Date' => 'lease_start_date',
+            'Lease End Date' => 'lease_end_date',
+            'Lease Duration Months' => 'lease_duration_months',
+            'Rent Amount' => 'rent_amount',
+            'Payment Frequency' => 'payment_frequency',
+            'Security Deposit' => 'security_deposit',
+            'Service Charge' => 'service_charge',
+            'Legal Fee' => 'legal_fee',
+            'Agency Fee' => 'agency_fee',
+            'Caution Deposit' => 'caution_deposit',
+            'Grace Period Days' => 'grace_period_days',
+            'Renewal Option' => 'renewal_option',
+            'Current Date' => 'current_date',
+            'Current Year' => 'current_year',
         ];
     }
 
@@ -100,46 +106,141 @@ class LeaseTemplate extends Model
     }
 
     /**
-     * Replace template variables with actual values
+     * Replace template variables with actual values using Filament merge tags
      */
     public function substituteVariables(array $data): string
     {
-        $termsAndConditions = $this->terms_and_conditions;
+        return self::renderWithMergeTags($this->terms_and_conditions, $data);
+    }
 
-        // Define variable patterns and their replacements
-        $variables = [
-            '{{property_title}}' => $data['property_title'] ?? '',
-            '{{property_address}}' => $data['property_address'] ?? '',
-            '{{property_type}}' => $data['property_type'] ?? '',
-            '{{property_subtype}}' => $data['property_subtype'] ?? '',
-            '{{landlord_name}}' => $data['landlord_name'] ?? '',
-            '{{landlord_email}}' => $data['landlord_email'] ?? '',
-            '{{landlord_phone}}' => $data['landlord_phone'] ?? '',
-            '{{tenant_name}}' => $data['tenant_name'] ?? '',
-            '{{tenant_email}}' => $data['tenant_email'] ?? '',
-            '{{tenant_phone}}' => $data['tenant_phone'] ?? '',
-            '{{lease_start_date}}' => $data['lease_start_date'] ?? '',
-            '{{lease_end_date}}' => $data['lease_end_date'] ?? '',
-            '{{lease_duration_months}}' => $data['lease_duration_months'] ?? '',
-            '{{rent_amount}}' => $data['rent_amount'] ? '₦' . number_format($data['rent_amount'], 2) : '',
-            '{{payment_frequency}}' => $data['payment_frequency'] ?? '',
-            '{{security_deposit}}' => $data['security_deposit'] ? '₦' . number_format($data['security_deposit'], 2) : '',
-            '{{service_charge}}' => $data['service_charge'] ? '₦' . number_format($data['service_charge'], 2) : '',
-            '{{legal_fee}}' => $data['legal_fee'] ? '₦' . number_format($data['legal_fee'], 2) : '',
-            '{{agency_fee}}' => $data['agency_fee'] ? '₦' . number_format($data['agency_fee'], 2) : '',
-            '{{caution_deposit}}' => $data['caution_deposit'] ? '₦' . number_format($data['caution_deposit'], 2) : '',
-            '{{grace_period_days}}' => $data['grace_period_days'] ?? '',
-            '{{renewal_option}}' => ($data['renewal_option'] ?? false) ? 'Yes' : 'No',
-            '{{current_date}}' => now()->format('F j, Y'),
-            '{{current_year}}' => now()->year,
-        ];
+    /**
+     * Render an arbitrary string using Filament merge tags
+     *
+     * @param string|null $string
+     * @param array $data
+     * @return string
+     */
+    public static function renderString(?string $string, array $data = []): string
+    {
+        return self::renderWithMergeTags($string, $data);
+    }
 
-        // Replace all variables in the terms and conditions
-        foreach ($variables as $placeholder => $value) {
-            $termsAndConditions = str_replace($placeholder, $value, $termsAndConditions);
+    /**
+     * Process content using Filament RichEditor merge tags
+     *
+     * @param string|null $content
+     * @param array $data
+     * @return string
+     */
+    public static function renderWithMergeTags(?string $content, array $data = []): string
+    {
+        if (! $content) {
+            return '';
         }
 
-        return $termsAndConditions;
+        // Prepare data for Filament merge tags
+        $mergeData = [
+            'signed_date' => $data['signed_date'] ?? '',
+            'property_title' => $data['property_title'] ?? '',
+            'property_address' => $data['property_address'] ?? '',
+            'property_type' => $data['property_type'] ?? '',
+            'property_subtype' => $data['property_subtype'] ?? '',
+            'property_city' => $data['property_city'] ?? '',
+            'property_state' => $data['property_state'] ?? '',
+            'property_area' => $data['property_area'] ?? '',
+            'landlord_name' => $data['landlord_name'] ?? '',
+            'landlord_email' => $data['landlord_email'] ?? '',
+            'landlord_phone' => $data['landlord_phone'] ?? '',
+            'landlord_address' => $data['landlord_address'] ?? '',
+            'tenant_name' => $data['tenant_name'] ?? '',
+            'tenant_email' => $data['tenant_email'] ?? '',
+            'tenant_phone' => $data['tenant_phone'] ?? '',
+            'tenant_address' => $data['tenant_address'] ?? '',
+            'lease_start_date' => $data['lease_start_date'] ?? '',
+            'lease_end_date' => $data['lease_end_date'] ?? '',
+            'lease_duration_months' => $data['lease_duration_months'] ?? '',
+            'rent_amount' => isset($data['rent_amount']) && $data['rent_amount'] ? '₦' . number_format($data['rent_amount'], 2) : '',
+            'payment_frequency' => $data['payment_frequency'] ?? '',
+            'security_deposit' => isset($data['security_deposit']) && $data['security_deposit'] ? '₦' . number_format($data['security_deposit'], 2) : '',
+            'service_charge' => isset($data['service_charge']) && $data['service_charge'] ? '₦' . number_format($data['service_charge'], 2) : '',
+            'legal_fee' => isset($data['legal_fee']) && $data['legal_fee'] ? '₦' . number_format($data['legal_fee'], 2) : '',
+            'agency_fee' => isset($data['agency_fee']) && $data['agency_fee'] ? '₦' . number_format($data['agency_fee'], 2) : '',
+            'caution_deposit' => isset($data['caution_deposit']) && $data['caution_deposit'] ? '₦' . number_format($data['caution_deposit'], 2) : '',
+            'grace_period_days' => $data['grace_period_days'] ?? '',
+            'renewal_option' => ! empty($data['renewal_option']) ? 'Yes' : 'No',
+            'current_date' => now()->format('F j, Y'),
+            'current_year' => now()->year,
+        ];
+
+        // First, try to use Filament's RichContentRenderer if the content contains proper merge tag format
+        if (class_exists(\Filament\Forms\Components\RichEditor\RichContentRenderer::class) &&
+            strpos($content, 'data-type="mergeTag"') !== false) {
+            try {
+                return \Filament\Forms\Components\RichEditor\RichContentRenderer::make($content)
+                    ->mergeTags($mergeData)
+                    ->toHtml();
+            } catch (\Exception $e) {
+                // Log the error but fall through to manual replacement
+                \Log::warning('RichContentRenderer failed: ' . $e->getMessage());
+            }
+        }
+
+        // Use manual replacement for simple {{ Tag }} format merge tags
+        return self::manualReplace($content, $mergeData);
+    }
+
+    /**
+     * Manual replacement for merge tags as fallback
+     *
+     * @param string $content
+     * @param array $data
+     * @return string
+     */
+    private static function manualReplace(string $content, array $data): string
+    {
+        // Build replacement map
+        $replacements = [];
+
+        // Get available variables to build proper label mapping
+        $availableVars = self::getAvailableVariables();
+
+        foreach ($data as $key => $value) {
+            // Find the proper label for this key
+            $label = array_search($key, $availableVars);
+            if ($label !== false) {
+                // Replace label-style merge tags
+                $replacements['{{ ' . $label . ' }}'] = (string) $value;
+                $replacements['{{' . $label . '}}'] = (string) $value;
+            }
+
+            // Also replace key-style merge tags
+            $replacements['{{ ' . $key . ' }}'] = (string) $value;
+            $replacements['{{' . $key . '}}'] = (string) $value;
+
+            // Handle various case formats
+            $keyTitle = ucwords(str_replace('_', ' ', $key));
+            $replacements['{{ ' . $keyTitle . ' }}'] = (string) $value;
+            $replacements['{{' . $keyTitle . '}}'] = (string) $value;
+        }
+
+        // Handle special cases and variations that might exist in templates
+        $specialCases = [
+            '{{ Lease Duration (Months) }}' => $data['lease_duration_months'] ?? '',
+            '{{Lease Duration (Months)}}' => $data['lease_duration_months'] ?? '',
+            '{{ Grace Period (Days) }}' => $data['grace_period_days'] ?? '',
+            '{{Grace Period (Days)}}' => $data['grace_period_days'] ?? '',
+            '{{ Monthly/Annual Rent Amount }}' => $data['rent_amount'] ?? '',
+            '{{Monthly/Annual Rent Amount}}' => $data['rent_amount'] ?? '',
+            '{{ Renewal Option (Yes/No) }}' => $data['renewal_option'] ?? '',
+            '{{Renewal Option (Yes/No)}}' => $data['renewal_option'] ?? '',
+        ];
+
+        $replacements = array_merge($replacements, $specialCases);
+
+        // Perform all replacements
+        $content = str_replace(array_keys($replacements), array_values($replacements), $content);
+
+        return $content;
     }
 
     /**
@@ -147,13 +248,17 @@ class LeaseTemplate extends Model
      */
     public function extractUsedVariables(): array
     {
-        $allVariables = array_keys(self::getAvailableVariables());
+        $availableVariables = self::getAvailableVariables();
         $usedVariables = [];
 
-        foreach ($allVariables as $variable) {
-            $placeholder = '{{' . $variable . '}}';
-            if (str_contains($this->terms_and_conditions, $placeholder)) {
-                $usedVariables[] = $variable;
+        foreach ($availableVariables as $label => $key) {
+            // Check for both label and key formats
+            $labelPlaceholder = '{{ ' . $label . ' }}';
+            $keyPlaceholder = '{{ ' . $key . ' }}';
+
+            if (str_contains($this->terms_and_conditions, $labelPlaceholder) ||
+                str_contains($this->terms_and_conditions, $keyPlaceholder)) {
+                $usedVariables[] = $key;
             }
         }
 

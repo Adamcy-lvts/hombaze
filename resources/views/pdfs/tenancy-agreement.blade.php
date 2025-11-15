@@ -328,8 +328,54 @@
 
                 <div class="bg-gray-50 p-2 rounded-sm border border-gray-200">
                     <div class="text-md text-gray-800 leading-tight prose prose-xs max-w-none">
-                        @if ($record->terms_and_conditions)
-                            {!! $record->terms_and_conditions !!}
+                        @php
+                            // Prefer a provided $content (passed by controllers/pages). Fallback to record terms or default.
+                            $renderContent = $content ?? $record->terms_and_conditions ?? null;
+                        @endphp
+
+                        @if ($renderContent)
+                            @php
+                                // Ensure any remaining placeholders in the provided content
+                                // are substituted using the lease record values as a final pass.
+                                $subData = [
+                                    'property_title' => $record->property->title ?? '',
+                                    'property_address' => $record->property->address ?? '',
+                                    'property_type' => $record->property->propertyType->name ?? '',
+                                    'property_subtype' => $record->property->propertySubtype->name ?? '',
+                                    'property_area' => $record->property->area->name ?? '',
+                                    'property_city' => $record->property->city->name ?? '',
+                                    'property_state' => $record->property->state->name ?? '',
+                                    'landlord_name' => $record->landlord->name ?? '',
+                                    'landlord_email' => $record->landlord->email ?? '',
+                                    'landlord_phone' => $record->landlord->phone_number ?? '',
+                                    'landlord_address' => $record->landlord->address ?? '',
+                                    'tenant_name' => $record->tenant->name ?? '',
+                                    'tenant_email' => $record->tenant->email ?? '',
+                                    'tenant_phone' => $record->tenant->phone_number ?? '',
+                                    'tenant_address' => $record->tenant->address ?? '',
+                                    'lease_start_date' => $record->start_date ? $record->start_date->format('F j, Y') : '',
+                                    'lease_end_date' => $record->end_date ? $record->end_date->format('F j, Y') : '',
+                                    'lease_duration_months' => $record->start_date && $record->end_date ? $record->start_date->diffInMonths($record->end_date) : '',
+                                    'rent_amount' => $record->yearly_rent ?? $record->monthly_rent ?? null,
+                                    'payment_frequency' => $record->payment_frequency ?? '',
+                                    'security_deposit' => $record->security_deposit ?? null,
+                                    'service_charge' => $record->service_charge ?? null,
+                                    'legal_fee' => $record->legal_fee ?? null,
+                                    'agency_fee' => $record->agency_fee ?? null,
+                                    'caution_deposit' => $record->caution_deposit ?? null,
+                                    'grace_period_days' => $record->grace_period_days ?? null,
+                                    'renewal_option' => $record->renewal_option ?? null,
+                                    'signed_date' => $record->signed_date ? $record->signed_date->format('F j, Y') : '',
+                                ];
+
+                                $renderContent = \App\Models\LeaseTemplate::renderWithMergeTags($renderContent, $subData);
+                            @endphp
+
+                            @if (class_exists(\Filament\Forms\Components\RichEditor\RichContentRenderer::class))
+                                {!! \Filament\Forms\Components\RichEditor\RichContentRenderer::make($renderContent)->toHtml() !!}
+                            @else
+                                {!! str($renderContent)->sanitizeHtml() !!}
+                            @endif
                         @else
                             <!-- Default Terms -->
                             <h3 class="text-sm font-bold mb-2">Standard Lease Terms</h3>

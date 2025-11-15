@@ -54,6 +54,7 @@ class LeaseResource extends Resource
             ->components([
                 Section::make('Lease Template')
                     ->description('Start with a template to auto-fill terms and conditions')
+                    ->columnSpanFull()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -120,6 +121,7 @@ class LeaseResource extends Resource
                     ->collapsed(false),
 
                 Section::make('Basic Lease Information')
+                    ->columnSpanFull()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -171,6 +173,7 @@ class LeaseResource extends Resource
                     ]),
 
                 Section::make('Financial Terms')
+                    ->columnSpanFull()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -205,6 +208,7 @@ class LeaseResource extends Resource
                     ]),
 
                 Section::make('Additional Information')
+                    ->columnSpanFull()
                     ->schema([
                         Grid::make(2)
                             ->schema([
@@ -221,15 +225,39 @@ class LeaseResource extends Resource
                         RichEditor::make('terms_and_conditions')
                             ->label('Terms & Conditions')
                             ->toolbarButtons([
+                                'attachFiles',
+                                'blockquote',
                                 'bold',
-                                'italic',
-                                'underline',
                                 'bulletList',
-                                'orderedList',
+                                'codeBlock',
                                 'h2',
                                 'h3',
-                                'undo',
+                                'italic',
+                                'link',
+                                'orderedList',
                                 'redo',
+                                'strike',
+                                'underline',
+                                'undo',
+                            ])
+                            ->mergeTags([
+                                'property_title' => 'Property Title',
+                                'property_address' => 'Property Address',
+                                'property_type' => 'Property Type',
+                                'property_subtype' => 'Property Subtype',
+                                'landlord_name' => 'Landlord Name',
+                                'landlord_email' => 'Landlord Email',
+                                'tenant_name' => 'Tenant Name',
+                                'tenant_email' => 'Tenant Email',
+                                'lease_start_date' => 'Lease Start Date',
+                                'lease_end_date' => 'Lease End Date',
+                                'lease_duration_months' => 'Lease Duration (Months)',
+                                'rent_amount' => 'Rent Amount',
+                                'payment_frequency' => 'Payment Frequency',
+                                'renewal_option' => 'Renewal Option',
+                                'signed_date' => 'Date Signed',
+                                'current_date' => 'Current Date',
+                                'current_year' => 'Current Year',
                             ])
                             ->default('
 <h3>Standard Lease Terms</h3>

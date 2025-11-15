@@ -51,6 +51,7 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use App\Enums\PropertyStatus;
+use Filament\Infolists\Components\TextEntry;
 
 class PropertyResource extends Resource
 {
@@ -458,7 +459,7 @@ class PropertyResource extends Resource
                                 Section::make('Property Management')
                                     ->description('Additional property management settings')
                                     ->schema([
-                                        Placeholder::make('owner_info')
+                                        TextEntry::make('owner_info')
                                             ->label('Property Owner')
                                             ->content('You are the owner of this property')
                                             ->helperText('As a landlord, you are automatically set as the owner of properties you create')

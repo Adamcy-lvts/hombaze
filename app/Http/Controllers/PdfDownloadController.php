@@ -56,9 +56,10 @@ class PdfDownloadController extends Controller
                     'template' => $template,
                 ]);
             } else {
-                // Use original default template
+                // Use original default template and pass rendered content for consistency
                 $pdf = Pdf::view('pdfs.tenancy-agreement', [
                     'record' => $lease,
+                    'content' => $this->generateLeaseContent($lease, null),
                 ]);
             }
             
@@ -140,38 +141,47 @@ class PdfDownloadController extends Controller
 
     private function generateLeaseContent(Lease $lease, ?LeaseTemplate $template): string
     {
+        // Build the variable map used for substitution
+        $data = [
+            'property_title' => $lease->property->title,
+            'property_address' => $lease->property->address,
+            'property_type' => $lease->property->propertyType->name ?? '',
+            'property_subtype' => $lease->property->propertySubtype->name ?? '',
+            'property_area' => $lease->property->area->name ?? '',
+            'property_city' => $lease->property->city->name ?? '',
+            'property_state' => $lease->property->state->name ?? '',
+            'landlord_name' => $lease->landlord->name,
+            'landlord_email' => $lease->landlord->email,
+            'tenant_name' => $lease->tenant->name,
+            'tenant_email' => $lease->tenant->email,
+            'tenant_phone' => $lease->tenant->phone_number ?? '',
+            'lease_start_date' => $lease->start_date ? $lease->start_date->format('F j, Y') : '',
+            'lease_end_date' => $lease->end_date ? $lease->end_date->format('F j, Y') : '',
+            'lease_duration_months' => $lease->start_date && $lease->end_date 
+                ? $lease->start_date->diffInMonths($lease->end_date) : '',
+            'rent_amount' => $lease->monthly_rent,
+            'payment_frequency' => $lease->payment_frequency,
+            'renewal_option' => $lease->renewal_option ? 'Yes' : 'No',
+            'signed_date' => $lease->signed_date ? $lease->signed_date->format('F j, Y') : '',
+            'current_date' => now()->format('F j, Y'),
+            'lease_status' => ucfirst($lease->status),
+            'security_deposit' => $lease->security_deposit ?? 0,
+            'service_charge' => $lease->service_charge ?? 0,
+            'legal_fee' => $lease->legal_fee ?? 0,
+            'agency_fee' => $lease->agency_fee ?? 0,
+            'caution_deposit' => $lease->caution_deposit ?? 0,
+            'grace_period_days' => $lease->grace_period_days ?? 30,
+        ];
+
         if ($template) {
-            // Use template with variable substitution
-            return $template->substituteVariables([
-                'property_title' => $lease->property->title,
-                'property_address' => $lease->property->address,
-                'property_type' => $lease->property->propertyType->name ?? '',
-                'property_subtype' => $lease->property->propertySubtype->name ?? '',
-                'property_area' => $lease->property->area->name ?? '',
-                'property_city' => $lease->property->city->name ?? '',
-                'property_state' => $lease->property->state->name ?? '',
-                'landlord_name' => $lease->landlord->name,
-                'landlord_email' => $lease->landlord->email,
-                'tenant_name' => $lease->tenant->name,
-                'tenant_email' => $lease->tenant->email,
-                'tenant_phone' => $lease->tenant->phone_number ?? '',
-                'lease_start_date' => $lease->start_date ? $lease->start_date->format('F j, Y') : '',
-                'lease_end_date' => $lease->end_date ? $lease->end_date->format('F j, Y') : '',
-                'lease_duration_months' => $lease->start_date && $lease->end_date 
-                    ? $lease->start_date->diffInMonths($lease->end_date) : '',
-                'rent_amount' => $lease->monthly_rent,
-                'payment_frequency' => $lease->payment_frequency,
-                'renewal_option' => $lease->renewal_option ? 'Yes' : 'No',
-                'signed_date' => $lease->signed_date ? $lease->signed_date->format('F j, Y') : '',
-                'current_date' => now()->format('F j, Y'),
-                'lease_status' => ucfirst($lease->status),
-                'security_deposit' => $lease->security_deposit ?? 0,
-                'service_charge' => $lease->service_charge ?? 0,
-            ]);
-        } else {
-            // Use default lease content
-            return $lease->terms_and_conditions ?? $this->getDefaultLeaseContent();
+            return $template->substituteVariables($data);
         }
+
+        // If there's no LeaseTemplate instance, attempt to render placeholders
+        // in the lease's terms using the same rules.
+        $content = $lease->terms_and_conditions ?? $this->getDefaultLeaseContent();
+
+        return \App\Models\LeaseTemplate::renderString($content, $data);
     }
 
     private function getDefaultLeaseContent(): string

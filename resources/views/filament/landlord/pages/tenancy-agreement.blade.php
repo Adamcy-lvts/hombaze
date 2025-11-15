@@ -216,7 +216,11 @@
                         <div class="bg-linear-to-br from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-750 p-4 rounded-sm border border-gray-200 dark:border-gray-600">
                             @if($record->terms_and_conditions)
                                 <div class="prose prose-sm max-w-none text-gray-800 dark:text-gray-200">
-                                    {!! $record->terms_and_conditions !!}
+                                    @if (class_exists(\Filament\Forms\Components\RichEditor\RichContentRenderer::class))
+                                        {!! \Filament\Forms\Components\RichEditor\RichContentRenderer::make($record->terms_and_conditions)->toHtml() !!}
+                                    @else
+                                        {!! str($record->terms_and_conditions)->sanitizeHtml() !!}
+                                    @endif
                                 </div>
                             @else
                                 <!-- Default Terms -->

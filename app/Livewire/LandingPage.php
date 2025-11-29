@@ -448,6 +448,22 @@ class LandingPage extends Component
     /**
      * Get landing page statistics
      */
+    /**
+     * Get featured properties for the carousel
+     */
+    public function getFeaturedPropertiesProperty()
+    {
+        return Cache::remember('featured_properties_landing', 300, function () {
+            return Property::with(['city', 'state', 'propertyType'])
+                ->published()
+                ->available()
+                ->where('is_featured', true)
+                ->latest()
+                ->take(8)
+                ->get();
+        });
+    }
+
     public function getStatsProperty()
     {
         return Cache::remember('landing_stats', 3600, function () {

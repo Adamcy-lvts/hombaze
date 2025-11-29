@@ -5,136 +5,148 @@
 @endpush
 
 <div class="min-h-screen bg-gray-50">
-    <!-- Minimal Airbnb-Style Hero Section -->
-    <section class="relative bg-white border-b border-gray-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
-            <!-- Minimal Header - Just Search -->
-            <div class="text-center mb-6">
-                <h1 class="text-2xl lg:text-3xl font-semibold text-gray-900 mb-4">
-                    Find your dream home
-                </h1>
-            </div>
+    <!-- Modern Hero Section -->
+    <!-- Modern Hero Section (Compact) -->
+    <section class="relative h-[350px] lg:h-[400px] flex flex-col justify-center items-center overflow-hidden">
+        <!-- Background Image & Overlay -->
+        <div class="absolute inset-0 z-0">
+            <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" 
+                 alt="Background" 
+                 class="w-full h-full object-cover transform scale-105 hover:scale-100 transition-transform duration-[20s] ease-out">
+            <div class="absolute inset-0 bg-gradient-to-b from-slate-900/70 via-slate-900/50 to-gray-50"></div>
+        </div>
 
-            <!-- Prominent Airbnb-Style Search Bar -->
-            <div class="max-w-3xl mx-auto relative mb-6">
-                <div class="relative">
-                    <input
-                        type="text"
-                        wire:model.live.debounce.500ms="searchQuery"
-                        wire:focus="updateSuggestions"
-                        placeholder="Search locations, property types, or areas"
-                        class="w-full pl-6 pr-16 py-4 text-base bg-white border border-gray-300 rounded-full focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 shadow-lg hover:shadow-xl transition-all duration-200"
-                        autocomplete="off"
-                    >
-
-                    <!-- Search Button -->
-                    <div class="absolute inset-y-0 right-0 pr-2 flex items-center">
-                        <button
-                            onclick="window.location.href='/properties?q=' + encodeURIComponent(document.querySelector('input[wire\\:model\\.live\\.debounce\\.500ms=\"searchQuery\"]').value)"
-                            class="bg-emerald-600 hover:bg-emerald-700 text-white p-3 rounded-full transition-colors duration-200 shadow-lg"
-                        >
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Hero Content -->
+        <div class="relative z-10 w-full max-w-4xl mx-auto px-4 text-center -mt-12">
+            <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
+                Find your <span class="text-emerald-400">dream home</span>
+            </h1>
+            
+            <!-- Glassmorphism Search Bar -->
+            <div class="relative max-w-2xl mx-auto mt-6">
+                <div class="relative group">
+                    <div class="absolute -inset-0.5 bg-gradient-to-r from-emerald-600 to-teal-600 rounded-full blur opacity-30 group-hover:opacity-50 transition duration-500"></div>
+                    <div class="relative flex items-center bg-white/10 backdrop-blur-md border border-white/20 rounded-full p-1.5 shadow-2xl transition-all duration-300 hover:bg-white/20">
+                        <div class="pl-4 text-white/80">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
+                        </div>
+                        <input
+                            type="text"
+                            wire:model.live.debounce.500ms="searchQuery"
+                            wire:focus="updateSuggestions"
+                            placeholder="Search locations, property types..."
+                            class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-white/70 text-base px-4 py-2.5"
+                            autocomplete="off"
+                        >
+                        <button
+                            onclick="window.location.href='/properties?q=' + encodeURIComponent(document.querySelector('input[wire\\:model\\.live\\.debounce\\.500ms=\"searchQuery\"]').value)"
+                            class="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all duration-200 shadow-lg hover:shadow-emerald-500/30"
+                        >
+                            Search
                         </button>
                     </div>
                 </div>
 
                 <!-- Search Suggestions -->
                 @if($showSuggestions && count($suggestions) > 0)
-                    <div class="absolute w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-80 overflow-y-auto z-50">
+                    <div class="absolute w-full mt-2 bg-white/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-50 text-left">
                         @foreach($suggestions as $suggestion)
                             <div
                                 wire:click="selectSuggestion({{ json_encode($suggestion) }})"
-                                class="flex items-center px-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0"
+                                class="flex items-center px-4 py-3 hover:bg-emerald-50/50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0 group"
                             >
-                                <div class="shrink-0 w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
+                                <div class="shrink-0 w-8 h-8 bg-emerald-100/50 text-emerald-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
                                     @if($suggestion['icon'] === 'location-dot')
-                                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         </svg>
                                     @else
-                                        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                                         </svg>
                                     @endif
                                 </div>
                                 <div class="flex-1">
-                                    <div class="font-medium text-gray-900">{{ $suggestion['text'] }}</div>
-                                    <div class="text-sm text-gray-500">{{ $suggestion['category'] }}</div>
+                                    <div class="font-semibold text-sm text-gray-900 group-hover:text-emerald-700 transition-colors">{{ $suggestion['text'] }}</div>
+                                    <div class="text-xs text-gray-500">{{ $suggestion['category'] }}</div>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 @endif
             </div>
+        </div>
+    </section>
 
-            <!-- Enhanced Quick Filters -->
-            <div class="bg-white/90 backdrop-blur-xs border border-gray-200/50 rounded-xl p-3 mb-4 shadow-xs">
-                <!-- Listing Type Filters (Always Visible) -->
-                <div class="mb-3">
-                    <div class="flex flex-wrap items-center justify-center gap-2">
+    <!-- Floating Filters Section (Collapsible) -->
+    <section class="relative z-20 -mt-12 px-4 sm:px-6 lg:px-8 pb-8" x-data="{ showFilters: false }">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 backdrop-blur-sm bg-white/95">
+                
+                <!-- Top Row: Listing Types & Toggle -->
+                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <!-- Listing Types (Always Visible) -->
+                    <div class="flex items-center bg-gray-100/80 p-1 rounded-lg">
                         @foreach($filterOptions['listing_types'] as $listingType)
                             <button
                                 wire:click="updateFilter('listing_type', '{{ $listingType['value'] }}')"
-                                class="px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 {{ $selectedListingType === $listingType['value'] ? 'bg-emerald-600 text-white shadow-md' : 'bg-white border border-gray-300 text-gray-700 hover:bg-emerald-50 hover:border-emerald-300' }}"
+                                class="px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 {{ $selectedListingType === $listingType['value'] ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}"
                             >
                                 {{ $listingType['label'] }}
                             </button>
                         @endforeach
-
-                        <!-- More Filters Toggle Button (Mobile Only) -->
-                        <button
-                            wire:click="toggleMobileFilters"
-                            class="md:hidden px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200"
-                        >
-                            <span class="flex items-center space-x-1">
-                                <svg class="w-4 h-4 transform transition-transform duration-200 {{ $showMobileFilters ? 'rotate-180' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                </svg>
-                                <span>{{ $showMobileFilters ? 'Less' : 'More' }} Filters</span>
-                            </span>
-                        </button>
                     </div>
+
+                    <!-- Filter Toggle Button -->
+                    <button 
+                        @click="showFilters = !showFilters"
+                        class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-emerald-200 transition-all duration-200"
+                        :class="{ 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50': showFilters }"
+                    >
+                        <svg class="w-5 h-5 text-gray-500" :class="{ 'text-emerald-600': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                        </svg>
+                        <span class="font-medium text-sm">Filters</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
                 </div>
 
-                <!-- Additional Filters Row (Collapsible on Mobile) -->
-                <div class="md:grid md:grid-cols-6 md:gap-2 {{ $showMobileFilters ? 'block space-y-2' : 'hidden md:block' }}">
-                    <!-- Bedrooms Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Bedrooms</label>
-                        <div class="flex flex-wrap gap-1">
+                <!-- Advanced Filters Grid (Collapsible) -->
+                <div 
+                    x-show="showFilters" 
+                    x-collapse
+                    x-transition:enter="transition ease-out duration-200"
+                    x-transition:enter-start="opacity-0 transform -translate-y-2"
+                    x-transition:enter-end="opacity-100 transform translate-y-0"
+                    class="mt-6 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+                    style="display: none;"
+                >
+                    <!-- Bedrooms -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                            Bedrooms
+                        </label>
+                        <select wire:model.live="selectedBedrooms" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="">Any</option>
                             @foreach($filterOptions['bedrooms'] as $bedroom)
-                                <button
-                                    wire:click="updateFilter('bedrooms', '{{ $bedroom['value'] }}')"
-                                    class="px-2 py-1 rounded-sm text-xs font-medium transition-all duration-200 {{ $selectedBedrooms === $bedroom['value'] ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-blue-100' }}"
-                                >
-                                    @if($bedroom['value'] === '1')
-                                        1BR
-                                    @elseif($bedroom['value'] === '2')
-                                        2BR
-                                    @elseif($bedroom['value'] === '3')
-                                        3BR
-                                    @elseif($bedroom['value'] === '4')
-                                        4BR
-                                    @elseif($bedroom['value'] === '5+')
-                                        5+BR
-                                    @else
-                                        {{ $bedroom['label'] }}
-                                    @endif
-                                </button>
+                                <option value="{{ $bedroom['value'] }}">{{ $bedroom['label'] }}</option>
                             @endforeach
-                        </div>
+                        </select>
                     </div>
 
-                    <!-- Property Type Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Property Type</label>
-                        <select
-                            wire:model.live="selectedPropertyType"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
-                        >
+                    <!-- Property Type -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            Type
+                        </label>
+                        <select wire:model.live="selectedPropertyType" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">All Types</option>
                             @foreach($filterOptions['property_types'] as $type)
                                 <option value="{{ $type->id }}">{{ $type->name }}</option>
@@ -142,13 +154,13 @@
                         </select>
                     </div>
 
-                    <!-- State Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">State</label>
-                        <select
-                            wire:model.live="selectedState"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
-                        >
+                    <!-- Location -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center">
+                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            State
+                        </label>
+                        <select wire:model.live="selectedState" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">All States</option>
                             @foreach($filterOptions['states'] as $state)
                                 <option value="{{ $state->id }}">{{ $state->name }}</option>
@@ -156,81 +168,34 @@
                         </select>
                     </div>
 
-                    <!-- City Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">City</label>
-                        <select
-                            wire:model.live="selectedCity"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
-                            {{ !$selectedState ? 'disabled' : '' }}
+                    <!-- Price Range -->
+                    <div class="space-y-1.5">
+                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
+                            <span>Max Price</span>
+                            <span class="text-emerald-600">{{ $selectedPriceRange > 0 ? '₦' . number_format($selectedPriceRange / 1000000) . 'M' : 'Any' }}</span>
+                        </label>
+                        <input
+                            type="range"
+                            wire:model.live="selectedPriceRange"
+                            min="0"
+                            max="100000000"
+                            step="5000000"
+                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider accent-emerald-500 mt-2"
                         >
-                            <option value="">{{ $selectedState ? 'All Cities' : 'Select State' }}</option>
-                            @if($selectedState && isset($filterOptions['cities']))
-                                @foreach($filterOptions['cities'] as $city)
-                                    <option value="{{ $city->id }}">{{ $city->name }}</option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-
-                    <!-- Area Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Area</label>
-                        <select
-                            wire:model.live="selectedArea"
-                            class="w-full px-2 py-1 text-xs border border-gray-300 rounded-sm focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
-                            {{ !$selectedCity ? 'disabled' : '' }}
-                        >
-                            <option value="">{{ $selectedCity ? 'All Areas' : 'Select City' }}</option>
-                            @if($selectedCity && isset($filterOptions['areas']))
-                                @foreach($filterOptions['areas'] as $area)
-                                    <option value="{{ $area->id }}">{{ $area->name }}</option>
-                                @endforeach
-                            @endif
-                        </select>
-                    </div>
-
-                    <!-- Price Range Filter -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Price Range</label>
-                        <div class="space-y-1">
-                            <div class="flex justify-between text-xs text-gray-500 mb-1">
-                                <span>₦0</span>
-                                <span>₦50M</span>
-                                <span>₦100M+</span>
-                            </div>
-                            <input
-                                type="range"
-                                wire:model.live="selectedPriceRange"
-                                min="0"
-                                max="100000000"
-                                step="5000000"
-                                class="w-full h-1 bg-gray-200 rounded-sm appearance-none cursor-pointer slider"
-                            >
-                            <div class="text-center">
-                                <span class="text-xs font-medium text-gray-700">
-                                    @if($selectedPriceRange && $selectedPriceRange > 0)
-                                        Up to ₦{{ number_format($selectedPriceRange / 1000000) }}M
-                                    @else
-                                        Any Price
-                                    @endif
-                                </span>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
-                <!-- Clear Filters Button -->
-                @if($selectedListingType || $selectedPropertyType || $selectedBedrooms || $selectedState || $selectedCity || $selectedArea || $selectedPriceRange || $searchQuery)
-                    <div class="mt-3 pt-2 border-t border-gray-200 text-center {{ $showMobileFilters ? 'block' : 'hidden md:block' }}">
+                <!-- Active Filters & Clear -->
+                @if($selectedPropertyType || $selectedBedrooms || $selectedState || $selectedCity || $selectedArea || $selectedPriceRange || $searchQuery)
+                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-center">
                         <button
                             wire:click="clearAllFilters"
-                            class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-600 hover:text-red-600 bg-gray-50 hover:bg-red-50 border border-gray-200 hover:border-red-200 rounded-lg transition-all duration-200"
+                            class="group inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-lg transition-all duration-200"
                         >
-                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-3.5 h-3.5 mr-1.5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
-                            Clear All
+                            Clear All Filters
                         </button>
                     </div>
                 @endif
@@ -238,127 +203,170 @@
         </div>
     </section>
 
+    <!-- Featured Properties Section (Premium Carousel) -->
+    @if($this->featuredProperties->count() > 0)
+        <section class="py-12 bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Featured Properties</h2>
+                        <p class="text-gray-500 text-sm mt-1">Handpicked premium listings just for you</p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors" onclick="document.getElementById('featured-carousel').scrollBy({left: -350, behavior: 'smooth'})">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        </button>
+                        <button class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors" onclick="document.getElementById('featured-carousel').scrollBy({left: 350, behavior: 'smooth'})">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="featured-carousel" class="flex space-x-6 overflow-x-auto pb-8 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 sm:mx-0 sm:px-0">
+                    @foreach($this->featuredProperties as $property)
+                        <div class="min-w-[85vw] sm:min-w-[350px] md:min-w-[400px] snap-center">
+                            <a href="{{ route('property.show', $property->slug ?? $property->id) }}" class="block group relative h-[400px] rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500">
+                                <!-- Image -->
+                                @if($property->getMedia('featured')->count() > 0)
+                                    <img src="{{ $property->getFirstMedia('featured')->getUrl() }}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="{{ $property->title }}">
+                                @else
+                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    </div>
+                                @endif
+                                
+                                <!-- Gradient Overlay -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-80 group-hover:opacity-90 transition-opacity"></div>
+
+                                <!-- Content -->
+                                <div class="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="bg-emerald-500 text-white text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wide">
+                                            {{ $property->listing_type === 'sale' ? 'For Sale' : 'For Rent' }}
+                                        </span>
+                                        <span class="text-xl font-bold text-emerald-400">
+                                            ₦{{ number_format($property->price) }}
+                                        </span>
+                                    </div>
+                                    <h3 class="text-xl font-bold mb-1 line-clamp-1 group-hover:text-emerald-300 transition-colors">{{ $property->title }}</h3>
+                                    <p class="text-gray-300 text-sm mb-4 flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                        {{ $property->city->name ?? '' }}, {{ $property->state->name ?? '' }}
+                                    </p>
+                                    <div class="flex items-center space-x-4 text-sm font-medium text-gray-200 border-t border-white/20 pt-4">
+                                        <span class="flex items-center"><svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> {{ $property->bedrooms }} Bedrooms</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
+
     <!-- Property Grid Section -->
     <section class="py-6 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             @if($properties->count() > 0)
                 <!-- Properties Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                     @foreach($properties as $property)
                         <a href="{{ route('property.show', $property->slug ?? $property->id) }}"
-                           class="group block transition-all duration-200 hover:scale-105">
+                           class="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-gray-100 flex flex-col h-full">
 
                             <!-- Property Image -->
-                            <div class="relative h-64 overflow-hidden rounded-xl mb-3">
+                            <div class="relative h-52 shrink-0 overflow-hidden">
                                 @if($property->getMedia('featured')->count() > 0)
                                     <img src="{{ $property->getFirstMedia('featured')->getUrl() }}"
                                          alt="{{ $property->title }}"
-                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                                 @elseif($property->getMedia('gallery')->count() > 0)
                                     <img src="{{ $property->getMedia('gallery')->first()->getUrl() }}"
                                          alt="{{ $property->title }}"
-                                         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110">
+                                         class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
                                 @else
-                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                        <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                    <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                                        <svg class="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                         </svg>
                                     </div>
                                 @endif
 
-                                <!-- Verified Badge -->
-                                @if($property->is_verified)
-                                    <div class="absolute top-3 left-3">
-                                        <div class="inline-flex items-center space-x-1.5 bg-blue-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 px-2.5 py-1 rounded-lg font-bold text-xs shadow-lg">
+                                <!-- Overlay Gradient (Subtle) -->
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+                                <!-- Top Badges -->
+                                <div class="absolute top-3 left-3 flex gap-2 z-10">
+                                    @if($property->is_verified)
+                                        <div class="flex items-center space-x-1 bg-white/95 backdrop-blur-sm text-blue-600 px-2.5 py-1 rounded-md text-xs font-bold shadow-sm">
                                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                                             </svg>
                                             <span>Verified</span>
                                         </div>
-                                    </div>
-                                @endif
-
-                                <!-- Listing Type Badge -->
-                                <div class="absolute top-3 right-3">
-                                    @if($property->listing_type === 'rent')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-emerald-100/90 to-green-100/90 backdrop-blur-xs border border-emerald-300/50 text-emerald-700 text-xs font-bold rounded-lg shadow-lg">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1721 9z"></path>
-                                            </svg>
-                                            <span>For Rent</span>
-                                        </div>
-                                    @elseif($property->listing_type === 'sale')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-blue-100/90 to-indigo-100/90 backdrop-blur-xs border border-blue-300/50 text-blue-700 text-xs font-bold rounded-lg shadow-lg">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                            </svg>
-                                            <span>For Sale</span>
-                                        </div>
-                                    @elseif($property->listing_type === 'lease')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-purple-100/90 to-pink-100/90 backdrop-blur-xs border border-purple-300/50 text-purple-700 text-xs font-bold rounded-lg shadow-lg">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                                            </svg>
-                                            <span>For Lease</span>
-                                        </div>
-                                    @elseif($property->listing_type === 'shortlet')
-                                        <div class="inline-flex items-center space-x-1.5 px-2.5 py-1 bg-linear-to-r from-yellow-100/90 to-orange-100/90 backdrop-blur-xs border border-yellow-300/50 text-yellow-700 text-xs font-bold rounded-lg shadow-lg">
-                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                                <path d="M10 2L3 7v11a2 2 0 002 2h4v-6h2v6h4a2 2 0 002-2V7l-7-5z"/>
-                                            </svg>
-                                            <span>Shortlet</span>
-                                        </div>
                                     @endif
+                                    <div class="bg-emerald-500/95 backdrop-blur-sm text-white px-2.5 py-1 rounded-md text-xs font-bold shadow-sm">
+                                        {{ $property->listing_type === 'sale' ? 'For Sale' : ($property->listing_type === 'rent' ? 'For Rent' : 'Short Let') }}
+                                    </div>
                                 </div>
 
-                                <!-- Heart Icon - moved to bottom right -->
-                                <div class="absolute bottom-3 right-3">
-                                    <button
-                                        wire:click.stop="toggleSaveProperty({{ $property->id }})"
-                                        onclick="event.stopPropagation(); event.preventDefault();"
-                                        class="p-2 bg-white/90 hover:bg-white rounded-full hover:scale-110 transition-all duration-200 shadow-lg"
-                                        title="{{ $this->isPropertySaved($property->id) ? 'Remove from saved' : 'Save property' }}"
-                                    >
-                                        @if($this->isPropertySaved($property->id))
-                                            <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                                            </svg>
-                                        @else
-                                            <svg class="w-5 h-5 text-gray-600 hover:text-red-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
-                                            </svg>
-                                        @endif
-                                    </button>
-                                </div>
+                                <!-- Save Button (Top Right) -->
+                                <button
+                                    wire:click.stop="toggleSaveProperty({{ $property->id }})"
+                                    onclick="event.stopPropagation(); event.preventDefault();"
+                                    class="absolute top-3 right-3 p-2 bg-white/90 backdrop-blur-sm rounded-full text-gray-400 hover:text-red-500 hover:bg-white transition-all shadow-sm z-10 group/btn"
+                                >
+                                    @if($this->isPropertySaved($property->id))
+                                        <svg class="w-5 h-5 text-red-500 transition-transform group-hover/btn:scale-110" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                        </svg>
+                                    @else
+                                        <svg class="w-5 h-5 text-gray-400 group-hover/btn:text-red-500 transition-colors transition-transform group-hover/btn:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                                        </svg>
+                                    @endif
+                                </button>
                             </div>
 
-                            <!-- Property Details (compact stool-like info) -->
-                            <div class="relative -mt-2 bg-white/95 backdrop-blur-xs border border-gray-100/80 rounded-xl shadow-xs px-3 py-2 space-y-1">
-                                <!-- Location (compact) -->
-                                <div class="text-xs text-gray-600 font-medium truncate">
-                                    {{ $property->city->name ?? 'Unknown' }}, {{ $property->state->name ?? 'Unknown' }}
-                                </div>
-
-                                <!-- Title (compact) -->
-                                <div class="text-sm text-gray-900 font-semibold line-clamp-1 group-hover:text-emerald-600 transition-colors duration-200">
-                                    {{ $property->title }}
-                                </div>
-
-                                <!-- Bedroom info (compact) -->
-                                @if($property->bedrooms)
-                                <div class="text-xs text-gray-600 font-medium">
-                                    {{ $property->bedrooms }} {{ $property->bedrooms == 1 ? 'Bedroom' : 'Bedrooms' }}
-                                </div>
-                                @endif
-
-                                <!-- Price (compact but prominent) -->
-                                <div class="flex items-baseline justify-between pt-1">
-                                    <span class="text-lg font-bold text-gray-900 bg-linear-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                                        ₦{{ number_format($property->price) }}
+                            <!-- Property Details -->
+                            <div class="p-4 flex flex-col flex-grow">
+                                <!-- Price -->
+                                <div class="mb-1.5">
+                                    <span class="text-lg font-bold text-emerald-600 block">
+                                        ₦{{ number_format($property->price) }}<span class="text-xs font-normal text-gray-500">{{ $property->listing_type === 'rent' ? '/yr' : '' }}</span>
                                     </span>
-                                    @if($property->listing_type === 'rent')
-                                        <span class="text-xs text-gray-500 font-medium">per year</span>
-                                    @endif
+                                </div>
+
+                                <!-- Title -->
+                                <h3 class="text-sm font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-emerald-600 transition-colors">
+                                    {{ $property->title }}
+                                </h3>
+                                
+                                <!-- Location -->
+                                <div class="flex items-center text-gray-500 text-[10px] mb-3">
+                                    <svg class="w-3 h-3 mr-1 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                    <span class="truncate">
+                                        {{ $property->city->name ?? '' }}, {{ $property->state->name ?? '' }}
+                                    </span>
+                                </div>
+
+                                <!-- Footer (Features & Date) -->
+                                <div class="mt-auto pt-2.5 border-t border-gray-100 flex items-center justify-between">
+                                    <div class="flex items-center gap-3 text-gray-600 text-[10px] font-medium">
+                                        <div class="flex items-center bg-gray-50 px-1.5 py-0.5 rounded-md">
+                                            <svg class="w-3 h-3 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                                            </svg>
+                                            {{ $property->bedrooms }} Bedrooms
+                                        </div>
+                                    </div>
+                                    <div class="text-[10px] text-gray-400">
+                                        {{ $property->created_at->diffForHumans(null, true) }}
+                                    </div>
                                 </div>
                             </div>
                         </a>

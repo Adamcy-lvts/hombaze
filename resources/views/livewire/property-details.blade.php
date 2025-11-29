@@ -274,9 +274,19 @@
                                     </div>
                                 </div>
                                 
-                                <a href="{{ route('agent.profile', $property->agent) }}" wire:navigate class="block w-full text-center py-2 px-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-lg transition-colors text-sm">
-                                    View Profile & Listings
-                                </a>
+                                @php
+                                    $agentSlugOrId = $property->agent?->slug ?? $property->agent?->id;
+                                @endphp
+                                
+                                @if($agentSlugOrId)
+                                    <a href="{{ route('agent.profile', $agentSlugOrId) }}" wire:navigate class="block w-full text-center py-2 px-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-lg transition-colors text-sm">
+                                        View Profile & Listings
+                                    </a>
+                                @else
+                                    <div class="block w-full text-center py-2 px-4 bg-gray-50 text-gray-400 font-medium rounded-lg text-sm">
+                                        Agent profile unavailable
+                                    </div>
+                                @endif
                             @else
                                 <div class="flex items-center gap-3">
                                     <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">

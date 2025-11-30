@@ -1,236 +1,83 @@
-<div class="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50 py-6 sm:py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 font-sans text-gray-900 py-12">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="mb-6 sm:mb-8">
-            <div class="flex items-center space-x-3 mb-2">
-                <a href="{{ route('customer.searches.index') }}"
-                   class="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200">
-                    <x-heroicon-o-arrow-left class="w-5 h-5" />
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <div>
+                <a href="{{ route('customer.searches.index') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 mb-2 transition-colors">
+                    <x-heroicon-o-arrow-left class="w-4 h-4 mr-1" />
+                    Back to Searches
                 </a>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Edit Search</h1>
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Edit Search</h1>
+                <p class="text-gray-500 mt-1">Update your preferences for this search.</p>
             </div>
-            <p class="text-sm text-gray-600">Update your saved search preferences</p>
         </div>
 
-        <!-- Form -->
-        <form wire:submit="updateSearch" class="space-y-6">
-            <!-- Basic Information -->
-            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
-
-                <div class="grid grid-cols-1 gap-4">
-                    <x-forms.input
-                        wire:model="name"
-                        label="Search Name"
-                        placeholder="e.g., 3BR House in Lagos"
-                        required
-                        :error="$errors->first('name')"
-                    />
-
-                    <x-forms.textarea
-                        wire:model="description"
-                        label="Description (Optional)"
-                        placeholder="Describe what you're looking for..."
-                        rows="3"
-                        :error="$errors->first('description')"
-                    />
-                </div>
-            </div>
-
-            <!-- Interest -->
-            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">What are you interested in? *</h3>
-
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    @foreach(['buying' => 'Buying', 'renting' => 'Renting', 'shortlet' => 'Short Let'] as $value => $label)
-                        <label class="relative flex items-center">
-                            <input type="radio"
-                                   wire:model.live="interested_in"
-                                   value="{{ $value }}"
-                                   class="sr-only">
-                            <div class="flex items-center justify-center w-full p-3 text-sm font-medium rounded-lg border-2 cursor-pointer transition-all duration-200 {{ $interested_in === $value ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300' }}">
-                                {{ $label }}
-                            </div>
-                        </label>
-                    @endforeach
-                </div>
-                @error('interested_in') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-            </div>
-
-            <!-- Property Types -->
-            @if(count($availablePropertyTypes) > 0)
-                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Property Type *</h3>
-                    <p class="text-sm text-gray-600 mb-4">Select the type of property you're interested in.</p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        @foreach($availablePropertyTypes as $typeId => $typeName)
-                            <label class="relative flex items-center">
-                                <input type="radio"
-                                       wire:model.live="selected_property_type"
-                                       value="{{ $typeId }}"
-                                       class="sr-only">
-                                <div class="flex items-center justify-center w-full p-3 text-sm font-medium rounded-lg border-2 cursor-pointer transition-all duration-200 {{ $selected_property_type == $typeId ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300' }}">
-                                    {{ $typeName }}
-                                </div>
-                            </label>
-                        @endforeach
-                    </div>
-                    @error('selected_property_type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-            @endif
-
-            <!-- Property Subtypes -->
-            @if(count($availableSubtypes) > 0)
-                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Specific Property Types</h3>
-                    <p class="text-sm text-gray-600 mb-4">Select specific types of properties you're interested in (optional).</p>
-
-                    @foreach($availableSubtypes as $propertyTypeName => $subtypes)
-                        <div class="mb-6 last:mb-0">
-                            <h4 class="text-base font-medium text-gray-800 mb-3">{{ $propertyTypeName }}</h4>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                                @foreach($subtypes as $subtype)
-                                    <x-forms.checkbox
-                                        wire:model.live="selected_subtypes"
-                                        value="{{ $subtype->id }}"
-                                        label="{{ $subtype->name }}"
-                                        size="sm"
-                                    />
-                                @endforeach
-                            </div>
+        <form wire:submit="updateSearch" class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <!-- Left Column: Primary Criteria -->
+            <div class="lg:col-span-8 space-y-6">
+                
+                <!-- Basic Info Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600">
+                            <x-heroicon-o-tag class="w-5 h-5" />
                         </div>
-                    @endforeach
-                </div>
-            @endif
-
-            <!-- Location Preferences -->
-            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Location Preferences</h3>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <x-forms.select
-                        wire:model.live="state_id"
-                        label="State"
-                        placeholder="Any State"
-                        :options="$states"
-                        :selected="$state_id"
-                    />
-
-                    <x-forms.select
-                        wire:model.live="city_id"
-                        label="City"
-                        placeholder="Any City"
-                        :options="$cities"
-                        :selected="$city_id"
-                        :disabled="!$state_id"
-                    />
+                        Search Details
+                    </h3>
+                    <div class="grid gap-6">
+                        <div class="grid grid-cols-1 gap-6">
+                            <x-forms.input 
+                                wire:model="name" 
+                                label="Search Name" 
+                                placeholder="e.g. 3BR Apartment in Lekki" 
+                                required 
+                                class="bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 rounded-xl" 
+                            />
+                        </div>
+                        <x-forms.textarea 
+                            wire:model="description" 
+                            label="Notes (Optional)" 
+                            placeholder="Any specific requirements..." 
+                            rows="2" 
+                            class="bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 rounded-xl" 
+                        />
+                    </div>
                 </div>
 
-                <!-- Area Selection -->
-                <div class="space-y-4">
-                    <label class="text-sm font-medium text-gray-700">Area Preferences</label>
-
-                    <!-- Area Selection Type -->
-                    <div class="space-y-3">
-                        <label class="relative flex items-center">
-                            <input type="radio"
-                                   wire:model.live="area_selection_type"
-                                   value="any"
-                                   class="sr-only">
-                            <div class="flex items-center justify-center w-full p-3 text-sm font-medium rounded-lg border-2 cursor-pointer transition-all duration-200 {{ $area_selection_type == 'any' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300' }}">
-                                Any Area
-                                <span class="ml-2 text-xs text-gray-500">(Open to any area in the city)</span>
-                            </div>
-                        </label>
-
-                        <label class="relative flex items-center">
-                            <input type="radio"
-                                   wire:model.live="area_selection_type"
-                                   value="all"
-                                   class="sr-only">
-                            <div class="flex items-center justify-center w-full p-3 text-sm font-medium rounded-lg border-2 cursor-pointer transition-all duration-200 {{ $area_selection_type == 'all' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300' }}">
-                                All Areas
-                                <span class="ml-2 text-xs text-gray-500">(Interested in all areas within the city)</span>
-                            </div>
-                        </label>
-
-                        <label class="relative flex items-center">
-                            <input type="radio"
-                                   wire:model.live="area_selection_type"
-                                   value="specific"
-                                   class="sr-only">
-                            <div class="flex items-center justify-center w-full p-3 text-sm font-medium rounded-lg border-2 cursor-pointer transition-all duration-200 {{ $area_selection_type == 'specific' ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300' }}">
-                                Specific Areas
-                                <span class="ml-2 text-xs text-gray-500">(Choose specific areas you're interested in)</span>
-                            </div>
-                        </label>
+                <!-- Interest & Type Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600">
+                            <x-heroicon-o-home class="w-5 h-5" />
+                        </div>
+                        Property Criteria
+                    </h3>
+                    
+                    <!-- Interest -->
+                    <div class="mb-8">
+                        <label class="block text-sm font-bold text-gray-700 mb-3">I want to</label>
+                        <div class="grid grid-cols-3 gap-4">
+                            @foreach(['buying' => 'Buy', 'renting' => 'Rent', 'shortlet' => 'Short Let'] as $value => $label)
+                                <label class="cursor-pointer group">
+                                    <input type="radio" wire:model.live="interested_in" value="{{ $value }}" class="peer sr-only">
+                                    <div class="text-center py-3 px-4 rounded-xl border-2 border-gray-100 bg-gray-50 text-gray-600 font-bold transition-all duration-200 peer-checked:bg-emerald-600 peer-checked:text-white peer-checked:border-emerald-600 peer-checked:shadow-md group-hover:border-emerald-200 group-hover:bg-white">
+                                        {{ $label }}
+                                    </div>
+                                </label>
+                            @endforeach
+                        </div>
                     </div>
 
-                    <!-- Specific Areas Selection -->
-                    @if($area_selection_type === 'specific' && $city_id && count($availableAreas) > 0)
-                        <div class="mt-4 p-4 bg-gray-50 rounded-lg">
-                            <label class="block text-sm font-medium text-gray-700 mb-3">Select Areas:</label>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                                @foreach($availableAreas as $areaId => $areaName)
-                                    <x-forms.checkbox
-                                        wire:model.live="selected_areas"
-                                        value="{{ $areaId }}"
-                                        label="{{ $areaName }}"
-                                        size="sm"
-                                    />
-                                @endforeach
-                            </div>
-                        </div>
-                    @endif
-
-                    @if($area_selection_type === 'specific' && $city_id && count($availableAreas) === 0)
-                        <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p class="text-sm text-yellow-800">No areas available for the selected city.</p>
-                        </div>
-                    @endif
-
-                    @if($area_selection_type === 'specific' && !$city_id)
-                        <div class="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <p class="text-sm text-blue-800">Please select a city first to see available areas.</p>
-                        </div>
-                    @endif
-
-                    <!-- Error handling for new fields -->
-                    @error('area_selection_type') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                    @error('selected_areas') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
-                </div>
-
-                <!-- Legacy single area dropdown (hidden, kept as fallback) -->
-                <div wire:ignore class="hidden">
-                    <x-forms.select
-                        wire:model.live="area_id"
-                        label="Area"
-                        placeholder="Any Area"
-                        :options="$areas"
-                        :selected="$area_id"
-                        :disabled="!$city_id"
-                    />
-                </div>
-            </div>
-
-             <!-- Land Size Preferences (Separate Section) -->
-            @if($selected_property_type == 3 && $interested_in === 'buying')
-                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Land Size Preferences</h3>
-
-                    <!-- Predefined Plot Sizes -->
-                    @if(count($availablePlotSizes) > 0)
-                        <div class="mb-4">
-                            <h6 class="text-sm font-medium text-gray-600 mb-3">Select a Standard Plot Size</h6>
-                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                                @foreach($availablePlotSizes as $plotSizeId => $plotSizeLabel)
-                                    <label class="relative flex items-center cursor-pointer">
-                                        <input type="radio"
-                                               wire:model.live="land_sizes.land_buy.predefined_size_id"
-                                               value="{{ $plotSizeId }}"
-                                               class="sr-only">
-                                        <div class="flex items-center justify-center w-full p-3 text-xs font-medium rounded-lg border-2 cursor-pointer transition-all duration-200 {{ ($land_sizes['land_buy']['predefined_size_id'] ?? '') == $plotSizeId ? 'border-blue-500 bg-blue-50 text-blue-700' : 'border-gray-200 bg-white text-gray-700 hover:border-blue-300' }}">
-                                            {{ $plotSizeLabel }}
+                    <!-- Property Types -->
+                    @if(count($availablePropertyTypes) > 0)
+                        <div class="mb-8">
+                            <label class="block text-sm font-bold text-gray-700 mb-3">Property Type</label>
+                            <div class="flex flex-wrap gap-3">
+                                @foreach($availablePropertyTypes as $typeId => $typeName)
+                                    <label class="cursor-pointer group">
+                                        <input type="radio" wire:model.live="selected_property_type" value="{{ $typeId }}" class="peer sr-only">
+                                        <div class="px-5 py-2.5 rounded-xl border-2 border-gray-100 bg-white text-sm font-semibold text-gray-600 transition-all duration-200 peer-checked:border-emerald-500 peer-checked:text-emerald-700 peer-checked:bg-emerald-50 group-hover:border-emerald-200">
+                                            {{ $typeName }}
                                         </div>
                                     </label>
                                 @endforeach
@@ -238,170 +85,282 @@
                         </div>
                     @endif
 
-                    <!-- Custom Size Toggle -->
-                    <div class="mb-4">
-                        <x-forms.checkbox
-                            wire:model.live="land_sizes.land_buy.use_custom_size"
-                            label="Specify Custom Size"
-                            description="Enter a specific size not listed above"
+                    <!-- Subtypes -->
+                    @if(count($availableSubtypes) > 0)
+                        <div class="pt-6 border-t border-gray-100">
+                            <label class="block text-sm font-bold text-gray-700 mb-4">Specific Types</label>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                @foreach($availableSubtypes as $propertyTypeName => $subtypes)
+                                    @foreach($subtypes as $subtype)
+                                        <label class="flex items-center gap-3 cursor-pointer group p-3 rounded-xl border border-transparent hover:bg-gray-50 hover:border-gray-200 transition-all">
+                                            <div class="relative flex items-center">
+                                                <input type="checkbox" wire:model.live="selected_subtypes" value="{{ $subtype->id }}" 
+                                                       class="w-5 h-5 rounded-md border-gray-300 text-emerald-600 focus:ring-emerald-500 transition-colors">
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-600 group-hover:text-gray-900">{{ $subtype->name }}</span>
+                                        </label>
+                                    @endforeach
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </div>
+
+                <!-- Location Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center text-purple-600">
+                            <x-heroicon-o-map-pin class="w-5 h-5" />
+                        </div>
+                        Location
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                        <x-forms.select 
+                            wire:model.live="state_id" 
+                            label="State" 
+                            placeholder="Select State" 
+                            :options="$states" 
+                            class="bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 rounded-xl" 
+                        />
+                        <x-forms.select 
+                            wire:model.live="city_id" 
+                            label="City" 
+                            placeholder="Select City" 
+                            :options="$cities" 
+                            :disabled="!$state_id" 
+                            class="bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 rounded-xl" 
                         />
                     </div>
 
-                    <!-- Custom Size Inputs -->
-                    @if($land_sizes['land_buy']['use_custom_size'] ?? false)
-                        <div class="mb-4 p-3 bg-gray-50 rounded-lg">
-                            <h6 class="text-sm font-medium text-gray-600 mb-3">Custom Size</h6>
-                            <div class="grid grid-cols-2 gap-4">
-                                <x-forms.input
-                                    wire:model="land_sizes.land_buy.custom_size_value"
-                                    label="Size Value"
-                                    placeholder="e.g., 1200"
-                                    type="number"
-                                    min="0"
-                                    step="0.01"
-                                />
+                    @if($city_id)
+                        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+                            <label class="block text-sm font-bold text-gray-700 mb-4">Preferred Areas</label>
+                            <div class="space-y-4">
+                                <div class="flex flex-wrap gap-4">
+                                    @foreach(['any' => 'Any Area', 'specific' => 'Specific Areas'] as $value => $label)
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <div class="relative flex items-center">
+                                                <input type="radio" wire:model.live="area_selection_type" value="{{ $value }}" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-gray-300">
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-700 group-hover:text-emerald-700 transition-colors">{{ $label }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
 
-                                <x-forms.select
-                                    wire:model="land_sizes.land_buy.custom_size_unit"
-                                    label="Unit"
-                                    :options="$plotSizeUnits"
-                                    :selected="$land_sizes['land_buy']['custom_size_unit'] ?? 'sqm'"
-                                />
+                                @if($area_selection_type === 'specific' && count($availableAreas) > 0)
+                                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4 pt-4 border-t border-gray-200">
+                                        @foreach($availableAreas as $areaId => $areaName)
+                                            <label class="inline-flex items-center gap-2.5 p-2.5 bg-white rounded-lg border border-gray-200 cursor-pointer hover:border-emerald-400 hover:shadow-sm transition-all">
+                                                <input type="checkbox" wire:model.live="selected_areas" value="{{ $areaId }}" class="rounded text-emerald-600 focus:ring-emerald-500 border-gray-300">
+                                                <span class="text-xs font-semibold text-gray-600 truncate">{{ $areaName }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endif
-
                 </div>
-            @endif
+                
+                <!-- Land Size Preferences (Conditional) -->
+                @if($selected_property_type == 3 && $interested_in === 'buying')
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                        <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center text-amber-600">
+                                <x-heroicon-o-arrows-pointing-out class="w-5 h-5" />
+                            </div>
+                            Land Size
+                        </h3>
+                        
+                        @if(count($availablePlotSizes) > 0)
+                            <div class="mb-6">
+                                <label class="block text-sm font-bold text-gray-700 mb-3">Standard Plot Size</label>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                    @foreach($availablePlotSizes as $plotSizeId => $plotSizeLabel)
+                                        <label class="cursor-pointer group">
+                                            <input type="radio" wire:model.live="land_sizes.land_buy.predefined_size_id" value="{{ $plotSizeId }}" class="peer sr-only">
+                                            <div class="text-center p-3 rounded-xl border-2 border-gray-100 bg-gray-50 text-sm font-medium text-gray-600 transition-all peer-checked:border-emerald-500 peer-checked:text-emerald-700 peer-checked:bg-emerald-50 group-hover:border-emerald-200">
+                                                {{ $plotSizeLabel }}
+                                            </div>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
-            <!-- Budget Preferences -->
-            @if($selected_property_type || array_filter($budgets, function($budget) { return !empty($budget['min']) || !empty($budget['max']); }))
-                <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">Budget Preferences</h3>
-                    <p class="text-sm text-gray-600 mb-4">Set your budget range for the selected property type.</p>
+                        <div class="space-y-4">
+                            <x-forms.checkbox
+                                wire:model.live="land_sizes.land_buy.use_custom_size"
+                                label="Specify Custom Size"
+                                description="Enter a specific size not listed above"
+                            />
 
-                    @php
-                        $typeId = $selected_property_type;
-                        $propertyType = $typeId ? collect($availablePropertyTypes)->get($typeId) : null;
-                        $budgetKey = null;
-                        $categoryLabel = 'Budget Preferences';
+                            @if($land_sizes['land_buy']['use_custom_size'] ?? false)
+                                <div class="p-6 bg-gray-50 rounded-xl border border-gray-100 grid grid-cols-2 gap-6">
+                                    <x-forms.input
+                                        wire:model="land_sizes.land_buy.custom_size_value"
+                                        label="Size Value"
+                                        placeholder="e.g., 1200"
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        class="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl"
+                                    />
+                                    <x-forms.select
+                                        wire:model="land_sizes.land_buy.custom_size_unit"
+                                        label="Unit"
+                                        :options="$plotSizeUnits"
+                                        :selected="$land_sizes['land_buy']['custom_size_unit'] ?? 'sqm'"
+                                        class="bg-white border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 rounded-xl"
+                                    />
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+            </div>
 
-                        // Create budget categories based on property type and interest
-                        if ($typeId) {
-                            if ($typeId == 1 || $typeId == 2) { // Apartment or House
-                                $budgetKey = $interested_in === 'buying' ? 'house_buy' : 'house_rent';
-                                $categoryLabel = $propertyType . ' (' . ucfirst($interested_in) . ')';
-                            } elseif ($typeId == 3) { // Land
-                                $budgetKey = 'land_buy';
-                                $categoryLabel = $propertyType . ' (Buy)';
-                            } elseif (in_array($typeId, [4, 5, 6])) { // Commercial, Office, Warehouse
-                                $budgetKey = $interested_in === 'buying' ? 'shop_buy' : 'shop_rent';
-                                $categoryLabel = $propertyType . ' (' . ucfirst($interested_in) . ')';
+            <!-- Right Column: Budget & Settings -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- Budget Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-8">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">Budget Range</h3>
+                    
+                    @if($selected_property_type || array_filter($budgets, function($budget) { return !empty($budget['min']) || !empty($budget['max']); }))
+                        @php
+                            $typeId = $selected_property_type;
+                            $propertyType = $typeId ? collect($availablePropertyTypes)->get($typeId) : null;
+                            $budgetKey = null;
+                            $categoryLabel = 'Budget Preferences';
+
+                            if ($typeId) {
+                                if ($typeId == 1 || $typeId == 2) {
+                                    $budgetKey = $interested_in === 'buying' ? 'house_buy' : 'house_rent';
+                                    $categoryLabel = $propertyType . ' (' . ucfirst($interested_in) . ')';
+                                } elseif ($typeId == 3) {
+                                    $budgetKey = 'land_buy';
+                                    $categoryLabel = $propertyType . ' (Buy)';
+                                } elseif (in_array($typeId, [4, 5, 6])) {
+                                    $budgetKey = $interested_in === 'buying' ? 'shop_buy' : 'shop_rent';
+                                    $categoryLabel = $propertyType . ' (' . ucfirst($interested_in) . ')';
+                                } else {
+                                    $categoryLabel = $propertyType ?: 'Budget Preferences';
+                                }
                             } else {
-                                $categoryLabel = $propertyType ?: 'Budget Preferences';
-                            }
-                        } else {
-                            // Fallback: Find the first budget category that has data
-                            foreach ($budgets as $key => $budget) {
-                                if (!empty($budget['min']) || !empty($budget['max'])) {
-                                    $budgetKey = $key;
-                                    // Try to make a nice label from the key
-                                    $labelMap = [
-                                        'house_buy' => 'Houses & Apartments (Buy)',
-                                        'house_rent' => 'Houses & Apartments (Rent)',
-                                        'land_buy' => 'Land & Plots (Buy)',
-                                        'shop_buy' => 'Commercial (Buy)',
-                                        'shop_rent' => 'Commercial (Rent)',
-                                    ];
-                                    $categoryLabel = $labelMap[$key] ?? ucfirst(str_replace('_', ' ', $key));
-                                    break;
+                                foreach ($budgets as $key => $budget) {
+                                    if (!empty($budget['min']) || !empty($budget['max'])) {
+                                        $budgetKey = $key;
+                                        break;
+                                    }
                                 }
                             }
-                        }
-                    @endphp
+                        @endphp
 
-                    @if($budgetKey)
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <h4 class="text-sm font-medium text-gray-900 mb-3">{{ $categoryLabel }}</h4>
-                            <div class="grid grid-cols-2 gap-4">
-                                <x-forms.currency
-                                    wire:model="budgets.{{ $budgetKey }}.min"
-                                    label="Minimum Budget"
-                                    placeholder="500,000"
+                        @if($budgetKey)
+                            <div class="space-y-5">
+                                <x-forms.currency 
+                                    wire:model="budgets.{{ $budgetKey }}.min" 
+                                    label="Minimum Price" 
+                                    placeholder="0" 
+                                    class="bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 rounded-xl"
                                 />
-
-                                <x-forms.currency
-                                    wire:model="budgets.{{ $budgetKey }}.max"
-                                    label="Maximum Budget"
-                                    placeholder="1,000,000"
+                                <x-forms.currency 
+                                    wire:model="budgets.{{ $budgetKey }}.max" 
+                                    label="Maximum Price" 
+                                    placeholder="Any" 
+                                    class="bg-gray-50 border-gray-200 focus:bg-white focus:border-emerald-500 focus:ring-emerald-500 rounded-xl"
                                 />
                             </div>
-                        </div>
+                        @endif
                     @else
-                        <div class="border border-gray-200 rounded-lg p-4">
-                            <p class="text-sm text-gray-500 text-center py-4">
-                                Please select a property type to set budget preferences.
-                            </p>
+                        <div class="text-center py-8 px-4 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                            <x-heroicon-o-currency-dollar class="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                            <p class="text-sm text-gray-500">Select a property type to set your budget preference.</p>
                         </div>
                     @endif
                 </div>
-            @endif
 
-            <!-- Notification Settings -->
-            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Notification Settings</h3>
+                <!-- Notifications Card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">Notifications</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-white rounded-lg text-gray-500">
+                                    <x-heroicon-o-envelope class="w-5 h-5" />
+                                </div>
+                                <span class="text-sm font-semibold text-gray-700">Email Alerts</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="notification_settings.email_alerts" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
 
-                <div class="space-y-3">
-                    <x-forms.checkbox
-                        wire:model="notification_settings.email_alerts"
-                        label="Email Alerts"
-                        description="Receive notifications via email"
-                    />
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-white rounded-lg text-gray-500">
+                                    <x-heroicon-o-device-phone-mobile class="w-5 h-5" />
+                                </div>
+                                <span class="text-sm font-semibold text-gray-700">SMS Alerts</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="notification_settings.sms_alerts" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
 
-                    <x-forms.checkbox
-                        wire:model="notification_settings.sms_alerts"
-                        label="SMS Alerts"
-                        description="Receive notifications via SMS"
-                    />
-
-                    <x-forms.checkbox
-                        wire:model="notification_settings.whatsapp_alerts"
-                        label="WhatsApp Alerts"
-                        description="Receive notifications via WhatsApp"
-                    />
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 bg-white rounded-lg text-green-600">
+                                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-700">WhatsApp Alerts</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="notification_settings.whatsapp_alerts" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Search Settings -->
-            <div class="bg-white rounded-lg shadow-xs border border-gray-200 p-4 sm:p-6">
-                <h3 class="text-lg font-medium text-gray-900 mb-4">Search Settings</h3>
-
-                <div class="space-y-3">
-                    <x-forms.checkbox
-                        wire:model="is_active"
-                        label="Active Search"
-                        description="Enable notifications for this search"
-                    />
-
-                    <x-forms.checkbox
-                        wire:model="is_default"
-                        label="Set as Default"
-                        description="Use this as your primary search criteria"
-                    />
+                <!-- Search Settings -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">Settings</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-semibold text-gray-700">Active Search</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="is_active" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-100">
+                            <div class="flex items-center gap-3">
+                                <span class="text-sm font-semibold text-gray-700">Set as Default</span>
+                            </div>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" wire:model="is_default" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-emerald-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+                            </label>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Form Actions -->
-            <div class="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-3">
-                <a href="{{ route('customer.searches.index') }}"
-                   class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
-                    Cancel
-                </a>
-                <button type="submit"
-                        class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200">
-                    <x-heroicon-o-check class="w-4 h-4 mr-2" />
-                    Update Search
-                </button>
+                <!-- Submit Action -->
+                <div class="pt-4">
+                     <button type="submit" class="w-full py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg rounded-2xl shadow-lg shadow-emerald-200 hover:shadow-xl transition-all transform hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <x-heroicon-o-check class="w-6 h-6" />
+                        Update Search
+                    </button>
+                    <p class="text-xs text-center text-gray-400 mt-4">
+                        Your changes will be saved immediately.
+                    </p>
+                </div>
             </div>
         </form>
     </div>

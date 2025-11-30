@@ -115,6 +115,6 @@ class SavedProperties extends Component
         return view('livewire.customer.saved-properties', [
             'savedProperties' => $this->getSavedProperties(),
             'stats' => $this->getStats(),
-        ])->extends('layouts.property')->section('content');
+        ])->layout('layouts.app');
     }
 }

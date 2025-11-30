@@ -71,7 +71,7 @@ class SearchManager extends Component
 
         return view('livewire.customer.search-manager', [
             'searches' => $searches
-        ])->layout('layouts.landing');
+        ])->layout('layouts.app');
     }
 
     public function checkJobStatus()

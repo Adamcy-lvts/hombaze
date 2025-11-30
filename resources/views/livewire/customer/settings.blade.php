@@ -1,71 +1,62 @@
-<div class="min-h-screen bg-linear-to-br from-gray-50 via-slate-50 to-gray-100 relative overflow-hidden py-4 sm:py-6 lg:py-8">
-    <!-- Subtle Background Elements -->
-    <div class="absolute inset-0 opacity-30">
-        <div class="floating-element absolute top-1/4 right-1/4 w-32 h-32 bg-linear-to-br from-emerald-400/8 to-teal-500/6 rounded-full blur-3xl"></div>
-        <div class="floating-element absolute bottom-1/3 left-1/4 w-40 h-40 bg-linear-to-br from-blue-400/6 to-indigo-500/4 rounded-full blur-3xl"></div>
-    </div>
-
-    <div class="relative z-30 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-gray-50 font-sans text-gray-900 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header -->
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6 sm:mb-8">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">Account Settings</h1>
-                <p class="text-sm sm:text-base text-gray-600 mt-1">Manage your profile, preferences, and account security</p>
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Account Settings</h1>
+                <p class="text-gray-500 mt-2">Manage your profile, preferences, and account security</p>
             </div>
             <a href="{{ route('dashboard') }}"
-               class="inline-flex items-center px-4 py-2 bg-white/95 backdrop-blur-xl border border-gray-300/60 rounded-xl text-gray-700 hover:bg-white transition-all duration-500 transform hover:scale-105 shadow-lg text-sm sm:text-base">
-                <x-heroicon-o-arrow-left class="w-4 h-4 mr-2" />
+               class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">
+                <x-heroicon-o-arrow-left class="w-4 h-4 mr-1" />
                 Back to Dashboard
             </a>
         </div>
 
         <!-- Flash Messages -->
         @if (session()->has('success'))
-            <div class="fixed top-4 right-4 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg"
-                 x-data="{ show: true }"
-                 x-show="show"
-                 x-transition
-                 x-init="setTimeout(() => show = false, 5000)">
-                {{ session('success') }}
+            <div class="mb-6 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-start gap-3"
+                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <x-heroicon-o-check-circle class="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                <p class="text-sm font-medium text-emerald-900">{{ session('success') }}</p>
             </div>
         @endif
 
         @if (session()->has('error'))
-            <div class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg"
-                 x-data="{ show: true }"
-                 x-show="show"
-                 x-transition
-                 x-init="setTimeout(() => show = false, 5000)">
-                {{ session('error') }}
+            <div class="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-start gap-3"
+                 x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)">
+                <x-heroicon-o-exclamation-circle class="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+                <p class="text-sm font-medium text-red-900">{{ session('error') }}</p>
             </div>
         @endif
 
         <!-- Loading Overlay -->
-        <div wire:loading.delay class="fixed inset-0 bg-black/50 backdrop-blur-xs z-50 flex items-center justify-center">
-            <div class="bg-white rounded-lg p-6 flex items-center space-x-3">
+        <div wire:loading.delay class="fixed inset-0 bg-black/20 backdrop-blur-sm z-50 flex items-center justify-center">
+            <div class="bg-white rounded-xl p-4 shadow-lg flex items-center gap-3">
                 <div class="animate-spin h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full"></div>
-                <span class="text-gray-700">Updating...</span>
+                <span class="text-sm font-medium text-gray-700">Updating...</span>
             </div>
         </div>
 
-        <div class="space-y-6 sm:space-y-8">
+        <div class="space-y-8">
             <!-- Profile Information -->
-            <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
-                <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-emerald-500 to-teal-600 shadow-lg mr-3">
-                        <x-heroicon-o-user class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-emerald-50 rounded-lg text-emerald-600">
+                        <x-heroicon-o-user class="w-6 h-6" />
                     </div>
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Profile Information</h2>
+                    <h2 class="text-lg font-bold text-gray-900">Profile Information</h2>
                 </div>
 
-                <form wire:submit="updateProfile" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <form wire:submit="updateProfile" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <x-forms.input
                             label="Full Name"
                             wire:model="name"
                             required
                             placeholder="Enter your full name"
                             :error="$errors->first('name')"
+                            class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                         />
 
                         <x-forms.input
@@ -75,6 +66,7 @@
                             required
                             placeholder="Enter your email address"
                             :error="$errors->first('email')"
+                            class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                         />
 
                         <x-forms.input
@@ -83,6 +75,7 @@
                             wire:model="phone"
                             placeholder="Enter your phone number"
                             :error="$errors->first('phone')"
+                            class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                         />
 
                         <x-forms.input
@@ -90,48 +83,46 @@
                             wire:model="address"
                             placeholder="Enter your address"
                             :error="$errors->first('address')"
+                            class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                         />
                     </div>
 
-
                     <div class="flex justify-end">
-                        <x-forms.button type="submit" variant="primary">
+                        <button type="submit" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-colors shadow-sm hover:shadow-md">
                             Update Profile
-                        </x-forms.button>
+                        </button>
                     </div>
                 </form>
             </div>
 
             <!-- Search Preferences -->
-            <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
-                <div class="flex items-center justify-between mb-4 sm:mb-6">
-                    <div class="flex items-center">
-                        <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 shadow-lg mr-3">
-                            <x-heroicon-o-magnifying-glass class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                            <x-heroicon-o-magnifying-glass class="w-6 h-6" />
                         </div>
-                        <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Search Preferences</h2>
+                        <h2 class="text-lg font-bold text-gray-900">Search Preferences</h2>
                     </div>
                     <a href="{{ route('customer.preferences') }}"
-                       class="inline-flex items-center px-4 py-2 bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-semibold rounded-xl transition-all duration-500 transform hover:scale-105 shadow-lg text-sm">
+                       class="inline-flex items-center px-4 py-2 bg-emerald-50 text-emerald-700 text-sm font-semibold rounded-xl hover:bg-emerald-100 transition-colors">
                         <x-heroicon-o-sparkles class="w-4 h-4 mr-2" />
                         Enhanced Preferences
                     </a>
                 </div>
 
-                <div class="mb-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div class="flex items-start">
-                        <x-heroicon-o-sparkles class="w-5 h-5 text-blue-600 mt-0.5 mr-3 shrink-0" />
-                        <div>
-                            <p class="text-sm font-medium text-blue-900">Try our Enhanced Preferences!</p>
-                            <p class="text-sm text-blue-700 mt-1">Get better property recommendations with our improved preference system featuring smart filtering and instant notifications.</p>
-                        </div>
+                <div class="mb-6 p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-start gap-3">
+                    <x-heroicon-o-information-circle class="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+                    <div>
+                        <p class="text-sm font-medium text-blue-900">Try our Enhanced Preferences!</p>
+                        <p class="text-sm text-blue-700 mt-1">Get better property recommendations with our improved preference system featuring smart filtering and instant notifications.</p>
                     </div>
                 </div>
 
-                <form wire:submit="updateSearchPreferences" class="space-y-4">
+                <form wire:submit="updateSearchPreferences" class="space-y-6">
                     <!-- Location Preferences -->
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Preferred Location</h3>
+                        <h3 class="text-sm font-semibold text-gray-900 mb-4">Preferred Location</h3>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             <x-forms.select
                                 label="State"
@@ -139,6 +130,7 @@
                                 placeholder="Select State"
                                 :options="$states"
                                 :error="$errors->first('preferred_location_state')"
+                                class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                             />
 
                             <x-forms.select
@@ -148,6 +140,7 @@
                                 :options="$cities"
                                 :disabled="!$preferred_location_state"
                                 :error="$errors->first('preferred_location_city')"
+                                class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                             />
 
                             <x-forms.select
@@ -157,17 +150,18 @@
                                 :options="$areas"
                                 :disabled="!$preferred_location_city"
                                 :error="$errors->first('preferred_location_area')"
+                                class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                             />
                         </div>
                     </div>
 
                     <!-- Property Preferences -->
                     <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Property Preferences</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <h3 class="text-sm font-semibold text-gray-900 mb-4">Property Preferences</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-900 mb-2">Property Types</label>
-                                <div class="space-y-2 max-h-32 overflow-y-auto border border-gray-300/60 rounded-xl p-3 bg-white/95 backdrop-blur-xl">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Property Types</label>
+                                <div class="max-h-48 overflow-y-auto border border-gray-200 rounded-xl p-4 space-y-2 bg-gray-50">
                                     @foreach($propertyTypes as $type)
                                         <x-forms.checkbox
                                             wire:model.defer="preferred_property_types"
@@ -186,54 +180,31 @@
                                 label="Listing Type"
                                 wire:model="preferred_listing_type"
                                 placeholder="Any"
-                                :options="[
-                                    '' => 'Any',
-                                    'rent' => 'Rent',
-                                    'sale' => 'Sale'
-                                ]"
+                                :options="['' => 'Any', 'rent' => 'Rent', 'sale' => 'Sale']"
                                 :error="$errors->first('preferred_listing_type')"
+                                class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                             />
                         </div>
                     </div>
 
-                    <!-- Budget Range -->
-                    {{-- <div>
-                        <h3 class="text-lg font-medium text-gray-900 mb-3">Budget Range</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-forms.currency
-                                label="Minimum Budget"
-                                wire:model="min_budget"
-                                placeholder="0.00"
-                                :error="$errors->first('min_budget')"
-                            />
-
-                            <x-forms.currency
-                                label="Maximum Budget"
-                                wire:model="max_budget"
-                                placeholder="0.00"
-                                :error="$errors->first('max_budget')"
-                            />
-                        </div>
-                    </div> --}}
-
                     <div class="flex justify-end">
-                        <x-forms.button type="submit" variant="info">
+                        <button type="submit" class="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-semibold rounded-xl transition-colors">
                             Update Preferences
-                        </x-forms.button>
+                        </button>
                     </div>
                 </form>
             </div>
 
             <!-- Notification Settings -->
-            <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
-                <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-yellow-500 to-orange-500 shadow-lg mr-3">
-                        <x-heroicon-o-bell class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-amber-50 rounded-lg text-amber-600">
+                        <x-heroicon-o-bell class="w-6 h-6" />
                     </div>
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Notification Settings</h2>
+                    <h2 class="text-lg font-bold text-gray-900">Notification Settings</h2>
                 </div>
 
-                <form wire:submit="updateNotifications" class="space-y-4">
+                <form wire:submit="updateNotifications" class="space-y-6">
                     <div class="space-y-4">
                         <x-forms.toggle
                             wire:model="email_notifications"
@@ -272,38 +243,40 @@
                     </div>
 
                     <div class="flex justify-end">
-                        <x-forms.button type="submit" variant="warning">
+                        <button type="submit" class="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 text-sm font-semibold rounded-xl transition-colors">
                             Update Notifications
-                        </x-forms.button>
+                        </button>
                     </div>
                 </form>
             </div>
 
             <!-- Security -->
-            <div class="bg-white/95 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-gray-300/60 shadow-lg p-4 sm:p-6">
-                <div class="flex items-center mb-4 sm:mb-6">
-                    <div class="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-linear-to-br from-red-500 to-pink-600 shadow-lg mr-3">
-                        <x-heroicon-o-lock-closed class="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="p-2 bg-red-50 rounded-lg text-red-600">
+                        <x-heroicon-o-lock-closed class="w-6 h-6" />
                     </div>
-                    <h2 class="text-lg sm:text-xl font-semibold text-gray-900">Security</h2>
+                    <h2 class="text-lg font-bold text-gray-900">Security</h2>
                 </div>
 
-                <form wire:submit="updatePassword" class="space-y-4">
+                <form wire:submit="updatePassword" class="space-y-6">
                     <x-forms.input
                         label="Current Password"
                         type="password"
                         wire:model="current_password"
                         placeholder="Enter your current password"
                         :error="$errors->first('current_password')"
+                        class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                     />
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <x-forms.input
                             label="New Password"
                             type="password"
                             wire:model="new_password"
                             placeholder="Enter new password"
                             :error="$errors->first('new_password')"
+                            class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                         />
 
                         <x-forms.input
@@ -312,17 +285,17 @@
                             wire:model="new_password_confirmation"
                             placeholder="Confirm new password"
                             :error="$errors->first('new_password_confirmation')"
+                            class="rounded-xl border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
                         />
                     </div>
 
                     <div class="flex justify-end">
-                        <x-forms.button type="submit" variant="danger">
+                        <button type="submit" class="px-6 py-2.5 bg-red-50 text-red-700 hover:bg-red-100 text-sm font-semibold rounded-xl transition-colors">
                             Update Password
-                        </x-forms.button>
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-

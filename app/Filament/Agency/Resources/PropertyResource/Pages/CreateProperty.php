@@ -10,15 +10,20 @@ use App\Models\City;
 use App\Models\PropertyOwner;
 use App\Models\Agent;
 use App\Filament\Agency\Resources\PropertyResource;
+use App\Models\Property;
+use App\Services\ListingCreditService;
+use App\Filament\Concerns\RedirectsToPricingOnCreditError;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Filament\Notifications\Notification;
+use Illuminate\Validation\ValidationException;
 
 class CreateProperty extends CreateRecord
 {
+    use RedirectsToPricingOnCreditError;
     protected static string $resource = PropertyResource::class;
 
     /**
@@ -77,8 +82,27 @@ class CreateProperty extends CreateRecord
         // Validate required relationships exist
         $this->validateRequiredRelationships($data);
 
+        $shouldPublish = array_key_exists('is_published', $data) ? (bool) $data['is_published'] : true;
+        try {
+            if ($shouldPublish) {
+                ListingCreditService::assertHasListingCredits($agency);
+            }
+            if (!empty($data['is_featured'])) {
+                ListingCreditService::assertHasFeaturedCredits($agency);
+            }
+        } catch (ValidationException $exception) {
+            $this->redirectToPricingForCredits($exception);
+        }
+
         // Create the property
         $property = static::getModel()::create($data);
+
+        if ($shouldPublish) {
+            ListingCreditService::consumeListingCredits($agency, $property);
+        }
+        if ($property->is_featured) {
+            ListingCreditService::consumeFeaturedCredits($agency, $property);
+        }
 
         // Send success notification
         Notification::make()
@@ -138,7 +162,7 @@ class CreateProperty extends CreateRecord
         $data['inquiry_count'] = 0;
         $data['favorite_count'] = 0;
 
-        return $data;
+        return Property::applyListingPackageData($data);
     }
 
     /**

@@ -460,6 +460,7 @@ class PropertyResource extends Resource
                                             ->default(false),
                                     ])->columns(1)->collapsible(),
 
+
                                 // Property Features - Sidebar
                                 Section::make('Property Features')
                                     ->description('Physical characteristics and specifications')
@@ -786,6 +787,7 @@ class PropertyResource extends Resource
                         'primary' => 'lease',
                     ])
                     ->sortable(),
+
 
                 TextColumn::make('status')
                     ->badge()

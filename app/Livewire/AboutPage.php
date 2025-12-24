@@ -62,6 +62,6 @@ class AboutPage extends Component
         return view('livewire.about-page', [
             'stats' => $this->stats,
             'teamMembers' => $this->teamMembers,
-        ])->layout('layouts.livewire-property', ['title' => 'About HomeBaze - Premier Real Estate Platform']);
+        ])->layout('layouts.guest-app', ['title' => 'About HomeBaze - Premier Real Estate Platform']);
     }
 }

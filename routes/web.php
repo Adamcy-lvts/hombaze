@@ -1,19 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\LandingController;
+
 use App\Http\Controllers\TenantInvitationController;
 use App\Http\Controllers\ReceiptViewController;
 use App\Http\Controllers\WhatsAppWebhookController;
+use App\Http\Controllers\PaystackController;
+use App\Http\Controllers\ListingBundleController;
 
 Route::get('/', App\Livewire\LandingPage::class)->name('landing');
 Route::get('/properties', App\Livewire\PropertySearch::class)->name('properties.search');
 Route::get('/property/{property:slug}', App\Livewire\PropertyDetails::class)->name('property.show');
+Route::get('/pricing', App\Livewire\PricingPage::class)->name('pricing');
 
 // New navigation pages
 Route::get('/agents', App\Livewire\AgentsPage::class)->name('agents');
 Route::get('/agent/{agent:slug}', App\Livewire\AgentProfile::class)->name('agent.profile');
 Route::get('/agencies', App\Livewire\AgenciesPage::class)->name('agencies');
+Route::get('/agency/{agency:slug}', App\Livewire\AgencyProfile::class)->name('agency.show');
 // Route::get('/about', App\Livewire\AboutPage::class)->name('about');
 // Route::get('/contact', App\Livewire\ContactPage::class)->name('contact');
 
@@ -22,6 +26,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/agent/{agent:slug}/review', [App\Http\Controllers\AgentReviewController::class, 'create'])->name('agent.review.create');
     Route::post('/agent/{agent:slug}/review', [App\Http\Controllers\AgentReviewController::class, 'store'])->name('agent.review.store');
     Route::patch('/agent/{agent:slug}/review', [App\Http\Controllers\AgentReviewController::class, 'update'])->name('agent.review.update');
+
+    Route::post('/payments/rent/{payment}/paystack', [PaystackController::class, 'initializeRentPayment'])
+        ->name('payments.rent.paystack');
+
+    Route::post('/billing/listing-bundles/{type}/{slug}', [ListingBundleController::class, 'purchase'])
+        ->name('listing-bundles.purchase');
 });
 
 // Tenant invitation routes
@@ -91,5 +101,11 @@ Route::prefix('api/whatsapp')->name('whatsapp.')->group(function () {
     Route::get('/webhook', [WhatsAppWebhookController::class, 'verify'])->name('webhook.verify');
     Route::post('/webhook', [WhatsAppWebhookController::class, 'handleWebhook'])->name('webhook.handle');
 });
+
+Route::get('/payments/paystack/callback', [PaystackController::class, 'handleCallback'])
+    ->name('paystack.callback');
+
+Route::get('/billing/listing-bundles/callback', [ListingBundleController::class, 'callback'])
+    ->name('listing-bundles.callback');
 
 require __DIR__.'/auth.php';

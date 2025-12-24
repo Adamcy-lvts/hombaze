@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
             Phase5PropertySeeder::class,    // Properties (depends on all previous phases)
             Phase7EngagementSeeder::class,  // Property engagement features
             ComprehensiveTestingSeeder::class, // Comprehensive testing scenarios
+            ListingCatalogSeeder::class, // Listing packages and add-ons
         ];
 
         foreach ($seeders as $seederClass) {

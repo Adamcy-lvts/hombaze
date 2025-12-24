@@ -84,6 +84,6 @@ class ContactPage extends Component
     {
         return view('livewire.contact-page', [
             'officeLocations' => $this->officeLocations,
-        ])->layout('layouts.livewire-property', ['title' => 'Contact HomeBaze - Get In Touch']);
+        ])->layout('layouts.guest-app', ['title' => 'Contact HomeBaze - Get In Touch']);
     }
 }

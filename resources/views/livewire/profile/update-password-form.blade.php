@@ -85,7 +85,7 @@ new class extends Component
         </div>
 
         <x-action-message class="me-3" on="password-updated">
-            <div class="fixed top-4 right-4 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg"
+            <div class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg"
                  x-data="{ show: true }"
                  x-show="show"
                  x-transition

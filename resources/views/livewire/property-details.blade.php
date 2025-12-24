@@ -2,7 +2,7 @@
 <div class="min-h-screen bg-gray-50 font-sans text-gray-900 relative selection:bg-emerald-100 selection:text-emerald-900">
     <!-- Flash Messages -->
     @if (session()->has('message'))
-        <div class="fixed top-4 right-4 z-50 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-300"
+        <div class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-300"
             x-data="{ show: true }" x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
             <span class="font-medium">{{ session('message') }}</span>
@@ -10,7 +10,7 @@
     @endif
 
     @if (session()->has('error'))
-        <div class="fixed top-4 right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-300" x-data="{ show: true }"
+        <div class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 bg-red-500 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-300" x-data="{ show: true }"
             x-show="show" x-transition x-init="setTimeout(() => show = false, 5000)">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             <span class="font-medium">{{ session('error') }}</span>

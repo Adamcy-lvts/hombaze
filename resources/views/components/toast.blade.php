@@ -38,7 +38,7 @@ $toastId = 'toast-' . uniqid();
 @endphp
 
 @if($message || $title)
-<div id="{{ $toastId }}" class="fixed top-4 right-4 z-9999 max-w-sm w-full transform transition-all duration-300 ease-in-out translate-x-0 opacity-100">
+<div id="{{ $toastId }}" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-9999 sm:max-w-sm w-full transform transition-all duration-300 ease-in-out translate-x-0 opacity-100">
     <div class="rounded-lg border shadow-lg {{ $config['bg'] }} p-4">
         <div class="flex">
             <div class="shrink-0">

@@ -12,7 +12,6 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Toggle;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
@@ -410,6 +409,7 @@ class PropertyResource extends Resource
                                             ->default('available'),
                                     ])->columns(1)->collapsible(),
 
+
                                 // Property Features - Sidebar
                                 Section::make('Property Features')
                                     ->description('Physical characteristics and specifications')
@@ -504,6 +504,7 @@ class PropertyResource extends Resource
                         'info' => 'shortlet',
                     ])
                     ->formatStateUsing(fn(string $state): string => ucwords(str_replace('_', ' ', $state))),
+
 
                 TextColumn::make('status')
                     ->badge()

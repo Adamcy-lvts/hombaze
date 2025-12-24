@@ -4,12 +4,14 @@ namespace App\Livewire;
 
 use Exception;
 use App\Models\Property;
+use App\Models\PropertyInquiry;
 use App\Services\SimpleRecommendationEngine;
 use App\Services\PropertyCommunicationService;
 use App\Services\Communication\WhatsAppService;
 use App\Services\PropertyViewService;
 use Livewire\Component;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 class PropertyDetails extends Component
@@ -101,6 +103,16 @@ class PropertyDetails extends Component
 
     public function submitInquiry()
     {
+        $identifier = auth()->id() ?: request()->ip();
+        $rateLimitKey = 'property-inquiry:' . $identifier . ':' . $this->property->id;
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+            session()->flash('error', 'Too many inquiries sent. Please wait a minute and try again.');
+            return;
+        }
+
+        RateLimiter::hit($rateLimitKey, 60);
+
         $this->validate([
             'inquiryName' => 'required|string|max:255',
             'inquiryEmail' => 'required|email|max:255',
@@ -109,17 +121,27 @@ class PropertyDetails extends Component
         ]);
 
         try {
-            DB::table('property_inquiries')->insert([
+            $inquiry = PropertyInquiry::create([
                 'property_id' => $this->property->id,
-                'user_id' => auth()->id(),
-                'name' => $this->inquiryName,
-                'email' => $this->inquiryEmail,
-                'phone' => $this->inquiryPhone,
+                'inquirer_id' => auth()->id(),
+                'inquirer_name' => $this->inquiryName,
+                'inquirer_email' => $this->inquiryEmail,
+                'inquirer_phone' => $this->inquiryPhone,
                 'message' => $this->inquiryMessage,
-                'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
+                'status' => 'new',
             ]);
+
+            if (config('mail.default')) {
+                $contactEmail = PropertyCommunicationService::getContactEmail($this->property);
+
+                if ($contactEmail) {
+                    Notification::route('mail', $contactEmail)
+                        ->notify(new \App\Notifications\PropertyInquiryReceived($inquiry, $this->property));
+                }
+
+                Notification::route('mail', $this->inquiryEmail)
+                    ->notify(new \App\Notifications\PropertyInquiryConfirmation($inquiry, $this->property));
+            }
 
             // Track property inquiry (simplified)
             if (auth()->check()) {
@@ -464,7 +486,7 @@ class PropertyDetails extends Component
         ];
 
         return view('livewire.property-details')
-            ->layout('layouts.livewire-property', [
+            ->layout('layouts.guest-app', [
                 'title' => $title,
                 'property' => $this->property,
                 'ogData' => $ogData

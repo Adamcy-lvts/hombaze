@@ -10,15 +10,20 @@ use App\Models\City;
 use App\Models\PropertyOwner;
 use App\Models\Agent;
 use App\Filament\Agent\Resources\PropertyResource;
+use App\Models\Property;
+use App\Services\ListingCreditService;
+use App\Filament\Concerns\RedirectsToPricingOnCreditError;
 use Filament\Actions;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class CreateProperty extends CreateRecord
 {
+    use RedirectsToPricingOnCreditError;
     protected static string $resource = PropertyResource::class;
 
     /**
@@ -88,6 +93,19 @@ class CreateProperty extends CreateRecord
         $this->validateRequiredRelationships($data);
         Log::info('Validation passed');
 
+        $creditOwner = $agentProfile->agency_id ? $agentProfile->agency : $user;
+        $shouldPublish = array_key_exists('is_published', $data) ? (bool) $data['is_published'] : true;
+        try {
+            if ($shouldPublish) {
+                ListingCreditService::assertHasListingCredits($creditOwner);
+            }
+            if (!empty($data['is_featured'])) {
+                ListingCreditService::assertHasFeaturedCredits($creditOwner);
+            }
+        } catch (ValidationException $exception) {
+            $this->redirectToPricingForCredits($exception);
+        }
+
         // Log final data before creation
         Log::info('Final data before property creation', [
             'title' => $data['title'] ?? 'no title',
@@ -100,6 +118,13 @@ class CreateProperty extends CreateRecord
 
         // Create the property
         $property = static::getModel()::create($data);
+
+        if ($shouldPublish) {
+            ListingCreditService::consumeListingCredits($creditOwner, $property);
+        }
+        if ($property->is_featured) {
+            ListingCreditService::consumeFeaturedCredits($creditOwner, $property);
+        }
 
         Log::info('Property created successfully', [
             'property_id' => $property->id,
@@ -169,7 +194,7 @@ class CreateProperty extends CreateRecord
         $data['inquiry_count'] = 0;
         $data['favorite_count'] = 0;
 
-        return $data;
+        return Property::applyListingPackageData($data);
     }
 
     /**

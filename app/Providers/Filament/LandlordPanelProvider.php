@@ -15,6 +15,7 @@ use Filament\PanelProvider;
 use Filament\Enums\ThemeMode;
 use Filament\Support\Colors\Color;
 use Filament\Http\Middleware\Authenticate;
+use Filament\Navigation\MenuItem;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -64,6 +65,12 @@ class LandlordPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 RequireProfileCompletion::class,
+            ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Pricing')
+                    ->icon('heroicon-o-tag')
+                    ->url(fn(): string => route('pricing')),
             ])
             ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'));
     }

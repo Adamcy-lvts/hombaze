@@ -25,6 +25,7 @@
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             <!-- Guest Navigation -->
+            @if (!($hideNav ?? false))
             <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -47,6 +48,9 @@
                                 </x-nav-link>
                                 <x-nav-link :href="route('agencies')" :active="request()->routeIs('agencies')" wire:navigate>
                                     {{ __('Agencies') }}
+                                </x-nav-link>
+                                <x-nav-link :href="route('pricing')" :active="request()->routeIs('pricing')" wire:navigate>
+                                    {{ __('Pricing') }}
                                 </x-nav-link>
                                 {{-- <x-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
                                     {{ __('About') }}
@@ -123,6 +127,9 @@
                         <x-responsive-nav-link :href="route('agencies')" :active="request()->routeIs('agencies')" wire:navigate>
                             {{ __('Agencies') }}
                         </x-responsive-nav-link>
+                        <x-responsive-nav-link :href="route('pricing')" :active="request()->routeIs('pricing')" wire:navigate>
+                            {{ __('Pricing') }}
+                        </x-responsive-nav-link>
                         {{-- <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
                             {{ __('About') }}
                         </x-responsive-nav-link>
@@ -164,6 +171,7 @@
                     </div>
                 </div>
             </nav>
+            @endif
 
             <!-- Page Heading -->
             @isset($header)

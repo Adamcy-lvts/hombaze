@@ -49,6 +49,12 @@ class AgencyPanelProvider extends PanelProvider
                     ->visible(fn(): bool => auth()->user()->can('update_agency_profile')),
 
             ])
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Pricing')
+                    ->icon('heroicon-o-tag')
+                    ->url(fn(): string => route('pricing')),
+            ])
             ->defaultThemeMode(ThemeMode::Light)
             ->colors([
                 'primary' => Color::Green,

@@ -149,6 +149,6 @@ class Dashboard extends Component
             'recentActivity' => $this->recentActivity,
             'recommendedProperties' => $this->recommendedProperties,
             'profileCompletion' => $this->profileCompletion,
-        ])->layout('layouts.livewire-property');
+        ])->layout('layouts.guest-app');
     }
 }

@@ -119,6 +119,6 @@ class AgentProfile extends Component
             'reviews' => $this->reviews,
             'reviewStats' => $this->reviewStats,
             'recentProperties' => $this->recentProperties,
-        ])->layout('layouts.app', ['title' => $this->agent->name . ' - Real Estate Agent']);
+        ])->layout('layouts.guest-app', ['title' => $this->agent->name . ' - Real Estate Agent']);
     }
 }

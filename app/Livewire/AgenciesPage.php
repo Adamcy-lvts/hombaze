@@ -173,6 +173,6 @@ class AgenciesPage extends Component
             'stats' => $this->stats,
             'locationOptions' => $this->locationOptions,
             'featuredAgencies' => $this->featuredAgencies,
-        ])->layout('layouts.livewire-property', ['title' => 'Find Trusted Real Estate Agencies']);
+        ])->layout('layouts.guest-app', ['title' => 'Find Trusted Real Estate Agencies']);
     }
 }

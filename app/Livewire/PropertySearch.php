@@ -13,6 +13,7 @@ use Livewire\Attributes\Url;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class PropertySearch extends Component
 {
@@ -36,6 +37,8 @@ class PropertySearch extends Component
     public $isLoading = false;
     public $showFilters = false;
     public $isDarkMode = false;
+    public $isRateLimited = false;
+    public $rateLimitMessage = '';
 
     // Selected filter states (for UI)
     public $selectedBedrooms = [];
@@ -101,6 +104,10 @@ class PropertySearch extends Component
     {
         $this->resetPage();
 
+        if ($this->shouldThrottleSearch()) {
+            return;
+        }
+
         if (strlen($this->searchQuery) >= 2) {
             $this->updateSuggestions();
         } else {
@@ -151,6 +158,12 @@ class PropertySearch extends Component
     {
         // Only update suggestions if we have enough characters and input is focused
         if (strlen($this->searchQuery) < 2) {
+            $this->suggestions = [];
+            $this->showSuggestions = false;
+            return;
+        }
+
+        if ($this->shouldThrottleSearch()) {
             $this->suggestions = [];
             $this->showSuggestions = false;
             return;
@@ -279,6 +292,10 @@ class PropertySearch extends Component
 
     public function getPropertiesProperty()
     {
+        if ($this->shouldThrottleSearch()) {
+            return Property::query()->whereRaw('1 = 0')->paginate(12);
+        }
+
         $query = Property::with(['city', 'state', 'area', 'propertyType', 'agency', 'agent'])
             ->published()
             ->available();
@@ -463,6 +480,22 @@ class PropertySearch extends Component
         return array_slice($suggestions, 0, 8);
     }
 
+    private function shouldThrottleSearch(): bool
+    {
+        $rateLimitKey = 'property-search:' . request()->ip();
+
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 60)) {
+            $this->isRateLimited = true;
+            $this->rateLimitMessage = 'Too many searches right now. Please wait a moment and try again.';
+            return true;
+        }
+
+        RateLimiter::hit($rateLimitKey, 60);
+        $this->isRateLimited = false;
+        $this->rateLimitMessage = '';
+        return false;
+    }
+
     private function getFilterLabel($type, $value)
     {
         switch ($type) {
@@ -559,6 +592,6 @@ class PropertySearch extends Component
     {
         return view('livewire.property-search', [
             'properties' => $this->properties,
-        ])->layout('layouts.livewire-property', ['title' => 'Property Search']);
+        ])->layout('layouts.guest-app', ['title' => 'Property Search']);
     }
 }

@@ -1,5 +1,5 @@
 <!-- Toast Container for Session Messages -->
-<div id="toast-container" class="fixed top-4 right-4 z-9999 space-y-2">
+<div id="toast-container" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-9999 space-y-2">
     <!-- Success Messages -->
     @if(session('success'))
         <x-toast type="success" :message="session('success')" title="Success!" />

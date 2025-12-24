@@ -12,7 +12,6 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\CheckboxList;
-use Filament\Forms\Components\Placeholder;
 use Filament\Facades\Filament;
 use App\Models\PropertyOwner;
 use Filament\Forms\Components\Toggle;
@@ -425,6 +424,7 @@ class PropertyResource extends Resource
                                             ->default('available'),
                                     ])->columns(1)->collapsible(),
 
+
                                 // Property Features - Sidebar
                                 Section::make('Property Features')
                                     ->description('Physical characteristics and specifications')
@@ -716,6 +716,7 @@ class PropertyResource extends Resource
                         'shortlet' => 'success',
                         default => 'gray',
                     }),
+
                     
                 TextColumn::make('status')
                     ->badge()

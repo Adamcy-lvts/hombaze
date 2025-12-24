@@ -124,6 +124,6 @@ class Inquiries extends Component
         return view('livewire.customer.inquiries', [
             'inquiries' => $this->getInquiries(),
             'stats' => $this->getStats(),
-        ])->extends('layouts.property')->section('content');
+        ])->layout('layouts.guest-app');
     }
 }

@@ -26,6 +26,7 @@ class Property extends Model implements HasMedia
         'slug',
         'description',
         'listing_type',
+        'listing_package',
         'status',
         'price',
         'price_period',
@@ -64,6 +65,10 @@ class Property extends Model implements HasMedia
         'is_featured',
         'is_verified',
         'is_published',
+        'listing_fee_amount',
+        'listing_fee_status',
+        'listing_paid_at',
+        'listing_expires_at',
         'featured_until',
         'verified_at',
         'published_at',
@@ -79,6 +84,7 @@ class Property extends Model implements HasMedia
 
     protected $casts = [
         'price' => 'decimal:2',
+        'listing_fee_amount' => 'decimal:2',
         'service_charge' => 'decimal:2',
         'legal_fee' => 'decimal:2',
         'agency_fee' => 'decimal:2',
@@ -93,10 +99,16 @@ class Property extends Model implements HasMedia
         'is_active' => 'boolean',
         'price_negotiable' => 'boolean',
         'last_viewed_at' => 'datetime',
+        'listing_paid_at' => 'datetime',
+        'listing_expires_at' => 'datetime',
         'featured_until' => 'datetime',
         'verified_at' => 'datetime',
         'published_at' => 'datetime',
     ];
+
+    public const LISTING_FEE_UNPAID = 'unpaid';
+    public const LISTING_FEE_PAID = 'paid';
+    public const LISTING_FEE_WAIVED = 'waived';
 
     protected static function boot()
     {
@@ -284,7 +296,8 @@ class Property extends Model implements HasMedia
     public function scopePublished($query)
     {
         return $query->where('is_published', true)
-            ->whereNotNull('published_at');
+            ->whereNotNull('published_at')
+            ->whereIn('listing_fee_status', [self::LISTING_FEE_PAID, self::LISTING_FEE_WAIVED]);
     }
 
     /**
@@ -301,6 +314,7 @@ class Property extends Model implements HasMedia
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true)
+            ->whereIn('listing_fee_status', [self::LISTING_FEE_PAID, self::LISTING_FEE_WAIVED])
             ->where(function ($q) {
                 $q->whereNull('featured_until')
                     ->orWhere('featured_until', '>', now());
@@ -347,6 +361,23 @@ class Property extends Model implements HasMedia
     public function getFormattedPriceAttribute(): string
     {
         return '₦' . number_format($this->price, 0);
+    }
+
+    public static function applyListingPackageData(array $data, ?self $property = null): array
+    {
+        if (empty($data['listing_package'])) {
+            $data['listing_package'] = $property?->listing_package ?? 'basic';
+        }
+
+        $data['listing_fee_amount'] = $data['listing_fee_amount'] ?? 0;
+        $data['listing_fee_status'] = $data['listing_fee_status'] ?? self::LISTING_FEE_UNPAID;
+        $data['listing_paid_at'] = $data['listing_paid_at'] ?? null;
+
+        if (!empty($data['is_published']) && empty($data['published_at'])) {
+            $data['published_at'] = now();
+        }
+
+        return $data;
     }
 
     /**

@@ -50,6 +50,11 @@
 
             <!-- Clean Search Bar -->
             <div class="max-w-4xl mx-auto relative mb-8 z-30">
+                @if ($isRateLimited)
+                    <div class="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                        {{ $rateLimitMessage }}
+                    </div>
+                @endif
                 <div class="relative group">
                     <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full opacity-20 group-hover:opacity-30 blur transition duration-200"></div>
                     <div class="relative flex items-center bg-white rounded-full shadow-lg">
@@ -459,7 +464,7 @@
     </section>
 
     <!-- Toast Notifications -->
-    <div id="toast-container" class="fixed top-4 right-4 z-50 space-y-2"></div>
+    <div id="toast-container" class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 space-y-2"></div>
 </div>
 
 @push('styles')

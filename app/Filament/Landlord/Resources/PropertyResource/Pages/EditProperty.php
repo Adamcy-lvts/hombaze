@@ -5,13 +5,18 @@ namespace App\Filament\Landlord\Resources\PropertyResource\Pages;
 use Filament\Actions\DeleteAction;
 use Illuminate\Support\Str;
 use App\Filament\Landlord\Resources\PropertyResource;
+use App\Models\Property;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
+use App\Services\ListingCreditService;
+use App\Filament\Concerns\RedirectsToPricingOnCreditError;
+use Illuminate\Validation\ValidationException;
 
 class EditProperty extends EditRecord
 {
+    use RedirectsToPricingOnCreditError;
     protected static string $resource = PropertyResource::class;
 
     protected function getHeaderActions(): array
@@ -51,6 +56,26 @@ class EditProperty extends EditRecord
      */
     private function processPropertyData(array $data): array
     {
+        $data = Property::applyListingPackageData($data, $this->record);
+
+        if (!$this->record->is_published && !empty($data['is_published'])) {
+            try {
+                ListingCreditService::assertHasListingCredits(auth()->user());
+                ListingCreditService::consumeListingCredits(auth()->user(), $this->record);
+            } catch (ValidationException $exception) {
+                $this->redirectToPricingForCredits($exception);
+            }
+        }
+
+        if (!$this->record->is_featured && !empty($data['is_featured'])) {
+            try {
+                ListingCreditService::assertHasFeaturedCredits(auth()->user());
+                ListingCreditService::consumeFeaturedCredits(auth()->user(), $this->record);
+            } catch (ValidationException $exception) {
+                $this->redirectToPricingForCredits($exception);
+            }
+        }
+
         // Generate slug if title changed and slug not provided
         if (isset($data['title']) && (empty($data['slug']) || $data['slug'] === $this->record->slug)) {
             $data['slug'] = Str::slug($data['title']);

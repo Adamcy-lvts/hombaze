@@ -32,7 +32,7 @@ class PaystackController extends Controller
             auth()->user()->email,
             (float) $payment->amount,
             $reference,
-            route('paystack.callback'),
+            route('paystack.universal.callback'),
             [
                 'payment_id' => $payment->id,
                 'purpose' => 'rent',

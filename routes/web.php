@@ -8,6 +8,7 @@ use App\Http\Controllers\WhatsAppWebhookController;
 use App\Http\Controllers\PaystackController;
 use App\Http\Controllers\ListingBundleController;
 use App\Http\Controllers\SmartSearchPaymentController;
+use App\Http\Controllers\PaystackUniversalCallbackController;
 
 Route::get('/', App\Livewire\LandingPage::class)->name('landing');
 Route::get('/properties', App\Livewire\PropertySearch::class)->name('properties.search');
@@ -103,16 +104,18 @@ Route::prefix('api/whatsapp')->name('whatsapp.')->group(function () {
     Route::post('/webhook', [WhatsAppWebhookController::class, 'handleWebhook'])->name('webhook.handle');
 });
 
-Route::get('/payments/paystack/callback', [PaystackController::class, 'handleCallback'])
+Route::get('/payment/callback', PaystackUniversalCallbackController::class)
+    ->name('paystack.universal.callback');
+Route::get('/payments/paystack/callback', PaystackUniversalCallbackController::class)
     ->name('paystack.callback');
 
-Route::get('/billing/listing-bundles/callback', [ListingBundleController::class, 'callback'])
+Route::get('/billing/listing-bundles/callback', PaystackUniversalCallbackController::class)
     ->name('listing-bundles.callback');
 
 // SmartSearch routes
 Route::prefix('smartsearch')->name('smartsearch.')->group(function () {
     Route::get('/pricing', [SmartSearchPaymentController::class, 'showPricing'])->name('pricing');
-    Route::get('/payment/callback', [SmartSearchPaymentController::class, 'handleCallback'])->name('payment.callback');
+    Route::get('/payment/callback', PaystackUniversalCallbackController::class)->name('payment.callback');
 
     Route::middleware(['auth'])->group(function () {
         Route::post('/purchase/{tier}', [SmartSearchPaymentController::class, 'purchase'])->name('purchase');

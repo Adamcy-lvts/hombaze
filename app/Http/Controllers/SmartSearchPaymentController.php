@@ -78,11 +78,12 @@ class SmartSearchPaymentController extends Controller
             $user->email,
             (float) $price,
             $reference,
-            route('smartsearch.payment.callback'),
+            route('paystack.universal.callback'),
             [
                 'purchase_id' => $purchase->id,
                 'tier' => $tier,
                 'user_id' => $user->id,
+                'purpose' => 'smartsearch',
             ]
         );
 

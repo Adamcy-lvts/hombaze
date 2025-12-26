@@ -67,9 +67,10 @@ class ListingBundleController extends Controller
             $request->user()->email,
             (float) $purchase->amount,
             $reference,
-            route('listing-bundles.callback'),
+            route('paystack.universal.callback'),
             [
                 'purchase_id' => $purchase->id,
+                'purpose' => 'listing_bundle',
             ]
         );
 

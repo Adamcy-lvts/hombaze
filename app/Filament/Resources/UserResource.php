@@ -17,10 +17,17 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\Filter;
 use Filament\Forms\Components\DatePicker;
+use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use App\Models\ListingPackage;
+use App\Models\SmartSearchSubscription;
+use App\Services\ListingCreditService;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use App\Filament\Resources\UserResource\RelationManagers\SavedPropertiesRelationManager;
 use App\Filament\Resources\UserResource\RelationManagers\SmartSearchesRelationManager;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
@@ -341,6 +348,68 @@ class UserResource extends Resource
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
+                ActionGroup::make([
+                    Action::make('grantSmartSearchPlan')
+                        ->label('Grant SmartSearch Plan')
+                        ->icon('heroicon-o-magnifying-glass')
+                        ->form([
+                            Select::make('plan_id')
+                                ->label('Plan')
+                                ->options(DB::table('smart_search_plans')
+                                    ->where('is_active', true)
+                                    ->orderBy('sort_order')
+                                    ->pluck('name', 'id')
+                                    ->toArray())
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $plan = DB::table('smart_search_plans')->where('id', $data['plan_id'] ?? null)->first();
+                            if (!$plan) {
+                                return;
+                            }
+                            $channels = $plan->notification_channels ?? '[]';
+                            if (is_string($channels)) {
+                                $decoded = json_decode($channels, true);
+                                $channels = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+                            }
+
+                            SmartSearchSubscription::create([
+                                'user_id' => $record->id,
+                                'tier' => $plan->slug,
+                                'searches_limit' => (int) $plan->searches_limit,
+                                'searches_used' => 0,
+                                'duration_days' => (int) $plan->duration_days,
+                                'amount_paid' => 0,
+                                'payment_reference' => Str::uuid()->toString(),
+                                'payment_method' => 'admin_grant',
+                                'payment_status' => 'paid',
+                                'paid_at' => now(),
+                                'starts_at' => now(),
+                                'expires_at' => now()->addDays((int) $plan->duration_days),
+                                'notification_channels' => $channels,
+                                'notes' => 'Admin granted plan',
+                            ]);
+                        }),
+                    Action::make('grantListingPackage')
+                        ->label('Grant Listing Package')
+                        ->icon('heroicon-o-briefcase')
+                        ->form([
+                            Select::make('package_id')
+                                ->label('Package')
+                                ->options(ListingPackage::query()
+                                    ->where('is_active', true)
+                                    ->orderBy('sort_order')
+                                    ->pluck('name', 'id')
+                                    ->toArray())
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $package = ListingPackage::find($data['package_id']);
+                            if ($package) {
+                                ListingCreditService::grantPackage($record, $package, 'admin_grant');
+                            }
+                        }),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

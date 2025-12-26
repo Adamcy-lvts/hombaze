@@ -10,6 +10,9 @@ use Filament\Resources\Pages\ViewRecord;
 use App\Services\ListingCreditService;
 use App\Models\ListingPackage;
 use App\Models\ListingAddon;
+use App\Models\SmartSearchSubscription;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ViewUser extends ViewRecord
 {
@@ -74,6 +77,48 @@ class ViewUser extends ViewRecord
                     if ($addon) {
                         ListingCreditService::grantAddon($record, $addon, 'admin_grant');
                     }
+                }),
+            Action::make('grantSmartSearchPlan')
+                ->label('Grant SmartSearch Plan')
+                ->color('success')
+                ->icon('heroicon-o-magnifying-glass')
+                ->form([
+                    \Filament\Forms\Components\Select::make('plan_id')
+                        ->label('Plan')
+                        ->options(DB::table('smart_search_plans')
+                            ->where('is_active', true)
+                            ->orderBy('sort_order')
+                            ->pluck('name', 'id')
+                            ->toArray())
+                        ->required(),
+                ])
+                ->action(function ($record, array $data) {
+                    $plan = DB::table('smart_search_plans')->where('id', $data['plan_id'] ?? null)->first();
+                    if (!$plan) {
+                        return;
+                    }
+                    $channels = $plan->notification_channels ?? '[]';
+                    if (is_string($channels)) {
+                        $decoded = json_decode($channels, true);
+                        $channels = json_last_error() === JSON_ERROR_NONE ? $decoded : [];
+                    }
+
+                    SmartSearchSubscription::create([
+                        'user_id' => $record->id,
+                        'tier' => $plan->slug,
+                        'searches_limit' => (int) $plan->searches_limit,
+                        'searches_used' => 0,
+                        'duration_days' => (int) $plan->duration_days,
+                        'amount_paid' => 0,
+                        'payment_reference' => Str::uuid()->toString(),
+                        'payment_method' => 'admin_grant',
+                        'payment_status' => 'paid',
+                        'paid_at' => now(),
+                        'starts_at' => now(),
+                        'expires_at' => now()->addDays((int) $plan->duration_days),
+                        'notification_channels' => $channels,
+                        'notes' => 'Admin granted plan',
+                    ]);
                 }),
         ];
     }

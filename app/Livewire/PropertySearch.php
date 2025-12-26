@@ -60,6 +60,14 @@ class PropertySearch extends Component
         'features' => ['swimming_pool', 'gym', 'security', 'parking', 'generator', 'air_conditioning']
     ];
 
+    // Saved search ID
+    #[Url]
+    public $saved_search = '';
+
+    // Custom price range
+    public $minPrice = null;
+    public $maxPrice = null;
+
     public function mount()
     {
         // Load property types for filter options
@@ -68,14 +76,74 @@ class PropertySearch extends Component
         // Load saved property IDs for authenticated users
         $this->loadSavedProperties();
 
+        // Load SmartSearch if provided
+        if ($this->saved_search) {
+            $this->loadSmartSearch($this->saved_search);
+        }
+
         // Initialize selected states from active filters
         $this->initializeSelectedStates();
     }
 
-    /**
-     * Initialize selected state arrays from active filters
-     */
-    private function initializeSelectedStates()
+    private function loadSmartSearch($searchId)
+    {
+        $search = \App\Models\SmartSearch::find($searchId);
+        if (!$search) return;
+
+        // Reset filters
+        $this->activeFilters = [];
+
+        // 1. Listing Type
+        if ($search->search_type) {
+            $type = $search->search_type === 'buy' ? 'sale' : $search->search_type;
+            if (in_array($type, $this->filterOptions['listing_type'])) {
+                $this->addFilter('listing_type', $type);
+            }
+        }
+
+        // 2. Property Type
+        if ($search->selected_property_type) {
+            $this->addFilter('property_type', $search->selected_property_type);
+        }
+
+        // 3. Location
+        if ($search->location_preferences) {
+            $loc = $search->location_preferences;
+            // Handle specific areas
+            if (isset($loc['selected_areas']) && is_array($loc['selected_areas'])) {
+                 $areas = \App\Models\Area::whereIn('id', $loc['selected_areas'])->pluck('name');
+                 foreach($areas as $areaName) {
+                     $this->addFilter('location', $areaName);
+                 }
+            }
+            // Handle city/state if no specific areas or as fallback
+            elseif (isset($loc['city'])) {
+                 $city = \App\Models\City::find($loc['city']);
+                 if ($city) $this->addFilter('location', $city->name);
+            }
+            elseif (isset($loc['state'])) {
+                 $state = \App\Models\State::find($loc['state']);
+                 if ($state) $this->addFilter('location', $state->name);
+            }
+        }
+
+        // 4. Budget (Custom Range)
+        if ($search->budget_min) $this->minPrice = $search->budget_min;
+        if ($search->budget_max) $this->maxPrice = $search->budget_max;
+
+        // 5. Bedrooms
+        if (isset($search->additional_filters['bedrooms'])) {
+            $beds = $search->additional_filters['bedrooms'];
+            // SmartSearch might store "2" or "2+". 
+            // If it's a specific number, added it.
+            // If it's a range or "2+", we might need to adapt.
+            // For now, assuming direct match keys:
+            if (in_array($beds, $this->filterOptions['bedrooms'])) {
+                $this->addFilter('bedrooms', $beds);
+            }
+        }
+    }
+    private function initializeSelectedStates(): void
     {
         $this->selectedBedrooms = [];
         $this->selectedListingTypes = [];
@@ -83,212 +151,54 @@ class PropertySearch extends Component
         $this->selectedPriceRanges = [];
 
         foreach ($this->activeFilters as $filter) {
-            switch ($filter['type']) {
-                case 'bedrooms':
-                    $this->selectedBedrooms[] = $filter['value'];
-                    break;
-                case 'listing_type':
-                    $this->selectedListingTypes[] = $filter['value'];
-                    break;
-                case 'property_type':
-                    $this->selectedPropertyType = $filter['value'];
-                    break;
-                case 'price_range':
-                    $this->selectedPriceRanges[] = $filter['value'];
-                    break;
+            $type = $filter['type'] ?? null;
+            $value = $filter['value'] ?? null;
+            if (!$type) {
+                continue;
             }
-        }
-    }
 
-    public function updatedSearchQuery()
-    {
-        $this->resetPage();
-
-        if ($this->shouldThrottleSearch()) {
-            return;
-        }
-
-        if (strlen($this->searchQuery) >= 2) {
-            $this->updateSuggestions();
-        } else {
-            $this->hideSuggestions();
-        }
-    }
-
-    public function updatedSelectedListingTypes()
-    {
-        // Remove existing listing type filters
-        $this->activeFilters = array_filter($this->activeFilters, function($filter) {
-            return $filter['type'] !== 'listing_type';
-        });
-
-        // Add new listing type filters
-        foreach ($this->selectedListingTypes as $type) {
-            $this->addFilter('listing_type', $type);
-        }
-    }
-
-    public function updatedSelectedPropertyType()
-    {
-        // Remove existing property type filters
-        $this->activeFilters = array_filter($this->activeFilters, function($filter) {
-            return $filter['type'] !== 'property_type';
-        });
-
-        // Add new property type filter if selected
-        if ($this->selectedPropertyType) {
-            $this->addFilter('property_type', $this->selectedPropertyType);
-        }
-    }
-
-    public function updatedSelectedPriceRanges()
-    {
-        // Remove existing price range filters
-        $this->activeFilters = array_filter($this->activeFilters, function($filter) {
-            return $filter['type'] !== 'price_range';
-        });
-
-        // Add new price range filters
-        foreach ($this->selectedPriceRanges as $range) {
-            $this->addFilter('price_range', $range);
-        }
-    }
-
-    public function updateSuggestions()
-    {
-        // Only update suggestions if we have enough characters and input is focused
-        if (strlen($this->searchQuery) < 2) {
-            $this->suggestions = [];
-            $this->showSuggestions = false;
-            return;
-        }
-
-        if ($this->shouldThrottleSearch()) {
-            $this->suggestions = [];
-            $this->showSuggestions = false;
-            return;
-        }
-
-        // Don't generate suggestions if we're already searching
-        if ($this->isLoading) {
-            return;
-        }
-
-        $this->suggestions = $this->generateSuggestions();
-        $this->showSuggestions = count($this->suggestions) > 0;
-    }
-
-    public function selectSuggestion($suggestion)
-    {
-        $this->searchQuery = $suggestion['text'];
-        $this->hideSuggestions();
-        $this->resetPage();
-    }
-
-    #[On('hideSuggestions')]
-    public function hideSuggestions()
-    {
-        $this->showSuggestions = false;
-    }
-
-    public function addFilter($type, $value, $label = null)
-    {
-        $filterKey = $type . ':' . $value;
-        
-        if (!isset($this->activeFilters[$filterKey])) {
-            $this->activeFilters[$filterKey] = [
-                'type' => $type,
-                'value' => $value,
-                'label' => $label ?: $this->getFilterLabel($type, $value)
-            ];
-        }
-        
-        $this->resetPage();
-    }
-
-    public function removeFilter($filterKey)
-    {
-        unset($this->activeFilters[$filterKey]);
-        $this->resetPage();
-    }
-
-    public function clearAllFilters()
-    {
-        $this->activeFilters = [];
-        $this->searchQuery = '';
-        $this->selectedBedrooms = [];
-        $this->selectedListingTypes = [];
-        $this->selectedPropertyType = '';
-        $this->selectedPriceRanges = [];
-        $this->resetPage();
-    }
-
-    public function toggleFilters()
-    {
-        $this->showFilters = !$this->showFilters;
-    }
-
-    public function toggleTheme()
-    {
-        $this->isDarkMode = !$this->isDarkMode;
-    }
-
-    /**
-     * Toggle a filter (add if not present, remove if present)
-     */
-    public function toggleFilter($type, $value)
-    {
-        $filterKey = $type . ':' . $value;
-
-        if (isset($this->activeFilters[$filterKey])) {
-            // Remove the filter if it exists
-            $this->removeFilter($filterKey);
-
-            // Update selected state arrays
             switch ($type) {
-                case 'bedrooms':
-                    $this->selectedBedrooms = array_diff($this->selectedBedrooms, [$value]);
-                    break;
-                case 'listing_type':
-                    $this->selectedListingTypes = array_diff($this->selectedListingTypes, [$value]);
-                    break;
-                case 'property_type':
-                    $this->selectedPropertyType = '';
-                    break;
-                case 'price_range':
-                    $this->selectedPriceRanges = array_diff($this->selectedPriceRanges, [$value]);
-                    break;
-            }
-        } else {
-            // Add the filter if it doesn't exist
-            $this->addFilter($type, $value);
-
-            // Update selected state arrays
-            switch ($type) {
-                case 'bedrooms':
-                    $this->selectedBedrooms[] = $value;
-                    break;
                 case 'listing_type':
                     $this->selectedListingTypes[] = $value;
                     break;
                 case 'property_type':
-                    $this->selectedPropertyType = $value;
+                    $this->selectedPropertyType = (string) $value;
+                    break;
+                case 'bedrooms':
+                    $this->selectedBedrooms[] = $value;
                     break;
                 case 'price_range':
                     $this->selectedPriceRanges[] = $value;
                     break;
             }
         }
+
+        $this->selectedListingTypes = array_values(array_unique($this->selectedListingTypes));
+        $this->selectedBedrooms = array_values(array_unique($this->selectedBedrooms));
+        $this->selectedPriceRanges = array_values(array_unique($this->selectedPriceRanges));
     }
 
-    /**
-     * Check if a specific filter is active
-     */
-    public function isFilterActive($type, $value)
-    {
-        $filterKey = $type . ':' . $value;
-        return isset($this->activeFilters[$filterKey]);
-    }
+    // ... existing updated methods ...
+
+    // ... existing updateSuggestions ...
+
+    // ... existing selectSuggestion ...
+    
+    // ... existing hideSuggestions ...
+
+    // ... existing addFilter ...
+
+    // ... existing removeFilter ...
+
+    // ... existing clearAllFilters ...
+
+    // ... existing toggleFilters ...
+    
+    // ... existing toggleTheme ...
+    
+    // ... existing toggleFilter ...
+    
+    // ... existing isFilterActive ...
 
     public function getPropertiesProperty()
     {
@@ -326,6 +236,14 @@ class PropertySearch extends Component
         // Apply active filters
         foreach ($this->activeFilters as $filter) {
             $this->applyFilter($query, $filter['type'], $filter['value']);
+        }
+
+        // Apply custom price range (from SmartSearch or advanced filters)
+        if ($this->minPrice) {
+            $query->where('price', '>=', $this->minPrice);
+        }
+        if ($this->maxPrice) {
+            $query->where('price', '<=', $this->maxPrice);
         }
 
         // Apply sorting

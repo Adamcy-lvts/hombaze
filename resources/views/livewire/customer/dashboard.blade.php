@@ -1,48 +1,70 @@
 <div class="min-h-screen bg-gray-50 font-sans text-gray-900">
     <!-- Header Section -->
-    <div class="bg-white border-b border-gray-100 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <!-- Header Section -->
+    <div class="bg-white border-b border-gray-100/50 sticky top-0 z-30 backdrop-blur-xl bg-white/80 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                 <!-- Welcome Section -->
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 shrink-0">
-                        <x-heroicon-o-user class="w-6 h-6" />
+                <div>
+                     <!-- Breadcrumb (Clean) -->
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-4 font-medium">
+                        <a href="{{ route('landing') }}" class="hover:text-emerald-600 transition-colors">Home</a>
+                        <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <span class="text-gray-900">Dashboard</span>
                     </div>
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Welcome back, {{ auth()->user()->name }}</h1>
-                        <p class="text-sm text-gray-500">Manage your property search and preferences</p>
+
+                    <div class="flex items-center gap-5">
+                        <div class="relative">
+                            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center text-emerald-600 shadow-sm border border-emerald-100/50">
+                                @if(auth()->user()->profile_photo_url)
+                                    <img src="{{ auth()->user()->profile_photo_url }}" class="w-full h-full object-cover rounded-2xl" alt="{{ auth()->user()->name }}">
+                                @else
+                                    <span class="text-xl font-bold">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                                @endif
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        <div>
+                            <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Welcome back, {{ explode(' ', auth()->user()->name)[0] }}!</h1>
+                            <p class="text-gray-500 mt-1">Here's what's happening with your property search today.</p>
+                        </div>
                     </div>
                 </div>
 
                 @php
                     $activeSubscription = auth()->user()?->activeSmartSearchSubscription();
                 @endphp
-                @if($activeSubscription)
-                    <div class="flex items-center gap-4 bg-emerald-50 px-4 py-2 rounded-xl border border-emerald-100">
-                        <div class="text-right">
-                            <p class="text-xs font-semibold text-emerald-900">Active plan</p>
-                            <p class="text-sm font-bold text-emerald-900">
-                                {{ $activeSubscription->getTierName() }}
-                                <span class="text-xs font-medium text-emerald-800/70">
-                                    · {{ $activeSubscription->hasUnlimitedSearches() ? 'Unlimited' : $activeSubscription->getRemainingSearches() }} left
-                                </span>
-                            </p>
+                <div class="flex items-center">
+                    @if($activeSubscription)
+                        <div class="bg-white rounded-2xl p-1.5 shadow-sm border border-gray-100 flex items-center gap-3 pr-4">
+                            <div class="bg-emerald-50 rounded-xl p-2.5 text-emerald-600">
+                                <x-heroicon-o-sparkles class="w-5 h-5" />
+                            </div>
+                            <div>
+                                <p class="text-[10px] uppercase tracking-wider font-bold text-gray-400">Current Plan</p>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="font-bold text-gray-900">{{ $activeSubscription->getTierName() }}</span>
+                                    <span class="text-xs text-gray-400 font-medium">
+                                        ({{ $activeSubscription->hasUnlimitedSearches() ? '∞' : $activeSubscription->getRemainingSearches() }} searches left)
+                                    </span>
+                                </div>
+                            </div>
+                            <a href="{{ route('customer.searches.index') }}" class="ml-2 p-2 rounded-lg hover:bg-gray-50 text-gray-400 hover:text-emerald-600 transition-colors">
+                                <x-heroicon-o-chevron-right class="w-5 h-5" />
+                            </a>
                         </div>
-                        <a href="{{ route('customer.searches.index') }}" class="text-sm font-semibold text-emerald-700 hover:text-emerald-800 whitespace-nowrap">
-                            Manage
+                    @else
+                        <a href="{{ route('smartsearch.pricing') }}" class="group flex items-center gap-4 bg-gray-900 hover:bg-gray-800 text-white pl-4 pr-1.5 py-1.5 rounded-2xl transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-300">Upgrade to SmartSearch</p>
+                                <p class="font-bold text-white">Unlock AI Matching</p>
+                            </div>
+                            <div class="bg-white/10 rounded-xl p-2.5 group-hover:bg-white/20 transition-colors">
+                                <x-heroicon-o-arrow-right class="w-5 h-5" />
+                            </div>
                         </a>
-                    </div>
-                @else
-                    <div class="flex items-center gap-4 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
-                        <div class="text-right">
-                            <p class="text-xs font-semibold text-gray-900">No active plan</p>
-                            <p class="text-sm font-medium text-gray-600">Get SmartSearch to start hunting</p>
-                        </div>
-                        <a href="{{ route('smartsearch.pricing') }}" class="text-sm font-semibold text-emerald-600 hover:text-emerald-700 whitespace-nowrap">
-                            View plans
-                        </a>
-                    </div>
-                @endif
+                    @endif
+                </div>
             </div>
         </div>
     </div>

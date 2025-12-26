@@ -37,32 +37,39 @@ class SearchManager extends Component
             ->paginate(10);
 
         // Get recent match notifications for each search
+        // Get recent match notifications for each search
         $searchesWithMatches = $searches->getCollection()->map(function ($search) {
             // Get recent SmartSearchMatch notifications for this search
-            $recentMatches = Auth::user()->notifications()
+            $recentNotifications = Auth::user()->notifications()
                 ->where('type', 'App\\Notifications\\SmartSearchMatch')
                 ->where('data->smart_search_id', $search->id)
                 ->where('created_at', '>=', now()->subDays(7)) // Last 7 days
-                ->latest()
-                ->limit(3)
-                ->get();
+                ->get(); // Get more notifications to ensure we capture multiple unique properties
 
-            $search->recent_matches = $recentMatches;
-            $search->has_matches = $recentMatches->isNotEmpty();
-
-            // Get the latest matched property if exists
-            if ($search->has_matches) {
-                $latestMatch = $recentMatches->first();
-                $properties = $latestMatch->data['properties'] ?? [];
-                $search->latest_matched_property = !empty($properties) ? $properties[0] : null;
-
-                // Ensure the property has required fields
-                if ($search->latest_matched_property &&
-                    (!isset($search->latest_matched_property['slug']) ||
-                     !isset($search->latest_matched_property['title']))) {
-                    $search->latest_matched_property = null;
+            // Extract unique property IDs from notifications
+            $propertyIds = collect();
+            foreach ($recentNotifications as $notification) {
+                if (isset($notification->data['properties']) && is_array($notification->data['properties'])) {
+                    foreach ($notification->data['properties'] as $propData) {
+                        if (isset($propData['id'])) {
+                            $propertyIds->push($propData['id']);
+                        }
+                    }
                 }
             }
+            
+            $uniquePropertyIds = $propertyIds->unique()->values();
+            
+            // Fetch actual property models with media to ensure we have thumbnails
+            // We take top 5 most recent matches (assuming implicit order if we sort by id desc or similar, but here just taking any valid ones)
+            $properties = \App\Models\Property::whereIn('id', $uniquePropertyIds)
+                ->with(['media', 'city', 'area'])
+                ->latest()
+                ->get(); // We can limit in view if needed, but let's get them all for accurate count
+
+            $search->matched_properties = $properties;
+            $search->has_matches = $properties->isNotEmpty();
+            $search->recent_matches_count = $properties->count();
 
             return $search;
         });
@@ -87,9 +94,7 @@ class SearchManager extends Component
             if ($recentNotifications > 0) {
                 $this->searchJobStatus = 'completed';
                 session()->flash('success',
-                    "✅ Search completed! Found {$recentNotifications} matching " .
-                    ($recentNotifications === 1 ? 'property' : 'properties') .
-                    ". Check your notifications for details."
+                    "✅ Search completed! Found properties that match your search criteria. Check your notifications for details."
                 );
                 $this->recentlyCreatedSearchId = null;
             } elseif (now()->diffInMinutes(session('search_created_at', now())) > 1) {

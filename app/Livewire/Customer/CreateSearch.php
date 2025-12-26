@@ -7,6 +7,7 @@ use App\Models\SmartSearchSubscription;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\PropertyFeature;
 use App\Models\PropertySubtype;
 use App\Models\PropertyType;
 use App\Models\PlotSize;
@@ -38,6 +39,11 @@ class CreateSearch extends Component
 
     // Property subtypes (new approach)
     public $selected_subtypes = [];
+
+    // Bedrooms & amenities (for residential types)
+    public $bedrooms_min = null;
+    public $bedrooms_max = null;
+    public $selected_features = [];
 
     // Budget preferences
     public $budgets = [
@@ -77,9 +83,10 @@ class CreateSearch extends Component
     // Active purchase info
     public ?SmartSearchSubscription $activePurchase = null;
     public int $remainingSearches = 0;
+    public array $allowedNotificationChannels = ['email'];
 
     protected $rules = [
-        'name' => 'required|string|max:255',
+        'name' => 'nullable|string|max:255',
         'description' => 'nullable|string|max:500',
         'interested_in' => 'required|string|in:buying,renting,shortlet',
         'selected_property_type' => 'nullable|integer',
@@ -87,6 +94,10 @@ class CreateSearch extends Component
         'selected_areas' => 'nullable|array',
         'selected_areas.*' => 'integer|exists:areas,id',
         'area_selection_type' => 'nullable|string|in:any,all,specific',
+        'bedrooms_min' => 'nullable|integer|min:0|max:20',
+        'bedrooms_max' => 'nullable|integer|min:0|max:20',
+        'selected_features' => 'nullable|array',
+        'selected_features.*' => 'integer|exists:property_features,id',
     ];
 
     protected $messages = [
@@ -119,11 +130,13 @@ class CreateSearch extends Component
             ? SmartSearch::TIER_CONFIGS[$this->activePurchase->tier]['channels'] ?? ['email']
             : ['email'];
 
+        $this->allowedNotificationChannels = $tierChannels;
         $this->notification_settings = [
             'email_alerts' => in_array('email', $tierChannels),
             'sms_alerts' => in_array('sms', $tierChannels),
             'whatsapp_alerts' => in_array('whatsapp', $tierChannels),
         ];
+        $this->enforceNotificationSettings();
     }
 
     /**
@@ -179,6 +192,9 @@ class CreateSearch extends Component
     {
         // Clear selected subtypes when property type changes
         $this->selected_subtypes = [];
+        $this->selected_features = [];
+        $this->bedrooms_min = null;
+        $this->bedrooms_max = null;
     }
 
     public function updatedAreaSelectionType($value)
@@ -187,6 +203,11 @@ class CreateSearch extends Component
         if ($value === 'any' || $value === 'all') {
             $this->selected_areas = [];
         }
+    }
+
+    public function updatedNotificationSettings($value, $key)
+    {
+        $this->enforceNotificationSettings();
     }
 
     public function getAvailablePropertyTypes()
@@ -200,6 +221,13 @@ class CreateSearch extends Component
             ->toArray();
     }
 
+    public function getAvailableFeatures()
+    {
+        return PropertyFeature::active()
+            ->ordered()
+            ->get()
+            ->groupBy('category');
+    }
 
     public function getAvailableSubtypes()
     {
@@ -250,9 +278,71 @@ class CreateSearch extends Component
             });
     }
 
+    private function enforceNotificationSettings(): void
+    {
+        $allowed = $this->allowedNotificationChannels;
+        $this->notification_settings['sms_alerts'] = in_array('sms', $allowed)
+            ? (bool) ($this->notification_settings['sms_alerts'] ?? false)
+            : false;
+        $this->notification_settings['whatsapp_alerts'] = in_array('whatsapp', $allowed)
+            ? (bool) ($this->notification_settings['whatsapp_alerts'] ?? false)
+            : false;
+        $this->notification_settings['email_alerts'] = in_array('email', $allowed)
+            ? (bool) ($this->notification_settings['email_alerts'] ?? true)
+            : false;
+    }
+
+    private function buildAutoName(array $locationPreferences): string
+    {
+        $intentLabel = match ($this->search_type) {
+            'buy' => 'Buy',
+            'rent' => 'Rent',
+            'shortlet' => 'Shortlet',
+            default => 'Search',
+        };
+
+        $typeLabel = $this->selected_property_type
+            ? PropertyType::find($this->selected_property_type)?->name
+            : 'Property';
+
+        $bedroomLabel = null;
+        if ($this->bedrooms_min !== null && $this->bedrooms_min !== '') {
+            $bedroomLabel = $this->bedrooms_min . '+ Bed';
+        }
+
+        $locationLabel = null;
+        if (($locationPreferences['area_selection_type'] ?? null) === 'specific' &&
+            !empty($locationPreferences['selected_areas'] ?? [])) {
+            $area = Area::find($locationPreferences['selected_areas'][0]);
+            $locationLabel = $area?->name;
+        }
+        if (!$locationLabel && !empty($locationPreferences['city'] ?? null)) {
+            $locationLabel = City::find($locationPreferences['city'])?->name;
+        }
+        if (!$locationLabel && !empty($locationPreferences['state'] ?? null)) {
+            $locationLabel = State::find($locationPreferences['state'])?->name;
+        }
+
+        $nameParts = array_filter([
+            $intentLabel,
+            $bedroomLabel,
+            $typeLabel,
+            $locationLabel ? 'in ' . $locationLabel : null,
+        ]);
+
+        return trim(implode(' ', $nameParts));
+    }
+
     public function createSearch()
     {
         $this->validate();
+
+        if ($this->bedrooms_min !== null && $this->bedrooms_max !== null
+            && $this->bedrooms_min !== '' && $this->bedrooms_max !== ''
+            && (int) $this->bedrooms_min > (int) $this->bedrooms_max) {
+            $this->addError('bedrooms_max', 'Maximum bedrooms must be greater than or equal to minimum bedrooms.');
+            return;
+        }
 
         // Re-check purchase validity before creating
         $this->checkActivePurchase();
@@ -293,9 +383,17 @@ class CreateSearch extends Component
         // Calculate land size ranges for each category
         $cleanedLandSizes = [];
         foreach ($this->land_sizes as $category => $landSize) {
-            if (!empty($landSize['plot_min']) || !empty($landSize['plot_max']) ||
-                !empty($landSize['sqm_min']) || !empty($landSize['sqm_max'])) {
+            $hasLegacyRange = !empty($landSize['plot_min']) || !empty($landSize['plot_max']) ||
+                !empty($landSize['sqm_min']) || !empty($landSize['sqm_max']);
+            $hasPredefined = !empty($landSize['predefined_size_id']);
+            $hasCustom = !empty($landSize['custom_size_value']);
+
+            if ($hasLegacyRange || $hasPredefined || $hasCustom) {
                 $cleanedLandSizes[$category] = [
+                    'predefined_size_id' => $landSize['predefined_size_id'] ?? null,
+                    'use_custom_size' => (bool) ($landSize['use_custom_size'] ?? false),
+                    'custom_size_value' => $landSize['custom_size_value'] ?? null,
+                    'custom_size_unit' => $landSize['custom_size_unit'] ?? null,
                     'plot_min' => !empty($landSize['plot_min']) ? (float) $landSize['plot_min'] : null,
                     'plot_max' => !empty($landSize['plot_max']) ? (float) $landSize['plot_max'] : null,
                     'sqm_min' => !empty($landSize['sqm_min']) ? (float) $landSize['sqm_min'] : null,
@@ -307,6 +405,11 @@ class CreateSearch extends Component
         // Get tier and duration from the purchase
         $tier = $this->activePurchase->tier;
         $tierConfig = SmartSearch::TIER_CONFIGS[$tier] ?? SmartSearch::TIER_CONFIGS[SmartSearch::TIER_STARTER];
+
+        $this->enforceNotificationSettings();
+        if (!filled($this->name)) {
+            $this->name = $this->buildAutoName($locationPreferences);
+        }
 
         $search = Auth::user()->smartSearches()->create([
             'name' => $this->name,
@@ -322,6 +425,9 @@ class CreateSearch extends Component
             'additional_filters' => [
                 'budgets' => $cleanedBudgets,
                 'land_sizes' => $cleanedLandSizes,
+                'bedrooms_min' => $this->bedrooms_min,
+                'bedrooms_max' => $this->bedrooms_max,
+                'features' => $this->selected_features,
                 'purchase_id' => $this->activePurchase->id,
             ],
             'notification_settings' => $this->notification_settings,
@@ -391,10 +497,12 @@ class CreateSearch extends Component
             'areas' => $areas,
             'availablePropertyTypes' => $this->getAvailablePropertyTypes(),
             'availableSubtypes' => $this->getAvailableSubtypes(),
+            'availableFeatures' => $this->getAvailableFeatures(),
             'availablePlotSizes' => $this->getAvailablePlotSizes(),
             'plotSizeUnits' => $this->getPlotSizeUnits(),
             'availableAreas' => $this->getAvailableAreas(),
             'tierInfo' => $tierInfo,
+            'allowedNotificationChannels' => $this->allowedNotificationChannels,
         ])->layout('layouts.app');
     }
 }

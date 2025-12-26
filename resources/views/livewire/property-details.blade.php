@@ -1,5 +1,5 @@
 <!-- Enhanced Property Details Page -->
-<div class="min-h-screen bg-gray-50 font-sans text-gray-900 relative selection:bg-emerald-100 selection:text-emerald-900">
+<div class="min-h-screen bg-gray-50 font-sans text-gray-900 relative selection:bg-emerald-100 selection:text-emerald-900 animate-in fade-in duration-500">
     <!-- Flash Messages -->
     @if (session()->has('message'))
         <div class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-300"
@@ -18,45 +18,58 @@
     @endif
 
     <!-- Main Content -->
-    <div class="relative z-30 pt-8 lg:pt-12 pb-20">
-        <!-- Premium Breadcrumb Navigation -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-            <nav aria-label="Breadcrumb">
-                <ol class="flex items-center gap-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-hide">
-                    <li>
-                        <a href="{{ route('landing') }}" wire:navigate class="flex items-center gap-2 hover:text-emerald-600 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                            Home
-                        </a>
-                    </li>
-                    <li class="text-gray-300">/</li>
-                    <li>
-                        <a href="{{ route('properties.search') }}" wire:navigate class="hover:text-emerald-600 transition-colors">Properties</a>
-                    </li>
-                    <li class="text-gray-300">/</li>
-                    <li>
-                        <span class="text-emerald-600 font-medium bg-emerald-50 px-2 py-1 rounded-lg">
-                            {{ $property->city?->name ?? 'Unknown City' }}
-                        </span>
-                    </li>
-                </ol>
-            </nav>
+    <!-- Main Content -->
+    <div class="relative z-30 pt-4 lg:pt-8 pb-20">
+        <!-- Premium Navigation Header -->
+        <div class="sticky top-0 z-40 bg-gray-50/95 backdrop-blur-xl border-b border-gray-100 mb-8 transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <nav aria-label="Breadcrumb">
+                        <ol class="flex items-center gap-2 text-sm text-gray-500 overflow-x-auto whitespace-nowrap scrollbar-hide font-medium">
+                            <li>
+                                <a href="{{ route('landing') }}" wire:navigate class="flex items-center gap-2 hover:text-emerald-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                                </a>
+                            </li>
+                            <li class="text-gray-300">/</li>
+                            <li>
+                                <a href="{{ route('properties.search') }}" wire:navigate class="hover:text-emerald-600 transition-colors">Properties</a>
+                            </li>
+                            <li class="text-gray-300">/</li>
+                            <li>
+                                <span class="text-gray-900 truncate max-w-[200px] block">
+                                    {{ $property->title }}
+                                </span>
+                            </li>
+                        </ol>
+                    </nav>
+
+                    <div class="flex items-center gap-3">
+                         <button class="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50">
+                            <x-heroicon-o-heart class="w-5 h-5" />
+                        </button>
+                        <button class="p-2 text-gray-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50">
+                            <x-heroicon-o-share class="w-5 h-5" />
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Property Header -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                <div class="space-y-4 max-w-3xl">
-                    <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                <div class="space-y-4 max-w-4xl">
+                    <div class="flex flex-wrap items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
                         @if ($property->is_featured)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold uppercase tracking-wider">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-wider border border-amber-100">
+                                <x-heroicon-s-star class="w-3.5 h-3.5" />
                                 Featured
                             </span>
                         @endif
                         @if ($property->is_verified)
                             <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-100">
-                                <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                <x-heroicon-s-check-badge class="w-3.5 h-3.5" />
                                 Verified
                             </span>
                         @endif
@@ -65,20 +78,20 @@
                         </span>
                     </div>
                     
-                    <h1 class="text-3xl lg:text-5xl font-bold text-gray-900 tracking-tight leading-tight">{{ $property->title }}</h1>
+                    <h1 class="text-3xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight animate-in fade-in slide-in-from-bottom-2 duration-500 delay-200">{{ $property->title }}</h1>
                     
-                    <div class="flex items-center text-gray-500 text-lg">
-                        <svg class="w-5 h-5 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <div class="flex items-center text-gray-500 text-lg animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
+                        <x-heroicon-o-map-pin class="w-5 h-5 mr-2 text-emerald-500" />
                         {{ ($property->area?->name ?? 'Unknown Area') . ', ' . ($property->city?->name ?? 'Unknown City') }}
                     </div>
                 </div>
 
-                <div class="text-left lg:text-right">
-                    <div class="text-3xl lg:text-4xl font-bold text-emerald-600 mb-1">
+                <div class="text-left lg:text-right mt-2 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
+                    <div class="text-3xl lg:text-5xl font-black text-emerald-600 tracking-tight">
                         {{ $property->formatted_price }}
                     </div>
                     @if ($property->price_period && $property->price_period !== 'total')
-                        <p class="text-gray-500 font-medium">per {{ str_replace('per_', '', $property->price_period) }}</p>
+                        <p class="text-gray-500 font-medium mt-1">per {{ str_replace('per_', '', $property->price_period) }}</p>
                     @endif
                 </div>
             </div>
@@ -205,7 +218,7 @@
                 <div class="lg:col-span-1">
                     <div class="sticky top-8 space-y-6">
                         <!-- Quick Stats Card -->
-                        <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6">
+                        <div class="bg-white/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl shadow-xl border border-white/50 p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
                             <div class="grid grid-cols-2 gap-4">
                                 @if (in_array($property->propertyType->slug, ['apartment', 'house']))
                                     <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
@@ -230,9 +243,10 @@
 
                             <div class="mt-6 pt-6 border-t border-gray-100 space-y-3">
                                 @if ($this->getAgentPhoneNumber())
-                                    <a href="tel:{{ $this->getAgentPhoneNumber() }}" class="flex items-center justify-center gap-2 w-full bg-linear-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg hover:shadow-emerald-500/40">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                        Call Agent
+                                    <a href="tel:{{ $this->getAgentPhoneNumber() }}" class="group flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-[1.02] shadow-lg hover:shadow-emerald-500/40 relative overflow-hidden">
+                                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 skew-y-12"></div>
+                                        <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                        <span class="relative z-10">Call Agent</span>
                                     </a>
                                 @endif
                                 
@@ -249,7 +263,7 @@
                         </div>
 
                         <!-- Agent Profile Card -->
-                        <div class="bg-white/95 backdrop-blur-xs rounded-2xl lg:rounded-3xl shadow-lg border border-gray-300/60 p-6">
+                        <div class="bg-white/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl shadow-xl border border-white/50 p-6 transition-all duration-300 hover:shadow-2xl">
                             <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Listed By</h3>
                             
                             @if($property->agent)
@@ -275,11 +289,11 @@
                                 </div>
                                 
                                 @php
-                                    $agentSlugOrId = $property->agent?->slug ?? $property->agent?->id;
+                                    $agentSlug = $property->agent?->slug;
                                 @endphp
                                 
-                                @if($agentSlugOrId)
-                                    <a href="{{ route('agent.profile', $agentSlugOrId) }}" wire:navigate class="block w-full text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
+                                @if($agentSlug)
+                                    <a href="{{ route('agent.profile', $agentSlug) }}" wire:navigate class="block w-full text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
                                         View Profile & Listings
                                     </a>
                                 @else

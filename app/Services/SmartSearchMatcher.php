@@ -9,6 +9,7 @@ use App\Models\Area;
 use App\Models\City;
 use App\Models\State;
 use App\Models\PropertySubtype;
+use App\Models\PlotSize;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -252,8 +253,38 @@ class SmartSearchMatcher
                 $query->where('listing_type', $filters['listing_type']);
             }
 
-            if (isset($filters['bedrooms'])) {
-                $query->where('bedrooms', '>=', $filters['bedrooms']);
+            $bedroomsMin = $filters['bedrooms_min'] ?? $filters['bedrooms'] ?? null;
+            $bedroomsMax = $filters['bedrooms_max'] ?? null;
+            if ($bedroomsMin !== null && $bedroomsMin !== '') {
+                $query->where('bedrooms', '>=', $bedroomsMin);
+            }
+            if ($bedroomsMax !== null && $bedroomsMax !== '') {
+                $query->where('bedrooms', '<=', $bedroomsMax);
+            }
+
+            if (!empty($filters['features']) && is_array($filters['features'])) {
+                $featureIds = array_filter($filters['features']);
+                if (!empty($featureIds)) {
+                    $query->whereHas('features', function ($featureQuery) use ($featureIds) {
+                        $featureQuery->whereIn('property_features.id', $featureIds);
+                    });
+                }
+            }
+
+            $landFilters = $filters['land_sizes']['land_buy'] ?? null;
+            $isLandSearch = ($search->selected_property_type === 3) || in_array('land_buy', $search->property_categories ?? [], true);
+            if ($landFilters && $isLandSearch) {
+                $predefinedSizeId = $landFilters['predefined_size_id'] ?? null;
+                if ($predefinedSizeId) {
+                    $query->where('plot_size_id', $predefinedSizeId);
+                }
+
+                $customSizeValue = $landFilters['custom_size_value'] ?? null;
+                $customSizeUnit = $landFilters['custom_size_unit'] ?? null;
+                if ($customSizeValue && $customSizeUnit) {
+                    $sqm = PlotSize::convertToSquareMeters((float) $customSizeValue, $customSizeUnit);
+                    $query->whereBetween('size_sqm', [$sqm * 0.9, $sqm * 1.1]);
+                }
             }
         }
 
@@ -613,9 +644,14 @@ class SmartSearchMatcher
         $filters = $search->additional_filters;
 
         // Bedroom count filter
-        if (isset($filters['bedrooms']) && $property->bedrooms) {
-            if ($property->bedrooms >= $filters['bedrooms']) {
-                $score += 3;
+        $bedroomsMin = $filters['bedrooms_min'] ?? $filters['bedrooms'] ?? null;
+        $bedroomsMax = $filters['bedrooms_max'] ?? null;
+        if ($property->bedrooms) {
+            if ($bedroomsMin !== null && $bedroomsMin !== '' && $property->bedrooms >= $bedroomsMin) {
+                $score += 2;
+            }
+            if ($bedroomsMax !== null && $bedroomsMax !== '' && $property->bedrooms <= $bedroomsMax) {
+                $score += 1;
             }
         }
 
@@ -638,6 +674,25 @@ class SmartSearchMatcher
             $propertyFeatureIds = $property->features->pluck('id')->toArray();
             $matchingFeatures = array_intersect($filters['features'], $propertyFeatureIds);
             $score += min(count($matchingFeatures) * 0.5, 3); // Max 3 points for features
+        }
+
+        // Land size filter (standard or custom size)
+        $landFilters = $filters['land_sizes']['land_buy'] ?? null;
+        $isLandSearch = ($search->selected_property_type === 3) || in_array('land_buy', $search->property_categories ?? [], true);
+        if ($landFilters && $isLandSearch && $property->size_sqm) {
+            $predefinedSizeId = $landFilters['predefined_size_id'] ?? null;
+            if ($predefinedSizeId && (int) $property->plot_size_id === (int) $predefinedSizeId) {
+                $score += 2;
+            }
+
+            $customSizeValue = $landFilters['custom_size_value'] ?? null;
+            $customSizeUnit = $landFilters['custom_size_unit'] ?? null;
+            if ($customSizeValue && $customSizeUnit) {
+                $sqm = PlotSize::convertToSquareMeters((float) $customSizeValue, $customSizeUnit);
+                if ($property->size_sqm >= $sqm * 0.9 && $property->size_sqm <= $sqm * 1.1) {
+                    $score += 2;
+                }
+            }
         }
 
         return min($score, $maxScore);

@@ -6,6 +6,7 @@ use App\Models\SmartSearch;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\PropertyFeature;
 use App\Models\PropertySubtype;
 use App\Models\PropertyType;
 use App\Models\PlotSize;
@@ -40,6 +41,11 @@ class EditSearch extends Component
     // Property subtypes (new approach)
     public $selected_subtypes = [];
 
+    // Bedrooms & amenities (for residential types)
+    public $bedrooms_min = null;
+    public $bedrooms_max = null;
+    public $selected_features = [];
+
     // Budget preferences
     public $budgets = [
         'house_buy' => ['min' => '', 'max' => ''],
@@ -70,6 +76,7 @@ class EditSearch extends Component
 
     public $is_active = true;
     public $is_default = false;
+    public array $allowedNotificationChannels = ['email'];
 
     protected $rules = [
         'name' => 'required|string|max:255',
@@ -81,6 +88,10 @@ class EditSearch extends Component
         'selected_areas' => 'nullable|array',
         'selected_areas.*' => 'integer|exists:areas,id',
         'area_selection_type' => 'nullable|string|in:any,all,specific',
+        'bedrooms_min' => 'nullable|integer|min:0|max:20',
+        'bedrooms_max' => 'nullable|integer|min:0|max:20',
+        'selected_features' => 'nullable|array',
+        'selected_features.*' => 'integer|exists:property_features,id',
     ];
 
     protected $messages = [
@@ -165,6 +176,9 @@ class EditSearch extends Component
             $this->land_sizes = array_merge($this->land_sizes, $additionalFilters['land_sizes']);
         }
 
+        $this->bedrooms_min = $additionalFilters['bedrooms_min'] ?? ($additionalFilters['bedrooms'] ?? null);
+        $this->bedrooms_max = $additionalFilters['bedrooms_max'] ?? null;
+        $this->selected_features = $additionalFilters['features'] ?? [];
 
         // Load notification settings
         $this->notification_settings = $search->notification_settings ?? [
@@ -172,6 +186,10 @@ class EditSearch extends Component
             'sms_alerts' => false,
             'whatsapp_alerts' => false,
         ];
+
+        $tierChannels = SmartSearch::TIER_CONFIGS[$search->tier]['channels'] ?? ['email'];
+        $this->allowedNotificationChannels = $tierChannels;
+        $this->enforceNotificationSettings();
 
         $this->is_active = $search->is_active;
         $this->is_default = $search->is_default;
@@ -290,6 +308,9 @@ class EditSearch extends Component
     {
         // Clear selected subtypes when property type changes
         $this->selected_subtypes = [];
+        $this->selected_features = [];
+        $this->bedrooms_min = null;
+        $this->bedrooms_max = null;
     }
 
     public function updatedAreaSelectionType($value)
@@ -298,6 +319,11 @@ class EditSearch extends Component
         if ($value === 'any' || $value === 'all') {
             $this->selected_areas = [];
         }
+    }
+
+    public function updatedNotificationSettings($value, $key)
+    {
+        $this->enforceNotificationSettings();
     }
 
     public function updatedInterestedIn($value)
@@ -416,6 +442,14 @@ class EditSearch extends Component
             });
     }
 
+    public function getAvailableFeatures()
+    {
+        return PropertyFeature::active()
+            ->ordered()
+            ->get()
+            ->groupBy('category');
+    }
+
     public function getAvailablePlotSizes()
     {
         return PlotSize::active()
@@ -448,9 +482,30 @@ class EditSearch extends Component
             ->toArray();
     }
 
+    private function enforceNotificationSettings(): void
+    {
+        $allowed = $this->allowedNotificationChannels;
+        $this->notification_settings['sms_alerts'] = in_array('sms', $allowed)
+            ? (bool) ($this->notification_settings['sms_alerts'] ?? false)
+            : false;
+        $this->notification_settings['whatsapp_alerts'] = in_array('whatsapp', $allowed)
+            ? (bool) ($this->notification_settings['whatsapp_alerts'] ?? false)
+            : false;
+        $this->notification_settings['email_alerts'] = in_array('email', $allowed)
+            ? (bool) ($this->notification_settings['email_alerts'] ?? true)
+            : false;
+    }
+
     public function updateSearch()
     {
         $this->validate();
+
+        if ($this->bedrooms_min !== null && $this->bedrooms_max !== null
+            && $this->bedrooms_min !== '' && $this->bedrooms_max !== ''
+            && (int) $this->bedrooms_min > (int) $this->bedrooms_max) {
+            $this->addError('bedrooms_max', 'Maximum bedrooms must be greater than or equal to minimum bedrooms.');
+            return;
+        }
 
         // Prepare location preferences
         $locationPreferences = [];
@@ -471,6 +526,8 @@ class EditSearch extends Component
             }
         }
 
+        $this->enforceNotificationSettings();
+
         $this->search->update([
             'name' => $this->name,
             'description' => $this->description,
@@ -482,6 +539,9 @@ class EditSearch extends Component
             'additional_filters' => [
                 'budgets' => $cleanedBudgets,
                 'land_sizes' => $this->land_sizes,
+                'bedrooms_min' => $this->bedrooms_min,
+                'bedrooms_max' => $this->bedrooms_max,
+                'features' => $this->selected_features,
             ],
             'notification_settings' => $this->notification_settings,
             'is_active' => $this->is_active,
@@ -513,9 +573,11 @@ class EditSearch extends Component
             'availablePropertyTypes' => $this->getAvailablePropertyTypes(),
             'availablePropertyCategories' => $this->getAvailablePropertyCategories(),
             'availableSubtypes' => $this->getAvailableSubtypes(),
+            'availableFeatures' => $this->getAvailableFeatures(),
             'availablePlotSizes' => $this->getAvailablePlotSizes(),
             'plotSizeUnits' => $this->getPlotSizeUnits(),
             'availableAreas' => $this->getAvailableAreas(),
+            'allowedNotificationChannels' => $this->allowedNotificationChannels,
         ])->layout('layouts.app');
     }
 }

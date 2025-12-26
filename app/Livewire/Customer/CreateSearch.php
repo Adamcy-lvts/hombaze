@@ -2,15 +2,16 @@
 
 namespace App\Livewire\Customer;
 
-use App\Models\SavedSearch;
+use App\Models\SmartSearch;
+use App\Models\SmartSearchSubscription;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\PropertySubtype;
 use App\Models\PropertyType;
 use App\Models\PlotSize;
-use App\Services\SavedSearchMatcher;
-use App\Jobs\ProcessSavedSearchMatches;
+use App\Services\SmartSearchMatcher;
+use App\Jobs\ProcessSmartSearchMatches;
 use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -73,6 +74,10 @@ class CreateSearch extends Component
     public $jobStatus = null; // 'searching', 'completed', 'failed'
     public $jobResults = null;
 
+    // Active purchase info
+    public ?SmartSearchSubscription $activePurchase = null;
+    public int $remainingSearches = 0;
+
     protected $rules = [
         'name' => 'required|string|max:255',
         'description' => 'nullable|string|max:500',
@@ -93,12 +98,53 @@ class CreateSearch extends Component
 
     public function mount()
     {
+        // Check if user has an active purchase with remaining searches
+        $this->checkActivePurchase();
+
+        // If no active purchase, redirect to pricing
+        if (!$this->activePurchase) {
+            session()->flash('error', 'You need to purchase a SmartSearch plan to create searches.');
+            return redirect()->route('smartsearch.pricing');
+        }
+
         // Set some default values
         $this->interested_in = 'renting';
         $this->search_type = 'rent';
-        $this->selected_property_type = null; // Start with no property type selected
+        $this->selected_property_type = null;
         $this->area_selection_type = 'any';
         $this->selected_areas = [];
+
+        // Set notification settings based on tier channels
+        $tierChannels = $this->activePurchase
+            ? SmartSearch::TIER_CONFIGS[$this->activePurchase->tier]['channels'] ?? ['email']
+            : ['email'];
+
+        $this->notification_settings = [
+            'email_alerts' => in_array('email', $tierChannels),
+            'sms_alerts' => in_array('sms', $tierChannels),
+            'whatsapp_alerts' => in_array('whatsapp', $tierChannels),
+        ];
+    }
+
+    /**
+     * Check if user has an active purchase with remaining searches
+     */
+    private function checkActivePurchase(): void
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return;
+        }
+
+        // Find an active purchase with remaining searches
+        $this->activePurchase = SmartSearchSubscription::where('user_id', $user->id)
+            ->active()
+            ->get()
+            ->first(fn($purchase) => $purchase->canCreateSearch());
+
+        if ($this->activePurchase) {
+            $this->remainingSearches = $this->activePurchase->getRemainingSearches();
+        }
     }
 
     public function updatedStateId($value)
@@ -208,6 +254,13 @@ class CreateSearch extends Component
     {
         $this->validate();
 
+        // Re-check purchase validity before creating
+        $this->checkActivePurchase();
+        if (!$this->activePurchase || !$this->activePurchase->canCreateSearch()) {
+            session()->flash('error', 'You have no remaining searches. Please purchase a new plan.');
+            return redirect()->route('smartsearch.pricing');
+        }
+
         // Prepare location preferences
         $locationPreferences = [];
         if ($this->state_id) $locationPreferences['state'] = $this->state_id;
@@ -251,7 +304,11 @@ class CreateSearch extends Component
             }
         }
 
-        $search = Auth::user()->savedSearches()->create([
+        // Get tier and duration from the purchase
+        $tier = $this->activePurchase->tier;
+        $tierConfig = SmartSearch::TIER_CONFIGS[$tier] ?? SmartSearch::TIER_CONFIGS[SmartSearch::TIER_STARTER];
+
+        $search = Auth::user()->smartSearches()->create([
             'name' => $this->name,
             'description' => $this->description,
             'search_type' => $this->search_type,
@@ -265,15 +322,24 @@ class CreateSearch extends Component
             'additional_filters' => [
                 'budgets' => $cleanedBudgets,
                 'land_sizes' => $cleanedLandSizes,
+                'purchase_id' => $this->activePurchase->id,
             ],
             'notification_settings' => $this->notification_settings,
             'is_active' => $this->is_active,
             'is_default' => $this->is_default,
+            'tier' => $tier,
+            'expires_at' => now()->addDays($tierConfig['duration_days']),
+            'purchased_at' => $this->activePurchase->paid_at,
+            'purchase_reference' => $this->activePurchase->payment_reference,
+            'matches_sent' => 0,
         ]);
+
+        // Increment the purchase's used search count
+        $this->activePurchase->incrementSearchCount();
 
         // If this is set as default, remove default from other searches
         if ($this->is_default) {
-            Auth::user()->savedSearches()
+            Auth::user()->smartSearches()
                 ->where('id', '!=', $search->id)
                 ->update(['is_default' => false]);
         }
@@ -288,11 +354,12 @@ class CreateSearch extends Component
         ]);
 
         // Dispatch the search job for real-time progress tracking
-        ProcessSavedSearchMatches::dispatch(null, $search->id, false);
+        ProcessSmartSearchMatches::dispatch(null, $search->id, false);
 
+        $tierName = $tierConfig['name'];
         session()->flash('success',
-            'Search created successfully! 🔍 We\'re now scanning all available properties for matches. ' .
-            'You\'ll receive real-time updates as we process your search.'
+            "Your {$tierName} SmartSearch '{$this->name}' is now active! We're scanning all available properties for matches. " .
+            "You'll receive notifications when we find matches."
         );
 
         return redirect()->route('customer.searches.index');
@@ -304,6 +371,19 @@ class CreateSearch extends Component
         $cities = $this->state_id ? City::where('state_id', $this->state_id)->orderBy('name')->get() : collect();
         $areas = $this->city_id ? Area::where('city_id', $this->city_id)->orderBy('name')->get() : collect();
 
+        // Get tier info for display
+        $tierInfo = null;
+        if ($this->activePurchase) {
+            $tierConfig = SmartSearch::TIER_CONFIGS[$this->activePurchase->tier] ?? null;
+            $tierInfo = [
+                'name' => $tierConfig['name'] ?? 'Unknown',
+                'remaining' => $this->remainingSearches,
+                'total' => $this->activePurchase->searches_limit,
+                'is_unlimited' => $this->activePurchase->hasUnlimitedSearches(),
+                'days_left' => $this->activePurchase->getDaysRemaining(),
+                'channels' => $tierConfig['channels'] ?? ['email'],
+            ];
+        }
 
         return view('livewire.customer.create-search', [
             'states' => $states,
@@ -314,6 +394,7 @@ class CreateSearch extends Component
             'availablePlotSizes' => $this->getAvailablePlotSizes(),
             'plotSizeUnits' => $this->getPlotSizeUnits(),
             'availableAreas' => $this->getAvailableAreas(),
+            'tierInfo' => $tierInfo,
         ])->layout('layouts.app');
     }
 }

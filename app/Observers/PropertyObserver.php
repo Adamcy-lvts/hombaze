@@ -4,8 +4,10 @@ namespace App\Observers;
 
 use Exception;
 use App\Models\Property;
-use App\Models\SavedSearch;
-use App\Jobs\ProcessSavedSearchMatches;
+use App\Models\SmartSearch;
+use App\Models\SmartSearchMatch;
+use App\Jobs\ProcessSmartSearchMatches;
+use App\Services\SmartSearchCascadeService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
@@ -16,7 +18,7 @@ class PropertyObserver
      */
     public function created(Property $property): void
     {
-        $this->triggerSavedSearchMatching($property, 'created');
+        $this->triggerSmartSearchMatching($property, 'created');
     }
 
     /**
@@ -26,7 +28,7 @@ class PropertyObserver
     {
         // Only trigger matching if publication status or availability changed
         if ($property->wasChanged(['is_published', 'status'])) {
-            $this->triggerSavedSearchMatching($property, 'updated');
+            $this->triggerSmartSearchMatching($property, 'updated');
         }
     }
 
@@ -51,7 +53,7 @@ class PropertyObserver
      */
     private function handlePropertyRemoval(Property $property, string $event): void
     {
-        Log::info("🗑️ PROPERTY OBSERVER - Property {$event} - Cleaning up cached matches", [
+        Log::info("PROPERTY OBSERVER - Property {$event} - Cleaning up cached matches", [
             'event' => $event,
             'property_id' => $property->id,
             'property_title' => $property->title ?? 'Unknown',
@@ -59,12 +61,20 @@ class PropertyObserver
             'city' => $property->area->city->name ?? 'Unknown',
         ]);
 
-        $this->clearSavedSearchMatchCache($property);
+        // Skip remaining cascade matches for this property
+        SmartSearchMatch::forProperty($property->id)
+            ->whereIn('status', [
+                SmartSearchMatch::STATUS_PENDING,
+                SmartSearchMatch::STATUS_QUEUED,
+            ])
+            ->update(['status' => SmartSearchMatch::STATUS_SKIPPED]);
 
-        Log::info('✅ Property removal cleanup completed', [
+        $this->clearSmartSearchMatchCache($property);
+
+        Log::info('Property removal cleanup completed', [
             'event' => $event,
             'property_id' => $property->id,
-            'action' => 'Cache cleared for all saved search matches'
+            'action' => 'Cache cleared and cascade matches skipped'
         ]);
     }
 
@@ -73,13 +83,13 @@ class PropertyObserver
      */
     public function restored(Property $property): void
     {
-        $this->triggerSavedSearchMatching($property, 'restored');
+        $this->triggerSmartSearchMatching($property, 'restored');
     }
 
     /**
-     * Clear saved search match cache when property is deleted
+     * Clear smart search match cache when property is deleted
      */
-    private function clearSavedSearchMatchCache(Property $property): void
+    private function clearSmartSearchMatchCache(Property $property): void
     {
         try {
             // Method 1: Try to clear cache using pattern (if using Redis)
@@ -90,14 +100,14 @@ class PropertyObserver
                 $clearedCaches = $this->clearCacheIndividually();
             }
 
-            Log::info("🧹 Cache cleanup: Cleared {$clearedCaches} cached saved search results", [
+            Log::info("Cache cleanup: Cleared {$clearedCaches} cached smart search results", [
                 'property_id' => $property->id,
                 'cleared_cache_entries' => $clearedCaches,
                 'method' => $clearedCaches > 100 ? 'pattern_based' : 'individual_keys'
             ]);
 
         } catch (Exception $e) {
-            Log::error('❌ Failed to clear saved search match cache after property deletion', [
+            Log::error('Failed to clear smart search match cache after property deletion', [
                 'property_id' => $property->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
@@ -114,7 +124,7 @@ class PropertyObserver
             // Check if we're using Redis cache
             if (config('cache.default') === 'redis') {
                 $redis = Cache::getRedis();
-                $keys = $redis->keys('*saved_search_matches_*');
+                $keys = $redis->keys('*smart_search_matches_*');
 
                 if (!empty($keys)) {
                     $redis->del($keys);
@@ -132,19 +142,19 @@ class PropertyObserver
     }
 
     /**
-     * Clear cache by iterating through saved searches individually
+     * Clear cache by iterating through smart searches individually
      */
     private function clearCacheIndividually(): int
     {
-        $savedSearches = SavedSearch::active()->get();
+        $smartSearches = SmartSearch::active()->get();
         $clearedCaches = 0;
 
-        foreach ($savedSearches as $search) {
+        foreach ($smartSearches as $search) {
             // Clear cache for different limits that might be used
             $limits = [10, 20, 50, 100]; // Common limits used in the system
 
             foreach ($limits as $limit) {
-                $cacheKey = "saved_search_matches_{$search->id}_{$limit}";
+                $cacheKey = "smart_search_matches_{$search->id}_{$limit}";
                 if (Cache::has($cacheKey)) {
                     Cache::forget($cacheKey);
                     $clearedCaches++;
@@ -156,13 +166,13 @@ class PropertyObserver
     }
 
     /**
-     * Trigger SavedSearch matching for properties that meet criteria
+     * Trigger SmartSearch matching for properties that meet criteria
      */
-    private function triggerSavedSearchMatching(Property $property, string $event): void
+    private function triggerSmartSearchMatching(Property $property, string $event): void
     {
         // Only process properties that are published and available
         if ($property->is_published && $property->status === 'available') {
-            Log::info('🏠 PROPERTY OBSERVER - Triggering SavedSearch Matching', [
+            Log::info('PROPERTY OBSERVER - Triggering SmartSearch Matching', [
                 'event' => $event,
                 'property_id' => $property->id,
                 'property_title' => $property->title,
@@ -175,15 +185,16 @@ class PropertyObserver
                 'created_via' => 'Observer'
             ]);
 
-            ProcessSavedSearchMatches::dispatch($property->id);
+            // Dispatch matching job which will trigger the cascade
+            ProcessSmartSearchMatches::dispatch($property->id);
 
-            Log::info('✅ SavedSearch matching job dispatched from Observer', [
+            Log::info('SmartSearch matching job dispatched from Observer', [
                 'property_id' => $property->id,
                 'event' => $event,
-                'job_type' => 'ProcessSavedSearchMatches'
+                'job_type' => 'ProcessSmartSearchMatches'
             ]);
         } else {
-            Log::info('⏩ Property Observer - Skipping matching', [
+            Log::info('Property Observer - Skipping matching', [
                 'event' => $event,
                 'property_id' => $property->id,
                 'property_title' => $property->title,

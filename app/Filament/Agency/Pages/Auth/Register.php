@@ -29,6 +29,7 @@ use App\Models\Agency;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\ListingPackage;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,7 @@ use DanHarrin\LivewireRateLimiting\WithRateLimiting;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
+use App\Services\ListingCreditService;
 
 class Register extends \Filament\Auth\Pages\Register
 {
@@ -103,6 +105,8 @@ class Register extends \Filament\Auth\Pages\Register
 
                 // Assign agency owner role
                 $this->assignAgencyOwnerRole($user, $agency);
+
+                $this->grantStarterPackage($agency);
 
                 $this->callHook('afterRegister');
 
@@ -398,6 +402,7 @@ class Register extends \Filament\Auth\Pages\Register
                                                 '16:9',
                                                 '4:3',
                                             ])
+                                            ->disk('public')
                                             ->directory('agency-logos')
                                             ->visibility('public')
                                             ->helperText('Upload your agency logo (JPG, PNG, SVG)')
@@ -586,7 +591,8 @@ class Register extends \Filament\Auth\Pages\Register
             // Use Artisan command to create super admin with all permissions
             Artisan::call('shield:super-admin', [
                 '--user' => $user->id,
-                '--tenant' => $agency->id
+                '--tenant' => $agency->id,
+                '--panel' => 'agency',
             ]);
 
             // Get the super admin and give all permissions
@@ -654,7 +660,7 @@ class Register extends \Filament\Auth\Pages\Register
     {
         return Action::make('login')
             ->link()
-            ->label(__('filament-panels::pages/auth/register.actions.login.label'))
+            ->label('sign in to your account')
             ->url(filament()->getLoginUrl());
     }
 
@@ -668,5 +674,19 @@ class Register extends \Filament\Auth\Pages\Register
             route('filament.agency.pages.agency-dashboard', ['tenant' => $agency]),
             navigate: true
         );
+    }
+
+    protected function grantStarterPackage(Agency $agency): void
+    {
+        $starterPackage = ListingPackage::where('slug', 'starter')->where('is_active', true)->first();
+
+        if (!$starterPackage) {
+            Log::warning('Starter package not found for agency registration.', [
+                'agency_id' => $agency->id,
+            ]);
+            return;
+        }
+
+        ListingCreditService::grantPackage($agency, $starterPackage, 'self_service_free');
     }
 }

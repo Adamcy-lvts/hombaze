@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Models\Property;
-use App\Models\SavedSearch;
+use App\Models\SmartSearch;
+use App\Models\SmartSearchMatch;
 use App\Models\Area;
 use App\Models\City;
 use App\Models\State;
@@ -12,14 +13,14 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
-class SavedSearchMatcher
+class SmartSearchMatcher
 {
     private const CACHE_TTL = 1800; // 30 minutes cache
     private const MIN_MATCH_SCORE = 70; // Minimum score for a valid match
     private const PERFECT_MATCH_SCORE = 90; // Score for instant notifications
 
     /**
-     * Find matches for a single property against all active saved searches
+     * Find matches for a single property against all active smart searches
      */
     public function findMatchesForProperty(Property $property): Collection
     {
@@ -35,16 +36,17 @@ class SavedSearchMatcher
 
         $this->log('info', "Finding matches for property: {$property->title} (ID: {$property->id})");
 
-        $activeSearches = SavedSearch::active()
+        $activeSearches = SmartSearch::active()
             ->with('user')
             ->get();
 
-        \Log::info('📋 ACTIVE SAVED SEARCHES FOUND', [
+        \Log::info('📋 ACTIVE SMART SEARCHES FOUND', [
             'total_active_searches' => $activeSearches->count(),
             'searches' => $activeSearches->map(fn($s) => [
                 'id' => $s->id,
                 'name' => $s->name,
                 'user_email' => $s->user->email ?? 'No user',
+                'tier' => $s->tier,
                 'categories' => $s->property_categories,
                 'location' => $s->location_preferences
             ])
@@ -57,6 +59,7 @@ class SavedSearchMatcher
                 'search_id' => $search->id,
                 'search_name' => $search->name,
                 'user_email' => $search->user->email ?? 'No user',
+                'tier' => $search->tier,
                 'property_id' => $property->id
             ]);
 
@@ -71,24 +74,28 @@ class SavedSearchMatcher
             ]);
 
             if ($score >= self::MIN_MATCH_SCORE) {
+                $matchReasons = $this->getMatchReasons($property, $search, $score);
+
                 $matches->push([
-                    'saved_search' => $search,
+                    'smart_search' => $search,
                     'property' => $property,
                     'score' => $score,
-                    'match_reasons' => $this->getMatchReasons($property, $search, $score),
-                    'notification_priority' => $this->getNotificationPriority($score),
+                    'match_reasons' => $matchReasons,
+                    'notification_priority' => $this->getNotificationPriority($score, $search),
+                    'tier' => $search->tier,
                 ]);
 
                 \Log::info('✅ MATCH FOUND!', [
                     'search_id' => $search->id,
                     'search_name' => $search->name,
                     'user_email' => $search->user->email ?? 'No user',
+                    'tier' => $search->tier,
                     'property_id' => $property->id,
                     'score' => $score,
-                    'priority' => $this->getNotificationPriority($score)
+                    'priority' => $this->getNotificationPriority($score, $search)
                 ]);
 
-                $this->log('info', "Match found: Search '{$search->name}' (Score: {$score})");
+                $this->log('info', "Match found: Search '{$search->name}' (Score: {$score}, Tier: {$search->tier})");
             } else {
                 \Log::info('❌ NO MATCH', [
                     'search_id' => $search->id,
@@ -103,35 +110,40 @@ class SavedSearchMatcher
             'property_id' => $property->id,
             'total_matches' => $matches->count(),
             'matches' => $matches->map(fn($m) => [
-                'search_id' => $m['saved_search']->id,
-                'user_email' => $m['saved_search']->user->email ?? 'No user',
+                'search_id' => $m['smart_search']->id,
+                'user_email' => $m['smart_search']->user->email ?? 'No user',
+                'tier' => $m['tier'],
                 'score' => $m['score']
             ])
         ]);
 
         $this->log('info', "Found {$matches->count()} matches for property {$property->id}");
 
-        return $matches->sortByDesc('score');
+        // Sort by tier priority first (VIP first), then by score
+        return $matches->sortBy([
+            ['smart_search.tier', 'asc'], // VIP = priority 1, Starter = priority 4
+            ['score', 'desc']
+        ])->values();
     }
 
     /**
-     * Find matches for a single saved search against existing properties
+     * Find matches for a single smart search against existing properties
      */
-    public function findMatchesForSavedSearch(SavedSearch $search, int $limit = 20): Collection
+    public function findMatchesForSmartSearch(SmartSearch $search, int $limit = 20): Collection
     {
-        $this->log('info', "Finding matches for saved search: {$search->name} (ID: {$search->id})");
+        $this->log('info', "Finding matches for smart search: {$search->name} (ID: {$search->id}, Tier: {$search->tier})");
 
-        $cacheKey = "saved_search_matches_{$search->id}_{$limit}";
+        $cacheKey = "smart_search_matches_{$search->id}_{$limit}";
 
         return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($search, $limit) {
-            return $this->calculateMatchesForSavedSearch($search, $limit);
+            return $this->calculateMatchesForSmartSearch($search, $limit);
         });
     }
 
     /**
-     * Calculate matches for a saved search
+     * Calculate matches for a smart search
      */
-    private function calculateMatchesForSavedSearch(SavedSearch $search, int $limit): Collection
+    private function calculateMatchesForSmartSearch(SmartSearch $search, int $limit): Collection
     {
         $baseQuery = Property::with(['propertyType', 'area.city.state', 'media', 'features'])
             ->where('status', 'available');
@@ -147,9 +159,10 @@ class SavedSearchMatcher
             if ($score >= self::MIN_MATCH_SCORE) {
                 $matches->push([
                     'property' => $property,
-                    'saved_search' => $search,
+                    'smart_search' => $search,
                     'score' => $score,
                     'match_reasons' => $this->getMatchReasons($property, $search, $score),
+                    'tier' => $search->tier,
                 ]);
             }
         }
@@ -160,7 +173,7 @@ class SavedSearchMatcher
     /**
      * Apply candidate filters to reduce the property dataset
      */
-    private function applyCandidateFilters($query, SavedSearch $search)
+    private function applyCandidateFilters($query, SmartSearch $search)
     {
         // Location filtering - supports both old and new formats
         if ($search->location_preferences) {
@@ -248,7 +261,7 @@ class SavedSearchMatcher
     }
 
     /**
-     * Apply property category filters based on saved search categories
+     * Apply property category filters based on smart search categories
      */
     private function applyPropertyCategoryFilter($query, array $categories)
     {
@@ -300,9 +313,9 @@ class SavedSearchMatcher
     }
 
     /**
-     * Calculate match score between property and saved search
+     * Calculate match score between property and smart search
      */
-    public function calculateMatchScore(Property $property, SavedSearch $search): float
+    public function calculateMatchScore(Property $property, SmartSearch $search): float
     {
         $score = 0;
 
@@ -327,7 +340,7 @@ class SavedSearchMatcher
     /**
      * Calculate location match score - supports both old and new area formats
      */
-    private function calculateLocationScore(Property $property, SavedSearch $search): float
+    private function calculateLocationScore(Property $property, SmartSearch $search): float
     {
         if (!$search->location_preferences) {
             return 10; // Neutral score if no location preference
@@ -380,7 +393,7 @@ class SavedSearchMatcher
     /**
      * Calculate property category match score
      */
-    private function calculateCategoryScore(Property $property, SavedSearch $search): float
+    private function calculateCategoryScore(Property $property, SmartSearch $search): float
     {
         // Priority 1: Check new property type system
         if ($search->selected_property_type) {
@@ -475,7 +488,7 @@ class SavedSearchMatcher
     /**
      * Calculate budget match score
      */
-    private function calculateBudgetScore(Property $property, SavedSearch $search): float
+    private function calculateBudgetScore(Property $property, SmartSearch $search): float
     {
         $price = $property->price;
 
@@ -539,7 +552,7 @@ class SavedSearchMatcher
     /**
      * Calculate property subtype match score
      */
-    private function calculateSubtypeScore(Property $property, SavedSearch $search): float
+    private function calculateSubtypeScore(Property $property, SmartSearch $search): float
     {
         if (!$search->property_subtypes) {
             return 7; // Neutral score if no subtype preference
@@ -589,7 +602,7 @@ class SavedSearchMatcher
     /**
      * Calculate additional filters match score
      */
-    private function calculateAdditionalFiltersScore(Property $property, SavedSearch $search): float
+    private function calculateAdditionalFiltersScore(Property $property, SmartSearch $search): float
     {
         if (!$search->additional_filters) {
             return 5; // Neutral score if no additional filters
@@ -633,7 +646,7 @@ class SavedSearchMatcher
     /**
      * Get match reasons for explanation
      */
-    private function getMatchReasons(Property $property, SavedSearch $search, float $score): array
+    private function getMatchReasons(Property $property, SmartSearch $search, float $score): array
     {
         $reasons = [];
 
@@ -694,16 +707,27 @@ class SavedSearchMatcher
     }
 
     /**
-     * Get notification priority based on match score
+     * Get notification priority based on match score and tier
      */
-    private function getNotificationPriority(float $score): string
+    private function getNotificationPriority(float $score, SmartSearch $search): string
     {
+        // VIP users always get instant priority
+        if ($search->isVip()) {
+            return 'vip_instant';
+        }
+
+        // Priority tier gets faster notifications
+        if ($search->isPriority()) {
+            return $score >= self::PERFECT_MATCH_SCORE ? 'priority_instant' : 'priority_batch';
+        }
+
+        // Standard and Starter tiers
         if ($score >= self::PERFECT_MATCH_SCORE) {
-            return 'instant'; // Send immediately
+            return 'batch_immediate';
         } elseif ($score >= 80) {
-            return 'daily'; // Include in daily digest
+            return 'batch_daily';
         } else {
-            return 'weekly'; // Include in weekly summary
+            return 'batch_weekly';
         }
     }
 
@@ -729,10 +753,26 @@ class SavedSearchMatcher
     }
 
     /**
+     * Create a SmartSearchMatch record for cascade tracking
+     */
+    public function createMatchRecord(SmartSearch $search, Property $property, float $score, array $matchReasons = []): SmartSearchMatch
+    {
+        return SmartSearchMatch::create([
+            'smart_search_id' => $search->id,
+            'property_id' => $property->id,
+            'user_id' => $search->user_id,
+            'match_score' => $score,
+            'tier' => $search->tier,
+            'status' => SmartSearchMatch::STATUS_PENDING,
+            'match_reasons' => $matchReasons,
+        ]);
+    }
+
+    /**
      * Log matching activity
      */
     private function log(string $level, string $message, array $context = []): void
     {
-        Log::channel('daily')->{$level}("[SavedSearchMatcher] {$message}", $context);
+        Log::channel('daily')->{$level}("[SmartSearchMatcher] {$message}", $context);
     }
 }

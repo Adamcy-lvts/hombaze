@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Customer;
 
-use App\Models\SavedSearch;
-use App\Jobs\ProcessSavedSearchMatches;
+use App\Models\SmartSearch;
+use App\Jobs\ProcessSmartSearchMatches;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
@@ -32,16 +32,16 @@ class SearchManager extends Component
 
     public function render()
     {
-        $searches = Auth::user()->savedSearches()
+        $searches = Auth::user()->smartSearches()
             ->latest()
             ->paginate(10);
 
         // Get recent match notifications for each search
         $searchesWithMatches = $searches->getCollection()->map(function ($search) {
-            // Get recent SavedSearchMatch notifications for this search
+            // Get recent SmartSearchMatch notifications for this search
             $recentMatches = Auth::user()->notifications()
-                ->where('type', 'App\\Notifications\\SavedSearchMatch')
-                ->where('data->saved_search_id', $search->id)
+                ->where('type', 'App\\Notifications\\SmartSearchMatch')
+                ->where('data->smart_search_id', $search->id)
                 ->where('created_at', '>=', now()->subDays(7)) // Last 7 days
                 ->latest()
                 ->limit(3)
@@ -79,8 +79,8 @@ class SearchManager extends Component
         if ($this->recentlyCreatedSearchId && $this->searchJobStatus === 'searching') {
             // Check if any notifications were created for this search in the last 2 minutes
             $recentNotifications = Auth::user()->notifications()
-                ->where('type', 'App\\Notifications\\SavedSearchMatch')
-                ->where('data->saved_search_id', $this->recentlyCreatedSearchId)
+                ->where('type', 'App\\Notifications\\SmartSearchMatch')
+                ->where('data->smart_search_id', $this->recentlyCreatedSearchId)
                 ->where('created_at', '>=', now()->subMinutes(2))
                 ->count();
 
@@ -128,47 +128,47 @@ class SearchManager extends Component
 
     public function deleteSearch($searchId)
     {
-        $search = Auth::user()->savedSearches()->find($searchId);
+        $search = Auth::user()->smartSearches()->find($searchId);
 
         if ($search) {
             $search->delete();
-            session()->flash('success', 'Search deleted successfully!');
+            session()->flash('success', 'SmartSearch deleted successfully!');
         }
     }
 
     public function toggleSearchStatus($searchId)
     {
-        $search = Auth::user()->savedSearches()->find($searchId);
+        $search = Auth::user()->smartSearches()->find($searchId);
 
         if ($search) {
             $search->update(['is_active' => !$search->is_active]);
             $status = $search->is_active ? 'activated' : 'deactivated';
-            session()->flash('success', "Search {$status} successfully!");
+            session()->flash('success', "SmartSearch {$status} successfully!");
         }
     }
 
     public function setDefaultSearch($searchId)
     {
         // First, remove default from all user's searches
-        Auth::user()->savedSearches()->update(['is_default' => false]);
+        Auth::user()->smartSearches()->update(['is_default' => false]);
 
         // Set the selected search as default
-        $search = Auth::user()->savedSearches()->find($searchId);
+        $search = Auth::user()->smartSearches()->find($searchId);
         if ($search) {
             $search->update(['is_default' => true]);
-            session()->flash('success', 'Default search updated successfully!');
+            session()->flash('success', 'Default SmartSearch updated successfully!');
         }
     }
 
     public function runSearch($searchId)
     {
-        $search = Auth::user()->savedSearches()->find($searchId);
+        $search = Auth::user()->smartSearches()->find($searchId);
 
         if ($search) {
             // Dispatch the job for real-time progress tracking
-            ProcessSavedSearchMatches::dispatch(null, $searchId, false);
+            ProcessSmartSearchMatches::dispatch(null, $searchId, false);
 
-            session()->flash('success', 'Search started! You\'ll see real-time progress updates as we scan for matching properties.');
+            session()->flash('success', 'SmartSearch started! You\'ll see real-time progress updates as we scan for matching properties.');
         }
     }
 }

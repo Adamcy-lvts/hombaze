@@ -7,6 +7,7 @@ use App\Http\Controllers\ReceiptViewController;
 use App\Http\Controllers\WhatsAppWebhookController;
 use App\Http\Controllers\PaystackController;
 use App\Http\Controllers\ListingBundleController;
+use App\Http\Controllers\SmartSearchPaymentController;
 
 Route::get('/', App\Livewire\LandingPage::class)->name('landing');
 Route::get('/properties', App\Livewire\PropertySearch::class)->name('properties.search');
@@ -107,5 +108,16 @@ Route::get('/payments/paystack/callback', [PaystackController::class, 'handleCal
 
 Route::get('/billing/listing-bundles/callback', [ListingBundleController::class, 'callback'])
     ->name('listing-bundles.callback');
+
+// SmartSearch routes
+Route::prefix('smartsearch')->name('smartsearch.')->group(function () {
+    Route::get('/pricing', [SmartSearchPaymentController::class, 'showPricing'])->name('pricing');
+    Route::get('/payment/callback', [SmartSearchPaymentController::class, 'handleCallback'])->name('payment.callback');
+
+    Route::middleware(['auth'])->group(function () {
+        Route::post('/purchase/{tier}', [SmartSearchPaymentController::class, 'purchase'])->name('purchase');
+        Route::post('/extend/{search}', [SmartSearchPaymentController::class, 'extendForNoMatch'])->name('extend');
+    });
+});
 
 require __DIR__.'/auth.php';

@@ -44,7 +44,7 @@ class EditProfile extends \Filament\Auth\Pages\EditProfile
                             ->columnSpan(1),
 
                         // Empty column to balance layout
-                        Placeholder::make('')
+                        Placeholder::make('profile_placeholder')
                             ->columnSpan(1),
 
                         $this->getPasswordFormComponent()
@@ -99,6 +99,7 @@ class EditProfile extends \Filament\Auth\Pages\EditProfile
                             ->label('Profile Photo')
                             ->image()
                             ->maxSize(2048)
+                            ->disk('public')
                             ->directory('avatars')
                             ->imageEditor()
                             ->circleCropper()

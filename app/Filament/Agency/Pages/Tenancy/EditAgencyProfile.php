@@ -215,6 +215,7 @@ class EditAgencyProfile extends EditTenantProfile
                                                 '16:9',
                                                 '4:3',
                                             ])
+                                            ->disk('public')
                                             ->directory('agency-logos')
                                             ->visibility('public')
                                             ->helperText('Upload your agency logo (JPG, PNG, SVG)'),

@@ -14,7 +14,6 @@ use Filament\Enums\ThemeMode;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Gate;
 use Filament\Http\Middleware\Authenticate;
-use Filament\Navigation\MenuItem;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -24,6 +23,8 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use App\Filament\Widgets\CreditStatusWidget;
+use App\Filament\Pages\Pricing;
 
 class AgentPanelProvider extends PanelProvider
 {
@@ -34,19 +35,26 @@ class AgentPanelProvider extends PanelProvider
             ->path('agent')
             ->login()
             ->registration(Register::class)
-            ->brandName('HomeBaze Agent')
+            ->brandName('')
+            ->brandLogo(asset('images/app-logo.svg'))
+            ->darkModeBrandLogo(asset('images/app-logo.svg'))
             ->colors([
                 'primary' => Color::Orange,
             ])
             ->defaultThemeMode(ThemeMode::Light)
             ->viteTheme('resources/css/filament/agent/theme.css')
             ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
+            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'))
             ->discoverResources(in: app_path('Filament/Agent/Resources'), for: 'App\\Filament\\Agent\\Resources')
             ->discoverPages(in: app_path('Filament/Agent/Pages'), for: 'App\\Filament\\Agent\\Pages')
             ->pages([
                 Dashboard::class,
+                Pricing::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Agent/Widgets'), for: 'App\\Filament\\Agent\\Widgets')
+            ->widgets([
+                CreditStatusWidget::class,
+            ])
             ->profile(EditProfile::class)
             ->middleware([
                 EncryptCookies::class,
@@ -63,12 +71,7 @@ class AgentPanelProvider extends PanelProvider
                 Authenticate::class,
                 RequireProfileCompletion::class,
             ])
-            ->userMenuItems([
-                MenuItem::make()
-                    ->label('Pricing')
-                    ->icon('heroicon-o-tag')
-                    ->url(fn(): string => route('pricing')),
-            ]);
+            ;
     }
 
     public function boot(): void

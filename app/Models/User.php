@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements HasTenants, HasName, FilamentUser, HasAvatar
 {
@@ -130,19 +131,113 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     }
 
     /**
-     * Relationship: User's saved searches
+     * Relationship: User's saved searches (legacy - use smartSearches() instead)
+     * @deprecated Use smartSearches() instead
      */
     public function savedSearches(): HasMany
     {
-        return $this->hasMany(SavedSearch::class);
+        return $this->hasMany(SmartSearch::class);
     }
 
     /**
-     * Relationship: User's active saved searches
+     * Relationship: User's active saved searches (legacy - use activeSmartSearches() instead)
+     * @deprecated Use activeSmartSearches() instead
      */
     public function activeSearches(): HasMany
     {
-        return $this->savedSearches()->active();
+        return $this->smartSearches()->active();
+    }
+
+    // =========================================
+    // SMARTSEARCH RELATIONSHIPS & METHODS
+    // =========================================
+
+    /**
+     * Relationship: User's SmartSearches
+     */
+    public function smartSearches(): HasMany
+    {
+        return $this->hasMany(SmartSearch::class);
+    }
+
+    /**
+     * Relationship: User's active SmartSearches
+     */
+    public function activeSmartSearches(): HasMany
+    {
+        return $this->smartSearches()->active();
+    }
+
+    /**
+     * Relationship: User's SmartSearch subscriptions
+     */
+    public function smartSearchSubscriptions(): HasMany
+    {
+        return $this->hasMany(SmartSearchSubscription::class);
+    }
+
+    /**
+     * Relationship: User's SmartSearch matches
+     */
+    public function smartSearchMatches(): HasMany
+    {
+        return $this->hasMany(SmartSearchMatch::class);
+    }
+
+    /**
+     * Get the user's active SmartSearch subscription for a specific tier (or any tier)
+     */
+    public function activeSmartSearchSubscription(?string $tier = null): ?SmartSearchSubscription
+    {
+        return $this->smartSearchSubscriptions()
+            ->where('payment_status', 'paid')
+            ->where('expires_at', '>', now())
+            ->when($tier, fn($q) => $q->where('tier', $tier))
+            ->latest('expires_at')
+            ->first();
+    }
+
+    /**
+     * Check if user can create a SmartSearch (has active subscription with remaining searches)
+     */
+    public function canCreateSmartSearch(): bool
+    {
+        $subscription = $this->activeSmartSearchSubscription();
+        return $subscription && $subscription->canCreateSearch();
+    }
+
+    /**
+     * Get the user's current SmartSearch tier (highest active tier)
+     */
+    public function getSmartSearchTier(): ?string
+    {
+        $subscription = $this->activeSmartSearchSubscription();
+        return $subscription?->tier;
+    }
+
+    /**
+     * Get remaining SmartSearches the user can create
+     */
+    public function getRemainingSmartSearches(): int
+    {
+        $subscription = $this->activeSmartSearchSubscription();
+        return $subscription?->getRemainingSearches() ?? 0;
+    }
+
+    /**
+     * Check if user has any active SmartSearch subscription
+     */
+    public function hasActiveSmartSearchSubscription(): bool
+    {
+        return $this->activeSmartSearchSubscription() !== null;
+    }
+
+    /**
+     * Check if user has VIP SmartSearch subscription
+     */
+    public function hasVipSmartSearch(): bool
+    {
+        return $this->activeSmartSearchSubscription(SmartSearch::TIER_VIP) !== null;
     }
 
     /**
@@ -427,7 +522,32 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
      */
     public function getFilamentAvatarUrl(): ?string
     {
-        return $this->avatar;
+        if (!$this->avatar) {
+            return null;
+        }
+
+        if (
+            str_starts_with($this->avatar, 'http://') ||
+            str_starts_with($this->avatar, 'https://') ||
+            str_starts_with($this->avatar, '/storage/')
+        ) {
+            return $this->avatar;
+        }
+
+        if (Storage::disk('public')->exists($this->avatar)) {
+            return Storage::disk('public')->url($this->avatar);
+        }
+
+        if (Storage::disk('local')->exists($this->avatar)) {
+            Storage::disk('public')->put(
+                $this->avatar,
+                Storage::disk('local')->get($this->avatar)
+            );
+
+            return Storage::disk('public')->url($this->avatar);
+        }
+
+        return Storage::disk('public')->url($this->avatar);
     }
 
     // =================================================================

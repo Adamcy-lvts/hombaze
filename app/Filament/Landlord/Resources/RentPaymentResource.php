@@ -393,8 +393,33 @@ class RentPaymentResource extends Resource
                     ->label('Paid'),
             ])
             ->recordActions([
-                EditAction::make(),
                 ActionGroup::make([
+                    Action::make('updateStatus')
+                        ->label('Update Status')
+                        ->icon('heroicon-o-adjustments-vertical')
+                        ->form([
+                            Select::make('status')
+                                ->label('Payment Status')
+                                ->options(RentPayment::getStatuses())
+                                ->required(),
+                            DatePicker::make('payment_date')
+                                ->label('Payment Date')
+                                ->default(now())
+                                ->required(),
+                            Select::make('payment_method')
+                                ->label('Payment Method')
+                                ->options(RentPayment::getPaymentMethods())
+                                ->required(),
+                        ])
+                        ->action(function (RentPayment $record, array $data): void {
+                            $record->update([
+                                'status' => $data['status'],
+                                'payment_date' => $data['payment_date'],
+                                'payment_method' => $data['payment_method'],
+                                'processed_by' => Auth::id(),
+                            ]);
+                        }),
+                    EditAction::make(),
                     Action::make('viewReceipt')
                         ->label('View Receipt')
                         ->icon('heroicon-o-receipt-percent')
@@ -410,12 +435,11 @@ class RentPaymentResource extends Resource
                             return redirect()->to(route('filament.landlord.resources.rent-payments.view-receipt', $record))->with('auto_download', 'pdf');
                         })
                         ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
+                    DeleteAction::make(),
                 ])
-                    ->label('Receipt')
-                    ->icon('heroicon-o-document-text')
-                    ->color('primary')
-                    ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
-                DeleteAction::make(),
+                    ->label('Actions')
+                    ->icon('heroicon-o-ellipsis-vertical')
+                    ->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

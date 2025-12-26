@@ -66,26 +66,24 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                 Wizard::make([
                     Step::make('Professional Details')
                         ->icon('heroicon-o-briefcase')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('professional_details'))
                         ->schema([
                             Section::make('Professional Information')
                                 ->description('Tell us about your professional background')
                                 ->schema([
                                     Textarea::make('bio')
                                         ->label('Professional Bio')
-                                        ->required()
                                         ->rows(4)
                                         ->placeholder('Describe your experience and expertise in real estate...'),
                                     
                                     TextInput::make('years_experience')
                                         ->label('Years of Experience')
                                         ->numeric()
-                                        ->required()
                                         ->minValue(0)
                                         ->maxValue(50),
                                     
                                     CheckboxList::make('specializations')
                                         ->label('Specializations')
-                                        ->required()
                                         ->options([
                                             'residential_sales' => 'Residential Sales',
                                             'residential_rentals' => 'Residential Rentals',
@@ -101,6 +99,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                     
                     Step::make('Service Areas')
                         ->icon('heroicon-o-map-pin')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('service_areas'))
                         ->schema([
                             Section::make('Service Areas')
                                 ->description('Define the areas where you provide services')
@@ -108,14 +107,12 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                     Select::make('service_areas')
                                         ->label('Service Areas')
                                         ->multiple()
-                                        ->required()
                                         ->options(Area::pluck('name', 'id'))
                                         ->searchable()
                                         ->preload(),
                                     
                                     CheckboxList::make('languages')
                                         ->label('Languages Spoken')
-                                        ->required()
                                         ->options([
                                             'english' => 'English',
                                             'yoruba' => 'Yoruba',
@@ -130,6 +127,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                     
                     Step::make('Certifications')
                         ->icon('heroicon-o-academic-cap')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('certifications'))
                         ->schema([
                             Section::make('Professional Certifications')
                                 ->description('Upload your professional certifications and documents')
@@ -146,6 +144,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                     
                     Step::make('Profile Photo')
                         ->icon('heroicon-o-camera')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('profile_photo'))
                         ->schema([
                             Section::make('Profile Photo')
                                 ->description('Add a professional profile photo')
@@ -153,9 +152,9 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                     FileUpload::make('profile_photo')
                                         ->label('Profile Photo')
                                         ->image()
-                                        ->required()
                                         ->maxSize(2048)
                                         ->imageEditor()
+                                        ->disk('public')
                                         ->directory('avatars')
                                         ->helperText('Upload a professional headshot (Max 2MB)'),
                                 ]),
@@ -225,6 +224,18 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                 ->danger()
                 ->send();
         }
+    }
+
+    protected function markProfileStepCompleted(string $step): void
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return;
+        }
+
+        $user->markStepCompleted($step);
+        $user->refresh();
+        $this->dispatch('$refresh');
     }
 
     public function getHeaderActions(): array

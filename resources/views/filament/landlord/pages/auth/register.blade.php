@@ -140,6 +140,11 @@
         .form-progress {
             display: none !important;
         }
+
+        /* Hide Filament simple header (logo/title) for this page */
+        .fi-simple-header {
+            display: none !important;
+        }
     </style>
 
     <div class="landlord-form-container">
@@ -164,7 +169,7 @@
             @if (filament()->hasLogin())
                 <div class="mt-4 text-sm">
                     <span class="text-gray-600 dark:text-gray-400">
-                        {{ __('filament-panels::pages/auth/register.actions.login.before') }}
+                        Already have an account?
                     </span>
                     {{ $this->loginAction }}
                 </div>
@@ -205,26 +210,7 @@
                     <a href="#" target="_blank" class="text-primary-600 hover:text-primary-500 dark:text-primary-400 underline">Privacy Policy</a>
                 </p>
                 <p class="text-xs">&copy; {{ date('Y') }} {{ $appName }}. All rights reserved.</p>
-                <div class="flex items-center justify-center space-x-4 text-xs pt-2">
-                    <span class="inline-flex items-center text-green-600">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        Secure
-                    </span>
-                    <span class="inline-flex items-center text-blue-600">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z"/>
-                        </svg>
-                        Verified
-                    </span>
-                    <span class="inline-flex items-center text-purple-600">
-                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
-                        </svg>
-                        Property Owner
-                    </span>
-                </div>
+                
             </div>
         </div>
     </div>

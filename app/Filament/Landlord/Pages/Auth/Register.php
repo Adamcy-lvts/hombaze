@@ -16,10 +16,12 @@ use App\Models\PropertyOwner;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\ListingPackage;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use App\Services\ListingCreditService;
 
 class Register extends \Filament\Auth\Pages\Register
 {
@@ -236,6 +238,11 @@ class Register extends \Filament\Auth\Pages\Register
         // Assign Landlord role and permissions
         $this->assignLandlordRole($user);
 
+        $this->grantStarterPackage($user);
+
+        // Initialize profile completion tracking for landlords.
+        $user->initializeProfileCompletion();
+
         Log::info('Landlord registration completed successfully', [
             'user_id' => $user->id,
         ]);
@@ -317,6 +324,20 @@ class Register extends \Filament\Auth\Pages\Register
             Log::error("Failed to assign Landlord role to user {$user->email}: " . $e->getMessage());
             // Don't fail registration if role assignment fails
         }
+    }
+
+    private function grantStarterPackage(User $user): void
+    {
+        $starterPackage = ListingPackage::where('slug', 'starter')->where('is_active', true)->first();
+
+        if (!$starterPackage) {
+            Log::warning('Starter package not found for landlord registration.', [
+                'user_id' => $user->id,
+            ]);
+            return;
+        }
+
+        ListingCreditService::grantPackage($user, $starterPackage, 'self_service_free');
     }
 
     /**

@@ -22,7 +22,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use App\Filament\Resources\UserResource\RelationManagers\SavedPropertiesRelationManager;
-use App\Filament\Resources\UserResource\RelationManagers\SavedSearchesRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\SmartSearchesRelationManager;
 use App\Filament\Resources\UserResource\Pages\ListUsers;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Filament\Resources\UserResource\Pages\ViewUser;
@@ -59,6 +59,7 @@ class UserResource extends Resource
                         FileUpload::make('avatar')
                             ->label('Profile Picture')
                             ->image()
+                            ->disk('public')
                             ->directory('user-avatars')
                             ->maxSize(5120)
                             ->imageResizeMode('cover')
@@ -352,7 +353,7 @@ class UserResource extends Resource
     {
         return [
             SavedPropertiesRelationManager::class,
-            SavedSearchesRelationManager::class,
+            SmartSearchesRelationManager::class,
         ];
     }
 

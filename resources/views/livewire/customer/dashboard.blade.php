@@ -211,7 +211,7 @@
                                 <x-heroicon-o-bell class="w-5 h-5" />
                             </div>
                             <div>
-                                <p class="text-sm font-semibold text-gray-900">Saved Searches</p>
+                                <p class="text-sm font-semibold text-gray-900">SmartSearch</p>
                                 <p class="text-xs text-gray-500">Manage alerts</p>
                             </div>
                         </a>

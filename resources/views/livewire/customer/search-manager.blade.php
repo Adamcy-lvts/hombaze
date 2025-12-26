@@ -4,8 +4,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">My Searches</h1>
-                    <p class="text-sm text-gray-500">Manage your saved property searches and alerts</p>
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">SmartSearch</h1>
+                    <p class="text-sm text-gray-500">Manage your property search alerts</p>
                 </div>
                 <div class="flex flex-col sm:flex-row items-center gap-4">
                     <div class="flex items-center gap-3">
@@ -13,7 +13,7 @@
                             Dashboard
                         </a>
                         <span class="text-gray-300">/</span>
-                        <span class="text-sm font-medium text-emerald-600">My Searches</span>
+                        <span class="text-sm font-medium text-emerald-600">SmartSearch</span>
                     </div>
                     <a href="{{ route('customer.searches.create') }}"
                        class="inline-flex items-center justify-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
@@ -202,7 +202,7 @@
                     <x-heroicon-o-magnifying-glass class="w-8 h-8 text-gray-400" />
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">No searches yet</h3>
-                <p class="text-gray-500 max-w-sm mx-auto mb-8">Create your first saved search to get personalized property recommendations and stay updated with new listings.</p>
+                <p class="text-gray-500 max-w-sm mx-auto mb-8">Create your first SmartSearch to get personalized property recommendations and stay updated with new listings.</p>
                 <a href="{{ route('customer.searches.create') }}"
                    class="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
                     <x-heroicon-o-plus class="w-5 h-5 mr-2" />

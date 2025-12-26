@@ -29,6 +29,8 @@ class PropertyView extends Model
         'country',
         'city',
         'viewed_at',
+        'source',
+        'smart_search_match_id',
     ];
 
     protected $casts = [
@@ -51,6 +53,14 @@ class PropertyView extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the SmartSearch match associated with this view (for claim tracking)
+     */
+    public function smartSearchMatch(): BelongsTo
+    {
+        return $this->belongsTo(SmartSearchMatch::class);
     }
 
     // Scopes
@@ -111,6 +121,22 @@ class PropertyView extends Model
     {
         return $query->select('property_id', 'user_id', 'ip_address')
                     ->distinct();
+    }
+
+    /**
+     * Scope for views from SmartSearch
+     */
+    public function scopeFromSmartSearch($query)
+    {
+        return $query->where('source', 'smartsearch');
+    }
+
+    /**
+     * Scope for views since a specific date
+     */
+    public function scopeSince($query, $date)
+    {
+        return $query->where('viewed_at', '>=', $date);
     }
 
     // Static Methods
@@ -264,5 +290,36 @@ class PropertyView extends Model
         if (preg_match('/android/i', $userAgent)) return 'Android';
         if (preg_match('/iphone|ipad|ipod/i', $userAgent)) return 'iOS';
         return 'Unknown';
+    }
+
+    // SmartSearch Claim Detection Methods
+
+    /**
+     * Check if a user has viewed a property since a specific date
+     * Used for SmartSearch claim detection
+     */
+    public static function hasUserViewedSince(int $propertyId, int $userId, $since): bool
+    {
+        return self::where('property_id', $propertyId)
+            ->where('user_id', $userId)
+            ->where('viewed_at', '>=', $since)
+            ->exists();
+    }
+
+    /**
+     * Record a SmartSearch-triggered view
+     */
+    public static function recordSmartSearchView(
+        int $propertyId,
+        int $userId,
+        ?int $matchId = null
+    ): ?self {
+        return self::recordView(
+            propertyId: $propertyId,
+            userId: $userId,
+            ipAddress: request()->ip(),
+            userAgent: request()->userAgent(),
+            sessionId: session()->getId()
+        );
     }
 }

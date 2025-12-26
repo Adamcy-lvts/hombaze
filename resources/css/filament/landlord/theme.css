@@ -2,3 +2,8 @@
 
 @source '../../../../app/Filament';
 @source '../../../../resources/views/filament';
+
+/* Improve logo visibility in dark mode. */
+.fi-logo-dark {
+    filter: invert(1) brightness(1.1);
+}

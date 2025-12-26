@@ -7,6 +7,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Placeholder;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Utilities\Get;
@@ -459,10 +460,9 @@ class PropertyResource extends Resource
                                 Section::make('Property Management')
                                     ->description('Additional property management settings')
                                     ->schema([
-                                        TextEntry::make('owner_info')
+                                        Placeholder::make('owner_info')
                                             ->label('Property Owner')
                                             ->content('You are the owner of this property')
-                                            ->helperText('As a landlord, you are automatically set as the owner of properties you create')
                                             ->columnSpanFull(),
                                     ])->columns(1)->collapsible(),
 

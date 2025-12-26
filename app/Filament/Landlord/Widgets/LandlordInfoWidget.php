@@ -6,6 +6,8 @@ use Filament\Widgets\FilamentInfoWidget;
 
 class LandlordInfoWidget extends FilamentInfoWidget
 {
+    protected string $view = 'filament.landlord.widgets.landlord-info-widget';
+
     /**
      * @var int | string | array<string, int | string | null>
      */
@@ -16,4 +18,3 @@ class LandlordInfoWidget extends FilamentInfoWidget
         'xl' => 1,
     ];
 }
-

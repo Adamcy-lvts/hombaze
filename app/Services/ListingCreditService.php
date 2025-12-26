@@ -13,6 +13,35 @@ use App\Models\ListingAddon;
 
 class ListingCreditService
 {
+    public static function resolveOwner(?Model $user, ?Model $tenant = null): ?Model
+    {
+        if ($tenant) {
+            return $tenant;
+        }
+
+        if (!$user) {
+            return null;
+        }
+
+        if (method_exists($user, 'user_type')) {
+            if ($user->user_type === 'agent' && method_exists($user, 'firstAgency')) {
+                $agency = $user->firstAgency();
+                if ($agency) {
+                    return $agency;
+                }
+            }
+
+            if ($user->user_type === 'agency_owner' && method_exists($user, 'ownedAgencies')) {
+                $agency = $user->ownedAgencies()->first();
+                if ($agency) {
+                    return $agency;
+                }
+            }
+        }
+
+        return $user;
+    }
+
     public static function getAccount(Model $owner): ?ListingCreditAccount
     {
         return ListingCreditAccount::where('owner_type', $owner->getMorphClass())
@@ -49,7 +78,7 @@ class ListingCreditService
         $required = $required ?? static::listingCost();
         if (static::getListingBalance($owner) < $required) {
             throw ValidationException::withMessages([
-                'listing_type' => 'Insufficient listing credits to publish this property.',
+                'listing_type' => 'Insufficient credits to publish this property.',
             ]);
         }
     }
@@ -59,7 +88,7 @@ class ListingCreditService
         $required = $required ?? static::featuredCost();
         if (static::getFeaturedBalance($owner) < $required) {
             throw ValidationException::withMessages([
-                'is_featured' => 'Insufficient featured credits to feature this property.',
+                'is_featured' => 'Insufficient credits to feature this property.',
             ]);
         }
     }
@@ -76,7 +105,7 @@ class ListingCreditService
 
             if (!$account || $account->listing_balance < $required) {
                 throw ValidationException::withMessages([
-                    'listing_type' => 'Insufficient listing credits to publish this property.',
+                    'listing_type' => 'Insufficient credits to publish this property.',
                 ]);
             }
 
@@ -113,7 +142,7 @@ class ListingCreditService
                 $account->featured_balance < $required
             ) {
                 throw ValidationException::withMessages([
-                    'is_featured' => 'Insufficient featured credits to feature this property.',
+                    'is_featured' => 'Insufficient credits to feature this property.',
                 ]);
             }
 

@@ -5,9 +5,9 @@
             <div>
                 <a href="{{ route('customer.searches.index') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 mb-2 transition-colors">
                     <x-heroicon-o-arrow-left class="w-4 h-4 mr-1" />
-                    Back to Searches
+                    Back to SmartSearch
                 </a>
-                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Edit Search</h1>
+                <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Edit SmartSearch</h1>
                 <p class="text-gray-500 mt-1">Update your preferences for this search.</p>
             </div>
         </div>

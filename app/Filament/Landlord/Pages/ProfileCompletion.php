@@ -65,6 +65,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                 Wizard::make([
                     Step::make('Personal Information')
                         ->icon('heroicon-o-identification')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('contact_details'))
                         ->schema([
                             Section::make('Basic Details')
                                 ->description('Tell us about yourself')
@@ -113,6 +114,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                     
                     Step::make('Address Information')
                         ->icon('heroicon-o-map-pin')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('address'))
                         ->schema([
                             Section::make('Location Details')
                                 ->description('Provide your address information')
@@ -167,6 +169,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                     
                     Step::make('ID Verification')
                         ->icon('heroicon-o-identification')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('id_verification'))
                         ->schema([
                             Section::make('Identity Verification')
                                 ->description('Upload your identification documents')
@@ -192,6 +195,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                     
                     Step::make('Profile Photo')
                         ->icon('heroicon-o-camera')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('profile_photo'))
                         ->schema([
                             Section::make('Profile Photo')
                                 ->description('Add a professional profile photo')
@@ -262,6 +266,19 @@ class ProfileCompletion extends Page implements HasForms, HasActions
 
         // Redirect to dashboard
         $this->redirect(route('filament.landlord.pages.dashboard'));
+    }
+
+    protected function markProfileStepCompleted(string $step): void
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return;
+        }
+
+        $user->markStepCompleted('basic_info');
+        $user->markStepCompleted($step);
+        $user->refresh();
+        $this->dispatch('$refresh');
     }
 
     public function getHeaderActions(): array

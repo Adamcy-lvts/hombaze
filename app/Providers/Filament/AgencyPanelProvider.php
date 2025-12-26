@@ -23,11 +23,14 @@ use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Agency\Pages\Tenancy\EditAgencyProfile;
+use App\Filament\Agency\Pages\Auth\EditProfile;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use App\Filament\Widgets\CreditStatusWidget;
+use App\Filament\Pages\Pricing;
 
 class AgencyPanelProvider extends PanelProvider
 {
@@ -40,6 +43,7 @@ class AgencyPanelProvider extends PanelProvider
             ->tenant(Agency::class, slugAttribute: 'slug')
             ->registration(Register::class)
             ->tenantProfile(EditAgencyProfile::class)
+            ->profile(EditProfile::class)
             ->tenantMenu(fn() => auth()->user()->can('view_tenant_menu'))
             ->tenantMenuItems([
                 'profile' => MenuItem::make()
@@ -49,13 +53,10 @@ class AgencyPanelProvider extends PanelProvider
                     ->visible(fn(): bool => auth()->user()->can('update_agency_profile')),
 
             ])
-            ->userMenuItems([
-                MenuItem::make()
-                    ->label('Pricing')
-                    ->icon('heroicon-o-tag')
-                    ->url(fn(): string => route('pricing')),
-            ])
             ->defaultThemeMode(ThemeMode::Light)
+            ->brandLogo(asset('images/app-logo.svg'))
+            ->darkModeBrandLogo(asset('images/app-logo.svg'))
+            ->viteTheme('resources/css/filament/agency/theme.css')
             ->colors([
                 'primary' => Color::Green,
             ])
@@ -69,10 +70,12 @@ class AgencyPanelProvider extends PanelProvider
             ], isPersistent: true)
             ->pages([
                 AgencyDashboard::class,
+                Pricing::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Agency/Widgets'), for: 'App\\Filament\\Agency\\Widgets')
             ->widgets([
                 AccountWidget::class,
+                CreditStatusWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -89,6 +92,7 @@ class AgencyPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'));
+            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
+            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'));
     }
 }

@@ -7,6 +7,7 @@ use App\Filament\Landlord\Pages\Dashboard;
 use App\Filament\Landlord\Widgets\LandlordAccountWidget;
 use App\Filament\Landlord\Widgets\PropertyOwnerProfileWidget;
 use App\Filament\Landlord\Widgets\LandlordInfoWidget;
+use App\Filament\Landlord\Pages\Auth\EditProfile;
 use App\Http\Middleware\RequireProfileCompletion;
 use Filament\Pages;
 use Filament\Panel;
@@ -25,6 +26,7 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use App\Filament\Pages\Pricing;
 
 class LandlordPanelProvider extends PanelProvider
 {
@@ -35,6 +37,8 @@ class LandlordPanelProvider extends PanelProvider
             ->path('landlord')
             ->login()
             ->registration(Register::class)
+            ->brandLogo(asset('images/app-logo.svg'))
+            ->darkModeBrandLogo(asset('images/app-logo.svg'))
             ->colors([
                 'primary' => Color::Green,
             ])
@@ -44,6 +48,7 @@ class LandlordPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/Landlord/Pages'), for: 'App\\Filament\\Landlord\\Pages')
             ->pages([
                 Dashboard::class,
+                Pricing::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Landlord/Widgets'), for: 'App\\Filament\\Landlord\\Widgets')
             ->widgets([
@@ -51,6 +56,7 @@ class LandlordPanelProvider extends PanelProvider
                 PropertyOwnerProfileWidget::class,
                 LandlordInfoWidget::class,
             ])
+            ->profile(EditProfile::class)
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -66,12 +72,7 @@ class LandlordPanelProvider extends PanelProvider
                 Authenticate::class,
                 RequireProfileCompletion::class,
             ])
-            ->userMenuItems([
-                MenuItem::make()
-                    ->label('Pricing')
-                    ->icon('heroicon-o-tag')
-                    ->url(fn(): string => route('pricing')),
-            ])
-            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'));
+            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
+            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'));
     }
 }

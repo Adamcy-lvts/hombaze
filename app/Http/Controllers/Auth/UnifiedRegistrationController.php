@@ -20,6 +20,8 @@ use App\Models\CustomerProfile;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\ListingPackage;
+use App\Services\ListingCreditService;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Artisan;
@@ -124,6 +126,10 @@ class UnifiedRegistrationController extends Controller
 
             // Create user type specific records and assign roles
             $this->createUserTypeSpecificData($user, $request->all());
+
+            if (in_array($user->user_type, ['agent', 'property_owner'], true)) {
+                $this->grantStarterPackage($user);
+            }
 
             // Initialize profile completion tracking
             $user->initializeProfileCompletion();
@@ -415,7 +421,8 @@ class UnifiedRegistrationController extends Controller
             // Use Artisan command to create super admin with all permissions
             Artisan::call('shield:super-admin', [
                 '--user' => $user->id,
-                '--tenant' => $agency->id
+                '--tenant' => $agency->id,
+                '--panel' => 'agency',
             ]);
 
             // Get the super admin and give all permissions
@@ -491,5 +498,20 @@ class UnifiedRegistrationController extends Controller
             ]);
             throw $e; // Re-throw since this is critical for a new agency
         }
+    }
+
+    private function grantStarterPackage(User $user): void
+    {
+        $starterPackage = ListingPackage::where('slug', 'starter')->where('is_active', true)->first();
+
+        if (!$starterPackage) {
+            Log::warning('Starter package not found for registration credits.', [
+                'user_id' => $user->id,
+                'user_type' => $user->user_type,
+            ]);
+            return;
+        }
+
+        ListingCreditService::grantPackage($user, $starterPackage, 'self_service_free');
     }
 }

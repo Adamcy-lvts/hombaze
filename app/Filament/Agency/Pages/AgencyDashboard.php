@@ -6,6 +6,7 @@ use Filament\Pages\Dashboard as BaseDashboard;
 use App\Filament\Agency\Widgets\AgencyStatsWidget;
 use App\Filament\Agency\Widgets\AgentStatsWidget;
 use App\Filament\Agency\Widgets\PropertiesChartWidget;
+use App\Filament\Widgets\CreditStatusWidget;
 
 class AgencyDashboard extends BaseDashboard
 {
@@ -23,6 +24,7 @@ class AgencyDashboard extends BaseDashboard
             AgencyStatsWidget::class,
             AgentStatsWidget::class,
             PropertiesChartWidget::class,
+            CreditStatusWidget::class,
         ];
     }
     

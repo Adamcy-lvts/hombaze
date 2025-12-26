@@ -16,10 +16,12 @@ use App\Models\Agent;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
+use App\Models\ListingPackage;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use App\Services\ListingCreditService;
 
 class Register extends \Filament\Auth\Pages\Register
 {
@@ -222,6 +224,8 @@ class Register extends \Filament\Auth\Pages\Register
         // Assign Independent Agent role and permissions
         $this->assignIndependentAgentRole($user);
 
+        $this->grantStarterPackage($user);
+
         // Initialize profile completion tracking
         $user->initializeProfileCompletion();
 
@@ -322,6 +326,20 @@ class Register extends \Filament\Auth\Pages\Register
         }
 
         return $role;
+    }
+
+    private function grantStarterPackage(User $user): void
+    {
+        $starterPackage = ListingPackage::where('slug', 'starter')->where('is_active', true)->first();
+
+        if (!$starterPackage) {
+            Log::warning('Starter package not found for agent registration.', [
+                'user_id' => $user->id,
+            ]);
+            return;
+        }
+
+        ListingCreditService::grantPackage($user, $starterPackage, 'self_service_free');
     }
 
     /**

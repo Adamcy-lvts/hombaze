@@ -6,25 +6,25 @@ use Illuminate\Database\Eloquent\Collection;
 use Exception;
 use Carbon\Carbon;
 use App\Models\Property;
-use App\Models\SavedSearch;
+use App\Models\SmartSearch;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use App\Services\SavedSearchMatcher;
-use App\Notifications\SavedSearchMatch;
+use App\Services\SmartSearchMatcher;
+use App\Notifications\SmartSearchMatch;
 
-class ProcessSavedSearchMatches extends Command
+class ProcessSmartSearchMatches extends Command
 {
-    protected $signature = 'searches:process-matches
+    protected $signature = 'smartsearch:process-matches
                             {--property= : Process matches for specific property ID}
-                            {--search= : Process matches for specific saved search ID}
+                            {--search= : Process matches for specific smart search ID}
                             {--new-properties : Only process properties created in last 24 hours}
                             {--batch-size=50 : Number of items to process in each batch}';
 
-    protected $description = 'Process saved search matches and send notifications';
+    protected $description = 'Process smart search matches and send notifications';
 
-    private SavedSearchMatcher $matcher;
+    private SmartSearchMatcher $matcher;
 
-    public function __construct(SavedSearchMatcher $matcher)
+    public function __construct(SmartSearchMatcher $matcher)
     {
         parent::__construct();
         $this->matcher = $matcher;
@@ -32,7 +32,7 @@ class ProcessSavedSearchMatches extends Command
 
     public function handle()
     {
-        Log::info('🚀 SAVEDSEARCH MATCHING JOB STARTED', [
+        Log::info('🚀 SMARTSEARCH MATCHING JOB STARTED', [
             'job_type' => $this->getJobType(),
             'options' => [
                 'property' => $this->option('property'),
@@ -43,7 +43,7 @@ class ProcessSavedSearchMatches extends Command
             'timestamp' => now()
         ]);
 
-        $this->info('Starting saved search matching process...');
+        $this->info('Starting smart search matching process...');
 
         $result = null;
         if ($this->option('property')) {
@@ -56,7 +56,7 @@ class ProcessSavedSearchMatches extends Command
             $result = $this->processAllMatches();
         }
 
-        Log::info('🏁 SAVEDSEARCH MATCHING JOB COMPLETED', [
+        Log::info('🏁 SMARTSEARCH MATCHING JOB COMPLETED', [
             'job_type' => $this->getJobType(),
             'result' => $result === Command::SUCCESS ? 'SUCCESS' : 'FAILURE',
             'timestamp' => now()
@@ -89,7 +89,7 @@ class ProcessSavedSearchMatches extends Command
         $this->info("   Price: ₦" . number_format($property->price));
         $this->info("   Location: " . ($property->area->name ?? 'N/A') . ', ' . ($property->city->name ?? 'N/A'));
 
-        Log::info("Processing SavedSearch matches for property", [
+        Log::info("Processing SmartSearch matches for property", [
             'property_id' => $property->id,
             'property_title' => $property->title,
             'property_status' => $property->status,
@@ -101,9 +101,9 @@ class ProcessSavedSearchMatches extends Command
 
         if ($matches->isEmpty()) {
             $this->info('❌ No matches found for this property');
-            Log::info("No SavedSearch matches found for property", [
+            Log::info("No SmartSearch matches found for property", [
                 'property_id' => $property->id,
-                'active_searches_count' => SavedSearch::active()->count()
+                'active_searches_count' => SmartSearch::active()->count()
             ]);
             return Command::SUCCESS;
         }
@@ -124,19 +124,19 @@ class ProcessSavedSearchMatches extends Command
     protected function processSpecificSearch()
     {
         $searchId = $this->option('search');
-        $search = SavedSearch::find($searchId);
+        $search = SmartSearch::find($searchId);
 
         if (!$search) {
-            $this->error("Saved search with ID {$searchId} not found");
+            $this->error("Smart search with ID {$searchId} not found");
             return Command::FAILURE;
         }
 
-        $this->info("Processing matches for saved search: {$search->name}");
+        $this->info("Processing matches for smart search: {$search->name} (Tier: {$search->tier})");
 
-        $matches = $this->matcher->findMatchesForSavedSearch($search);
+        $matches = $this->matcher->findMatchesForSmartSearch($search);
 
         if ($matches->isEmpty()) {
-            $this->info('No matches found for this saved search');
+            $this->info('No matches found for this smart search');
             return Command::SUCCESS;
         }
 
@@ -147,11 +147,12 @@ class ProcessSavedSearchMatches extends Command
 
         // Send batch notification
         if ($this->shouldSendNotification($search)) {
-            $user->notify(new SavedSearchMatch($search, Collection::make($properties)));
+            $user->notify(new SmartSearchMatch($search, Collection::make($properties)));
             $this->info("Sent batch notification to {$user->name}");
 
-            // Update last alerted timestamp
+            // Update last alerted timestamp and matches sent
             $search->update(['last_alerted_at' => now()]);
+            $search->incrementMatchesSent($matches->count());
         }
 
         return Command::SUCCESS;
@@ -162,7 +163,7 @@ class ProcessSavedSearchMatches extends Command
         $this->info('Processing matches for new properties (last 24 hours)...');
 
         $newProperties = Property::where('created_at', '>=', Carbon::now()->subDay())
-            ->where('status', 'active')
+            ->where('status', 'available')
             ->get();
 
         if ($newProperties->isEmpty()) {
@@ -197,17 +198,17 @@ class ProcessSavedSearchMatches extends Command
 
     protected function processAllMatches()
     {
-        $this->info('Processing all saved search matches...');
+        $this->info('Processing all smart search matches...');
 
         $batchSize = $this->option('batch-size');
-        $activeSearches = SavedSearch::active()->with('user')->get();
+        $activeSearches = SmartSearch::active()->with('user')->get();
 
         if ($activeSearches->isEmpty()) {
-            $this->info('No active saved searches found');
+            $this->info('No active smart searches found');
             return Command::SUCCESS;
         }
 
-        $this->info("Processing {$activeSearches->count()} active saved searches");
+        $this->info("Processing {$activeSearches->count()} active smart searches");
 
         $totalMatches = 0;
         $totalNotifications = 0;
@@ -222,7 +223,7 @@ class ProcessSavedSearchMatches extends Command
                 continue;
             }
 
-            $matches = $this->matcher->findMatchesForSavedSearch($search, 10);
+            $matches = $this->matcher->findMatchesForSmartSearch($search, 10);
             $totalMatches += $matches->count();
 
             if ($matches->isNotEmpty() && $this->shouldSendNotification($search)) {
@@ -230,11 +231,12 @@ class ProcessSavedSearchMatches extends Command
                 $properties = $matches->pluck('property');
 
                 try {
-                    $user->notify(new SavedSearchMatch($search, Collection::make($properties)));
+                    $user->notify(new SmartSearchMatch($search, Collection::make($properties)));
                     $totalNotifications++;
 
-                    // Update last alerted timestamp
+                    // Update last alerted timestamp and matches sent
                     $search->update(['last_alerted_at' => now()]);
+                    $search->incrementMatchesSent($matches->count());
 
                 } catch (Exception $e) {
                     $this->error("Failed to send notification for search {$search->id}: {$e->getMessage()}");
@@ -256,12 +258,12 @@ class ProcessSavedSearchMatches extends Command
 
     protected function sendMatchNotification(array $match): bool
     {
-        $search = $match['saved_search'];
+        $search = $match['smart_search'];
         $property = $match['property'];
         $user = $search->user;
 
         $this->info("🎯 MATCH FOUND!");
-        $this->info("   Search: {$search->name} (ID: {$search->id})");
+        $this->info("   Search: {$search->name} (ID: {$search->id}, Tier: {$search->tier})");
         $this->info("   Property: {$property->title} (ID: {$property->id})");
         $this->info("   Score: {$match['score']}");
         $this->info("   User: {$user->name} ({$user->email})");
@@ -273,15 +275,17 @@ class ProcessSavedSearchMatches extends Command
 
         try {
             $this->info("   📧 Attempting to send notification...");
-            $user->notify(new SavedSearchMatch($search, Collection::make([$property]), $match['score']));
+            $user->notify(new SmartSearchMatch($search, Collection::make([$property]), $match['score']));
 
-            // Update last alerted timestamp
+            // Update last alerted timestamp and matches sent
             $search->update(['last_alerted_at' => now()]);
+            $search->incrementMatchesSent();
 
             $this->info("   ✅ Notification sent successfully!");
-            Log::info("SavedSearch Match Notification Sent", [
+            Log::info("SmartSearch Match Notification Sent", [
                 'search_id' => $search->id,
                 'search_name' => $search->name,
+                'tier' => $search->tier,
                 'property_id' => $property->id,
                 'property_title' => $property->title,
                 'user_id' => $user->id,
@@ -294,7 +298,7 @@ class ProcessSavedSearchMatches extends Command
 
         } catch (Exception $e) {
             $this->error("   ❌ Failed to send notification: {$e->getMessage()}");
-            Log::error("SavedSearch Match Notification Failed", [
+            Log::error("SmartSearch Match Notification Failed", [
                 'search_id' => $search->id,
                 'property_id' => $property->id,
                 'user_id' => $user->id,
@@ -305,8 +309,13 @@ class ProcessSavedSearchMatches extends Command
         }
     }
 
-    protected function shouldSendNotification(SavedSearch $search): bool
+    protected function shouldSendNotification(SmartSearch $search): bool
     {
+        // Check if search is expired
+        if ($search->isExpired()) {
+            return false;
+        }
+
         // Check if user has notifications enabled
         $notificationSettings = $search->notification_settings ?? [];
 

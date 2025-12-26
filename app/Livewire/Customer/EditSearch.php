@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Customer;
 
-use App\Models\SavedSearch;
+use App\Models\SmartSearch;
 use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Auth;
 
 class EditSearch extends Component
 {
-    public SavedSearch $search;
+    public SmartSearch $search;
 
     // Basic search info
     public $name = '';
@@ -90,7 +90,7 @@ class EditSearch extends Component
         'selected_areas.*.integer' => 'Area selection is invalid.',
     ];
 
-    public function mount(SavedSearch $search)
+    public function mount(SmartSearch $search)
     {
         // Ensure the search belongs to the authenticated user
         if ($search->user_id !== Auth::id()) {
@@ -490,7 +490,7 @@ class EditSearch extends Component
 
         // If this is set as default, remove default from other searches
         if ($this->is_default) {
-            Auth::user()->savedSearches()
+            Auth::user()->smartSearches()
                 ->where('id', '!=', $this->search->id)
                 ->update(['is_default' => false]);
         }

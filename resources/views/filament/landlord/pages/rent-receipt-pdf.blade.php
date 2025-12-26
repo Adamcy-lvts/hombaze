@@ -28,6 +28,36 @@
             <!-- Left: Company Info -->
             <div class="flex items-center space-x-2 flex-1">
                 @php
+                    $inlineLogo = function (string $relativePath): ?string {
+                        $fullPath = public_path($relativePath);
+                        if (!is_file($fullPath)) {
+                            return null;
+                        }
+                        $contents = file_get_contents($fullPath);
+                        if ($contents === false) {
+                            return null;
+                        }
+                        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+                        $mime = $extension === 'svg' ? 'image/svg+xml' : "image/{$extension}";
+                        return 'data:' . $mime . ';base64,' . base64_encode($contents);
+                    };
+                    $inlineStorageLogo = function (?string $storagePath): ?string {
+                        if (!$storagePath) {
+                            return null;
+                        }
+                        $fullPath = storage_path('app/public/' . ltrim($storagePath, '/'));
+                        if (!is_file($fullPath)) {
+                            return null;
+                        }
+                        $contents = file_get_contents($fullPath);
+                        if ($contents === false) {
+                            return null;
+                        }
+                        $extension = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+                        $mime = $extension === 'svg' ? 'image/svg+xml' : "image/{$extension}";
+                        return 'data:' . $mime . ';base64,' . base64_encode($contents);
+                    };
+
                     $businessInfo = null;
                     $businessLogo = null;
                     $businessInitials = 'HB';
@@ -49,7 +79,7 @@
                             'website' => $agency->website ?? 'www.homebaze.com',
                             'tagline' => 'Real Estate Agency',
                         ];
-                        $businessLogo = $agency->logo ? asset('storage/' . $agency->logo) : null;
+                        $businessLogo = $inlineStorageLogo($agency->logo) ?? $inlineLogo('images/app-logo.svg');
                         $businessInitials = strtoupper(substr($agency->name, 0, 2));
                     }
                     // 2. Check for Property Owner Company
@@ -100,8 +130,10 @@ elseif (
                             'website' => 'www.homebaze.com',
                             'tagline' => 'Management System',
                         ];
-                        $businessLogo = asset('img/homebaze_logo.png');
+                        $businessLogo = $inlineLogo('images/app-logo.svg');
                     }
+
+                    $landlordInfo = $receipt->landlord;
 
                     $isPropertyOwnerCompany =
                         $receipt->lease &&
@@ -158,11 +190,11 @@ elseif (
 
         <!-- Main Content Area - Optimized Layout -->
         <!-- Top Row: Basic Information (4 columns) -->
-        <div class="grid grid-cols-4 gap-3 mb-3">
-            <div class="bg-white p-2 rounded-lg shadow-xs border border-gray-200">
-                <p class="text-xs font-semibold text-gray-600 mb-1">Received From:</p>
-                <p class="text-sm text-gray-800 font-medium">{{ $receipt->tenant->name ?? 'N/A' }}</p>
-            </div>
+            <div class="grid grid-cols-4 gap-3 mb-3">
+                <div class="bg-white p-2 rounded-lg shadow-xs border border-gray-200">
+                    <p class="text-xs font-semibold text-gray-600 mb-1">Received From:</p>
+                    <p class="text-sm text-gray-800 font-medium">{{ $receipt->tenant->name ?? 'N/A' }}</p>
+                </div>
             <div class="bg-white p-2 rounded-lg shadow-xs border border-gray-200">
                 <p class="text-xs font-semibold text-gray-600 mb-1">Payment Date:</p>
                 <p class="text-sm text-gray-800 font-medium">
@@ -173,9 +205,28 @@ elseif (
                 <p class="text-xs font-semibold text-gray-600 mb-1">Payment For:</p>
                 <p class="text-sm text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
             </div>
-            <div class="bg-linear-to-r from-indigo-50 to-blue-50 p-2 rounded-lg shadow-xs border-2 border-indigo-200">
-                <p class="text-xs font-semibold text-indigo-700 mb-1">Total Amount</p>
-                <p class="text-lg font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
+                <div class="bg-linear-to-r from-indigo-50 to-blue-50 p-2 rounded-lg shadow-xs border-2 border-indigo-200">
+                    <p class="text-xs font-semibold text-indigo-700 mb-1">Total Amount</p>
+                    <p class="text-lg font-bold text-indigo-700">₦{{ number_format($receipt->amount, 2) }}</p>
+                </div>
+            </div>
+
+        <!-- Landlord Information -->
+        <div class="bg-white p-2 rounded-lg shadow-xs border border-gray-200 mb-3">
+            <p class="text-xs font-semibold text-gray-600 mb-1">Landlord Details</p>
+            <div class="grid grid-cols-3 gap-2 text-xs text-gray-700">
+                <div>
+                    <span class="text-[10px] uppercase tracking-wide text-gray-500">Name</span>
+                    <p class="font-medium">{{ $landlordInfo->name ?? 'N/A' }}</p>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wide text-gray-500">Email</span>
+                    <p class="font-medium">{{ $landlordInfo->email ?? 'N/A' }}</p>
+                </div>
+                <div>
+                    <span class="text-[10px] uppercase tracking-wide text-gray-500">Phone</span>
+                    <p class="font-medium">{{ $landlordInfo->phone ?? 'N/A' }}</p>
+                </div>
             </div>
         </div>
 

@@ -388,6 +388,7 @@ class AgentResource extends Resource
                 ImageColumn::make('user.avatar')
                     ->label('Avatar')
                     ->circular()
+                    ->disk('public')
                     ->defaultImageUrl('/images/default-avatar.png'),
                 
                 TextColumn::make('user.name')

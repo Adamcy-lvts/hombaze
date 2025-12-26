@@ -83,11 +83,14 @@
                                         </x-dropdown-link>
 
                                         <!-- Authentication -->
-                                        <button wire:click="logout" class="w-full text-start">
-                                            <x-dropdown-link>
-                                                {{ __('Log Out') }}
-                                            </x-dropdown-link>
-                                        </button>
+                                        <form method="POST" action="{{ route('logout') }}">
+                                            @csrf
+                                            <button type="submit" class="w-full text-start">
+                                                <x-dropdown-link>
+                                                    {{ __('Log Out') }}
+                                                </x-dropdown-link>
+                                            </button>
+                                        </form>
                                     </x-slot>
                                 </x-dropdown>
                             @else
@@ -152,11 +155,14 @@
                                 </x-responsive-nav-link>
 
                                 <!-- Authentication -->
-                                <button wire:click="logout" class="w-full text-start">
-                                    <x-responsive-nav-link>
-                                        {{ __('Log Out') }}
-                                    </x-responsive-nav-link>
-                                </button>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full text-start">
+                                        <x-responsive-nav-link>
+                                            {{ __('Log Out') }}
+                                        </x-responsive-nav-link>
+                                    </button>
+                                </form>
                             </div>
                         @else
                             <div class="space-y-1 px-4">
@@ -184,7 +190,11 @@
 
             <!-- Page Content -->
             <main>
-                {{ $slot }}
+                @hasSection('content')
+                    @yield('content')
+                @else
+                    {{ $slot ?? '' }}
+                @endif
             </main>
         </div>
 

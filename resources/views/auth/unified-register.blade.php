@@ -34,9 +34,7 @@
                 <div>
                     <a href="{{ route('landing') }}" class="flex items-center space-x-3 group">
                         <div class="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
-                            <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                            </svg>
+                            <x-application-logo class="w-7 h-7 text-white" />
                         </div>
                         <div class="flex flex-col">
                             <span class="text-2xl font-bold tracking-tight">HomeBaze</span>
@@ -110,9 +108,7 @@
                 <div class="lg:hidden text-center mb-8">
                     <a href="{{ route('landing') }}" class="inline-flex items-center space-x-2">
                         <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
-                            </svg>
+                            <x-application-logo class="w-6 h-6 text-white" />
                         </div>
                         <span class="text-xl font-bold text-gray-900">HomeBaze</span>
                     </a>

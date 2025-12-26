@@ -203,6 +203,33 @@
                 </div>
                 <h3 class="text-lg font-bold text-gray-900 mb-2">No searches yet</h3>
                 <p class="text-gray-500 max-w-sm mx-auto mb-8">Create your first SmartSearch to get personalized property recommendations and stay updated with new listings.</p>
+                @php
+                    $activeSubscription = auth()->user()?->activeSmartSearchSubscription();
+                    $channels = $activeSubscription?->notification_channels ?: ['email'];
+                    $channelLabels = collect($channels)->map(function ($channel) {
+                        return match ($channel) {
+                            'sms' => 'SMS',
+                            'whatsapp' => 'WhatsApp',
+                            default => ucfirst($channel),
+                        };
+                    })->implode(', ');
+                @endphp
+                <div class="mx-auto mb-8 max-w-xl rounded-xl border border-emerald-100 bg-emerald-50/60 p-5 text-left">
+                    <h4 class="text-sm font-semibold text-emerald-900 mb-2">Start hunting now</h4>
+                    <p class="text-sm text-emerald-900/80">
+                        Create your SmartSearch and we start hunting immediately, 24/7. When a match is found, you will be notified right away via
+                        {{ $channelLabels }}. Your plan activates as soon as you create your first search.
+                    </p>
+                    <div class="mt-4">
+                        <div class="text-sm font-semibold text-emerald-900 mb-2">Tips for better matches</div>
+                        <ul class="text-sm text-emerald-900/80 space-y-1">
+                            <li>Use a budget range that matches current market prices.</li>
+                            <li>Pick multiple areas or nearby neighborhoods for more results.</li>
+                            <li>Choose the right property type and add must-have features.</li>
+                            <li>Be specific about bedrooms, bathrooms, and amenities.</li>
+                        </ul>
+                    </div>
+                </div>
                 <a href="{{ route('customer.searches.create') }}"
                    class="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl transition-all duration-300 shadow-sm hover:shadow-md">
                     <x-heroicon-o-plus class="w-5 h-5 mr-2" />

@@ -16,10 +16,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use App\Jobs\ProcessSavedSearchMatches;
+use Laravel\Scout\Searchable;
 
 class Property extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, InteractsWithMedia;
+    use HasFactory, SoftDeletes, InteractsWithMedia, Searchable;
 
     protected $fillable = [
         'title',
@@ -351,6 +352,67 @@ class Property extends Model implements HasMedia
     public function scopeForShortlet($query)
     {
         return $query->where('listing_type', 'shortlet');
+    }
+
+    // Scout Searchable Methods
+
+    /**
+     * Get the indexable data array for the model (Meilisearch).
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'slug' => $this->slug,
+            'description' => $this->description,
+            'address' => $this->address,
+            'landmark' => $this->landmark,
+
+            // Relationships (denormalized for search)
+            'city_name' => $this->city?->name,
+            'state_name' => $this->state?->name,
+            'area_name' => $this->area?->name,
+            'property_type_name' => $this->propertyType?->name,
+            'property_subtype_name' => $this->propertySubtype?->name,
+
+            // Filterable attributes
+            'listing_type' => $this->listing_type,
+            'property_type_id' => $this->property_type_id,
+            'property_subtype_id' => $this->property_subtype_id,
+            'state_id' => $this->state_id,
+            'city_id' => $this->city_id,
+            'area_id' => $this->area_id,
+            'price' => (float) $this->price,
+            'bedrooms' => $this->bedrooms,
+            'bathrooms' => $this->bathrooms,
+            'furnishing_status' => $this->furnishing_status,
+
+            // Featured & ranking
+            'is_featured' => $this->is_featured,
+            'is_featured_active' => $this->isFeaturedActive(),
+            'featured_until' => $this->featured_until?->timestamp,
+            'is_verified' => $this->is_verified,
+            'view_count' => $this->view_count ?? 0,
+            'created_at' => $this->created_at?->timestamp,
+
+            // Geo-search (for "properties near me")
+            '_geo' => $this->latitude && $this->longitude ? [
+                'lat' => (float) $this->latitude,
+                'lng' => (float) $this->longitude,
+            ] : null,
+        ];
+    }
+
+    /**
+     * Determine if the model should be searchable.
+     * Only index published and available properties.
+     */
+    public function shouldBeSearchable(): bool
+    {
+        return $this->is_published
+            && $this->status === 'available'
+            && in_array($this->listing_fee_status, [self::LISTING_FEE_PAID, self::LISTING_FEE_WAIVED]);
     }
 
     // Accessors & Mutators

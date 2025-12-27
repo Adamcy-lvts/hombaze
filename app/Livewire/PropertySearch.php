@@ -2,461 +2,285 @@
 
 namespace App\Livewire;
 
-use App\Models\Area;
-use App\Models\City;
-use App\Models\State;
-use Livewire\Component;
-use App\Models\Property;
-use App\Models\PropertyType;
 use App\Models\SavedProperty;
+use App\Models\SmartSearch;
+use App\Search\SearchQuery;
+use App\Services\PropertySearchEngine;
 use Livewire\Attributes\Url;
-use Livewire\Attributes\On;
+use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\RateLimiter;
 
 class PropertySearch extends Component
 {
     use WithPagination;
 
-    // Main search query
+    protected PropertySearchEngine $searchEngine;
+
+    // URL-bound search parameters
     #[Url(as: 'q')]
-    public $searchQuery = '';
-    
-    // Active filters as array
-    #[Url(as: 'filters')]
-    public $activeFilters = [];
-    
-    // Sort option
+    public string $searchQuery = '';
+
+    #[Url(as: 'type')]
+    public ?string $listingType = null;
+
+    #[Url(as: 'property_type')]
+    public ?int $propertyTypeId = null;
+
+    #[Url(as: 'bedrooms')]
+    public ?string $bedrooms = null;
+
+    #[Url(as: 'min_price')]
+    public ?int $minPrice = null;
+
+    #[Url(as: 'max_price')]
+    public ?int $maxPrice = null;
+
+    #[Url(as: 'furnishing')]
+    public ?string $furnishing = null;
+
+    #[Url(as: 'city')]
+    public ?int $cityId = null;
+
+    #[Url(as: 'area')]
+    public ?int $areaId = null;
+
     #[Url(as: 'sort')]
-    public $sortBy = 'relevance';
-    
+    public string $sortBy = 'relevance';
+
+    #[Url(as: 'saved_search')]
+    public ?string $savedSearchId = null;
+
     // UI state
-    public $showSuggestions = false;
-    public $suggestions = [];
-    public $isLoading = false;
-    public $showFilters = false;
-    public $isDarkMode = false;
-    public $isRateLimited = false;
-    public $rateLimitMessage = '';
+    public bool $showSuggestions = false;
+    public array $suggestions = [];
+    public bool $showFilters = false;
 
-    // Selected filter states (for UI)
-    public $selectedBedrooms = [];
-    public $selectedListingTypes = [];
-    public $selectedPropertyType = '';
-    public $selectedPriceRanges = [];
+    // Search result metadata
+    public int $processingTimeMs = 0;
+    public int $featuredCount = 0;
+    public array $facets = [];
 
-    // Saved properties tracking
-    public $savedPropertyIds = [];
-    
-    // Available filter options
-    public $filterOptions = [
-        'listing_type' => ['rent', 'sale', 'shortlet'],
-        'property_type' => [],
-        'bedrooms' => ['1', '2', '3', '4', '5+'],
-        'bathrooms' => ['1', '2', '3', '4+'],
-        'price_range' => ['0-500000', '500000-1000000', '1000000-2000000', '2000000+'],
-        'furnishing' => ['furnished', 'semi-furnished', 'unfurnished'],
-        'features' => ['swimming_pool', 'gym', 'security', 'parking', 'generator', 'air_conditioning']
-    ];
+    // Saved properties
+    public array $savedPropertyIds = [];
 
-    // Saved search ID
-    #[Url]
-    public $saved_search = '';
+    // Filter options
+    public array $filterOptions = [];
 
-    // Custom price range
-    public $minPrice = null;
-    public $maxPrice = null;
-
-    public function mount()
+    public function boot(PropertySearchEngine $searchEngine): void
     {
-        // Load property types for filter options
-        $this->filterOptions['property_type'] = PropertyType::pluck('name', 'id')->toArray();
+        $this->searchEngine = $searchEngine;
+    }
 
-        // Load saved property IDs for authenticated users
+    public function mount(): void
+    {
+        $this->filterOptions = $this->searchEngine->getFilterOptions();
         $this->loadSavedProperties();
 
         // Load SmartSearch if provided
-        if ($this->saved_search) {
-            $this->loadSmartSearch($this->saved_search);
+        if ($this->savedSearchId) {
+            $this->loadSmartSearch($this->savedSearchId);
         }
-
-        // Initialize selected states from active filters
-        $this->initializeSelectedStates();
     }
 
-    private function loadSmartSearch($searchId)
+    public function updatedSearchQuery(): void
     {
-        $search = \App\Models\SmartSearch::find($searchId);
-        if (!$search) return;
+        $this->resetPage();
 
-        // Reset filters
-        $this->activeFilters = [];
-
-        // 1. Listing Type
-        if ($search->search_type) {
-            $type = $search->search_type === 'buy' ? 'sale' : $search->search_type;
-            if (in_array($type, $this->filterOptions['listing_type'])) {
-                $this->addFilter('listing_type', $type);
-            }
-        }
-
-        // 2. Property Type
-        if ($search->selected_property_type) {
-            $this->addFilter('property_type', $search->selected_property_type);
-        }
-
-        // 3. Location
-        if ($search->location_preferences) {
-            $loc = $search->location_preferences;
-            // Handle specific areas
-            if (isset($loc['selected_areas']) && is_array($loc['selected_areas'])) {
-                 $areas = \App\Models\Area::whereIn('id', $loc['selected_areas'])->pluck('name');
-                 foreach($areas as $areaName) {
-                     $this->addFilter('location', $areaName);
-                 }
-            }
-            // Handle city/state if no specific areas or as fallback
-            elseif (isset($loc['city'])) {
-                 $city = \App\Models\City::find($loc['city']);
-                 if ($city) $this->addFilter('location', $city->name);
-            }
-            elseif (isset($loc['state'])) {
-                 $state = \App\Models\State::find($loc['state']);
-                 if ($state) $this->addFilter('location', $state->name);
-            }
-        }
-
-        // 4. Budget (Custom Range)
-        if ($search->budget_min) $this->minPrice = $search->budget_min;
-        if ($search->budget_max) $this->maxPrice = $search->budget_max;
-
-        // 5. Bedrooms
-        if (isset($search->additional_filters['bedrooms'])) {
-            $beds = $search->additional_filters['bedrooms'];
-            // SmartSearch might store "2" or "2+". 
-            // If it's a specific number, added it.
-            // If it's a range or "2+", we might need to adapt.
-            // For now, assuming direct match keys:
-            if (in_array($beds, $this->filterOptions['bedrooms'])) {
-                $this->addFilter('bedrooms', $beds);
-            }
+        if (strlen($this->searchQuery) >= 2) {
+            $this->loadSuggestions();
+            $this->showSuggestions = true;
+        } else {
+            $this->suggestions = [];
+            $this->showSuggestions = false;
         }
     }
-    private function initializeSelectedStates(): void
+
+    public function loadSuggestions(): void
     {
-        $this->selectedBedrooms = [];
-        $this->selectedListingTypes = [];
-        $this->selectedPropertyType = '';
-        $this->selectedPriceRanges = [];
-
-        foreach ($this->activeFilters as $filter) {
-            $type = $filter['type'] ?? null;
-            $value = $filter['value'] ?? null;
-            if (!$type) {
-                continue;
-            }
-
-            switch ($type) {
-                case 'listing_type':
-                    $this->selectedListingTypes[] = $value;
-                    break;
-                case 'property_type':
-                    $this->selectedPropertyType = (string) $value;
-                    break;
-                case 'bedrooms':
-                    $this->selectedBedrooms[] = $value;
-                    break;
-                case 'price_range':
-                    $this->selectedPriceRanges[] = $value;
-                    break;
-            }
-        }
-
-        $this->selectedListingTypes = array_values(array_unique($this->selectedListingTypes));
-        $this->selectedBedrooms = array_values(array_unique($this->selectedBedrooms));
-        $this->selectedPriceRanges = array_values(array_unique($this->selectedPriceRanges));
+        $suggestions = $this->searchEngine->suggest($this->searchQuery);
+        $this->suggestions = $suggestions->map(fn ($s) => $s->toArray())->toArray();
     }
 
-    // ... existing updated methods ...
+    public function selectSuggestion(int $index): void
+    {
+        if (!isset($this->suggestions[$index])) {
+            return;
+        }
 
-    // ... existing updateSuggestions ...
+        $suggestion = $this->suggestions[$index];
 
-    // ... existing selectSuggestion ...
-    
-    // ... existing hideSuggestions ...
+        // If it's a property, go directly to it
+        if ($suggestion['type'] === 'property' && isset($suggestion['meta']['slug'])) {
+            $this->redirect(route('property.show', $suggestion['meta']['slug']));
+            return;
+        }
 
-    // ... existing addFilter ...
+        // If it's a location, search for that location
+        if ($suggestion['type'] === 'location') {
+            $this->searchQuery = $suggestion['text'];
+            $this->hideSuggestions();
+            $this->resetPage();
+            return;
+        }
 
-    // ... existing removeFilter ...
+        // Otherwise, search for the text
+        $this->searchQuery = $suggestion['text'];
+        $this->hideSuggestions();
+        $this->resetPage();
+    }
 
-    // ... existing clearAllFilters ...
+    public function hideSuggestions(): void
+    {
+        $this->showSuggestions = false;
+    }
 
-    // ... existing toggleFilters ...
-    
-    // ... existing toggleTheme ...
-    
-    // ... existing toggleFilter ...
-    
-    // ... existing isFilterActive ...
+    public function search(): void
+    {
+        $this->hideSuggestions();
+        $this->resetPage();
+    }
+
+    public function toggleFilters(): void
+    {
+        $this->showFilters = !$this->showFilters;
+    }
+
+    public function setListingType(?string $type): void
+    {
+        $this->listingType = $this->listingType === $type ? null : $type;
+        $this->resetPage();
+    }
+
+    public function setPropertyType(?int $typeId): void
+    {
+        $this->propertyTypeId = $typeId ?: null;
+        $this->resetPage();
+    }
+
+    public function setBedrooms(?string $bedrooms): void
+    {
+        $this->bedrooms = $this->bedrooms === $bedrooms ? null : $bedrooms;
+        $this->resetPage();
+    }
+
+    public function setFurnishing(?string $furnishing): void
+    {
+        $this->furnishing = $this->furnishing === $furnishing ? null : $furnishing;
+        $this->resetPage();
+    }
+
+    public function setPriceRange(?int $min, ?int $max): void
+    {
+        $this->minPrice = $min;
+        $this->maxPrice = $max;
+        $this->resetPage();
+    }
+
+    public function setSortBy(string $sort): void
+    {
+        $this->sortBy = $sort;
+        $this->resetPage();
+    }
+
+    public function clearFilters(): void
+    {
+        $this->listingType = null;
+        $this->propertyTypeId = null;
+        $this->bedrooms = null;
+        $this->minPrice = null;
+        $this->maxPrice = null;
+        $this->furnishing = null;
+        $this->cityId = null;
+        $this->areaId = null;
+        $this->resetPage();
+    }
+
+    public function hasActiveFilters(): bool
+    {
+        return $this->listingType !== null
+            || $this->propertyTypeId !== null
+            || $this->bedrooms !== null
+            || $this->minPrice !== null
+            || $this->maxPrice !== null
+            || $this->furnishing !== null
+            || $this->cityId !== null
+            || $this->areaId !== null;
+    }
 
     public function getPropertiesProperty()
     {
-        if ($this->shouldThrottleSearch()) {
-            return Property::query()->whereRaw('1 = 0')->paginate(12);
+        $bedroomsArray = null;
+        if ($this->bedrooms) {
+            $bedroomsArray = $this->bedrooms === '5+' ? [5] : [(int) $this->bedrooms];
         }
 
-        $query = Property::with(['city', 'state', 'area', 'propertyType', 'agency', 'agent'])
-            ->published()
-            ->available();
+        $query = new SearchQuery(
+            term: $this->searchQuery ?: null,
+            listingType: $this->listingType,
+            propertyTypeId: $this->propertyTypeId,
+            cityId: $this->cityId,
+            areaId: $this->areaId,
+            minPrice: $this->minPrice,
+            maxPrice: $this->maxPrice,
+            bedrooms: $bedroomsArray,
+            furnishing: $this->furnishing,
+            sortBy: $this->sortBy,
+            perPage: 12,
+            page: $this->getPage(),
+        );
 
-        // Apply search query
-        if (!empty($this->searchQuery)) {
-            $searchTerm = $this->searchQuery;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('description', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('address', 'LIKE', "%{$searchTerm}%")
-                    ->orWhere('landmark', 'LIKE', "%{$searchTerm}%")
-                    ->orWhereHas('city', function ($cityQuery) use ($searchTerm) {
-                        $cityQuery->where('name', 'LIKE', "%{$searchTerm}%");
-                    })
-                    ->orWhereHas('state', function ($stateQuery) use ($searchTerm) {
-                        $stateQuery->where('name', 'LIKE', "%{$searchTerm}%");
-                    })
-                    ->orWhereHas('area', function ($areaQuery) use ($searchTerm) {
-                        $areaQuery->where('name', 'LIKE', "%{$searchTerm}%");
-                    })
-                    ->orWhereHas('propertyType', function ($typeQuery) use ($searchTerm) {
-                        $typeQuery->where('name', 'LIKE', "%{$searchTerm}%");
-                    });
-            });
-        }
+        $result = $this->searchEngine->search($query);
 
-        // Apply active filters
-        foreach ($this->activeFilters as $filter) {
-            $this->applyFilter($query, $filter['type'], $filter['value']);
-        }
+        $this->processingTimeMs = $result->processingTimeMs;
+        $this->featuredCount = $result->featuredCount;
+        $this->facets = $result->facets;
 
-        // Apply custom price range (from SmartSearch or advanced filters)
-        if ($this->minPrice) {
-            $query->where('price', '>=', $this->minPrice);
-        }
-        if ($this->maxPrice) {
-            $query->where('price', '<=', $this->maxPrice);
-        }
-
-        // Apply sorting
-        $this->applySorting($query);
-
-        return $query->paginate(12);
+        return $result->toPaginator();
     }
 
-    private function applyFilter($query, $type, $value)
+    private function loadSmartSearch(string $searchId): void
     {
-        switch ($type) {
-            case 'listing_type':
-                $query->where('listing_type', $value);
-                break;
-            case 'property_type':
-                $query->where('property_type_id', $value);
-                break;
-            case 'bedrooms':
-                if ($value === '5+') {
-                    $query->where('bedrooms', '>=', 5);
-                } else {
-                    $query->where('bedrooms', $value);
-                }
-                break;
-            case 'bathrooms':
-                if ($value === '4+') {
-                    $query->where('bathrooms', '>=', 4);
-                } else {
-                    $query->where('bathrooms', $value);
-                }
-                break;
-            case 'price_range':
-                $this->applyPriceRange($query, $value);
-                break;
-            case 'furnishing':
-                $query->where('furnishing_status', $value);
-                break;
-            case 'features':
-                $query->whereHas('features', function ($q) use ($value) {
-                    $q->where('slug', $value);
-                });
-                break;
-            case 'location':
-                $query->where(function ($q) use ($value) {
-                    $q->whereHas('city', function ($cityQuery) use ($value) {
-                        $cityQuery->where('name', $value);
-                    })
-                    ->orWhereHas('area', function ($areaQuery) use ($value) {
-                        $areaQuery->where('name', $value);
-                    })
-                    ->orWhereHas('state', function ($stateQuery) use ($value) {
-                        $stateQuery->where('name', $value);
-                    });
-                });
-                break;
+        $search = SmartSearch::find($searchId);
+        if (!$search) {
+            return;
+        }
+
+        // Listing Type
+        if ($search->search_type) {
+            $this->listingType = $search->search_type === 'buy' ? 'sale' : $search->search_type;
+        }
+
+        // Property Type
+        if ($search->selected_property_type) {
+            $this->propertyTypeId = $search->selected_property_type;
+        }
+
+        // Budget
+        if ($search->budget_min) {
+            $this->minPrice = $search->budget_min;
+        }
+        if ($search->budget_max) {
+            $this->maxPrice = $search->budget_max;
+        }
+
+        // Bedrooms from additional_filters
+        if (isset($search->additional_filters['bedrooms'])) {
+            $this->bedrooms = (string) $search->additional_filters['bedrooms'];
+        }
+
+        // Location
+        if ($search->location_preferences) {
+            $loc = $search->location_preferences;
+            if (isset($loc['city'])) {
+                $this->cityId = $loc['city'];
+            }
+            if (isset($loc['selected_areas']) && is_array($loc['selected_areas']) && count($loc['selected_areas']) === 1) {
+                $this->areaId = $loc['selected_areas'][0];
+            }
         }
     }
 
-    private function applyPriceRange($query, $range)
-    {
-        switch ($range) {
-            case '0-500000':
-                $query->where('price', '<=', 500000);
-                break;
-            case '500000-1000000':
-                $query->whereBetween('price', [500000, 1000000]);
-                break;
-            case '1000000-2000000':
-                $query->whereBetween('price', [1000000, 2000000]);
-                break;
-            case '2000000+':
-                $query->where('price', '>=', 2000000);
-                break;
-        }
-    }
-
-    private function applySorting($query)
-    {
-        switch ($this->sortBy) {
-            case 'price_low':
-                $query->orderBy('price', 'asc');
-                break;
-            case 'price_high':
-                $query->orderBy('price', 'desc');
-                break;
-            case 'newest':
-                $query->orderBy('created_at', 'desc');
-                break;
-            case 'oldest':
-                $query->orderBy('created_at', 'asc');
-                break;
-            case 'popular':
-                $query->orderBy('view_count', 'desc');
-                break;
-            case 'relevance':
-            default:
-                $query->orderBy('is_featured', 'desc')
-                      ->orderBy('updated_at', 'desc');
-                break;
-        }
-    }
-
-    private function generateSuggestions()
-    {
-        $suggestions = [];
-        $searchTerm = strtolower($this->searchQuery);
-
-        // Search locations
-        $cities = City::where('name', 'LIKE', "%{$searchTerm}%")
-                     ->with('state')
-                     ->limit(3)
-                     ->get();
-        
-        foreach ($cities as $city) {
-            $suggestions[] = [
-                'text' => $city->name . ', ' . $city->state->name,
-                'type' => 'location',
-                'icon' => 'location-dot',
-                'category' => 'Cities'
-            ];
-        }
-
-        // Search areas
-        $areas = Area::where('name', 'LIKE', "%{$searchTerm}%")
-                    ->with(['city', 'state'])
-                    ->limit(3)
-                    ->get();
-        
-        foreach ($areas as $area) {
-            $suggestions[] = [
-                'text' => $area->name . ', ' . $area->city->name,
-                'type' => 'location',
-                'icon' => 'location-dot',
-                'category' => 'Areas'
-            ];
-        }
-
-        // Search property types
-        $propertyTypes = PropertyType::where('name', 'LIKE', "%{$searchTerm}%")
-                                   ->limit(3)
-                                   ->get();
-        
-        foreach ($propertyTypes as $type) {
-            $suggestions[] = [
-                'text' => $type->name,
-                'type' => 'property_type',
-                'icon' => 'home',
-                'category' => 'Property Types'
-            ];
-        }
-
-        return array_slice($suggestions, 0, 8);
-    }
-
-    private function shouldThrottleSearch(): bool
-    {
-        $rateLimitKey = 'property-search:' . request()->ip();
-
-        if (RateLimiter::tooManyAttempts($rateLimitKey, 60)) {
-            $this->isRateLimited = true;
-            $this->rateLimitMessage = 'Too many searches right now. Please wait a moment and try again.';
-            return true;
-        }
-
-        RateLimiter::hit($rateLimitKey, 60);
-        $this->isRateLimited = false;
-        $this->rateLimitMessage = '';
-        return false;
-    }
-
-    private function getFilterLabel($type, $value)
-    {
-        switch ($type) {
-            case 'listing_type':
-                return ucfirst($value);
-            case 'property_type':
-                $propertyType = PropertyType::find($value);
-                return $propertyType ? $propertyType->name : $value;
-            case 'bedrooms':
-                return $value . ' Bedroom' . ($value > 1 ? 's' : '');
-            case 'bathrooms':
-                return $value . ' Bathroom' . ($value > 1 ? 's' : '');
-            case 'price_range':
-                return $this->formatPriceRange($value);
-            case 'furnishing':
-                return ucfirst(str_replace('_', ' ', $value));
-            case 'features':
-                return ucfirst(str_replace('_', ' ', $value));
-            default:
-                return $value;
-        }
-    }
-
-    private function formatPriceRange($range)
-    {
-        switch ($range) {
-            case '0-500000':
-                return 'Under ₦500K';
-            case '500000-1000000':
-                return '₦500K - ₦1M';
-            case '1000000-2000000':
-                return '₦1M - ₦2M';
-            case '2000000+':
-                return 'Over ₦2M';
-            default:
-                return $range;
-        }
-    }
-
-    /**
-     * Load saved property IDs for the authenticated user
-     */
-    private function loadSavedProperties()
+    private function loadSavedProperties(): void
     {
         if (auth()->check()) {
             $this->savedPropertyIds = SavedProperty::where('user_id', auth()->id())
@@ -465,14 +289,12 @@ class PropertySearch extends Component
         }
     }
 
-    /**
-     * Toggle save status of a property
-     */
-    public function toggleSaveProperty($propertyId)
+    public function toggleSaveProperty(int $propertyId): void
     {
         if (!auth()->check()) {
             session()->flash('error', 'Please login to save properties.');
-            return $this->redirect(route('login'));
+            $this->redirect(route('login'));
+            return;
         }
 
         $userId = auth()->id();
@@ -481,27 +303,20 @@ class PropertySearch extends Component
             ->first();
 
         if ($savedProperty) {
-            // Remove from saved properties
             $savedProperty->delete();
-            $this->savedPropertyIds = array_diff($this->savedPropertyIds, [$propertyId]);
-
-            $this->dispatch('property-unsaved', ['message' => 'Property removed from saved list']);
+            $this->savedPropertyIds = array_values(array_diff($this->savedPropertyIds, [$propertyId]));
+            $this->dispatch('property-unsaved', message: 'Property removed from saved list');
         } else {
-            // Add to saved properties
             SavedProperty::create([
                 'user_id' => $userId,
                 'property_id' => $propertyId,
             ]);
             $this->savedPropertyIds[] = $propertyId;
-
-            $this->dispatch('property-saved', ['message' => 'Property saved successfully']);
+            $this->dispatch('property-saved', message: 'Property saved successfully');
         }
     }
 
-    /**
-     * Check if a property is saved by the current user
-     */
-    public function isPropertySaved($propertyId)
+    public function isPropertySaved(int $propertyId): bool
     {
         return in_array($propertyId, $this->savedPropertyIds);
     }

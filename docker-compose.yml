@@ -79,6 +79,19 @@ services:
     networks:
       - homebaze_network
 
+  meilisearch:
+    image: getmeili/meilisearch:v1.6
+    container_name: homebaze_meilisearch
+    ports:
+      - "7700:7700"
+    environment:
+      - MEILI_ENV=development
+      - MEILI_MASTER_KEY=${MEILISEARCH_KEY:-homebaze_meilisearch_dev_key}
+    volumes:
+      - meilisearch_data:/meili_data
+    networks:
+      - homebaze_network
+
   queue:
     build:
       context: .
@@ -114,3 +127,4 @@ networks:
 
 volumes:
   mysql_data:
+  meilisearch_data:

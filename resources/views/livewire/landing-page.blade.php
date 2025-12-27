@@ -17,7 +17,7 @@
         </div>
 
         <!-- Hero Content -->
-        <div class="relative z-10 w-full max-w-5xl mx-auto px-4 text-center -mt-12 hero-content">
+        <div class="relative z-30 w-full max-w-5xl mx-auto px-4 text-center -mt-12 hero-content">
             <div class="inline-block px-4 py-1.5 mb-6 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
                 <span class="text-emerald-300 font-medium text-sm tracking-wide uppercase">The Future of Living</span>
             </div>
@@ -30,60 +30,11 @@
             </p>
             
             <!-- Glassmorphism Search Bar -->
-            <div class="relative max-w-3xl mx-auto mt-8">
-                <div class="relative group">
-                    <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur opacity-25 group-hover:opacity-60 transition duration-500"></div>
-                    <div class="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-full p-2 shadow-xl transition-all duration-300 hover:bg-white/10 ring-1 ring-white/20">
-                        <div class="pl-5 text-emerald-400">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                        <input
-                            type="text"
-                            wire:model.live.debounce.500ms="searchQuery"
-                            wire:focus="updateSuggestions"
-                            placeholder="Search city, state, or property type..."
-                            class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-gray-300/80 text-lg px-4 py-3 font-medium"
-                            autocomplete="off"
-                        >
-                        <button
-                            onclick="window.location.href='/properties?q=' + encodeURIComponent(document.querySelector('input[wire\\:model\\.live\\.debounce\\.500ms=\"searchQuery\"]').value)"
-                            class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full font-bold text-base transition-all duration-200 shadow-lg hover:shadow-emerald-500/20 transform hover:-translate-y-0.5"
-                        >
-                            Search
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Search Suggestions -->
-                @if($showSuggestions && count($suggestions) > 0)
-                    <div class="absolute w-full mt-2 bg-white/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-xl max-h-60 overflow-y-auto z-50 text-left">
-                        @foreach($suggestions as $suggestion)
-                            <div
-                                wire:click="selectSuggestion({{ json_encode($suggestion) }})"
-                                class="flex items-center px-4 py-3 hover:bg-emerald-50/50 cursor-pointer transition-colors duration-200 border-b border-gray-100 last:border-b-0 group"
-                            >
-                                <div class="shrink-0 w-8 h-8 bg-emerald-100/50 text-emerald-600 rounded-lg flex items-center justify-center mr-3 group-hover:scale-110 transition-transform duration-200">
-                                    @if($suggestion['icon'] === 'location-dot')
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        </svg>
-                                    @else
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
-                                        </svg>
-                                    @endif
-                                </div>
-                                <div class="flex-1">
-                                    <div class="font-semibold text-sm text-gray-900 group-hover:text-emerald-700 transition-colors">{{ $suggestion['text'] }}</div>
-                                    <div class="text-xs text-gray-500">{{ $suggestion['category'] }}</div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @endif
+            <div class="max-w-3xl mx-auto mt-8">
+                <livewire:components.search-bar
+                    :placeholder="'Search city, area, or property type...'"
+                    :auto-focus="false"
+                />
             </div>
         </div>
     </section>
@@ -99,7 +50,7 @@
                     <div class="flex items-center bg-gray-100/80 p-1 rounded-lg">
                         @foreach($filterOptions['listing_types'] as $listingType)
                             <button
-                                wire:click="updateFilter('listing_type', '{{ $listingType['value'] }}')"
+                                wire:click="setListingType('{{ $listingType['value'] }}')"
                                 class="px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 {{ $selectedListingType === $listingType['value'] ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}"
                             >
                                 {{ $listingType['label'] }}
@@ -156,7 +107,7 @@
                         <select wire:model.live="selectedPropertyType" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">All Types</option>
                             @foreach($filterOptions['property_types'] as $type)
-                                <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                <option value="{{ $type['value'] }}">{{ $type['label'] }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -169,7 +120,7 @@
                         </label>
                         <select wire:model.live="selectedState" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="">All States</option>
-                            @foreach($filterOptions['states'] as $state)
+                            @foreach($locationOptions['states'] as $state)
                                 <option value="{{ $state->id }}">{{ $state->name }}</option>
                             @endforeach
                         </select>
@@ -210,6 +161,8 @@
         </div>
     </section>
 
+    <!-- Previous Featured Sections Commented Out -->
+    {{-- 
     <!-- Simple Featured Grid Section -->
     @if($this->featuredProperties->count() > 0)
     <section class="py-24 bg-slate-900 overflow-hidden relative" id="featured-grid-section">
@@ -293,134 +246,130 @@
     <!-- Editorial Bento Featured Section (Hidden for now) -->
     @if(false && $this->featuredProperties->count() > 0)
     <section class="py-24 bg-white overflow-hidden" id="featured-section">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Header Section -->
-            <div class="flex flex-col md:flex-row md:items-end justify-between gap-10 mb-16">
-                <div class="max-w-2xl">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="w-12 h-[2px] bg-emerald-500"></span>
-                        <span class="text-emerald-600 font-bold text-xs uppercase tracking-[0.3em]">Signature Collection</span>
+        <!-- ... existing director's cut logic ... -->
+    </section>
+    @endif
+    --}}
+
+    <!-- The Director's Cut Interactive List (Minimalist Luxury) -->
+    @if($this->featuredProperties->count() > 0)
+    <section class="relative bg-slate-950 h-screen lg:h-screen overflow-hidden group/dc flex flex-col lg:flex-row" id="directors-cut-section">
+        
+        <!-- Background Visual Deck (Top on mobile, Right on desktop) -->
+        <div class="relative w-full h-[45vh] lg:absolute lg:inset-0 lg:left-[40%] lg:w-[60%] lg:h-full z-10 lg:z-0 overflow-hidden shrink-0">
+            @foreach($this->featuredProperties as $index => $property)
+                <div 
+                    class="visual-item absolute inset-0 opacity-0 transition-opacity duration-1000 ease-in-out"
+                    id="property-visual-{{ $index }}"
+                >
+                    <!-- Background Image -->
+                    <div class="absolute inset-0 overflow-hidden">
+                        @if($property->getMedia('featured')->count() > 0)
+                            <img src="{{ $property->getFirstMedia('featured')->getUrl() }}" 
+                                 class="w-full h-full object-cover lg:object-cover visual-img" 
+                                 alt="{{ $property->title }}">
+                        @else
+                            <div class="w-full h-full bg-slate-900 flex items-center justify-center">
+                                <svg class="w-16 h-16 lg:w-20 lg:h-20 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            </div>
+                        @endif
+                        <!-- Desktop Gradients -->
+                        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/20 to-transparent hidden lg:block"></div>
                     </div>
-                    <h2 class="text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[0.95] mb-8">
-                        The <span class="text-transparent bg-clip-text bg-gradient-to-br from-emerald-600 to-blue-700">Editorial</span><br class="hidden md:block" /> List
-                    </h2>
-                    <p class="text-slate-600 text-lg md:text-xl font-light leading-relaxed">
-                        A curated selection of properties that define modern luxury. Each residence is handpicked for its architectural excellence and superior lifestyle offering.
-                    </p>
+
+                    <!-- Visual Info Anchor (Desktop only) -->
+                    <div class="hidden lg:flex absolute inset-0 flex-col justify-end p-24 z-20">
+                        <div class="visual-meta opacity-0 translate-y-8 transition-all duration-700 delay-300">
+                            <span class="text-emerald-400 font-mono text-sm tracking-widest block mb-4">₦{{ number_format($property->price) }}</span>
+                            <h4 class="text-white text-4xl font-black mb-8 leading-tight max-w-lg">{{ $property->title }}</h4>
+                            <a href="{{ route('property.show', $property->slug ?? $property->id) }}" 
+                               class="inline-block px-8 py-4 bg-white text-slate-900 font-bold text-xs uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <a href="/properties?is_featured=1" class="group flex items-center gap-4 px-10 py-5 bg-slate-900 text-white rounded-[2rem] font-bold text-sm transition-all duration-500 hover:bg-emerald-600 hover:shadow-2xl hover:shadow-emerald-200">
-                        <span>View All Featured</span>
-                        <svg class="w-5 h-5 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                    </a>
+            @endforeach
+            
+            <!-- Mobile Price/Badge Overlay (Minimalist) -->
+            <div class="lg:hidden absolute bottom-4 right-4 z-30">
+                <div id="mobile-price-badge" class="bg-emerald-500 text-white px-4 py-2 font-black text-xs rounded-lg shadow-2xl transition-all duration-500 scale-0">
+                    ₦0
                 </div>
             </div>
+        </div>
 
-            <!-- Director's Cut: Synched Viewfinder Layout -->
-            <div id="directors-cut-container" 
-                 x-data="{ 
-                    activeId: {{ $this->featuredProperties[0]->id ?? 0 }},
-                    init() {
-                        window.addEventListener('active-property-changed', (e) => {
-                            this.activeId = e.detail.id;
-                        });
-                    }
-                 }"
-                 class="flex flex-col md:flex-row gap-8 lg:gap-16 relative items-stretch bg-white">
-                
-                <!-- Left: Minimalist Property List (The Scrollable Core) -->
-                <div class="w-full md:w-[45%] py-4 lg:py-8" id="property-list-viewport">
-                    <div class="flex flex-col space-y-4" id="property-list-content">
-                        @foreach($this->featuredProperties as $index => $property)
-                            <div 
-                                id="property-item-{{ $property->id }}"
-                                data-id="{{ $property->id }}"
-                                @mouseenter="$dispatch('active-property-changed', { id: {{ $property->id }} })"
-                                @click="window.location.href = '{{ route('property.show', $property->slug ?? $property->id) }}'"
-                                :class="activeId == {{ $property->id }} ? 'border-emerald-600 opacity-100 translate-x-4' : 'border-slate-100 opacity-40 hover:opacity-100 hover:translate-x-2'"
-                                class="featured-list-item relative py-6 md:py-10 border-b transition-all duration-500 cursor-pointer origin-left"
-                            >
-                            <a href="{{ route('property.show', $property->slug ?? $property->id) }}" class="absolute inset-0 z-10"></a>
-                            
-                            <div class="flex items-start justify-between gap-6 md:gap-12 pointer-events-none pr-4 md:pr-8">
-                                <div class="flex gap-4 md:gap-6 flex-1">
-                                    <span 
-                                        :class="activeId === {{ $property->id }} ? 'text-emerald-500' : 'text-slate-300'"
-                                        class="text-[10px] md:text-sm font-black mt-1.5 md:mt-2 tracking-widest transition-colors uppercase flex-shrink-0 tabular-nums"
-                                    >
-                                        {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                                    </span>
-                                    <div class="flex-1">
-                                        <!-- Mobile Thumbnail (visible only on mobile) -->
-                                        <div class="md:hidden mb-4 rounded-2xl overflow-hidden aspect-video w-full shadow-lg h-0 group-hover/item:h-48 transition-all duration-500"
-                                             :class="activeId === {{ $property->id }} ? 'h-48 mb-6' : 'h-0 mb-0'">
-                                            @if($property->getMedia('featured')->count() > 0)
-                                                <img src="{{ $property->getFirstMedia('featured')->getUrl() }}" class="w-full h-full object-cover" alt="">
-                                            @endif
+        <!-- Foreground Content Pane (Bottom on mobile, Left 40% on desktop) -->
+        <div class="relative z-20 w-full flex-1 lg:w-[40%] lg:h-full flex flex-col bg-slate-950 lg:bg-white overflow-hidden">
+            <!-- Fixed Header (Responsive) -->
+            <div class="shrink-0 p-6 lg:p-16 border-b border-white/5 lg:border-slate-50">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="w-8 h-[2px] bg-emerald-600 font-bold"></span>
+                    <span class="text-emerald-500 lg:text-emerald-600 font-extrabold text-[8px] uppercase tracking-[0.5em]">Collections</span>
+                </div>
+                <h2 class="text-2xl lg:text-5xl font-black text-white lg:text-slate-900 tracking-tight leading-tight">
+                    Director's <span class="text-emerald-400 lg:text-transparent lg:bg-clip-text lg:bg-gradient-to-r lg:from-emerald-600 lg:to-teal-500">Cut</span>
+                </h2>
+            </div>
+
+            <!-- Scrollable List Container -->
+            <div 
+                id="property-list-container"
+                class="flex-1 overflow-y-auto scrollbar-hide snap-y snap-mandatory bg-transparent lg:bg-white"
+            >
+                <!-- Mobile Entrance Padding -->
+                <div class="h-10 lg:h-0"></div>
+
+                <div class="px-6 lg:px-16 space-y-0">
+                    @foreach($this->featuredProperties as $index => $property)
+                        <div 
+                            class="property-trigger group cursor-pointer py-6 lg:py-4 border-b border-white/5 lg:border-slate-100 last:border-0 transition-all duration-500 snap-center min-h-[100px] lg:min-h-0 flex items-center"
+                            data-index="{{ $index }}"
+                            data-price="₦{{ number_format($property->price) }}"
+                            onmouseenter="switchVisual({{ $index }})"
+                        >
+                            <div class="flex items-center gap-6 lg:gap-8 w-full">
+                                <span class="text-white/20 lg:text-slate-200 font-mono text-base group-hover:text-emerald-400 transition-colors duration-500">
+                                    {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
+                                </span>
+                                <div class="flex-1">
+                                    <h3 class="text-lg lg:text-2xl font-bold text-white/40 lg:text-slate-300 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-500 leading-tight">
+                                        {{ $property->title }}
+                                    </h3>
+                                    <div class="max-h-0 group-hover:max-h-20 overflow-hidden transition-all duration-500 ease-in-out">
+                                        <div class="flex flex-col gap-1 mt-2">
+                                            <p class="text-white/30 lg:text-slate-500 text-[8px] uppercase tracking-[0.2em] font-bold">
+                                                {{ $property->city->name ?? '' }}, {{ $property->state->name ?? '' }}
+                                            </p>
                                         </div>
-
-                                        <h3 :class="activeId === {{ $property->id }} ? 'text-emerald-700' : 'text-slate-900'"
-                                            class="text-lg md:text-2xl lg:text-3xl font-black leading-tight transition-all duration-500">
-                                            {{ $property->title }}
-                                        </h3>
-                                        <p class="text-slate-400 text-xs md:text-sm mt-1 md:mt-2 font-medium">
-                                            {{ $property->city->name ?? '' }}, {{ $property->state->name ?? '' }}
-                                        </p>
                                     </div>
                                 </div>
-                                
-                                <div class="text-right flex flex-col items-end shrink-0">
-                                    <span class="text-base md:text-xl lg:text-2xl font-black text-slate-900 tabular-nums">
-                                        ₦{{ number_format($property->price) }}
-                                    </span>
-                                    <span class="text-[9px] md:text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                                        {{ $property->propertyType->name ?? 'Luxury' }}
-                                    </span>
+                                <!-- Desktop Link Arrow -->
+                                <div class="opacity-0 group-hover:opacity-100 transition-all duration-500 transform lg:-translate-x-4 group-hover:translate-x-0 hidden lg:block">
+                                    <svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                    </svg>
                                 </div>
+                                <!-- Mobile Action Link -->
+                                <a href="{{ route('property.show', $property->slug ?? $property->id) }}" class="lg:hidden p-3 bg-white/5 rounded-full text-white/50 group-hover:text-emerald-400 group-hover:bg-emerald-500/10 transition-all">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
                             </div>
                         </div>
                     @endforeach
                 </div>
 
-                <div class="hidden md:block w-full md:w-[55%] sticky top-24 self-start" id="visual-deck-viewport">
-                    <div class="w-full h-[600px] lg:h-[750px] relative overflow-hidden bg-slate-100 rounded-[2.5rem] lg:rounded-[3.5rem] shadow-2xl">
-                        @foreach($this->featuredProperties as $index => $property)
-                            <div 
-                                class="absolute inset-0 z-10 transition-opacity duration-700 ease-in-out"
-                                :class="activeId == {{ $property->id }} ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'"
-                            >
-                                @if($property->getMedia('featured')->count() > 0)
-                                    <img src="{{ $property->getFirstMedia('featured')->getUrl() }}" class="w-full h-full object-cover" alt="{{ $property->title }}">
-                                @endif
-                                
-                                <!-- Premium Overlays -->
-                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent"></div>
-                                
-                                <!-- Floating Info -->
-                                <div class="absolute bottom-6 lg:bottom-12 left-6 lg:left-12 right-6 lg:right-12 flex items-end justify-between text-white z-20">
-                                    <div class="max-w-xs">
-                                        <div class="flex items-center gap-3 mb-4">
-                                            <span class="px-4 py-1.5 bg-emerald-500 rounded-full text-[9px] font-black uppercase tracking-[0.2em] shadow-lg shadow-emerald-500/20">
-                                                Elite Piece
-                                            </span>
-                                        </div>
-                                        <p class="text-xs md:text-sm font-light text-slate-200 leading-relaxed drop-shadow-md">
-                                            Architecture masterpiece in {{ $property->city->name ?? 'Nigeria' }}. Optimized for luxury living.
-                                        </p>
-                                    </div>
-                                    
-                                    <button wire:click.stop.prevent="toggleSaveProperty({{ $property->id }})" class="group/save w-14 h-14 lg:w-16 lg:h-16 rounded-2xl lg:rounded-3xl bg-white/10 backdrop-blur-3xl border border-white/20 flex items-center justify-center hover:bg-emerald-500 hover:border-emerald-500 transition-all duration-500 shadow-2xl">
-                                        @if($this->isPropertySaved($property->id))
-                                            <svg class="w-6 h-6 lg:w-7 lg:h-7 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                        @else
-                                            <svg class="w-6 h-6 lg:w-7 lg:h-7 transform group-hover/save:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                                        @endif
-                                    </button>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+                <div class="h-20 lg:h-32"></div>
+            </div>
+
+            <!-- Fixed Footer (Responsive) -->
+            <div class="shrink-0 p-6 lg:p-16 border-t border-white/5 lg:border-slate-50">
+                <a href="/properties?is_featured=1" class="group flex items-center justify-between lg:justify-start gap-4 text-white/50 lg:text-slate-900 font-bold text-[9px] uppercase tracking-[0.4em] hover:text-emerald-400 transition-colors">
+                    <span>Explore Collection</span>
+                    <span class="w-10 h-10 rounded-full bg-white/5 lg:bg-slate-100 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all duration-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
+                </a>
             </div>
         </div>
     </section>
@@ -663,9 +612,40 @@
     scrollbar-width: none;
 }
 
-/* Bento Item Transitions */
-.bento-item {
-    will-change: transform, opacity;
+/* Director's Cut Transitions */
+.visual-img {
+    transform: scale(1.1);
+    transition: transform 15s linear;
+}
+
+.visual-item.active .visual-img {
+    transform: scale(1);
+}
+
+.visual-item.active {
+    opacity: 1 !important;
+    z-index: 10;
+}
+
+.visual-item.active .visual-meta {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.property-trigger.active h3 {
+    color: white !important;
+    transform: translateX(10px);
+}
+
+@media (min-width: 1024px) {
+    .property-trigger.active h3 {
+        color: #0f172a !important; /* slate-900 */
+    }
+}
+
+.property-trigger.active .text-white\/20,
+.property-trigger.active .text-slate-200 {
+    color: #10b981 !important; /* emerald-500 */
 }
 </style>
 @endpush
@@ -678,8 +658,53 @@ document.addEventListener('livewire:initialized', () => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
 
-    // Initial Animation & Carousel Logic
+    // Director's Cut Logic
+    window.switchVisual = (index) => {
+        const visualItems = document.querySelectorAll('.visual-item');
+        const triggers = document.querySelectorAll('.property-trigger');
+        const mobileBadge = document.getElementById('mobile-price-badge');
+
+        // Remove active from all
+        visualItems.forEach(item => item.classList.remove('active'));
+        triggers.forEach(trigger => trigger.classList.remove('active'));
+
+        // Add to target
+        const targetVisual = document.getElementById(`property-visual-${index}`);
+        const targetTrigger = document.querySelector(`[data-index="${index}"]`);
+        
+        if (targetVisual) targetVisual.classList.add('active');
+        if (targetTrigger) {
+            targetTrigger.classList.add('active');
+            
+            // Update mobile badge
+            if (mobileBadge) {
+                mobileBadge.textContent = targetTrigger.getAttribute('data-price');
+                mobileBadge.classList.remove('scale-0');
+            }
+        }
+    };
+
     const initLuxuryAnimation = () => {
+        const triggers = gsap.utils.toArray('.property-trigger');
+        
+        // Mobile Center Detection via ScrollTrigger
+        triggers.forEach((trigger, i) => {
+            ScrollTrigger.create({
+                scroller: "#property-list-container",
+                trigger: trigger,
+                start: "top 60%", // Adjusted for mobile split view
+                end: "bottom 40%",
+                onToggle: self => {
+                    if (self.isActive) switchVisual(i);
+                }
+            });
+        });
+
+        // Initialize first one
+        if (triggers.length > 0) {
+            switchVisual(0);
+        }
+
         // Simple entrance for hero - less aggressive
         gsap.to('.hero-content', {
             y: 0,

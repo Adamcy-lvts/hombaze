@@ -4,8 +4,9 @@ namespace App\Filament\Agent\Resources;
 
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Components\Wizard\Step;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Forms\Components\Select;
@@ -17,6 +18,7 @@ use Filament\Forms\Components\Placeholder;
 use App\Models\PropertyOwner;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\SelectColumn;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\ViewAction;
 use Filament\Actions\EditAction;
@@ -24,6 +26,7 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\BulkAction;
 use App\Filament\Agent\Resources\PropertyResource\Pages\ListProperties;
 use App\Filament\Agent\Resources\PropertyResource\Pages\CreateProperty;
 use App\Filament\Agent\Resources\PropertyResource\Pages\EditProperty;
@@ -52,6 +55,12 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use App\Filament\Agent\Resources\PropertyResource\RelationManagers;
 use App\Rules\OptimalImageResolution;
+use Filament\Actions\ReplicateAction;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Blade;
+use Filament\Tables\Columns\Layout\Split;
+use Filament\Tables\Columns\Layout\Stack;
+use Filament\Support\Enums\FontWeight;
 
 class PropertyResource extends Resource
 {
@@ -114,623 +123,445 @@ class PropertyResource extends Resource
     {
         return $schema
             ->components([
-                // Main content area (2/3 width) and Sidebar (1/3 width)
-                Grid::make([
-                    'default' => 1,
-                    'lg' => 3,
+                Wizard::make([
+                    // Step 1: Basic Information
+                    Step::make('Basic Info')
+                        ->icon('heroicon-o-home')
+                        ->description('Property title, type & description')
+                        ->schema([
+                            Grid::make(['default' => 1, 'lg' => 2])
+                                ->schema([
+                                    TextInput::make('title')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->placeholder('e.g., Beautiful 3 Bedroom Apartment in Lekki')
+                                        ->live(onBlur: true)
+                                        ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
+                                        ->columnSpanFull(),
+
+                                    TextInput::make('slug')
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->unique(ignoreRecord: true)
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->hidden()
+                                        ->columnSpanFull(),
+
+                                    Select::make('property_type_id')
+                                        ->label('Property Type')
+                                        ->relationship('propertyType', 'name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->required()
+                                        ->live()
+                                        ->afterStateUpdated(fn(Set $set) => $set('property_subtype_id', null)),
+
+                                    Select::make('property_subtype_id')
+                                        ->label('Property Subtype')
+                                        ->options(fn(Get $get): array => PropertySubtype::query()
+                                            ->where('property_type_id', $get('property_type_id'))
+                                            ->pluck('name', 'id')
+                                            ->toArray())
+                                        ->searchable()
+                                        ->preload()
+                                        ->placeholder('Select subtype (optional)'),
+                                ]),
+
+                            Textarea::make('description')
+                                ->required()
+                                ->rows(5)
+                                ->placeholder('Describe the property in detail. Include key features, condition, and any unique selling points.')
+                                ->helperText('A good description helps attract more inquiries')
+                                ->columnSpanFull(),
+                        ]),
+
+                    // Step 2: Location
+                    Step::make('Location')
+                        ->icon('heroicon-o-map-pin')
+                        ->description('Property address & location')
+                        ->schema([
+                            Grid::make(['default' => 1, 'sm' => 3])
+                                ->schema([
+                                    Select::make('state_id')
+                                        ->label('State')
+                                        ->relationship('state', 'name')
+                                        ->searchable()
+                                        ->preload()
+                                        ->required()
+                                        ->default(fn (): ?int => static::getDefaultStateId())
+                                        ->live()
+                                        ->afterStateUpdated(function (Set $set) {
+                                            $set('city_id', null);
+                                            $set('area_id', null);
+                                        }),
+
+                                    Select::make('city_id')
+                                        ->label('City')
+                                        ->options(fn (Get $get): array => City::query()
+                                            ->where('state_id', $get('state_id'))
+                                            ->pluck('name', 'id')
+                                            ->toArray())
+                                        ->searchable()
+                                        ->preload()
+                                        ->required()
+                                        ->default(fn (Get $get): ?int => static::getDefaultCityId($get('state_id')))
+                                        ->live()
+                                        ->afterStateUpdated(fn (Set $set) => $set('area_id', null)),
+
+                                    Select::make('area_id')
+                                        ->label('Area')
+                                        ->options(fn (Get $get): array => Area::query()
+                                            ->where('city_id', $get('city_id'))
+                                            ->pluck('name', 'id')
+                                            ->toArray())
+                                        ->searchable()
+                                        ->preload()
+                                        ->default(fn (Get $get): ?int => static::getDefaultAreaId($get('city_id')))
+                                        ->placeholder('Select area (optional)'),
+                                ]),
+
+                            Textarea::make('address')
+                                ->label('Street Address')
+                                ->required()
+                                ->rows(2)
+                                ->placeholder('Enter the full street address')
+                                ->columnSpanFull(),
+
+                            TextInput::make('landmark')
+                                ->label('Nearby Landmark')
+                                ->maxLength(255)
+                                ->placeholder('e.g., Near Shoprite, Close to VGC'),
+                        ]),
+
+                    // Step 3: Features & Specifications
+                    Step::make('Features')
+                        ->icon('heroicon-o-square-3-stack-3d')
+                        ->description('Rooms, size & amenities')
+                        ->schema([
+                            Section::make('Property Specifications')
+                                ->description('Physical characteristics of the property')
+                                ->schema([
+                                    Grid::make(['default' => 1, 'sm' => 2])
+                                        ->schema([
+                                            TextInput::make('bedrooms')
+                                                ->numeric()
+                                                ->minValue(0)
+                                                ->maxValue(20)
+                                                ->suffix('beds')
+                                                ->required(fn(Get $get): bool => static::isFieldRequired('bedrooms', $get))
+                                                ->visible(fn(Get $get): bool => static::isFieldVisible('bedrooms', $get)),
+
+                                            TextInput::make('bathrooms')
+                                                ->numeric()
+                                                ->minValue(0)
+                                                ->maxValue(20)
+                                                ->suffix('baths')
+                                                ->required(fn(Get $get): bool => static::isFieldRequired('bathrooms', $get))
+                                                ->visible(fn(Get $get): bool => static::isFieldVisible('bathrooms', $get)),
+                                        ]),
+
+                                    Grid::make(['default' => 1, 'sm' => 2])
+                                        ->schema([
+                                            Select::make('furnishing_status')
+                                                ->label('Furnishing')
+                                                ->options([
+                                                    'unfurnished' => 'Unfurnished',
+                                                    'semi_furnished' => 'Semi Furnished',
+                                                    'furnished' => 'Fully Furnished',
+                                                ])
+                                                ->required(fn(Get $get): bool => static::isFieldRequired('furnishing_status', $get))
+                                                ->visible(fn(Get $get): bool => static::isFieldVisible('furnishing_status', $get)),
+
+                                            Select::make('compound_type')
+                                                ->label('Compound Type')
+                                                ->options(Property::getCompoundTypeOptions())
+                                                ->searchable()
+                                                ->placeholder('Select type...'),
+                                        ]),
+
+                                    // Plot Size for Land Properties
+                                    Grid::make(['default' => 1, 'sm' => 2])
+                                        ->schema([
+                                            Select::make('plot_size_id')
+                                                ->label('Standard Plot Size')
+                                                ->options(PlotSize::getFormOptions())
+                                                ->searchable()
+                                                ->placeholder('Select a standard plot size...')
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, $state) {
+                                                    if ($state) {
+                                                        $plotSize = PlotSize::find($state);
+                                                        if ($plotSize) {
+                                                            $set('size_sqm', $plotSize->size_in_sqm);
+                                                            $set('custom_plot_size', null);
+                                                            $set('custom_plot_unit', null);
+                                                        }
+                                                    }
+                                                }),
+
+                                            Placeholder::make('calculated_sqm')
+                                                ->label('Calculated Size')
+                                                ->content(fn(Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated'),
+                                        ])
+                                        ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3])),
+
+                                    Grid::make(2)
+                                        ->schema([
+                                            TextInput::make('custom_plot_size')
+                                                ->label('Custom Plot Size')
+                                                ->numeric()
+                                                ->step(0.01)
+                                                ->placeholder('e.g., 1200')
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                                                    if ($state && $get('custom_plot_unit')) {
+                                                        $sqm = PlotSize::convertToSquareMeters((float) $state, $get('custom_plot_unit'));
+                                                        $set('size_sqm', $sqm);
+                                                    }
+                                                }),
+
+                                            Select::make('custom_plot_unit')
+                                                ->label('Unit')
+                                                ->options(PlotSize::getUnits())
+                                                ->default('sqm')
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, $state, Get $get) {
+                                                    if ($state && $get('custom_plot_size')) {
+                                                        $sqm = PlotSize::convertToSquareMeters((float) $get('custom_plot_size'), $state);
+                                                        $set('size_sqm', $sqm);
+                                                    }
+                                                }),
+                                        ])
+                                        ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id')),
+                                ])->columns(1),
+
+                            Section::make('Amenities & Features')
+                                ->description('Select all that apply')
+                                ->collapsed()
+                                ->schema([
+                                    CheckboxList::make('features')
+                                        ->label('')
+                                        ->relationship('features', 'name')
+                                        ->options(function () {
+                                            return PropertyFeature::active()
+                                                ->ordered()
+                                                ->pluck('name', 'id')
+                                                ->toArray();
+                                        })
+                                        ->descriptions(function () {
+                                            return PropertyFeature::active()
+                                                ->ordered()
+                                                ->pluck('description', 'id')
+                                                ->toArray();
+                                        })
+                                        ->columns(['default' => 2, 'sm' => 3, 'lg' => 4])
+                                        ->gridDirection('row')
+                                        ->bulkToggleable()
+                                        ->columnSpanFull(),
+                                ]),
+                        ]),
+
+                    // Step 4: Pricing & Ownership
+                    Step::make('Pricing')
+                        ->icon('heroicon-o-currency-dollar')
+                        ->description('Price, listing type & ownership')
+                        ->schema([
+                            Section::make('Listing Details')
+                                ->schema([
+                                    Grid::make(['default' => 1, 'sm' => 2, 'lg' => 4])
+                                        ->schema([
+                                            Select::make('listing_type')
+                                                ->label('Listing Type')
+                                                ->options([
+                                                    'sale' => 'For Sale',
+                                                    'rent' => 'For Rent',
+                                                    'lease' => 'For Lease',
+                                                    'shortlet' => 'Shortlet',
+                                                ])
+                                                ->required()
+                                                ->default(fn (): string => static::getDefaultListingType())
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set, Get $get, ?string $state): void {
+                                                    $options = static::getStatusOptionsForListingType($state);
+                                                    if (!array_key_exists($get('status'), $options)) {
+                                                        $set('status', array_key_first($options));
+                                                    }
+                                                    $set('price_period', static::getDefaultPricePeriod($state));
+                                                }),
+
+                                            TextInput::make('price')
+                                                ->label('Price')
+                                                ->numeric()
+                                                ->prefix('₦')
+                                                ->required()
+                                                ->placeholder('e.g., 5000000'),
+
+                                            Select::make('price_period')
+                                                ->label('Price Period')
+                                                ->options([
+                                                    'per_month' => 'Per Month',
+                                                    'per_year' => 'Per Year',
+                                                    'per_night' => 'Per Night',
+                                                    'total' => 'Total',
+                                                ])
+                                                ->default(fn (Get $get): string => static::getDefaultPricePeriod($get('listing_type')))
+                                                ->visible(fn (Get $get): bool => in_array($get('listing_type'), ['rent', 'lease', 'shortlet'])),
+
+                                            Select::make('status')
+                                                ->label('Status')
+                                                ->options(fn (Get $get): array => static::getStatusOptionsForListingType($get('listing_type')))
+                                                ->required()
+                                                ->default('available'),
+                                        ]),
+                                ]),
+
+                            Section::make('Property Owner')
+                                ->description('Select or create the property owner')
+                                ->schema([
+                                    Select::make('owner_id')
+                                        ->label('Property Owner')
+                                        ->relationship('owner', 'name', function ($query) {
+                                            $user = auth()->user();
+                                            $agentProfile = $user?->agentProfile;
+
+                                            if ($agentProfile) {
+                                                return $query->where('agent_id', $agentProfile->id);
+                                            }
+
+                                            return $query->whereRaw('1 = 0');
+                                        })
+                                        ->getOptionLabelFromRecordUsing(fn($record) => $record->display_name)
+                                        ->searchable(['first_name', 'last_name', 'company_name', 'email'])
+                                        ->preload()
+                                        ->required()
+                                        ->createOptionForm([
+                                            Select::make('type')
+                                                ->label('Owner Type')
+                                                ->options(PropertyOwner::getTypes())
+                                                ->default(PropertyOwner::TYPE_INDIVIDUAL)
+                                                ->required()
+                                                ->live()
+                                                ->afterStateUpdated(fn($state, Set $set) => $set('company_name', null)),
+
+                                            Grid::make(2)
+                                                ->schema([
+                                                    TextInput::make('first_name')
+                                                        ->label('First Name')
+                                                        ->required(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
+                                                        ->visible(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
+                                                        ->maxLength(255),
+                                                    TextInput::make('last_name')
+                                                        ->label('Last Name')
+                                                        ->required(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
+                                                        ->visible(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
+                                                        ->maxLength(255),
+                                                ]),
+
+                                            TextInput::make('company_name')
+                                                ->label('Company/Organization Name')
+                                                ->required(fn(Get $get) => $get('type') !== PropertyOwner::TYPE_INDIVIDUAL)
+                                                ->visible(fn(Get $get) => $get('type') !== PropertyOwner::TYPE_INDIVIDUAL)
+                                                ->maxLength(255),
+
+                                            Grid::make(2)
+                                                ->schema([
+                                                    TextInput::make('email')
+                                                        ->label('Email Address')
+                                                        ->email()
+                                                        ->maxLength(255)
+                                                        ->placeholder('e.g., owner@example.com'),
+                                                    TextInput::make('phone')
+                                                        ->label('Phone Number')
+                                                        ->tel()
+                                                        ->maxLength(20)
+                                                        ->placeholder('e.g., +234 801 234 5678'),
+                                                ]),
+
+                                            Textarea::make('address')
+                                                ->label('Address')
+                                                ->maxLength(500)
+                                                ->placeholder('Full address of the property owner'),
+                                        ])
+                                        ->createOptionUsing(function (array $data): int {
+                                            $user = auth()->user();
+                                            $agentProfile = $user?->agentProfile;
+
+                                            $data['agency_id'] = null;
+                                            $data['agent_id'] = $agentProfile?->id;
+
+                                            $propertyOwner = PropertyOwner::create($data);
+
+                                            return $propertyOwner->id;
+                                        })
+                                        ->helperText('Select an existing owner or click + to create new')
+                                        ->columnSpanFull(),
+                                ]),
+
+                        ]),
+
+                    // Step 5: Media
+                    Step::make('Media')
+                        ->icon('heroicon-o-photo')
+                        ->description('Photos & images')
+                        ->schema([
+                            Section::make('Featured Image')
+                                ->description('The main image that represents this property')
+                                ->schema([
+                                    SpatieMediaLibraryFileUpload::make('featured_image')
+                                        ->label('')
+                                        ->collection('featured')
+                                        ->image()
+                                        ->imageEditor()
+                                        ->required()
+                                        ->acceptedFileTypes(getOptimalImageResolution()['formats'])
+                                        ->maxSize(getOptimalImageResolution()['max_file_size'])
+                                        ->rules([
+                                            new OptimalImageResolution(false)
+                                        ])
+                                        ->validationMessages([
+                                            'required' => 'A featured image is required to showcase your property.',
+                                        ])
+                                        ->helperText('Upload a high-quality image. ' . getOptimalImageResolution()['quality_note'])
+                                        ->columnSpanFull(),
+                                ]),
+
+                            Section::make('Gallery Images')
+                                ->description('Additional photos to showcase the property')
+                                ->schema([
+                                    SpatieMediaLibraryFileUpload::make('gallery_images')
+                                        ->label('')
+                                        ->collection('gallery')
+                                        ->image()
+                                        ->multiple()
+                                        ->reorderable()
+                                        ->acceptedFileTypes(getOptimalImageResolution()['formats'])
+                                        ->maxFiles(20)
+                                        ->maxSize(getOptimalImageResolution()['max_file_size'])
+                                        ->minFiles(1)
+                                        ->rules([
+                                            new OptimalImageResolution(true)
+                                        ])
+                                        ->validationMessages([
+                                            'min' => 'Please add at least one gallery image.',
+                                        ])
+                                        ->helperText('Add multiple images from different angles. Drag to reorder.')
+                                        ->columnSpanFull(),
+                                ]),
+                        ]),
                 ])
-                    ->schema([
-                        // Main Content Area (spans 2 columns)
-                        Group::make()
-                            ->schema([
-                                // Basic Property Information
-                                Section::make('Property Information')
-                                    ->description('Basic details about the property')
-                                    ->schema([
-                                        Grid::make([
-                                            'default' => 1,
-                                            'sm' => 2,
-                                        ])
-                                            ->schema([
-                                                TextInput::make('title')
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->live(onBlur: true)
-                                                    ->afterStateUpdated(fn(Set $set, ?string $state) => $set('slug', Str::slug($state)))
-                                                    ->columnSpanFull(),
-
-                                                TextInput::make('slug')
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->unique(ignoreRecord: true)
-                                                    ->disabled()
-                                                    ->dehydrated()
-                                                    ->hidden()
-                                                    ->columnSpanFull(),
-
-                                                Select::make('property_type_id')
-                                                    ->label('Property Type')
-                                                    ->relationship('propertyType', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(fn(Set $set) => $set('property_subtype_id', null))
-                                                    ->columnSpan(1),
-
-                                                Select::make('property_subtype_id')
-                                                    ->label('Property Subtype')
-                                                    ->options(fn(Get $get): array => PropertySubtype::query()
-                                                        ->where('property_type_id', $get('property_type_id'))
-                                                        ->pluck('name', 'id')
-                                                        ->toArray())
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->placeholder('Select subtype (optional)')
-                                                    ->columnSpan(1),
-                                            ]),
-                                        Textarea::make('description')
-                                            ->required()
-                                            ->rows(4)
-                                            ->columnSpanFull(),
-                                    ])->collapsible(),
-
-                                // Location Information
-                                Section::make('Location Details')
-                                    ->description('Property location and address information')
-                                    ->schema([
-                                        Grid::make([
-                                            'default' => 1,
-                                            'sm' => 3,
-                                        ])
-                                            ->schema([
-                                                Select::make('state_id')
-                                                    ->label('State')
-                                                    ->relationship('state', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(function (Set $set) {
-                                                        $set('city_id', null);
-                                                        $set('area_id', null);
-                                                    })
-                                                    ->columnSpan(1),
-
-                                                Select::make('city_id')
-                                                    ->label('City')
-                                                    ->options(fn(Get $get): array => City::query()
-                                                        ->where('state_id', $get('state_id'))
-                                                        ->pluck('name', 'id')
-                                                        ->toArray())
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(fn(Set $set) => $set('area_id', null))
-                                                    ->columnSpan(1),
-
-                                                Select::make('area_id')
-                                                    ->label('Area')
-                                                    ->options(fn(Get $get): array => Area::query()
-                                                        ->where('city_id', $get('city_id'))
-                                                        ->pluck('name', 'id')
-                                                        ->toArray())
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->placeholder('Select area (optional)')
-                                                    ->columnSpan(1),
-                                            ]),
-                                        Textarea::make('address')
-                                            ->label('Street Address')
-                                            ->required()
-                                            ->rows(3)
-                                            ->placeholder('Enter the full street address')
-                                            ->columnSpanFull(),
-                                    ])->collapsible(),
-
-
-                                // Property Features & Amenities
-                                Section::make('Features & Amenities')
-                                    ->description('Select property features and amenities to highlight')
-                                    ->schema([
-                                        CheckboxList::make('features')
-                                            ->label('Property Features')
-                                            ->relationship('features', 'name')
-                                            ->options(function () {
-                                                return PropertyFeature::active()
-                                                    ->ordered()
-                                                    ->pluck('name', 'id')
-                                                    ->toArray();
-                                            })
-                                            ->descriptions(function () {
-                                                return PropertyFeature::active()
-                                                    ->ordered()
-                                                    ->pluck('description', 'id')
-                                                    ->toArray();
-                                            })
-                                            ->columns(3)
-                                            ->gridDirection('row')
-                                            ->bulkToggleable()
-                                            ->helperText('Select all features and amenities that apply to this property. Features are grouped by category for easy selection.')
-                                            ->columnSpanFull(),
-                                    ])->collapsible(),
-
-
-                                // Additional Property Details
-                                Section::make('Additional Details')
-                                    ->description('Optional additional property information')
-                                    ->collapsed()
-                                    ->schema([
-                                        Grid::make([
-                                            'default' => 1,
-                                            'sm' => 2,
-                                        ])
-                                            ->schema([
-                                                TextInput::make('year_built')
-                                                    ->label('Year Built')
-                                                    ->numeric()
-                                                    ->minValue(1800)
-                                                    ->maxValue(date('Y') + 5)
-                                                    ->placeholder('e.g., 2020')
-                                                    ->columnSpan(1),
-
-                                                TextInput::make('landmark')
-                                                    ->label('Nearby Landmark')
-                                                    ->maxLength(255)
-                                                    ->placeholder('e.g., Near Shopping Mall, Close to School')
-                                                    ->columnSpan(1),
-                                            ]),
-                                        Grid::make([
-                                            'default' => 1,
-                                            'sm' => 2,
-                                        ])
-                                            ->schema([
-                                                TextInput::make('latitude')
-                                                    ->label('Latitude')
-                                                    ->numeric()
-                                                    ->step(0.000001)
-                                                    ->placeholder('e.g., 6.524379')
-                                                    ->helperText('GPS coordinates for map display')
-                                                    ->columnSpan(1),
-
-                                                TextInput::make('longitude')
-                                                    ->label('Longitude')
-                                                    ->numeric()
-                                                    ->step(0.000001)
-                                                    ->placeholder('e.g., 3.379206')
-                                                    ->helperText('GPS coordinates for map display')
-                                                    ->columnSpan(1),
-                                            ]),
-                                        TextInput::make('video_url')
-                                            ->label('Property Video URL')
-                                            ->url()
-                                            ->placeholder('https://youtube.com/watch?v=...')
-                                            ->helperText('YouTube or Vimeo video link for property tour')
-                                            ->columnSpanFull(),
-
-                                        TextInput::make('virtual_tour_url')
-                                            ->label('Virtual Tour URL')
-                                            ->url()
-                                            ->placeholder('https://...')
-                                            ->helperText('Link to 360° virtual tour or 3D walkthrough')
-                                            ->columnSpanFull(),
-                                    ])->collapsible(),
-
-                                // Media Files
-                                Section::make('Property Media')
-                                    ->description('Upload images, videos, documents and floor plans')
-                                    ->schema([
-                                        SpatieMediaLibraryFileUpload::make('featured_image')
-                                            ->label('Featured Image')
-                                            ->collection('featured')
-                                            ->image()
-                                            ->imageEditor()
-                                            ->imageEditorAspectRatios([
-                                                '3:2',
-                                                '16:9',
-                                                '4:3',
-                                            ])
-                                            ->acceptedFileTypes(getOptimalImageResolution()['formats'])
-                                            ->maxSize(getOptimalImageResolution()['max_file_size'])
-                                            ->required()
-                                            ->rules([
-                                                new OptimalImageResolution(false)
-                                            ])
-                                            ->helperText('Upload a high-quality featured image for this property. ' . getOptimalImageResolution()['quality_note'])
-                                            ->live(onBlur: true)
-                                            ->columnSpanFull(),
-
-                                        SpatieMediaLibraryFileUpload::make('gallery_images')
-                                            ->label('Gallery Images')
-                                            ->collection('gallery')
-                                            ->image()
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->acceptedFileTypes(getOptimalImageResolution()['formats'])
-                                            ->customProperties([
-                                                'caption' => null,
-                                                'alt_text' => null,
-                                            ])
-                                            ->maxFiles(function (Get $get) {
-                                                $propertyTypeId = $get('property_type_id');
-                                                if ($propertyTypeId) {
-                                                    $propertyType = PropertyType::find($propertyTypeId);
-                                                    if ($propertyType) {
-                                                        return getPropertyImageConfig($propertyType->slug)['gallery_max_files'];
-                                                    }
-                                                }
-                                                return getPropertyImageConfig()['gallery_max_files'];
-                                            })
-                                            ->maxSize(getOptimalImageResolution()['max_file_size'])
-                                            ->minFiles(1)
-                                            ->rules([
-                                                new OptimalImageResolution(true)
-                                            ])
-                                            ->validationMessages([
-                                                'min' => '📸 Please add at least one gallery image to showcase your property.',
-                                            ])
-                                            ->helperText(function (Get $get) {
-                                                $propertyTypeId = $get('property_type_id');
-                                                $resolutionInfo = getOptimalImageResolution();
-                                                if ($propertyTypeId) {
-                                                    $propertyType = PropertyType::find($propertyTypeId);
-                                                    if ($propertyType) {
-                                                        return getPropertyImageConfig($propertyType->slug)['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
-                                                    }
-                                                }
-                                                return getPropertyImageConfig()['gallery_helper_text'] . ' ' . $resolutionInfo['quality_note'];
-                                            })
-                                            ->live(onBlur: true)
-                                            ->columnSpanFull(),
-
-                                        // Forms\Components\SpatieMediaLibraryFileUpload::make('floor_plans')
-                                        //     ->label('Floor Plans')
-                                        //     ->collection('floor_plans')
-                                        //     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'application/pdf'])
-                                        //     ->multiple()
-                                        //     ->reorderable()
-                                        //     ->maxFiles(10)
-                                        //     ->maxSize(10240) // 10MB per file
-                                        //     ->helperText('Upload floor plan images or PDF documents')
-                                        //     ->columnSpanFull(),
-                                        //
-                                        // Forms\Components\SpatieMediaLibraryFileUpload::make('documents')
-                                        //     ->label('Property Documents')
-                                        //     ->collection('documents')
-                                        //     ->acceptedFileTypes(['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'])
-                                        //     ->multiple()
-                                        //     ->reorderable()
-                                        //     ->maxFiles(10)
-                                        //     ->maxSize(20480) // 20MB per file
-                                        //     ->helperText('Upload property documents, certificates, contracts, etc.')
-                                        //     ->columnSpanFull(),
-                                    ])->collapsible(),
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'lg' => 2,
-                            ]),
-
-                        // Sidebar (spans 1 column)
-                        Group::make()
-                            ->schema([
-                                // Pricing & Listing Details - Sidebar
-                                Section::make('Pricing & Listing')
-                                    ->description('Property pricing and listing information')
-                                    ->schema([
-                                        Select::make('listing_type')
-                                            ->options([
-                                                'sale' => 'For Sale',
-                                                'rent' => 'For Rent',
-                                                'lease' => 'For Lease',
-                                                'shortlet' => 'Shortlet',
-                                            ])
-                                            ->required()
-                                            ->live(),
-
-                                        TextInput::make('price')
-                                            ->numeric()
-                                            ->prefix('₦')
-                                            ->required(),
-
-                                        Select::make('price_period')
-                                            ->label('Price Period')
-                                            ->options([
-                                                'per_month' => 'Per Month',
-                                                'per_year' => 'Per Year',
-                                                'per_night' => 'Per Night',
-                                                'total' => 'Total',
-                                            ])
-                                            ->visible(fn(Get $get): bool => in_array($get('listing_type'), ['rent', 'lease', 'shortlet'])),
-
-                                        Select::make('status')
-                                            ->options([
-                                                'available' => 'Available',
-                                                'sold' => 'Sold',
-                                                'rented' => 'Rented',
-                                                'under_offer' => 'Under Offer',
-                                                'withdrawn' => 'Withdrawn',
-                                            ])
-                                            ->required()
-                                            ->default('available'),
-
-                                        Toggle::make('price_negotiable')
-                                            ->label('Price Negotiable')
-                                            ->default(false),
-                                    ])->columns(1)->collapsible(),
-
-
-                                // Property Features - Sidebar
-                                Section::make('Property Features')
-                                    ->description('Physical characteristics and specifications')
-                                    ->schema([
-                                        TextInput::make('bedrooms')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->maxValue(20)
-                                            ->required(fn(Get $get): bool => static::isFieldRequired('bedrooms', $get))
-                                            ->visible(fn(Get $get): bool => static::isFieldVisible('bedrooms', $get)),
-
-                                        TextInput::make('bathrooms')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->maxValue(20)
-                                            ->required(fn(Get $get): bool => static::isFieldRequired('bathrooms', $get))
-                                            ->visible(fn(Get $get): bool => static::isFieldVisible('bathrooms', $get)),
-
-                                        TextInput::make('toilets')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->maxValue(20)
-                                            ->visible(fn(Get $get): bool => static::isFieldVisible('toilets', $get)),
-
-                                        TextInput::make('parking_spaces')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->default(0)
-                                            ->visible(fn(Get $get): bool => static::isFieldVisible('parking_spaces', $get)),
-
-                                        TextInput::make('size_sqm')
-                                            ->label('Size (sqm)')
-                                            ->numeric()
-                                            ->suffix('sqm')
-                                            ->visible(fn(Get $get): bool => !in_array($get('property_type_id'), [3])), // Hide for land properties
-
-                                        // Plot Size Selection for Land Properties
-                                        Select::make('plot_size_id')
-                                            ->label('Standard Plot Size')
-                                            ->options(PlotSize::getFormOptions())
-                                            ->searchable()
-                                            ->placeholder('Select a standard plot size...')
-                                            ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3])) // Show only for land properties
-                                            ->live()
-                                            ->afterStateUpdated(function (Set $set, $state) {
-                                                if ($state) {
-                                                    $plotSize = PlotSize::find($state);
-                                                    if ($plotSize) {
-                                                        $set('size_sqm', $plotSize->size_in_sqm);
-                                                        $set('custom_plot_size', null);
-                                                        $set('custom_plot_unit', null);
-                                                    }
-                                                }
-                                            })
-                                            ->helperText('Select from predefined plot sizes'),
-
-                                        Grid::make(2)
-                                            ->schema([
-                                                TextInput::make('custom_plot_size')
-                                                    ->label('Custom Plot Size')
-                                                    ->numeric()
-                                                    ->step(0.01)
-                                                    ->placeholder('e.g., 1200')
-                                                    ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id'))
-                                                    ->live()
-                                                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
-                                                        if ($state && $get('custom_plot_unit')) {
-                                                            $sqm = PlotSize::convertToSquareMeters((float) $state, $get('custom_plot_unit'));
-                                                            $set('size_sqm', $sqm);
-                                                        }
-                                                    })
-                                                    ->helperText('Enter custom size value'),
-
-                                                Select::make('custom_plot_unit')
-                                                    ->label('Unit')
-                                                    ->options(PlotSize::getUnits())
-                                                    ->default('sqm')
-                                                    ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id'))
-                                                    ->live()
-                                                    ->afterStateUpdated(function (Set $set, $state, Get $get) {
-                                                        if ($state && $get('custom_plot_size')) {
-                                                            $sqm = PlotSize::convertToSquareMeters((float) $get('custom_plot_size'), $state);
-                                                            $set('size_sqm', $sqm);
-                                                        }
-                                                    })
-                                                    ->helperText('Select unit of measurement'),
-                                            ])
-                                            ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3]) && !$get('plot_size_id')),
-
-                                        Placeholder::make('calculated_sqm')
-                                            ->label('Calculated Size in SQM')
-                                            ->content(fn(Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated')
-                                            ->visible(fn(Get $get): bool => in_array($get('property_type_id'), [3])),
-
-                                        Select::make('furnishing_status')
-                                            ->options([
-                                                'unfurnished' => 'Unfurnished',
-                                                'semi_furnished' => 'Semi Furnished',
-                                                'furnished' => 'Fully Furnished',
-                                            ])
-                                            ->required(fn(Get $get): bool => static::isFieldRequired('furnishing_status', $get))
-                                            ->visible(fn(Get $get): bool => static::isFieldVisible('furnishing_status', $get)),
-
-                                        Select::make('compound_type')
-                                            ->label('Compound/Estate Type')
-                                            ->options(Property::getCompoundTypeOptions())
-                                            ->searchable()
-                                            ->placeholder('Select compound type...')
-                                            ->helperText('Specify if the property is in a compound, estate, or standalone'),
-                                    ])->columns(1)->collapsible(),
-
-                                // Property Owner - Sidebar
-                                Section::make('Property Owner')
-                                    ->description('Property ownership information')
-                                    ->schema([
-                                        Select::make('owner_id')
-                                            ->label('Property Owner')
-                                            ->relationship('owner', 'name', function ($query) {
-                                                $user = auth()->user();
-                                                $agentProfile = $user?->agentProfile;
-
-                                                if ($agentProfile) {
-                                                    // For independent agents, show only property owners they created
-                                                    return $query->where('agent_id', $agentProfile->id);
-                                                }
-
-                                                // Fallback: show no property owners if agent profile not found
-                                                return $query->whereRaw('1 = 0');
-                                            })
-                                            ->getOptionLabelFromRecordUsing(fn($record) => $record->display_name)
-                                            ->searchable(['first_name', 'last_name', 'company_name', 'email'])
-                                            ->preload()
-                                            ->required()
-                                            ->createOptionForm([
-                                                Select::make('type')
-                                                    ->label('Owner Type')
-                                                    ->options(PropertyOwner::getTypes())
-                                                    ->default(PropertyOwner::TYPE_INDIVIDUAL)
-                                                    ->required()
-                                                    ->live()
-                                                    ->afterStateUpdated(fn($state, Set $set) => $set('company_name', null)),
-
-                                                Grid::make(2)
-                                                    ->schema([
-                                                        TextInput::make('first_name')
-                                                            ->label('First Name')
-                                                            ->required(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
-                                                            ->visible(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
-                                                            ->maxLength(255),
-                                                        TextInput::make('last_name')
-                                                            ->label('Last Name')
-                                                            ->required(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
-                                                            ->visible(fn(Get $get) => $get('type') === PropertyOwner::TYPE_INDIVIDUAL)
-                                                            ->maxLength(255),
-                                                    ]),
-
-                                                TextInput::make('company_name')
-                                                    ->label('Company/Organization Name')
-                                                    ->required(fn(Get $get) => $get('type') !== PropertyOwner::TYPE_INDIVIDUAL)
-                                                    ->visible(fn(Get $get) => $get('type') !== PropertyOwner::TYPE_INDIVIDUAL)
-                                                    ->maxLength(255),
-
-                                                Grid::make(2)
-                                                    ->schema([
-                                                        TextInput::make('email')
-                                                            ->label('Email Address')
-                                                            ->email()
-                                                            ->maxLength(255)
-                                                            ->placeholder('e.g., owner@example.com'),
-                                                        TextInput::make('phone')
-                                                            ->label('Phone Number')
-                                                            ->tel()
-                                                            ->maxLength(20)
-                                                            ->placeholder('e.g., +234 801 234 5678'),
-                                                    ]),
-
-                                                Textarea::make('address')
-                                                    ->label('Address')
-                                                    ->maxLength(500)
-                                                    ->placeholder('Full address of the property owner'),
-
-                                                Grid::make(3)
-                                                    ->schema([
-                                                        TextInput::make('city')
-                                                            ->label('City')
-                                                            ->maxLength(100),
-                                                        TextInput::make('state')
-                                                            ->label('State')
-                                                            ->maxLength(100),
-                                                        TextInput::make('country')
-                                                            ->label('Country')
-                                                            ->default('Nigeria')
-                                                            ->maxLength(100),
-                                                    ]),
-
-                                                TextInput::make('tax_id')
-                                                    ->label('Tax ID / Business Registration')
-                                                    ->maxLength(50)
-                                                    ->placeholder('Optional tax identification number'),
-
-                                                Textarea::make('notes')
-                                                    ->label('Internal Notes')
-                                                    ->maxLength(1000)
-                                                    ->placeholder('Internal notes about this property owner')
-                                                    ->helperText('These notes are for your internal use only'),
-                                            ])
-                                            ->createOptionUsing(function (array $data): int {
-                                                $user = auth()->user();
-                                                $agentProfile = $user?->agentProfile;
-
-                                                // For independent agents, create property owners with agent_id but no agency_id
-                                                $data['agency_id'] = null;
-                                                $data['agent_id'] = $agentProfile?->id;
-
-                                                Log::info('Creating new property owner from agent panel', [
-                                                    'agent_id' => $agentProfile?->id,
-                                                    'user_id' => $user?->id,
-                                                    'owner_type' => $data['type'] ?? 'unknown',
-                                                    'owner_name' => ($data['first_name'] ?? '') . ' ' . ($data['last_name'] ?? '') ?: ($data['company_name'] ?? 'unknown'),
-                                                ]);
-
-                                                $propertyOwner = PropertyOwner::create($data);
-
-                                                Log::info('Property owner created successfully', [
-                                                    'property_owner_id' => $propertyOwner->id,
-                                                    'agent_id' => $propertyOwner->agent_id,
-                                                ]);
-
-                                                return $propertyOwner->id;
-                                            })
-                                            ->helperText('Select an existing property owner or click the + button to create a new owner profile. Property owners do not need user accounts.')
-                                            ->columnSpanFull(),
-                                    ])->columns(1)->collapsible(),
-
-                                // Property Settings - Sidebar
-                                Section::make('Property Settings')
-                                    ->description('Property status and visibility settings')
-                                    ->schema([
-                                        Toggle::make('is_active')
-                                            ->label('Active Listing')
-                                            ->default(true)
-                                            ->helperText('Inactive listings are hidden from public search'),
-                                    ])->columns(1)->collapsible(),
-
-                                // Contact Information - Sidebar
-                                Section::make('Contact Information')
-                                    ->description('Property viewing and contact details')
-                                    ->collapsed()
-                                    ->schema([
-                                        TextInput::make('contact_phone')
-                                            ->label('Contact Phone')
-                                            ->tel()
-                                            ->helperText('Phone number for property inquiries'),
-
-                                        TextInput::make('contact_email')
-                                            ->label('Contact Email')
-                                            ->email()
-                                            ->helperText('Email for property inquiries'),
-
-                                        Textarea::make('viewing_instructions')
-                                            ->label('Viewing Instructions')
-                                            ->rows(3)
-                                            ->helperText('Special instructions for property viewings'),
-                                    ])->columns(1)->collapsible(),
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'lg' => 1,
-                            ]),
-                    ]),
+                    ->skippable()
+                    ->persistStepInQueryString()
+                    ->submitAction(new HtmlString(Blade::render(<<<BLADE
+                        <x-filament::button
+                            type="submit"
+                            size="lg"
+                            wire:loading.attr="disabled"
+                        >
+                            Create Property
+                        </x-filament::button>
+                    BLADE)))
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -739,77 +570,81 @@ class PropertyResource extends Resource
         return $table
             ->columns([
                 SpatieMediaLibraryImageColumn::make('featured_image')
-                    ->label('Image')
+                    ->label('')
                     ->collection('featured')
                     ->circular()
                     ->defaultImageUrl('/images/property-placeholder.svg'),
 
                 TextColumn::make('title')
+                    ->label('Property')
                     ->searchable()
                     ->sortable()
+                    ->weight(FontWeight::Bold)
                     ->limit(30)
-                    ->weight('medium'),
+                    ->description(fn ($record) => $record->area?->name . ', ' . $record->city?->name),
 
                 TextColumn::make('propertyType.name')
                     ->label('Type')
                     ->badge()
-                    ->color('gray'),
-
-                TextColumn::make('location_summary')
-                    ->label('Location')
-                    ->getStateUsing(fn($record) => $record->area?->name . ', ' . $record->city?->name)
-                    ->searchable(['area.name', 'city.name'])
-                    ->limit(25),
+                    ->color('gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('bedrooms')
-                    ->label('Bed')
-                    ->sortable()
-                    ->alignCenter(),
+                    ->label('Beds')
+                    ->alignCenter()
+                    ->toggleable(),
 
                 TextColumn::make('bathrooms')
-                    ->label('Bath')
-                    ->sortable()
-                    ->alignCenter(),
+                    ->label('Baths')
+                    ->alignCenter()
+                    ->toggleable(),
 
                 TextColumn::make('price')
                     ->label('Price')
                     ->formatStateUsing(fn($state) => formatNaira($state ?? 0))
                     ->sortable()
-                    ->weight('bold')
+                    ->weight(FontWeight::Bold)
                     ->color('success'),
 
                 TextColumn::make('listing_type')
+                    ->label('Listing')
                     ->badge()
-                    ->colors([
-                        'success' => 'rent',
-                        'warning' => 'sale',
-                        'info' => 'shortlet',
-                        'primary' => 'lease',
-                    ])
+                    ->color(fn (string $state): string => match ($state) {
+                        'sale' => 'info',
+                        'rent' => 'warning',
+                        'lease' => 'primary',
+                        'shortlet' => 'success',
+                        default => 'gray',
+                    }),
+
+                SelectColumn::make('status')
+                    ->options(fn (Property $record): array => static::getStatusOptionsForListingType($record->listing_type))
                     ->sortable(),
 
-
-                TextColumn::make('status')
-                    ->badge()
-                    ->formatStateUsing(fn(string $state): string => PropertyStatus::from($state)->getLabel())
-                    ->color(fn(string $state): string => PropertyStatus::from($state)->getColor())
-                    ->icon(fn(string $state): string => PropertyStatus::from($state)->getIcon())
-                    ->sortable()
-                    ->searchable(),
+                TextColumn::make('owner.name')
+                    ->label('Owner')
+                    ->placeholder('No owner')
+                    ->toggleable(),
 
                 IconColumn::make('is_featured')
-                    ->boolean()
                     ->label('Featured')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-star')
+                    ->falseIcon('heroicon-o-star')
+                    ->trueColor('warning')
+                    ->falseColor('gray')
                     ->toggleable(),
 
                 IconColumn::make('is_verified')
-                    ->boolean()
                     ->label('Verified')
+                    ->boolean()
                     ->toggleable(),
 
                 TextColumn::make('created_at')
+                    ->label('Created')
                     ->dateTime()
                     ->sortable()
+                    ->since()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -821,13 +656,7 @@ class PropertyResource extends Resource
                         'shortlet' => 'Shortlet',
                     ]),
                 SelectFilter::make('status')
-                    ->options([
-                        'available' => 'Available',
-                        'rented' => 'Rented',
-                        'sold' => 'Sold',
-                        'under_offer' => 'Under Offer',
-                        'withdrawn' => 'Withdrawn',
-                    ]),
+                    ->options(PropertyStatus::options()),
                 SelectFilter::make('property_type_id')
                     ->relationship('propertyType', 'name')
                     ->label('Property Type')
@@ -910,13 +739,39 @@ class PropertyResource extends Resource
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
+                    ReplicateAction::make()
+                        ->label('Duplicate')
+                        ->icon('heroicon-o-document-duplicate')
+                        ->mutateRecordDataUsing(function (array $data): array {
+                            $data['title'] = $data['title'] . ' (Copy)';
+                            $data['slug'] = null;
+                            $data['status'] = PropertyStatus::OFF_MARKET->value;
+                            $data['is_published'] = false;
+                            $data['published_at'] = null;
+                            $data['is_featured'] = false;
+                            $data['is_verified'] = false;
+                            $data['view_count'] = 0;
+                            $data['inquiry_count'] = 0;
+                            $data['favorite_count'] = 0;
+                            return $data;
+                        })
+                        ->successRedirectUrl(fn (Property $replica): string => static::getUrl('edit', ['record' => $replica]))
+                        ->after(function (Property $record, Property $replica): void {
+                            $replica->features()->sync($record->features->pluck('id'));
+
+                            foreach (['featured', 'gallery'] as $collection) {
+                                $record->getMedia($collection)->each(
+                                    fn ($media) => $media->copy($replica, $collection)
+                                );
+                            }
+                        }),
                     Action::make('change_status')
                         ->label('Change Status')
                         ->icon('heroicon-o-arrow-path')
                         ->color('info')
                         ->schema([
                             Select::make('status')
-                                ->options(PropertyStatus::class)
+                                ->options(fn (Property $record): array => static::getStatusOptionsForListingType($record->listing_type))
                                 ->required(),
                         ])
                         ->action(function ($record, array $data) {
@@ -945,6 +800,20 @@ class PropertyResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    BulkAction::make('change_status')
+                        ->label('Change Status')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('info')
+                        ->form([
+                            Select::make('status')
+                                ->options(function (BulkAction $action): array {
+                                    return static::getStatusOptionsForRecords($action->getSelectedRecords());
+                                })
+                                ->required(),
+                        ])
+                        ->action(function ($records, array $data) {
+                            $records->each->update(['status' => $data['status']]);
+                        }),
                 ]),
             ])
             ->defaultSort('created_at', 'desc');
@@ -1006,5 +875,81 @@ class PropertyResource extends Resource
         $requiredFields = Property::getRequiredFieldsForType($propertyType->slug);
 
         return in_array($fieldName, $requiredFields);
+    }
+
+    private static function getStatusOptionsForListingType(?string $listingType): array
+    {
+        $options = PropertyStatus::options();
+
+        return match ($listingType) {
+            'sale' => array_intersect_key($options, array_flip([
+                PropertyStatus::AVAILABLE->value,
+                PropertyStatus::UNDER_OFFER->value,
+                PropertyStatus::SOLD->value,
+                PropertyStatus::OFF_MARKET->value,
+                PropertyStatus::WITHDRAWN->value,
+            ])),
+            'rent', 'lease', 'shortlet' => array_intersect_key($options, array_flip([
+                PropertyStatus::AVAILABLE->value,
+                PropertyStatus::RENTED->value,
+                PropertyStatus::OFF_MARKET->value,
+                PropertyStatus::WITHDRAWN->value,
+            ])),
+            default => $options,
+        };
+    }
+
+    private static function getStatusOptionsForRecords(iterable $records): array
+    {
+        $options = PropertyStatus::options();
+        $statusOptions = null;
+
+        foreach ($records as $record) {
+            $listingOptions = static::getStatusOptionsForListingType($record->listing_type ?? null);
+            $statusOptions = $statusOptions === null
+                ? $listingOptions
+                : array_intersect_key($statusOptions, $listingOptions);
+        }
+
+        return $statusOptions ?? $options;
+    }
+
+    private static function getDefaultListingType(): string
+    {
+        $user = auth()->user();
+        $preferred = $user?->preferences['default_listing_type'] ?? null;
+
+        return in_array($preferred, ['sale', 'rent', 'lease', 'shortlet'], true) ? $preferred : 'rent';
+    }
+
+    private static function getDefaultPricePeriod(?string $listingType): string
+    {
+        return in_array($listingType, ['rent', 'lease', 'shortlet'], true) ? 'per_month' : 'total';
+    }
+
+    private static function getDefaultStateId(): ?int
+    {
+        $agent = auth()->user()?->agentProfile;
+        $agency = $agent?->agency;
+
+        return $agency?->state_id ?? auth()->user()?->profile?->state_id;
+    }
+
+    private static function getDefaultCityId(?int $stateId): ?int
+    {
+        $agent = auth()->user()?->agentProfile;
+        $agency = $agent?->agency;
+        $cityId = $agency?->city_id ?? auth()->user()?->profile?->city_id;
+
+        return $cityId;
+    }
+
+    private static function getDefaultAreaId(?int $cityId): ?int
+    {
+        $agent = auth()->user()?->agentProfile;
+        $agency = $agent?->agency;
+        $areaId = $agency?->area_id ?? auth()->user()?->profile?->area_id;
+
+        return $areaId;
     }
 }

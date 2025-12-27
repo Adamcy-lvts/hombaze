@@ -50,11 +50,6 @@
 
             <!-- Clean Search Bar -->
             <div class="max-w-4xl mx-auto relative mb-8 z-30">
-                @if ($isRateLimited)
-                    <div class="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                        {{ $rateLimitMessage }}
-                    </div>
-                @endif
                 <div class="relative group">
                     <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full opacity-20 group-hover:opacity-30 blur transition duration-200"></div>
                     <div class="relative flex items-center bg-white rounded-full shadow-lg">
@@ -63,7 +58,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </div>
-                        <input type="text" wire:model.live.debounce.500ms="searchQuery" wire:focus="updateSuggestions"
+                        <input type="text" wire:model.live.debounce.500ms="searchQuery" wire:focus="loadSuggestions"
                             placeholder="Search by location, property type, or features..."
                             class="w-full pl-4 pr-16 py-4 text-lg bg-transparent border-none focus:ring-0 text-gray-900 placeholder-gray-400 rounded-full"
                             autocomplete="off">
@@ -81,8 +76,8 @@
                 <!-- Search Suggestions -->
                 @if ($showSuggestions && count($suggestions) > 0)
                     <div class="absolute w-full mt-3 bg-white border border-gray-100 rounded-2xl shadow-xl max-h-96 overflow-y-auto z-50 overflow-hidden">
-                        @foreach ($suggestions as $suggestion)
-                            <div wire:click="selectSuggestion({{ json_encode($suggestion) }})"
+                        @foreach ($suggestions as $index => $suggestion)
+                            <div wire:click="selectSuggestion({{ $index }})"
                                 class="flex items-center px-5 py-3.5 hover:bg-gray-50 cursor-pointer transition-colors duration-200 border-b border-gray-50 last:border-b-0 group">
                                 <div class="shrink-0 w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center mr-4 group-hover:bg-emerald-100 group-hover:scale-110 transition-all duration-200">
                                     @if ($suggestion['icon'] === 'location-dot')
@@ -114,21 +109,32 @@
             <!-- Clean Filters -->
             <div class="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
                 <!-- Active Filters Display -->
-                @if (count($activeFilters) > 0)
+                @if ($this->hasActiveFilters())
                     <div class="mb-4 flex flex-wrap items-center gap-2">
                         <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mr-2">Active filters:</span>
-                        @foreach ($activeFilters as $key => $filter)
+                        @if ($listingType)
                             <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                {{ $filter['label'] }}
-                                <button wire:click="removeFilter('{{ $key }}')"
+                                {{ ucfirst($listingType) }}
+                                <button wire:click="setListingType(null)"
                                     class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-emerald-500 hover:bg-emerald-200 hover:text-emerald-800 transition-colors duration-200">
                                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
                                 </button>
                             </span>
-                        @endforeach
-                        <button wire:click="clearAllFilters"
+                        @endif
+                        @if ($bedrooms)
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                {{ $bedrooms }} Bed{{ $bedrooms !== '1' ? 's' : '' }}
+                                <button wire:click="setBedrooms(null)"
+                                    class="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-emerald-500 hover:bg-emerald-200 hover:text-emerald-800 transition-colors duration-200">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </span>
+                        @endif
+                        <button wire:click="clearFilters"
                             class="text-xs font-medium text-gray-500 hover:text-red-600 transition-colors duration-200 ml-2 underline decoration-gray-300 hover:decoration-red-300">
                             Clear all
                         </button>
@@ -146,11 +152,6 @@
                             </path>
                         </svg>
                         {{ $showFilters ? 'Hide Filters' : 'Show Filters' }}
-                        @if (count($activeFilters) > 0)
-                            <span class="ml-2 bg-white/20 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                                {{ count($activeFilters) }}
-                            </span>
-                        @endif
                     </button>
 
                     <!-- Sort Options -->
@@ -181,16 +182,12 @@
                             <!-- Listing Type -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Listing Type</label>
-                                <div class="space-y-2.5">
-                                    @foreach ($filterOptions['listing_type'] as $type)
-                                        <label class="flex items-center group cursor-pointer">
-                                            <div class="relative flex items-center">
-                                                <input type="checkbox" wire:model.live="selectedListingTypes"
-                                                    value="{{ $type }}"
-                                                    class="peer h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 transition duration-150 ease-in-out">
-                                            </div>
-                                            <span class="ml-3 text-sm text-gray-700 group-hover:text-emerald-700 transition-colors">{{ ucfirst($type) }}</span>
-                                        </label>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach ($filterOptions['listing_types'] as $type)
+                                        <button wire:click="setListingType('{{ $type['value'] }}')"
+                                            class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ $listingType === $type['value'] ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 border border-transparent hover:border-emerald-200' }}">
+                                            {{ $type['label'] }}
+                                        </button>
                                     @endforeach
                                 </div>
                             </div>
@@ -199,11 +196,11 @@
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Property Type</label>
                                 <div class="relative">
-                                    <select wire:model.live="selectedPropertyType"
+                                    <select wire:model.live="propertyTypeId"
                                         class="w-full pl-4 pr-10 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 appearance-none cursor-pointer hover:bg-white transition-colors">
                                         <option value="">All Types</option>
-                                        @foreach ($filterOptions['property_type'] as $id => $name)
-                                            <option value="{{ $id }}">{{ $name }}</option>
+                                        @foreach ($filterOptions['property_types'] as $type)
+                                            <option value="{{ $type['value'] }}">{{ $type['label'] }}</option>
                                         @endforeach
                                     </select>
                                     <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-gray-500">
@@ -218,10 +215,10 @@
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Bedrooms</label>
                                 <div class="flex flex-wrap gap-2">
-                                    @foreach ($filterOptions['bedrooms'] as $beds)
-                                        <button wire:click="toggleFilter('bedrooms', '{{ $beds }}')"
-                                            class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ in_array($beds, $selectedBedrooms ?? []) ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 border border-transparent hover:border-emerald-200' }}">
-                                            {{ $beds }}
+                                    @foreach ($filterOptions['bedrooms'] as $bed)
+                                        <button wire:click="setBedrooms('{{ $bed['value'] }}')"
+                                            class="px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 {{ $bedrooms == $bed['value'] ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 border border-transparent hover:border-emerald-200' }}">
+                                            {{ $bed['label'] }}
                                         </button>
                                     @endforeach
                                 </div>
@@ -230,34 +227,12 @@
                             <!-- Price Range -->
                             <div>
                                 <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Price Range</label>
-                                <div class="space-y-2.5">
-                                    @foreach ($filterOptions['price_range'] as $range)
-                                        <label class="flex items-center group cursor-pointer">
-                                            <div class="relative flex items-center">
-                                                <input type="checkbox" wire:model.live="selectedPriceRanges"
-                                                    value="{{ $range }}"
-                                                    class="peer h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 transition duration-150 ease-in-out">
-                                            </div>
-                                            <span class="ml-3 text-sm text-gray-700 group-hover:text-emerald-700 transition-colors">
-                                                @switch($range)
-                                                    @case('0-500000')
-                                                        Under ₦500K
-                                                    @break
-
-                                                    @case('500000-1000000')
-                                                        ₦500K - ₦1M
-                                                    @break
-
-                                                    @case('1000000-2000000')
-                                                        ₦1M - ₦2M
-                                                    @break
-
-                                                    @case('2000000+')
-                                                        Over ₦2M
-                                                    @break
-                                                @endswitch
-                                            </span>
-                                        </label>
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach ($filterOptions['price_ranges'] as $range)
+                                        <button wire:click="setPriceRange({{ $range['min'] ?? 'null' }}, {{ $range['max'] ?? 'null' }})"
+                                            class="px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 {{ ($minPrice == $range['min'] && $maxPrice == $range['max']) ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-50 text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 border border-transparent hover:border-emerald-200' }}">
+                                            {{ $range['label'] }}
+                                        </button>
                                     @endforeach
                                 </div>
                             </div>

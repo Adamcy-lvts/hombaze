@@ -7,3 +7,32 @@
 .fi-logo-dark {
     filter: invert(1) brightness(1.1);
 }
+
+/* Show wizard steps stacked vertically on mobile */
+.fi-fo-wizard-header {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+@media (min-width: 640px) {
+    .fi-fo-wizard-header {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+}
+
+/* Compact steps on mobile */
+@media (max-width: 639px) {
+    .fi-fo-wizard-header-step {
+        padding: 0.5rem;
+    }
+
+    .fi-fo-wizard-header-step-description {
+        display: none;
+    }
+
+    .fi-fo-wizard-header-step-label {
+        font-size: 0.75rem;
+    }
+}

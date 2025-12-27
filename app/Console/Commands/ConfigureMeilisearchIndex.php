@@ -16,7 +16,15 @@ class ConfigureMeilisearchIndex extends Command
         $this->info('Configuring Meilisearch index settings...');
 
         try {
-            $client = app(MeilisearchClient::class);
+            $host = config('scout.meilisearch.host');
+            $key = config('scout.meilisearch.key');
+
+            if (!$host || !$key) {
+                $this->error('Meilisearch host or key not configured. Check MEILISEARCH_HOST and MEILISEARCH_KEY in .env');
+                return Command::FAILURE;
+            }
+
+            $client = new MeilisearchClient($host, $key);
             $index = $client->index('properties');
 
             // Create index if it doesn't exist

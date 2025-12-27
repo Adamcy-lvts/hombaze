@@ -1,0 +1,39 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-Deg_Jsvc.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/css/filament/agency/theme.css": {
+    "file": "assets/theme-Cmh1LlJ_.css",
+    "src": "resources/css/filament/agent/theme.css",
+    "isEntry": true
+  },
+  "resources/css/filament/agent/theme.css": {
+    "file": "assets/theme-Cmh1LlJ_.css",
+    "src": "resources/css/filament/agent/theme.css",
+    "isEntry": true
+  },
+  "resources/css/filament/landlord/theme.css": {
+    "file": "assets/theme-Cmh1LlJ_.css",
+    "src": "resources/css/filament/agent/theme.css",
+    "isEntry": true
+  },
+  "resources/css/filament/tenant/theme.css": {
+    "file": "assets/theme-BA1tNmot.css",
+    "src": "resources/css/filament/tenant/theme.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-Sn65oQVg.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/property-image-validator.js": {
+    "file": "assets/property-image-validator-DRAVyGnJ.js",
+    "name": "property-image-validator",
+    "src": "resources/js/property-image-validator.js",
+    "isEntry": true
+  }
+}

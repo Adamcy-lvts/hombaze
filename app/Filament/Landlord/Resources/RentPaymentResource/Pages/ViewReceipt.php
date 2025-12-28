@@ -24,6 +24,7 @@ class ViewReceipt extends Page
 
     public $receipt;
     public $amountInWords;
+    public ?string $autoDownload = null;
 
     public function mount($record)
     {
@@ -40,6 +41,11 @@ class ViewReceipt extends Page
         } catch (Exception $e) {
             Log::error('Error converting amount to words: ' . $e->getMessage());
             $this->amountInWords = 'Amount in words not available';
+        }
+
+        $download = request()->query('download');
+        if (in_array($download, ['png', 'pdf'], true)) {
+            $this->autoDownload = $download;
         }
     }
 

@@ -3,7 +3,6 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Agency\Pages\Auth\Register;
-use Filament\Widgets\AccountWidget;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -29,7 +28,8 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use BezhanSalleh\FilamentShield\Middleware\SyncShieldTenant;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use App\Filament\Widgets\CreditStatusWidget;
+use App\Filament\Agency\Widgets\AgencyAccountWidget;
+use App\Filament\Agency\Widgets\AgencyCreditStatusWidget;
 use App\Filament\Pages\Pricing;
 
 class AgencyPanelProvider extends PanelProvider
@@ -74,8 +74,8 @@ class AgencyPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Agency/Widgets'), for: 'App\\Filament\\Agency\\Widgets')
             ->widgets([
-                AccountWidget::class,
-                CreditStatusWidget::class,
+                AgencyAccountWidget::class,
+                AgencyCreditStatusWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

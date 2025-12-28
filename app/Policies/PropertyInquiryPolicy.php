@@ -15,7 +15,8 @@ class PropertyInquiryPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('view_any_property::inquiry');
     }
 
     /**
@@ -23,7 +24,8 @@ class PropertyInquiryPolicy
      */
     public function view(User $user, PropertyInquiry $propertyInquiry): bool
     {
-        return $user->can('view_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('view_property::inquiry');
     }
 
     /**
@@ -31,7 +33,8 @@ class PropertyInquiryPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('create_property::inquiry');
     }
 
     /**
@@ -39,7 +42,8 @@ class PropertyInquiryPolicy
      */
     public function update(User $user, PropertyInquiry $propertyInquiry): bool
     {
-        return $user->can('update_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('update_property::inquiry');
     }
 
     /**
@@ -47,7 +51,8 @@ class PropertyInquiryPolicy
      */
     public function delete(User $user, PropertyInquiry $propertyInquiry): bool
     {
-        return $user->can('delete_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('delete_property::inquiry');
     }
 
     /**
@@ -55,7 +60,8 @@ class PropertyInquiryPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('delete_any_property::inquiry');
     }
 
     /**
@@ -63,7 +69,8 @@ class PropertyInquiryPolicy
      */
     public function forceDelete(User $user, PropertyInquiry $propertyInquiry): bool
     {
-        return $user->can('force_delete_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('force_delete_property::inquiry');
     }
 
     /**
@@ -71,7 +78,8 @@ class PropertyInquiryPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('force_delete_any_property::inquiry');
     }
 
     /**
@@ -79,7 +87,8 @@ class PropertyInquiryPolicy
      */
     public function restore(User $user, PropertyInquiry $propertyInquiry): bool
     {
-        return $user->can('restore_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('restore_property::inquiry');
     }
 
     /**
@@ -87,7 +96,8 @@ class PropertyInquiryPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('restore_any_property::inquiry');
     }
 
     /**
@@ -95,7 +105,8 @@ class PropertyInquiryPolicy
      */
     public function replicate(User $user, PropertyInquiry $propertyInquiry): bool
     {
-        return $user->can('replicate_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('replicate_property::inquiry');
     }
 
     /**
@@ -103,6 +114,7 @@ class PropertyInquiryPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_property::inquiry');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('reorder_property::inquiry');
     }
 }

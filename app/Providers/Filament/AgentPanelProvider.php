@@ -23,7 +23,8 @@ use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
-use App\Filament\Widgets\CreditStatusWidget;
+use App\Filament\Agent\Widgets\AgentAccountWidget;
+use App\Filament\Agent\Widgets\AgentCreditStatusWidget;
 use App\Filament\Pages\Pricing;
 
 class AgentPanelProvider extends PanelProvider
@@ -53,7 +54,8 @@ class AgentPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Agent/Widgets'), for: 'App\\Filament\\Agent\\Widgets')
             ->widgets([
-                CreditStatusWidget::class,
+                AgentAccountWidget::class,
+                AgentCreditStatusWidget::class,
             ])
             ->profile(EditProfile::class)
             ->middleware([

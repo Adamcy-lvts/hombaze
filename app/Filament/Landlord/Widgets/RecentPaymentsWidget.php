@@ -77,7 +77,7 @@ class RecentPaymentsWidget extends BaseWidget
                     ->label('Receipt')
                     ->icon('heroicon-o-document-arrow-down')
                     ->color('success')
-                    ->url(fn (RentPayment $record) => route('landlord.payment.download-receipt', $record))
+                    ->url(fn (RentPayment $record) => route('filament.landlord.resources.rent-payments.view-receipt', ['record' => $record]) . '?download=png')
                     ->openUrlInNewTab(false)
                     ->visible(fn (RentPayment $record) => in_array($record->status, ['paid', 'partial'])),
             ])

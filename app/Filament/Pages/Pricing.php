@@ -28,7 +28,7 @@ class Pricing extends Page
         $currentPackageSlug = $account
             ? ListingCreditTransaction::where('listing_credit_account_id', $account->id)
                 ->whereNotNull('package')
-                ->whereIn('reason', ['self_service_purchase', 'self_service_free'])
+                ->whereIn('reason', ['self_service_purchase', 'self_service_free', 'package_purchase', 'package_free', 'admin_grant'])
                 ->latest()
                 ->value('package')
             : null;

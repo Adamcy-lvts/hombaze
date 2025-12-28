@@ -1,6 +1,9 @@
 {{-- Landlord Rent Receipt View --}}
 <x-filament::page>
     <div>
+        @if ($autoDownload === 'png')
+            <div x-data x-init="$nextTick(() => { $wire.downloadPng(); $wire.set('autoDownload', null); })"></div>
+        @endif
         <!-- Download Actions Buttons -->
         <div class="flex flex-wrap justify-end gap-4 mb-6">
             <x-filament::button color="primary" wire:click="downloadPdf" icon="heroicon-o-document-arrow-down"

@@ -15,7 +15,8 @@ class PropertyViewingPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('view_any_property::viewing');
     }
 
     /**
@@ -23,7 +24,8 @@ class PropertyViewingPolicy
      */
     public function view(User $user, PropertyViewing $propertyViewing): bool
     {
-        return $user->can('view_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('view_property::viewing');
     }
 
     /**
@@ -31,7 +33,8 @@ class PropertyViewingPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('create_property::viewing');
     }
 
     /**
@@ -39,7 +42,8 @@ class PropertyViewingPolicy
      */
     public function update(User $user, PropertyViewing $propertyViewing): bool
     {
-        return $user->can('update_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('update_property::viewing');
     }
 
     /**
@@ -47,7 +51,8 @@ class PropertyViewingPolicy
      */
     public function delete(User $user, PropertyViewing $propertyViewing): bool
     {
-        return $user->can('delete_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('delete_property::viewing');
     }
 
     /**
@@ -55,7 +60,8 @@ class PropertyViewingPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('delete_any_property::viewing');
     }
 
     /**
@@ -63,7 +69,8 @@ class PropertyViewingPolicy
      */
     public function forceDelete(User $user, PropertyViewing $propertyViewing): bool
     {
-        return $user->can('force_delete_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('force_delete_property::viewing');
     }
 
     /**
@@ -71,7 +78,8 @@ class PropertyViewingPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('force_delete_any_property::viewing');
     }
 
     /**
@@ -79,7 +87,8 @@ class PropertyViewingPolicy
      */
     public function restore(User $user, PropertyViewing $propertyViewing): bool
     {
-        return $user->can('restore_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('restore_property::viewing');
     }
 
     /**
@@ -87,7 +96,8 @@ class PropertyViewingPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('restore_any_property::viewing');
     }
 
     /**
@@ -95,7 +105,8 @@ class PropertyViewingPolicy
      */
     public function replicate(User $user, PropertyViewing $propertyViewing): bool
     {
-        return $user->can('replicate_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('replicate_property::viewing');
     }
 
     /**
@@ -103,6 +114,7 @@ class PropertyViewingPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_property::viewing');
+        return $user->hasRole(['agent', 'independent_agent'])
+            || $user->can('reorder_property::viewing');
     }
 }

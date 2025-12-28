@@ -36,6 +36,9 @@ use App\Filament\Resources\PropertyResource\Pages\EditProperty;
 use App\Filament\Resources\PropertyResource\Pages;
 use App\Filament\Resources\PropertyResource\RelationManagers;
 use App\Models\Property;
+use App\Models\State;
+use App\Models\City;
+use App\Models\Area;
 use App\Models\PropertyFeature;
 use App\Models\PropertySubtype;
 use App\Rules\OptimalImageResolution;
@@ -46,6 +49,7 @@ use Filament\Tables\Table;
 use App\Enums\PropertyStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class PropertyResource extends Resource
 {
@@ -174,7 +178,13 @@ class PropertyResource extends Resource
                                                 ->relationship('state', 'name')
                                                 ->required()
                                                 ->default(fn (): ?int => static::getDefaultStateId())
-                                                ->reactive()
+                                                ->searchable()
+                                                ->preload()
+                                                ->live()
+                                                ->afterStateUpdated(function (Set $set): void {
+                                                    $set('city_id', null);
+                                                    $set('area_id', null);
+                                                })
                                                 ->columnSpan([
                                                     'default' => 1,
                                                     'sm' => 1,
@@ -182,10 +192,45 @@ class PropertyResource extends Resource
                                                 ]),
                                             Select::make('city_id')
                                                 ->label('City')
-                                                ->relationship('city', 'name')
+                                                ->options(fn (Get $get): array => City::query()
+                                                    ->where('state_id', $get('state_id'))
+                                                    ->pluck('name', 'id')
+                                                    ->toArray())
+                                                ->searchable()
+                                                ->preload()
+                                                ->suffixAction(
+                                                    Action::make('add_city')
+                                                        ->icon('heroicon-m-plus')
+                                                        ->tooltip('Add city')
+                                                        ->modalHeading('Add city')
+                                                        ->form([
+                                                            TextInput::make('name')
+                                                                ->label('City name')
+                                                                ->required()
+                                                                ->maxLength(255),
+                                                        ])
+                                                        ->action(function (array $data, Set $set, Get $get): void {
+                                                            $stateId = $get('state_id');
+                                                            if (!$stateId) {
+                                                                return;
+                                                            }
+
+                                                            $city = City::create([
+                                                                'name' => $data['name'],
+                                                                'slug' => Str::slug($data['name']),
+                                                                'state_id' => $stateId,
+                                                                'is_active' => true,
+                                                            ]);
+
+                                                            $set('city_id', $city->id);
+                                                            $set('area_id', null);
+                                                        })
+                                                        ->disabled(fn (Get $get): bool => blank($get('state_id')))
+                                                )
                                                 ->required()
                                                 ->default(fn (Get $get): ?int => static::getDefaultCityId($get('state_id')))
-                                                ->reactive()
+                                                ->live()
+                                                ->afterStateUpdated(fn (Set $set) => $set('area_id', null))
                                                 ->columnSpan([
                                                     'default' => 1,
                                                     'sm' => 1,
@@ -193,7 +238,40 @@ class PropertyResource extends Resource
                                                 ]),
                                             Select::make('area_id')
                                                 ->label('Area')
-                                                ->relationship('area', 'name')
+                                                ->options(fn (Get $get): array => Area::query()
+                                                    ->where('city_id', $get('city_id'))
+                                                    ->pluck('name', 'id')
+                                                    ->toArray())
+                                                ->searchable()
+                                                ->preload()
+                                                ->suffixAction(
+                                                    Action::make('add_area')
+                                                        ->icon('heroicon-m-plus')
+                                                        ->tooltip('Add area')
+                                                        ->modalHeading('Add area')
+                                                        ->form([
+                                                            TextInput::make('name')
+                                                                ->label('Area name')
+                                                                ->required()
+                                                                ->maxLength(255),
+                                                        ])
+                                                        ->action(function (array $data, Set $set, Get $get): void {
+                                                            $cityId = $get('city_id');
+                                                            if (!$cityId) {
+                                                                return;
+                                                            }
+
+                                                            $area = Area::create([
+                                                                'name' => $data['name'],
+                                                                'slug' => Str::slug($data['name']),
+                                                                'city_id' => $cityId,
+                                                                'is_active' => true,
+                                                            ]);
+
+                                                            $set('area_id', $area->id);
+                                                        })
+                                                        ->disabled(fn (Get $get): bool => blank($get('city_id')))
+                                                )
                                                 ->default(fn (Get $get): ?int => static::getDefaultAreaId($get('city_id')))
                                                 ->columnSpan([
                                                     'default' => 1,

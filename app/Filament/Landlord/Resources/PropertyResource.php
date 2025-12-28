@@ -159,6 +159,35 @@ class PropertyResource extends Resource
                                             ->toArray())
                                         ->searchable()
                                         ->preload()
+                                        ->suffixAction(
+                                            Action::make('add_city')
+                                                ->icon('heroicon-m-plus')
+                                                ->tooltip('Add city')
+                                                ->modalHeading('Add city')
+                                                ->schema([
+                                                    TextInput::make('name')
+                                                        ->label('City name')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                ])
+                                                ->action(function (array $data, Set $set, Get $get): void {
+                                                    $stateId = $get('state_id');
+                                                    if (!$stateId) {
+                                                        return;
+                                                    }
+
+                                                    $city = City::create([
+                                                        'name' => $data['name'],
+                                                        'slug' => Str::slug($data['name']),
+                                                        'state_id' => $stateId,
+                                                        'is_active' => true,
+                                                    ]);
+
+                                                    $set('city_id', $city->id);
+                                                    $set('area_id', null);
+                                                })
+                                                ->disabled(fn (Get $get): bool => blank($get('state_id')))
+                                        )
                                         ->required()
                                         ->default(fn (Get $get): ?int => static::getDefaultCityId($get('state_id')))
                                         ->live()
@@ -172,6 +201,34 @@ class PropertyResource extends Resource
                                             ->toArray())
                                         ->searchable()
                                         ->preload()
+                                        ->suffixAction(
+                                            Action::make('add_area')
+                                                ->icon('heroicon-m-plus')
+                                                ->tooltip('Add area')
+                                                ->modalHeading('Add area')
+                                                ->schema([
+                                                    TextInput::make('name')
+                                                        ->label('Area name')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                ])
+                                                ->action(function (array $data, Set $set, Get $get): void {
+                                                    $cityId = $get('city_id');
+                                                    if (!$cityId) {
+                                                        return;
+                                                    }
+
+                                                    $area = Area::create([
+                                                        'name' => $data['name'],
+                                                        'slug' => Str::slug($data['name']),
+                                                        'city_id' => $cityId,
+                                                        'is_active' => true,
+                                                    ]);
+
+                                                    $set('area_id', $area->id);
+                                                })
+                                                ->disabled(fn (Get $get): bool => blank($get('city_id')))
+                                        )
                                         ->default(fn (Get $get): ?int => static::getDefaultAreaId($get('city_id')))
                                         ->placeholder('Select area (optional)'),
                                 ]),

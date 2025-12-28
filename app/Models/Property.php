@@ -431,9 +431,9 @@ class Property extends Model implements HasMedia
             $data['listing_package'] = $property?->listing_package ?? 'basic';
         }
 
-        $data['listing_fee_amount'] = $data['listing_fee_amount'] ?? 0;
-        $data['listing_fee_status'] = $data['listing_fee_status'] ?? self::LISTING_FEE_UNPAID;
-        $data['listing_paid_at'] = $data['listing_paid_at'] ?? null;
+        $data['listing_fee_amount'] = $data['listing_fee_amount'] ?? $property?->listing_fee_amount ?? 0;
+        $data['listing_fee_status'] = $data['listing_fee_status'] ?? $property?->listing_fee_status ?? self::LISTING_FEE_UNPAID;
+        $data['listing_paid_at'] = $data['listing_paid_at'] ?? $property?->listing_paid_at ?? null;
 
         if (!empty($data['is_published']) && empty($data['published_at'])) {
             $data['published_at'] = now();

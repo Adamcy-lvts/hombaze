@@ -56,6 +56,7 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Actions\ReplicateAction;
 use App\Filament\Agency\Resources\PropertyResource\Pages;
 use App\Filament\Agency\Resources\PropertyResource\RelationManagers;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 use Filament\Tables\Columns\Layout\Split;
@@ -157,6 +158,35 @@ class PropertyResource extends Resource
                                             ->toArray())
                                         ->searchable()
                                         ->preload()
+                                        ->suffixAction(
+                                            Action::make('add_city')
+                                                ->icon('heroicon-m-plus')
+                                                ->tooltip('Add city')
+                                                ->modalHeading('Add city')
+                                                ->schema([
+                                                    TextInput::make('name')
+                                                        ->label('City name')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                ])
+                                                ->action(function (array $data, Set $set, Get $get): void {
+                                                    $stateId = $get('state_id');
+                                                    if (!$stateId) {
+                                                        return;
+                                                    }
+
+                                                     $city = City::create([
+                                                        'name' => $data['name'],
+                                                        'slug' => Str::slug($data['name']),
+                                                        'state_id' => $stateId,
+                                                        'is_active' => true,
+                                                    ]);
+
+                                                    $set('city_id', $city->id);
+                                                    $set('area_id', null);
+                                                })
+                                                ->disabled(fn (Get $get): bool => blank($get('state_id')))
+                                        )
                                         ->required()
                                         ->default(fn (Get $get): ?int => static::getDefaultCityId($get('state_id')))
                                         ->live()
@@ -170,6 +200,34 @@ class PropertyResource extends Resource
                                             ->toArray())
                                         ->searchable()
                                         ->preload()
+                                        ->suffixAction(
+                                            Action::make('add_area')
+                                                ->icon('heroicon-m-plus')
+                                                ->tooltip('Add area')
+                                                ->modalHeading('Add area')
+                                                ->schema([
+                                                    TextInput::make('name')
+                                                        ->label('Area name')
+                                                        ->required()
+                                                        ->maxLength(255),
+                                                ])
+                                                ->action(function (array $data, Set $set, Get $get): void {
+                                                    $cityId = $get('city_id');
+                                                    if (!$cityId) {
+                                                        return;
+                                                    }
+
+                                                    $area = Area::create([
+                                                        'name' => $data['name'],
+                                                        'slug' => Str::slug($data['name']),
+                                                        'city_id' => $cityId,
+                                                        'is_active' => true,
+                                                    ]);
+
+                                                    $set('area_id', $area->id);
+                                                })
+                                                ->disabled(fn (Get $get): bool => blank($get('city_id')))
+                                        )
                                         ->default(fn (Get $get): ?int => static::getDefaultAreaId($get('city_id')))
                                         ->placeholder('Select area (optional)'),
                                 ]),
@@ -253,7 +311,7 @@ class PropertyResource extends Resource
                                                     }
                                                 }),
 
-                                            Placeholder::make('calculated_sqm')
+                                            TextEntry::make('calculated_sqm')
                                                 ->label('Calculated Size')
                                                 ->content(fn (Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated'),
                                         ])

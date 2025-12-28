@@ -10,6 +10,19 @@ class PropertyPolicy
 {
     use HandlesAuthorization;
 
+    public function before(User $user, string $ability): ?bool
+    {
+        if (
+            $user->user_type === 'admin'
+            || $user->user_type === 'super_admin'
+            || $user->hasRole(['admin', 'super_admin'])
+        ) {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

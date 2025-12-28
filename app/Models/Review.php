@@ -15,19 +15,34 @@ class Review extends Model
         'reviewable_type',
         'reviewable_id',
         'reviewer_id',
+        'moderated_by',
         'rating',
         'title',
         'comment',
+        'status',
         'is_verified',
         'is_approved',
+        'is_featured',
+        'is_anonymous',
         'helpful_count',
+        'not_helpful_count',
+        'response_count',
+        'moderated_at',
+        'moderation_notes',
+        'last_activity_at',
     ];
 
     protected $casts = [
         'rating' => 'integer',
         'is_verified' => 'boolean',
         'is_approved' => 'boolean',
+        'is_featured' => 'boolean',
+        'is_anonymous' => 'boolean',
         'helpful_count' => 'integer',
+        'not_helpful_count' => 'integer',
+        'response_count' => 'integer',
+        'moderated_at' => 'datetime',
+        'last_activity_at' => 'datetime',
     ];
 
     // Relationships
@@ -46,6 +61,14 @@ class Review extends Model
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    /**
+     * Get the user who moderated the review.
+     */
+    public function moderator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     // Scopes

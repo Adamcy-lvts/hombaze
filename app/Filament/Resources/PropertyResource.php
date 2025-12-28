@@ -735,7 +735,6 @@ class PropertyResource extends Resource
                     ->badge()
                     ->separator(', ')
                     ->limit(3)
-                    ->limitedRemainingText()
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->wrap(),
                 IconColumn::make('is_featured')

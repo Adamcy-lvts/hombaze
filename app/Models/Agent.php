@@ -291,7 +291,7 @@ class Agent extends Model implements HasMedia
      */
     public function getProfilePhotoUrlAttribute(): ?string
     {
-        return $this->user?->avatar;
+        return $this->user?->getFilamentAvatarUrl();
     }
 
     /**

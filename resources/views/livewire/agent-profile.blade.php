@@ -30,7 +30,7 @@
                 <div class="shrink-0 relative group mx-auto lg:mx-0">
                     <div class="absolute -inset-1 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-full opacity-20 group-hover:opacity-40 blur transition duration-500"></div>
                     @if($agentProfile->profile_photo_url)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($agentProfile->profile_photo_url) }}"
+                        <img src="{{ $agentProfile->profile_photo_url }}"
                              alt="{{ $agent->name }}"
                              class="relative w-32 h-32 lg:w-48 lg:h-48 rounded-full border-4 border-white shadow-xl object-cover z-10">
                     @else

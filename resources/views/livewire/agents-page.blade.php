@@ -204,7 +204,7 @@
                                 <!-- Agent Avatar -->
                                 <div class="relative h-48 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
                                     @if($agent->agentProfile && $agent->agentProfile->profile_photo_url)
-                                        <img src="{{ \Illuminate\Support\Facades\Storage::url($agent->agentProfile->profile_photo_url) }}"
+                                        <img src="{{ $agent->agentProfile->profile_photo_url }}"
                                              alt="{{ $agent->name }}"
                                              class="w-28 h-28 rounded-full border-4 border-white shadow-lg object-cover group-hover:scale-105 transition-transform duration-300">
                                     @else

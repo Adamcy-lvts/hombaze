@@ -275,11 +275,11 @@
                                 </div>
                                 
                                 @php
-                                    $agentSlugOrId = $property->agent?->slug ?? $property->agent?->id;
+                                    $agentUserSlug = $property->agent?->user?->slug;
                                 @endphp
-                                
-                                @if($agentSlugOrId)
-                                    <a href="{{ route('agent.profile', $agentSlugOrId) }}" wire:navigate class="block w-full text-center py-2 px-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-lg transition-colors text-sm">
+
+                                @if($agentUserSlug)
+                                    <a href="{{ route('agent.profile', $agentUserSlug) }}" wire:navigate class="block w-full text-center py-2 px-4 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium rounded-lg transition-colors text-sm">
                                         View Profile & Listings
                                     </a>
                                 @else

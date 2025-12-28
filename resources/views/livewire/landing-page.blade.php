@@ -278,10 +278,10 @@
                     </div>
 
                     <!-- Visual Info Anchor (Desktop only) -->
-                    <div class="hidden lg:flex absolute inset-0 flex-col justify-end p-24 z-20">
+                    <div class="hidden lg:flex absolute inset-0 flex-col justify-end p-16 z-20">
                         <div class="visual-meta opacity-0 translate-y-8 transition-all duration-700 delay-300">
-                            <span class="text-emerald-400 font-mono text-sm tracking-widest block mb-4">₦{{ number_format($property->price) }}</span>
-                            <h4 class="text-white text-4xl font-black mb-8 leading-tight max-w-lg">{{ $property->title }}</h4>
+                            <span class="text-emerald-400 font-black text-2xl tracking-tight block mb-2">₦{{ number_format($property->price) }}</span>
+                            <h4 class="text-white text-3xl font-black mb-6 leading-tight max-w-md">{{ $property->title }}</h4>
                             <a href="{{ route('property.show', $property->slug ?? $property->id) }}" 
                                class="inline-block px-8 py-4 bg-white text-slate-900 font-bold text-xs uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
                                 View Details
@@ -300,7 +300,7 @@
         </div>
 
         <!-- Foreground Content Pane (Bottom on mobile, Left 40% on desktop) -->
-        <div class="relative z-20 w-full flex-1 lg:w-[40%] lg:h-full flex flex-col bg-slate-950 lg:bg-white overflow-hidden">
+        <div class="relative z-20 w-full flex-1 lg:flex-none lg:w-[40%] lg:h-full flex flex-col bg-slate-950 lg:bg-white overflow-hidden">
             <!-- Fixed Header (Responsive) -->
             <div class="shrink-0 p-6 lg:p-16 border-b border-white/5 lg:border-slate-50">
                 <div class="flex items-center gap-3 mb-2">
@@ -323,7 +323,7 @@
                 <div class="px-6 lg:px-16 space-y-0">
                     @foreach($this->featuredProperties as $index => $property)
                         <div 
-                            class="property-trigger group cursor-pointer py-6 lg:py-4 border-b border-white/5 lg:border-slate-100 last:border-0 transition-all duration-500 snap-center min-h-[100px] lg:min-h-0 flex items-center"
+                            class="property-trigger group cursor-pointer py-4 lg:py-3 border-b border-white/5 lg:border-slate-100 last:border-0 transition-all duration-500 snap-center min-h-[80px] lg:min-h-0 flex items-center"
                             data-index="{{ $index }}"
                             data-price="₦{{ number_format($property->price) }}"
                             onmouseenter="switchVisual({{ $index }})"
@@ -333,15 +333,14 @@
                                     {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                                 </span>
                                 <div class="flex-1">
-                                    <h3 class="text-lg lg:text-2xl font-bold text-white/40 lg:text-slate-300 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-500 leading-tight">
+                                    <h3 class="text-lg lg:text-xl font-bold text-white/40 lg:text-slate-400 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-500 leading-tight">
                                         {{ $property->title }}
                                     </h3>
-                                    <div class="max-h-0 group-hover:max-h-20 overflow-hidden transition-all duration-500 ease-in-out">
-                                        <div class="flex flex-col gap-1 mt-2">
-                                            <p class="text-white/30 lg:text-slate-500 text-[8px] uppercase tracking-[0.2em] font-bold">
-                                                {{ $property->city->name ?? '' }}, {{ $property->state->name ?? '' }}
-                                            </p>
-                                        </div>
+                                    <div class="mt-1 flex items-center gap-3">
+                                        <span class="text-emerald-500 font-bold text-sm">₦{{ number_format($property->price) }}</span>
+                                        <p class="text-white/30 lg:text-slate-500 text-[8px] uppercase tracking-[0.2em] font-bold">
+                                            {{ $property->city->name ?? '' }}
+                                        </p>
                                     </div>
                                 </div>
                                 <!-- Desktop Link Arrow -->

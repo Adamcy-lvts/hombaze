@@ -30,6 +30,7 @@ use Filament\Actions\BulkAction;
 use App\Filament\Agent\Resources\PropertyResource\Pages\ListProperties;
 use App\Filament\Agent\Resources\PropertyResource\Pages\CreateProperty;
 use App\Filament\Agent\Resources\PropertyResource\Pages\EditProperty;
+use App\Filament\Agent\Resources\SalesAgreementResource;
 use Filament\Forms;
 use App\Models\Area;
 use App\Models\City;
@@ -792,6 +793,16 @@ class PropertyResource extends Resource
             ])
             ->recordActions([
 
+                Action::make('sales_agreement')
+                    ->label(fn ($record) => $record->salesAgreement ? 'View Sales Agreement' : 'Create Sales Agreement')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->listing_type === 'sale' && $record->status === PropertyStatus::SOLD->value)
+                    ->url(function ($record): string {
+                        return $record->salesAgreement
+                            ? SalesAgreementResource::getUrl('view', ['record' => $record->salesAgreement])
+                            : SalesAgreementResource::getUrl('create', ['property' => $record->id]);
+                    }),
 
                 ActionGroup::make([
                     ViewAction::make(),
@@ -817,11 +828,11 @@ class PropertyResource extends Resource
                             $replica->features()->sync($record->features->pluck('id'));
 
                             foreach (['featured', 'gallery'] as $collection) {
-                                $record->getMedia($collection)->each(
-                                    fn ($media) => $media->copy($replica, $collection)
-                                );
-                            }
-                        }),
+                            $record->getMedia($collection)->each(
+                                fn ($media) => $media->copy($replica, $collection)
+                            );
+                        }
+                    }),
                     Action::make('change_status')
                         ->label('Change Status')
                         ->icon('heroicon-o-arrow-path')

@@ -6,6 +6,8 @@ use App\Models\Property;
 use App\Models\Agent;
 use App\Models\PropertyInquiry;
 use App\Models\PropertyViewing;
+use App\Models\SalesAgreement;
+use App\Models\SalesAgreementTemplate;
 use Closure;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -59,6 +61,16 @@ class ApplyAgencyScopes
                     $query->whereHas('property', function (Builder $subQuery) use ($agencyId) {
                         $subQuery->where('agency_id', $agencyId);
                     });
+                });
+
+                // Apply global scope to SalesAgreement model for agency context
+                SalesAgreement::addGlobalScope('agency', function (Builder $query) use ($agencyId) {
+                    $query->where('agency_id', $agencyId);
+                });
+
+                // Apply global scope to SalesAgreementTemplate model for agency context
+                SalesAgreementTemplate::addGlobalScope('agency', function (Builder $query) use ($agencyId) {
+                    $query->where('agency_id', $agencyId);
                 });
             }
         }

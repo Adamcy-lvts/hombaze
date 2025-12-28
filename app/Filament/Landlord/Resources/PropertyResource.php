@@ -31,6 +31,7 @@ use Filament\Actions\BulkAction;
 use App\Filament\Landlord\Resources\PropertyResource\Pages\ListProperties;
 use App\Filament\Landlord\Resources\PropertyResource\Pages\CreateProperty;
 use App\Filament\Landlord\Resources\PropertyResource\Pages\EditProperty;
+use App\Filament\Landlord\Resources\SalesAgreementResource;
 use App\Filament\Landlord\Resources\PropertyResource\Pages;
 use App\Filament\Landlord\Resources\PropertyResource\RelationManagers;
 use App\Models\Property;
@@ -576,6 +577,17 @@ class PropertyResource extends Resource
                                 fn ($media) => $media->copy($replica, $collection)
                             );
                         }
+                    }),
+
+                Action::make('sales_agreement')
+                    ->label(fn ($record) => $record->salesAgreement ? 'View Sales Agreement' : 'Create Sales Agreement')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->listing_type === 'sale' && $record->status === PropertyStatus::SOLD->value)
+                    ->url(function ($record): string {
+                        return $record->salesAgreement
+                            ? SalesAgreementResource::getUrl('view', ['record' => $record->salesAgreement])
+                            : SalesAgreementResource::getUrl('create', ['property' => $record->id]);
                     }),
 
                 ActionGroup::make([

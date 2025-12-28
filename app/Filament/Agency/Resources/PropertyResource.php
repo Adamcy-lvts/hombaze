@@ -31,6 +31,7 @@ use Filament\Actions\BulkAction;
 use App\Filament\Agency\Resources\PropertyResource\Pages\ListProperties;
 use App\Filament\Agency\Resources\PropertyResource\Pages\CreateProperty;
 use App\Filament\Agency\Resources\PropertyResource\Pages\EditProperty;
+use App\Filament\Agency\Resources\SalesAgreementResource;
 use App\Rules\OptimalImageResolution;
 use Filament\Forms;
 use App\Models\Area;
@@ -56,7 +57,6 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Actions\ReplicateAction;
 use App\Filament\Agency\Resources\PropertyResource\Pages;
 use App\Filament\Agency\Resources\PropertyResource\RelationManagers;
-use Filament\Infolists\Components\TextEntry;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 use Filament\Tables\Columns\Layout\Split;
@@ -311,7 +311,7 @@ class PropertyResource extends Resource
                                                     }
                                                 }),
 
-                                            TextEntry::make('calculated_sqm')
+                                            Placeholder::make('calculated_sqm')
                                                 ->label('Calculated Size')
                                                 ->content(fn (Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated'),
                                         ])
@@ -747,6 +747,17 @@ class PropertyResource extends Resource
                         }
                     }),
                 
+                Action::make('sales_agreement')
+                    ->label(fn ($record) => $record->salesAgreement ? 'View Sales Agreement' : 'Create Sales Agreement')
+                    ->icon('heroicon-o-document-text')
+                    ->color('success')
+                    ->visible(fn ($record) => $record->listing_type === 'sale' && $record->status === PropertyStatus::SOLD->value)
+                    ->url(function ($record): string {
+                        return $record->salesAgreement
+                            ? SalesAgreementResource::getUrl('view', ['record' => $record->salesAgreement])
+                            : SalesAgreementResource::getUrl('create', ['property' => $record->id]);
+                    }),
+
                 Action::make('toggle_featured')
                     ->label(fn ($record) => $record->is_featured ? 'Unfeature' : 'Feature')
                     ->icon(fn ($record) => $record->is_featured ? 'heroicon-o-star' : 'heroicon-s-star')

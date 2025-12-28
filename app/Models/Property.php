@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -233,6 +234,14 @@ class Property extends Model implements HasMedia
     public function inquiries(): HasMany
     {
         return $this->hasMany(PropertyInquiry::class);
+    }
+
+    /**
+     * Sales agreement for this property.
+     */
+    public function salesAgreement(): HasOne
+    {
+        return $this->hasOne(SalesAgreement::class);
     }
 
     /**

@@ -101,15 +101,18 @@
         </div>
 
         <!-- Right Side - Login Form (Light Theme) -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50">
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-12 bg-gray-50 min-h-screen overflow-y-auto">
             <div class="w-full max-w-md space-y-8">
-                <!-- Mobile Logo -->
-                <div class="lg:hidden text-center mb-8">
-                    <a href="{{ route('landing') }}" class="inline-flex items-center space-x-2">
-                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                            <x-application-logo class="w-6 h-6 text-white" />
+                <!-- Universal Logo -->
+                <div class="text-center mb-10">
+                    <a href="{{ route('landing') }}" class="inline-flex flex-col items-center group">
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-105 transition-all duration-500 mb-4">
+                            <x-application-logo class="w-9 h-9 text-white" />
                         </div>
-                        <span class="text-xl font-bold text-gray-900">HomeBaze</span>
+                        <div class="flex flex-col items-center">
+                            <span class="text-3xl font-black text-gray-900 tracking-tight leading-none">HomeBaze</span>
+                            <span class="text-[10px] text-emerald-600 font-black uppercase tracking-[0.3em] mt-2">Premium Real Estate</span>
+                        </div>
                     </a>
                 </div>
 
@@ -145,7 +148,7 @@
                 @endif
 
                 <!-- Form -->
-                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
                     <form method="POST" action="{{ route('login') }}" class="space-y-6">
                         @csrf
 

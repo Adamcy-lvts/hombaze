@@ -102,15 +102,18 @@
         </div>
 
         <!-- Right Side - Register Form (Light Theme) -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50 overflow-y-auto h-screen">
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-12 bg-gray-50 min-h-screen overflow-y-auto pt-8 pb-12">
             <div class="w-full max-w-xl space-y-6">
-                <!-- Mobile Logo -->
-                <div class="lg:hidden text-center mb-8">
-                    <a href="{{ route('landing') }}" class="inline-flex items-center space-x-2">
-                        <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
-                            <x-application-logo class="w-6 h-6 text-white" />
+                <!-- Universal Logo -->
+                <div class="text-center mb-8">
+                    <a href="{{ route('landing') }}" class="inline-flex flex-col items-center group">
+                        <div class="w-16 h-16 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:scale-105 transition-all duration-500 mb-4">
+                            <x-application-logo class="w-9 h-9 text-white" />
                         </div>
-                        <span class="text-xl font-bold text-gray-900">HomeBaze</span>
+                        <div class="flex flex-col items-center">
+                            <span class="text-3xl font-black text-gray-900 tracking-tight leading-none">HomeBaze</span>
+                            <span class="text-[10px] text-emerald-600 font-black uppercase tracking-[0.3em] mt-2">Premium Real Estate</span>
+                        </div>
                     </a>
                 </div>
 
@@ -123,20 +126,20 @@
                 </div>
 
                 <!-- Form -->
-                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
                     <form method="POST" action="{{ route('unified.register') }}" class="space-y-5">
                         @csrf
 
                         <!-- User Type Selection -->
                         <div class="space-y-3">
                             <label class="block text-sm font-semibold text-gray-700">I am a...</label>
-                            <div class="grid grid-cols-2 gap-3">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 @foreach($userTypes as $type => $config)
                                 <label class="relative cursor-pointer group">
                                     <input type="radio" name="user_type" value="{{ $type }}" class="peer sr-only" {{ old('user_type') === $type || ($type === 'customer' && !old('user_type')) ? 'checked' : '' }}>
                                     <div class="p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-white hover:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:ring-1 peer-checked:ring-emerald-500 transition-all duration-200 flex flex-col items-center text-center h-full">
-                                        <div class="text-sm font-bold text-gray-900 peer-checked:text-emerald-700">{{ $config['label'] }}</div>
-                                        <div class="text-xs text-gray-500 mt-1 peer-checked:text-emerald-600/80">{{ $config['description'] }}</div>
+                                        <div class="text-sm font-bold text-gray-900 peer-checked:text-emerald-700 leading-tight">{{ $config['label'] }}</div>
+                                        <div class="text-[10px] text-gray-500 mt-1 peer-checked:text-emerald-600/80 leading-snug">{{ $config['description'] }}</div>
                                     </div>
                                 </label>
                                 @endforeach

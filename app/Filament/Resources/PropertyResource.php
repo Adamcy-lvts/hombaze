@@ -16,6 +16,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\Filter;
@@ -737,8 +738,7 @@ class PropertyResource extends Resource
                     ->limit(3)
                     ->toggleable(isToggledHiddenByDefault: true)
                     ->wrap(),
-                IconColumn::make('is_featured')
-                    ->boolean()
+                ToggleColumn::make('is_featured')
                     ->label('Featured')
                     ->toggleable(),
                 IconColumn::make('is_verified')

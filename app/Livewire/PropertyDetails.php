@@ -31,6 +31,13 @@ class PropertyDetails extends Component
     public $inquiryPhone = '';
     public $inquiryMessage = '';
 
+    protected \App\Services\PropertyWishlistService $wishlistService;
+
+    public function boot(\App\Services\PropertyWishlistService $wishlistService): void
+    {
+        $this->wishlistService = $wishlistService;
+    }
+
     public function mount(Property $property)
     {
         $this->property = $property;
@@ -68,28 +75,27 @@ class PropertyDetails extends Component
 
         // Check if favorited (if user is logged in)
         if (auth()->check()) {
-            $this->isFavorited = auth()->user()->savedProperties()->where('property_id', $this->property->id)->exists();
+            $this->isFavorited = $this->wishlistService->isSaved(auth()->user(), $this->property);
         }
     }
 
-    public function toggleFavorite()
+    public function toggleSaveProperty()
     {
         if (!auth()->check()) {
             session()->flash('message', 'Please login to save favorites.');
+            $this->redirect(route('login'));
             return;
         }
 
-        if ($this->isFavorited) {
-            auth()->user()->savedProperties()->where('property_id', $this->property->id)->delete();
-            $this->isFavorited = false;
-            session()->flash('message', 'Property removed from favorites.');
-        } else {
-            auth()->user()->savedProperties()->create([
-                'property_id' => $this->property->id,
-                'notes' => null,
-            ]);
-            $this->isFavorited = true;
+        $isSaved = $this->wishlistService->toggleSave(auth()->user(), $this->property);
+        $this->isFavorited = $isSaved;
+
+        if ($isSaved) {
             session()->flash('message', 'Property added to favorites.');
+            $this->dispatch('property-saved', message: 'Property saved successfully');
+        } else {
+            session()->flash('message', 'Property removed from favorites.');
+            $this->dispatch('property-unsaved', message: 'Property removed from saved list');
         }
     }
 
@@ -276,7 +282,7 @@ class PropertyDetails extends Component
             $propertyDetails = [
                 'title' => $this->property->title,
                 'location' => ($this->property->area?->name ?? 'Unknown Area') . ', ' . ($this->property->city?->name ?? 'Unknown City'),
-                'price' => '₦' . number_format($this->property->price),
+                'price' => '₦' . number_format((float) $this->property->price),
                 'type' => $this->property->propertySubtype?->name ?? 'Unknown Type'
             ];
 
@@ -474,7 +480,7 @@ class PropertyDetails extends Component
             'title' => $this->property->title,
             'description' => $this->property->description ?
                 Str::limit(strip_tags($this->property->description), 150) :
-                "Discover this amazing {$propertyTypeName} in {$areaName}, {$cityName}. Price: ₦" . number_format($this->property->price),
+                "Discover this amazing {$propertyTypeName} in {$areaName}, {$cityName}. Price: ₦" . number_format((float) $this->property->price),
             'image' => $this->property->getFeaturedImageUrl('medium'),
             'url' => route('property.show', $this->property->slug),
             'type' => 'article',

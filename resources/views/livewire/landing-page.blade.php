@@ -153,19 +153,32 @@
                                 <svg class="w-16 h-16 lg:w-20 lg:h-20 text-slate-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                             </div>
                         @endif
-                        <!-- Desktop Gradients -->
-                        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/20 to-transparent hidden lg:block"></div>
-                    </div>
+                     <!-- Cinematic Gradients -->
+                     <div class="absolute inset-0 bg-slate-950/40 hidden lg:block"></div>
+                     <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/60 to-transparent hidden lg:block"></div>
+                     <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent hidden lg:block"></div>
+                 </div>
 
                     <!-- Visual Info Anchor (Desktop only) -->
-                    <div class="hidden lg:flex absolute inset-0 flex-col justify-end p-16 z-20">
-                        <div class="visual-meta opacity-0 translate-y-8 transition-all duration-700 delay-300">
-                            <span class="text-emerald-400 font-black text-2xl tracking-tight block mb-2">₦{{ number_format($property->price) }}</span>
-                            <h4 class="text-white text-3xl font-black mb-6 leading-tight max-w-md">{{ $property->title }}</h4>
-                            <a href="{{ route('property.show', $property->slug ?? $property->id) }}" 
-                               class="inline-block px-8 py-4 bg-white text-slate-900 font-bold text-xs uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all duration-300">
-                                View Details
-                            </a>
+                    <div class="hidden lg:flex absolute inset-0 flex-col justify-end p-20 z-20">
+                        <div class="visual-meta opacity-0 translate-y-8 select-none">
+                            <div class="inline-flex items-center gap-2 mb-4">
+                                <span class="w-12 h-[1px] bg-emerald-500/50"></span>
+                                <span class="text-emerald-400 font-black text-3xl tracking-tighter tabular-nums drop-shadow-sm">₦{{ number_format($property->price) }}</span>
+                            </div>
+                            <h4 class="text-white text-5xl font-black mb-10 leading-tight max-w-xl drop-shadow-2xl">
+                                {{ $property->title }}
+                            </h4>
+                            <div class="flex items-center gap-6">
+                                <a href="{{ route('property.show', $property->slug ?? $property->id) }}" 
+                                   class="relative group/btn-v overflow-hidden px-10 py-5 bg-white text-slate-900 font-black text-xs uppercase tracking-[0.2em] shadow-2xl transition-all duration-500">
+                                    <span class="relative z-10">Explore Detail</span>
+                                    <div class="absolute inset-0 bg-emerald-500 translate-y-full group-hover/btn-v:translate-y-0 transition-transform duration-500 ease-out"></div>
+                                </a>
+                                <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center text-white/50 hover:text-white transition-colors cursor-pointer group/arrow">
+                                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -209,7 +222,7 @@
                             onmouseenter="switchVisual({{ $index }})"
                         >
                             <div class="flex items-center gap-4 lg:gap-8 w-full">
-                                <span class="text-white/20 lg:text-slate-200 font-mono text-base group-hover:text-emerald-400 transition-colors duration-500 shrink-0">
+                                <span class="text-white/10 lg:text-slate-200 font-black text-2xl lg:text-3xl tracking-tighter group-hover:text-emerald-500 transition-colors duration-500 shrink-0 w-12 lg:w-16">
                                     {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                                 </span>
                                 <div class="flex-1 min-w-0">
@@ -220,14 +233,17 @@
                                         </span>
                                     </div>
 
-                                    <h3 class="text-sm sm:text-lg lg:text-xl font-bold text-white/60 lg:text-slate-400 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-500 leading-tight line-clamp-2 lg:line-clamp-1 mb-1">
+                                    <h3 class="text-lg lg:text-2xl font-black text-white/40 lg:text-slate-300 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-700 leading-tight line-clamp-2 lg:line-clamp-1 mb-1.5 uppercase tracking-tighter">
                                         {{ $property->title }}
                                     </h3>
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
-                                        <span class="text-emerald-500 font-extrabold text-xs sm:text-sm">₦{{ number_format($property->price) }}</span>
-                                        <p class="text-white/40 lg:text-slate-500 text-[8px] uppercase tracking-[0.2em] font-bold truncate">
-                                            {{ $property->city->name ?? '' }}
-                                        </p>
+                                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
+                                        <span class="text-emerald-500 font-black text-sm lg:text-base tabular-nums">₦{{ number_format($property->price) }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-1 h-1 rounded-full bg-slate-700 hidden lg:block"></span>
+                                            <p class="text-white/30 lg:text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black truncate">
+                                                {{ $property->city->name ?? '' }}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                                 <!-- Desktop Link Arrow -->
@@ -623,26 +639,48 @@
 /* Featured Collection Transitions */
 .visual-img {
     transform: scale(1.1);
-    transition: transform 15s linear;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .visual-item.active .visual-img {
     transform: scale(1);
 }
 
+.visual-item {
+    pointer-events: none;
+    z-index: 0;
+}
+
 .visual-item.active {
     opacity: 1 !important;
     z-index: 10;
+    pointer-events: auto;
 }
 
-.visual-item.active .visual-meta {
-    opacity: 1;
-    transform: translateY(0);
+.property-trigger {
+    position: relative;
+    overflow: hidden;
+}
+
+.property-trigger::before {
+    content: '';
+    position: absolute;
+    left: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 0;
+    background: #10b981;
+    transition: height 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.property-trigger.active::before {
+    height: 70%;
 }
 
 .property-trigger.active h3 {
     color: white !important;
-    transform: translateX(10px);
+    padding-left: 8px;
 }
 
 @media (min-width: 1024px) {
@@ -654,6 +692,17 @@
 .property-trigger.active .text-white\/20,
 .property-trigger.active .text-slate-200 {
     color: #10b981 !important; /* emerald-500 */
+}
+
+/* Kinetic Metadata Reveal */
+.char-reveal {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: bottom;
+}
+
+.char-inner {
+    display: inline-block;
 }
 </style>
 @endpush
@@ -667,7 +716,12 @@ document.addEventListener('livewire:initialized', () => {
     gsap.registerPlugin(ScrollTrigger);
 
     // Featured Collection Logic
+    let currentIdx = -1;
+
     window.switchVisual = (index) => {
+        if (currentIdx === index) return;
+        currentIdx = index;
+
         const visualItems = document.querySelectorAll('.visual-item');
         const triggers = document.querySelectorAll('.property-trigger');
         const mobileBadge = document.getElementById('mobile-price-badge');
@@ -680,13 +734,41 @@ document.addEventListener('livewire:initialized', () => {
         const targetVisual = document.getElementById(`property-visual-${index}`);
         const targetTrigger = document.querySelector(`[data-index="${index}"]`);
         
-        if (targetVisual) targetVisual.classList.add('active');
+        if (targetVisual) {
+            targetVisual.classList.add('active');
+            
+            // GSAP Cinematic Reveal for Metadata
+            const meta = targetVisual.querySelector('.visual-meta');
+            if (meta) {
+                gsap.fromTo(meta, 
+                    { opacity: 0, y: 30, filter: 'blur(10px)' },
+                    { opacity: 1, y: 0, filter: 'blur(0px)', duration: 0.8, ease: "back.out(1.7)", delay: 0.2 }
+                );
+
+                // Target inner elements for staggered reveal
+                const title = meta.querySelector('h4');
+                const price = meta.querySelector('span');
+                const btn = meta.querySelector('a');
+
+                gsap.fromTo([price, title, btn],
+                    { opacity: 0, x: -20 },
+                    { opacity: 1, x: 0, duration: 0.6, stagger: 0.1, ease: "power2.out", delay: 0.3 }
+                );
+            }
+        }
+
         if (targetTrigger) {
             targetTrigger.classList.add('active');
             
-            // Update mobile badge
+            // Update mobile badge with animation
             if (mobileBadge) {
-                mobileBadge.textContent = targetTrigger.getAttribute('data-price');
+                const newPrice = targetTrigger.getAttribute('data-price');
+                if (mobileBadge.textContent !== newPrice) {
+                    gsap.to(mobileBadge, { scale: 0.8, opacity: 0.5, duration: 0.2, onComplete: () => {
+                        mobileBadge.textContent = newPrice;
+                        gsap.to(mobileBadge, { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(2)" });
+                    }});
+                }
                 mobileBadge.classList.remove('scale-0');
             }
         }
@@ -695,12 +777,39 @@ document.addEventListener('livewire:initialized', () => {
     const initLuxuryAnimation = () => {
         const triggers = gsap.utils.toArray('.property-trigger');
         
-        // Mobile Center Detection via ScrollTrigger
+        // Desktop Metadata Tilt Effect
+        const section = document.getElementById('directors-cut-section');
+        section.addEventListener('mousemove', (e) => {
+            if (window.innerWidth < 1024) return;
+            
+            const metas = document.querySelectorAll('.visual-meta');
+            const { clientX, clientY } = e;
+            const centerX = window.innerWidth * 0.7; // Approx center of visual deck
+            const centerY = window.innerHeight / 2;
+            
+            const moveX = (clientX - centerX) / 50;
+            const moveY = (clientY - centerY) / 50;
+            
+            metas.forEach(meta => {
+                if (meta.parentElement.parentElement.classList.contains('active')) {
+                    gsap.to(meta, {
+                        rotateY: moveX,
+                        rotateX: -moveY,
+                        x: moveX * 2,
+                        y: moveY * 2,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                }
+            });
+        });
+
+        // Mobile Split View Center Detection via ScrollTrigger
         triggers.forEach((trigger, i) => {
             ScrollTrigger.create({
                 scroller: "#property-list-container",
                 trigger: trigger,
-                start: "top 60%", // Adjusted for mobile split view
+                start: "top 60%", 
                 end: "bottom 40%",
                 onToggle: self => {
                     if (self.isActive) switchVisual(i);

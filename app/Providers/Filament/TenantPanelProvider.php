@@ -84,6 +84,8 @@ class TenantPanelProvider extends PanelProvider
                 'My Tenancy',
                 'Requests & Support',
                 'Property Search'
-            ]);
+            ])
+            ->renderHook('panels::head.end', fn () => view('filament.pwa.head-meta'))
+            ->renderHook('panels::body.end', fn () => view('filament.pwa.body-scripts'));
     }
 }

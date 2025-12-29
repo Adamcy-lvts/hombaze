@@ -1,5 +1,71 @@
+@php
+    // Move image processing logic to the top for global availability
+    $images = [];
+    if ($featured = $property->getFirstMedia('featured')) {
+        $images[] = [
+            'src' => $featured->getUrl(),
+            'preview' => $featured->hasGeneratedConversion('preview') ? $featured->getUrl('preview') : $featured->getUrl(),
+            'caption' => $featured->getCustomProperty('caption'),
+            'alt' => $featured->getCustomProperty('alt_text') ?? $property->title
+        ];
+    }
+    foreach($property->getMedia('gallery') as $media) {
+        if ($featured && $media->getUrl() === $featured->getUrl()) continue;
+        $images[] = [
+            'src' => $media->getUrl(),
+            'preview' => $media->hasGeneratedConversion('preview') ? $media->getUrl('preview') : $media->getUrl(),
+            'caption' => $media->getCustomProperty('caption'),
+            'alt' => $media->getCustomProperty('alt_text') ?? $property->title
+        ];
+    }
+    if (empty($images)) {
+        $images[] = [
+            'src' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
+            'preview' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+            'alt' => $property->title
+        ];
+    }
+@endphp
+
 <!-- Enhanced Property Details Page -->
-<div class="min-h-screen bg-gray-50 font-sans text-gray-900 relative selection:bg-emerald-100 selection:text-emerald-900 animate-in fade-in duration-500 overflow-x-hidden">
+<div class="min-h-screen bg-gray-50 font-sans text-gray-900 relative selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden"
+     x-data="{
+        activeImage: 0,
+        images: {{ \Illuminate\Support\Js::from($images) }},
+        lightboxOpen: false,
+        touchStartX: 0,
+        touchEndX: 0,
+        minSwipeDistance: 50,
+        
+        next() { this.activeImage = (this.activeImage + 1) % this.images.length },
+        prev() { this.activeImage = (this.activeImage - 1 + this.images.length) % this.images.length },
+        
+        handleTouchStart(e) { this.touchStartX = e.changedTouches[0].screenX; },
+        handleTouchEnd(e) { 
+            this.touchEndX = e.changedTouches[0].screenX; 
+            if (this.touchEndX < this.touchStartX - this.minSwipeDistance) this.next();
+            if (this.touchEndX > this.touchStartX + this.minSwipeDistance) this.prev();
+        },
+        
+        shareProperty() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ $property->title }}',
+                    text: 'Explore this premium property: {{ $property->title }}',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    if (typeof showToast === 'function') {
+                        showToast('success', 'Property link copied to clipboard!', 'Success');
+                    } else {
+                        alert('Link copied to clipboard!');
+                    }
+                });
+            }
+        }
+    }"
+    x-effect="document.documentElement.classList.toggle('lightbox-prevent-scroll', lightboxOpen)">
     <!-- Flash Messages -->
     @if (session()->has('message'))
         <div class="fixed top-4 left-4 right-4 sm:left-auto sm:right-4 z-50 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 animate-in slide-in-from-top-4 duration-300"
@@ -45,10 +111,16 @@
                     </nav>
 
                     <div class="flex items-center gap-1 sm:gap-3 shrink-0">
-                         <button class="p-2 text-gray-400 hover:text-red-500 transition-colors rounded-full hover:bg-red-50">
-                            <x-heroicon-o-heart class="w-5 h-5" />
+                         <button wire:click="toggleSaveProperty()" 
+                                 class="p-2 transition-all duration-300 rounded-full hover:bg-red-50 group/save {{ $isFavorited ? 'text-red-500 bg-red-50/50' : 'text-gray-400 hover:text-red-500' }}"
+                                 aria-label="{{ $isFavorited ? 'Remove from favorites' : 'Add to favorites' }}">
+                            @if($isFavorited)
+                                <x-heroicon-s-heart class="w-6 h-6 animate-in zoom-in duration-300" />
+                            @else
+                                <x-heroicon-o-heart class="w-6 h-6 transition-transform group-hover/save:scale-110" />
+                            @endif
                         </button>
-                        <button class="p-2 text-gray-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50">
+                        <button @click="shareProperty()" class="p-2 text-gray-400 hover:text-blue-500 transition-colors rounded-full hover:bg-blue-50" aria-label="Share property">
                             <x-heroicon-o-share class="w-5 h-5" />
                         </button>
                     </div>
@@ -56,269 +128,253 @@
             </div>
         </div>
 
-        <!-- Property Header -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-                <div class="space-y-4 max-w-4xl">
-                    <div class="flex flex-wrap items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
-                        @if ($property->is_featured)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-wider border border-amber-100">
-                                <x-heroicon-s-star class="w-3.5 h-3.5" />
-                                Featured
+        <!-- Main Property Layout Grid -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 grid grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-6 lg:gap-y-10 items-start">
+            
+            <!-- 1. Property Header (Title & Price) -->
+            <!-- Mobile: Second | Desktop: Top Full Width -->
+            <div class="lg:col-span-3 order-2 lg:order-1">
+                <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+                    <div class="space-y-4 max-w-4xl">
+                        <div class="flex flex-wrap items-center gap-3 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-100">
+                            @if ($property->is_featured)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold uppercase tracking-wider border border-amber-100">
+                                    <x-heroicon-s-star class="w-3.5 h-3.5" />
+                                    Featured
+                                </span>
+                            @endif
+                            @if ($property->is_verified)
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-100">
+                                    <x-heroicon-s-check-badge class="w-3.5 h-3.5" />
+                                    Verified
+                                </span>
+                            @endif
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider border border-gray-200">
+                                {{ $property->listing_type }}
                             </span>
-                        @endif
-                        @if ($property->is_verified)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-wider border border-blue-100">
-                                <x-heroicon-s-check-badge class="w-3.5 h-3.5" />
-                                Verified
-                            </span>
-                        @endif
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-bold uppercase tracking-wider border border-gray-200">
-                            {{ $property->listing_type }}
-                        </span>
+                        </div>
+                        
+                        <h1 class="text-3xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight animate-in fade-in slide-in-from-bottom-2 duration-500 delay-200">{{ $property->title }}</h1>
+                        
+                        <div class="flex items-center text-gray-500 text-lg animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
+                            <x-heroicon-o-map-pin class="w-5 h-5 mr-2 text-emerald-500" />
+                            {{ ($property->area?->name ?? 'Unknown Area') . ', ' . ($property->city?->name ?? 'Unknown City') }}
+                        </div>
                     </div>
-                    
-                    <h1 class="text-3xl lg:text-5xl font-extrabold text-gray-900 tracking-tight leading-tight animate-in fade-in slide-in-from-bottom-2 duration-500 delay-200">{{ $property->title }}</h1>
-                    
-                    <div class="flex items-center text-gray-500 text-lg animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
-                        <x-heroicon-o-map-pin class="w-5 h-5 mr-2 text-emerald-500" />
-                        {{ ($property->area?->name ?? 'Unknown Area') . ', ' . ($property->city?->name ?? 'Unknown City') }}
-                    </div>
-                </div>
 
-                <div class="text-left lg:text-right mt-2 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
-                    <div class="text-3xl lg:text-5xl font-black text-emerald-600 tracking-tight">
-                        {{ $property->formatted_price }}
+                    <div class="text-left lg:text-right mt-2 animate-in fade-in slide-in-from-bottom-2 duration-500 delay-300">
+                        <div class="text-3xl lg:text-5xl font-black text-emerald-600 tracking-tight">
+                            {{ $property->formatted_price }}
+                        </div>
+                        @if ($property->price_period && $property->price_period !== 'total')
+                            <p class="text-gray-500 font-medium mt-1">per {{ str_replace('per_', '', $property->price_period) }}</p>
+                        @endif
                     </div>
-                    @if ($property->price_period && $property->price_period !== 'total')
-                        <p class="text-gray-500 font-medium mt-1">per {{ str_replace('per_', '', $property->price_period) }}</p>
-                    @endif
                 </div>
             </div>
-        </div>
 
-        <!-- Property Hero Section -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Enhanced Property Gallery -->
-                <div class="lg:col-span-2">
-                    @if ($property->getMedia('gallery')->count() > 0 || $property->getMedia('featured')->count() > 0)
-                        @php
-                            // Image processing logic (same as before but cleaner)
-                            $images = [];
-                            // Add featured image
-                            if ($featured = $property->getFirstMedia('featured')) {
-                                $images[] = [
-                                    'src' => $featured->getUrl(),
-                                    'preview' => $featured->hasGeneratedConversion('preview') ? $featured->getUrl('preview') : $featured->getUrl(),
-                                    'caption' => $featured->getCustomProperty('caption'),
-                                    'alt' => $featured->getCustomProperty('alt_text') ?? $property->title
-                                ];
-                            }
-                            // Add gallery images
-                            foreach($property->getMedia('gallery') as $media) {
-                                // Avoid duplicates if featured image is also in gallery
-                                if ($featured && $media->getUrl() === $featured->getUrl()) continue;
-                                
-                                $images[] = [
-                                    'src' => $media->getUrl(),
-                                    'preview' => $media->hasGeneratedConversion('preview') ? $media->getUrl('preview') : $media->getUrl(),
-                                    'caption' => $media->getCustomProperty('caption'),
-                                    'alt' => $media->getCustomProperty('alt_text') ?? $property->title
-                                ];
-                            }
+            <!-- 2. Property Gallery Area -->
+            <!-- Mobile: First | Desktop: Left Side -->
+            <div class="lg:col-span-2 order-1 lg:order-2">
+                @if ($property->getMedia('gallery')->count() > 0 || $property->getFirstMedia('featured'))
+                    <div class="space-y-4">
+                        <!-- Main Image (with Swipe and Touch Support) -->
+                        <div class="relative aspect-video rounded-3xl overflow-hidden shadow-2xl group cursor-pointer bg-gray-100" 
+                             @click="lightboxOpen = true"
+                             @touchstart="handleTouchStart($event)"
+                             @touchend="handleTouchEnd($event)">
+                            <template x-for="(image, index) in images" :key="index">
+                                <img :src="image.src" 
+                                     x-show="activeImage === index"
+                                     x-transition:enter="transition ease-out duration-400"
+                                     x-transition:enter-start="opacity-0 scale-105"
+                                     x-transition:enter-end="opacity-100 scale-100"
+                                     class="absolute inset-0 w-full h-full object-cover"
+                                     :alt="image.alt">
+                            </template>
                             
-                            // Fallback
-                            if (empty($images)) {
-                                $images[] = [
-                                    'src' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80',
-                                    'preview' => 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-                                    'alt' => $property->title
-                                ];
-                            }
-                        @endphp
-
-                        <div x-data="{
-                            active: 0,
-                            images: {{ \Illuminate\Support\Js::from($images) }},
-                            lightboxOpen: false,
-                            next() { this.active = (this.active + 1) % this.images.length },
-                            prev() { this.active = (this.active - 1 + this.images.length) % this.images.length }
-                        }" class="space-y-4">
-                            
-                            <!-- Main Image -->
-                            <div class="relative aspect-video rounded-3xl overflow-hidden shadow-2xl group cursor-pointer bg-gray-100" @click="lightboxOpen = true">
-                                <template x-for="(image, index) in images" :key="index">
-                                    <img :src="image.src" 
-                                         x-show="active === index"
-                                         x-transition:enter="transition ease-out duration-300"
-                                         x-transition:enter-start="opacity-0 scale-105"
-                                         x-transition:enter-end="opacity-100 scale-100"
-                                         class="absolute inset-0 w-full h-full object-cover"
-                                         :alt="image.alt">
-                                </template>
-                                
-                                <!-- Navigation Overlays -->
-                                <div class="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <button @click.stop="prev()" class="bg-white/20 backdrop-blur-md hover:bg-white/40 text-white p-3 rounded-full transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                                    </button>
-                                    <button @click.stop="next()" class="bg-white/20 backdrop-blur-md hover:bg-white/40 text-white p-3 rounded-full transition-colors">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                                    </button>
-                                </div>
-
-                                <!-- Expand Icon -->
-                                <div class="absolute bottom-4 right-4 bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
-                                    View Fullscreen
-                                </div>
-                            </div>
-
-                            <!-- Thumbnails -->
-                            <div class="grid grid-cols-4 sm:grid-cols-5 gap-3">
-                                <template x-for="(image, index) in images" :key="index">
-                                    <button @click="active = index" 
-                                            class="relative aspect-square rounded-xl overflow-hidden ring-2 transition-all duration-200"
-                                            :class="active === index ? 'ring-emerald-500 ring-offset-2' : 'ring-transparent opacity-70 hover:opacity-100'">
-                                        <img :src="image.preview" class="w-full h-full object-cover">
-                                    </button>
-                                </template>
-                            </div>
-
-                            <!-- Lightbox Modal (Simplified for brevity, can be expanded) -->
-                            <div x-show="lightboxOpen" 
-                                 x-transition.opacity
-                                 class="fixed inset-0 z-50 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
-                                 style="display: none;">
-                                <button @click="lightboxOpen = false" class="absolute top-6 right-6 text-white/70 hover:text-white">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <!-- Navigation Overlays -->
+                            <div class="absolute inset-0 hidden md:flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <button @click.stop="prev()" class="bg-white/20 backdrop-blur-md hover:bg-white/40 text-white p-3 rounded-full transition-colors border border-white/30">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
                                 </button>
-                                <img :src="images[active].src" class="max-w-full max-h-[90vh] object-contain shadow-2xl rounded-lg">
-                                
-                                <button @click.stop="prev()" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-4">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                                </button>
-                                <button @click.stop="next()" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white p-4">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                <button @click.stop="next()" class="bg-white/20 backdrop-blur-md hover:bg-white/40 text-white p-3 rounded-full transition-colors border border-white/30">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                 </button>
                             </div>
-                        </div>
-                    @else
-                        <div class="aspect-video bg-gray-100 rounded-3xl flex items-center justify-center text-gray-400">
-                            <div class="text-center">
-                                <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                <span class="font-medium">No images available</span>
-                            </div>
-                        </div>
-                    @endif
-                </div>
 
-                <!-- Sticky Sidebar -->
-                <div class="lg:col-span-1">
-                    <div class="sticky top-8 space-y-6">
-                        <!-- Quick Stats Card -->
-                        <div class="bg-white/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl shadow-xl border border-white/50 p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
-                            <div class="grid grid-cols-2 gap-4">
-                                @if (in_array($property->propertyType->slug, ['apartment', 'house']))
-                                    <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                        <span class="block text-2xl font-bold text-gray-900">{{ $property->bedrooms }}</span>
-                                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Bedrooms</span>
-                                    </div>
-                                    <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
-                                        <span class="block text-2xl font-bold text-gray-900">{{ $property->toilets }}</span>
-                                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Bathrooms</span>
-                                    </div>
-                                    <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200 col-span-2">
-                                        <span class="block text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</span>
-                                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Square Meters</span>
-                                    </div>
-                                @else
-                                    <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200 col-span-2">
-                                        <span class="block text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</span>
-                                        <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Size (SQM)</span>
-                                    </div>
-                                @endif
+                            <!-- Progress Indicator (Mobile) -->
+                            <div class="absolute bottom-4 left-4 md:hidden bg-black/40 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-bold border border-white/10">
+                                <span x-text="activeImage + 1"></span> / <span x-text="images.length"></span>
                             </div>
 
-                            <div class="mt-6 pt-6 border-t border-gray-100 space-y-3">
-                                @if ($this->getAgentPhoneNumber())
-                                    <a href="tel:{{ $this->getAgentPhoneNumber() }}" class="group flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-[1.02] shadow-lg hover:shadow-emerald-500/40 relative overflow-hidden">
-                                        <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 skew-y-12"></div>
-                                        <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
-                                        <span class="relative z-10">Call Agent</span>
-                                    </a>
-                                @endif
-                                
-                                <button wire:click="sendWhatsAppMessage" class="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20ba5c] text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg">
-                                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                                    </svg>
-                                    WhatsApp
-                                </button>
-
-                                <button wire:click="toggleContactForm" class="flex items-center justify-center gap-2 w-full bg-blue-50 text-blue-700 font-semibold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl border border-blue-200 hover:bg-blue-100 transition-all duration-300">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-                                    Enquire Now
-                                </button>
+                            <!-- Expand Icon -->
+                            <div class="absolute bottom-4 right-4 bg-black/50 backdrop-blur-md text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 shadow-lg">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                                View Fullscreen
                             </div>
                         </div>
 
-                        <!-- Agent Profile Card -->
-                        <div class="bg-white/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl shadow-xl border border-white/50 p-6 transition-all duration-300 hover:shadow-2xl">
-                            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Listed By</h3>
-                            
-                            @if($property->agent)
-                                <div class="flex items-center gap-4 mb-4">
-                                    <div class="relative">
-                                        @if($property->agent->profile_photo_url)
-                                            <img src="{{ $property->agent->profile_photo_url }}" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
-                                        @else
-                                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xl font-bold border-2 border-white shadow-md">
-                                                {{ substr($property->agent->name, 0, 1) }}
-                                            </div>
-                                        @endif
-                                        @if($property->agent->is_verified)
-                                            <div class="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
-                                                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                            </div>
-                                        @endif
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900 text-lg">{{ $property->agent->name }}</h4>
-                                        <p class="text-sm text-gray-500">{{ $property->agent->agency->name ?? 'Independent Agent' }}</p>
-                                    </div>
-                                </div>
-                                
-                                @php
-                                    $agentUserSlug = $property->agent?->user?->slug;
-                                @endphp
+                        <!-- Thumbnails -->
+                        <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                            <template x-for="(image, index) in images" :key="index">
+                                <button @click="activeImage = index" 
+                                        class="relative flex-shrink-0 w-20 sm:w-24 aspect-square rounded-xl overflow-hidden ring-2 transition-all duration-300 snap-start"
+                                        :class="activeImage === index ? 'ring-emerald-500 ring-offset-2 scale-95 shadow-lg' : 'ring-transparent opacity-60 hover:opacity-100'">
+                                    <img :src="image.preview" class="w-full h-full object-cover">
+                                </button>
+                            </template>
+                        </div>
+                    </div>
 
-                                @if($agentUserSlug)
-                                    <a href="{{ route('agent.profile', $agentUserSlug) }}" wire:navigate class="block w-full text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
-                                        View Profile & Listings
-                                    </a>
-                                @else
-                                    <div class="block w-full text-center py-2 px-4 bg-gray-50 text-gray-400 font-medium rounded-lg text-sm">
-                                        Agent profile unavailable
-                                    </div>
-                                @endif
+                    <!-- Lightbox Modal -->
+                    <div x-show="lightboxOpen" 
+                         x-transition.opacity
+                         x-cloak
+                         @keydown.escape.window="lightboxOpen = false"
+                         @touchstart="handleTouchStart($event)"
+                         @touchend="handleTouchEnd($event)"
+                         class="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-0 md:p-12"
+                         style="display: none;">
+                        
+                        <button @click="lightboxOpen = false" 
+                                class="fixed top-8 right-6 z-[200] bg-black/60 hover:bg-black/80 text-white p-3.5 rounded-xl transition-all duration-300 backdrop-blur-2xl border border-white/30 shadow-[0_0_30px_rgba(0,0,0,0.5)] group active:scale-95">
+                            <svg class="w-7 h-7 sm:w-8 sm:h-8 transition-transform group-hover:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                            <span class="sr-only">Close</span>
+                        </button>
+                        
+                        <div class="relative w-full h-full flex flex-col items-center justify-center">
+                            <img :src="images[activeImage].src" 
+                                 class="max-w-full max-h-full md:max-h-[90vh] object-contain shadow-2xl md:rounded-2xl transition-all duration-300">
+                        </div>
+                        
+                        <button @click.stop="prev()" class="hidden md:flex absolute left-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-6 rounded-full transition-all border border-white/10">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                        </button>
+                        <button @click.stop="next()" class="hidden md:flex absolute right-8 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white p-6 rounded-full transition-all border border-white/10">
+                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </button>
+
+                        <div class="absolute bottom-10 md:bottom-auto md:top-8 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-sm font-bold border border-white/10">
+                            <span x-text="activeImage + 1"></span> / <span x-text="images.length"></span>
+                        </div>
+                    </div>
+                @else
+                    <div class="aspect-video bg-gray-100 rounded-3xl flex items-center justify-center text-gray-400">
+                        <div class="text-center">
+                            <svg class="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                            <span class="font-medium">No images available</span>
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <!-- 3. Sticky Sidebar -->
+            <!-- Mobile: Third | Desktop: Right Side -->
+            <div class="lg:col-span-1 order-3 lg:order-3">
+                <div class="sticky top-8 space-y-6">
+                    <!-- Quick Stats Card -->
+                    <div class="bg-white/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl shadow-xl border border-white/50 p-6 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1">
+                        <div class="grid grid-cols-2 gap-4">
+                            @if (in_array($property->propertyType->slug, ['apartment', 'house']))
+                                <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <span class="block text-2xl font-bold text-gray-900">{{ $property->bedrooms }}</span>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Bedrooms</span>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200">
+                                    <span class="block text-2xl font-bold text-gray-900">{{ $property->toilets }}</span>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Bathrooms</span>
+                                </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200 col-span-2">
+                                    <span class="block text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</span>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Square Meters</span>
+                                </div>
                             @else
-                                <div class="flex items-center gap-3">
-                                    <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="font-bold text-gray-900">HomeBaze Listing</h4>
-                                        <p class="text-sm text-gray-500">Verified Property</p>
-                                    </div>
+                                <div class="text-center p-3 bg-gray-50 rounded-lg lg:rounded-xl border border-gray-200 col-span-2">
+                                    <span class="block text-2xl font-bold text-gray-900">{{ $property->size ?? 'N/A' }}</span>
+                                    <span class="text-xs text-gray-500 uppercase tracking-wider font-semibold">Size (SQM)</span>
                                 </div>
                             @endif
                         </div>
+
+                        <div class="mt-6 pt-6 border-t border-gray-100 space-y-3">
+                            @if ($this->getAgentPhoneNumber())
+                                <a href="tel:{{ $this->getAgentPhoneNumber() }}" class="group flex items-center justify-center gap-2 w-full bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-700 hover:via-emerald-600 hover:to-teal-600 text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-[1.02] shadow-lg hover:shadow-emerald-500/40 relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 skew-y-12"></div>
+                                    <svg class="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                                    <span class="relative z-10">Call Agent</span>
+                                </a>
+                            @endif
+                            
+                            <button wire:click="sendWhatsAppMessage" class="flex items-center justify-center gap-2 w-full bg-[#25D366] hover:bg-[#20ba5c] text-white font-bold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl transition-all duration-500 transform hover:scale-105 shadow-lg">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.63 1.438h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                                </svg>
+                                WhatsApp
+                            </button>
+
+                            <button wire:click="toggleContactForm" class="flex items-center justify-center gap-2 w-full bg-blue-50 text-blue-700 font-semibold py-3 lg:py-4 px-4 lg:px-6 rounded-xl lg:rounded-2xl border border-blue-200 hover:bg-blue-100 transition-all duration-300">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                Enquire Now
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Agent Profile Card -->
+                    <div class="bg-white/80 backdrop-blur-xl rounded-2xl lg:rounded-3xl shadow-xl border border-white/50 p-6 transition-all duration-300 hover:shadow-2xl">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Listed By</h3>
+                        
+                        @if($property->agent)
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="relative">
+                                    @if($property->agent->profile_photo_url)
+                                        <img src="{{ $property->agent->profile_photo_url }}" class="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md">
+                                    @else
+                                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-xl font-bold border-2 border-white shadow-md">
+                                            {{ substr($property->agent->name, 0, 1) }}
+                                        </div>
+                                    @endif
+                                    @if($property->agent->is_verified)
+                                        <div class="absolute -bottom-1 -right-1 bg-white rounded-full p-1 shadow-sm">
+                                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900 text-lg">{{ $property->agent->name }}</h4>
+                                    <p class="text-sm text-gray-500">{{ $property->agent->agency->name ?? 'Independent Agent' }}</p>
+                                </div>
+                            </div>
+                            
+                            @php
+                                $agentUserSlug = $property->agent?->user?->slug;
+                            @endphp
+
+                            @if($agentUserSlug)
+                                <a href="{{ route('agent.profile', $agentUserSlug) }}" wire:navigate class="block w-full text-center bg-blue-100 hover:bg-blue-200 text-blue-800 font-semibold py-2 px-4 rounded-xl transition-colors">
+                                    View Profile & Listings
+                                </a>
+                            @else
+                                <div class="block w-full text-center py-2 px-4 bg-gray-50 text-gray-400 font-medium rounded-lg text-sm">
+                                    Agent profile unavailable
+                                </div>
+                            @endif
+                        @else
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-gray-900">HomeBaze Listing</h4>
+                                    <p class="text-sm text-gray-500">Verified Property</p>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
-        </div>
+        </div><!-- End Main Property Layout Grid -->
+
 
         <!-- Property Details Grid -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-16">
@@ -554,9 +610,35 @@
 
 @push('head')
     <style>
-        /* Hide global navigation for property details view to keep it immersive */
-        #navbar, #navbar + .h-20 { display: none !important; }
+        /* Immersive Lightbox: Hide global navigation elements only when active */
+        .lightbox-prevent-scroll { overflow: hidden; }
+        .lightbox-prevent-scroll nav, 
+        .lightbox-prevent-scroll header, 
+        .lightbox-prevent-scroll [role="navigation"], 
+        .lightbox-prevent-scroll .h-16, 
+        .lightbox-prevent-scroll .h-20 { 
+            display: none !important; 
+        }
+        
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        [x-cloak] { display: none !important; }
     </style>
+@endpush
+@push('scripts')
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('property-saved', (event) => {
+                if (typeof showToast === 'function') {
+                    showToast('success', event.message || 'Property saved successfully!', 'Saved');
+                }
+            });
+
+            Livewire.on('property-unsaved', (event) => {
+                if (typeof showToast === 'function') {
+                    showToast('info', event.message || 'Removed from saved properties', 'Removed');
+                }
+            });
+        });
+    </script>
 @endpush

@@ -15,6 +15,7 @@ class PropertySearch extends Component
     use WithPagination;
 
     protected PropertySearchEngine $searchEngine;
+    protected \App\Services\PropertyWishlistService $wishlistService;
 
     // URL-bound search parameters
     #[Url(as: 'q')]
@@ -66,9 +67,10 @@ class PropertySearch extends Component
     // Filter options
     public array $filterOptions = [];
 
-    public function boot(PropertySearchEngine $searchEngine): void
+    public function boot(PropertySearchEngine $searchEngine, \App\Services\PropertyWishlistService $wishlistService): void
     {
         $this->searchEngine = $searchEngine;
+        $this->wishlistService = $wishlistService;
     }
 
     public function mount(): void
@@ -283,9 +285,7 @@ class PropertySearch extends Component
     private function loadSavedProperties(): void
     {
         if (auth()->check()) {
-            $this->savedPropertyIds = SavedProperty::where('user_id', auth()->id())
-                ->pluck('property_id')
-                ->toArray();
+            $this->savedPropertyIds = $this->wishlistService->getSavedPropertyIds(auth()->user());
         }
     }
 
@@ -297,28 +297,20 @@ class PropertySearch extends Component
             return;
         }
 
-        $userId = auth()->id();
-        $savedProperty = SavedProperty::where('user_id', $userId)
-            ->where('property_id', $propertyId)
-            ->first();
+        $isSaved = $this->wishlistService->toggleSave(auth()->user(), $propertyId);
 
-        if ($savedProperty) {
-            $savedProperty->delete();
-            $this->savedPropertyIds = array_values(array_diff($this->savedPropertyIds, [$propertyId]));
-            $this->dispatch('property-unsaved', message: 'Property removed from saved list');
-        } else {
-            SavedProperty::create([
-                'user_id' => $userId,
-                'property_id' => $propertyId,
-            ]);
+        if ($isSaved) {
             $this->savedPropertyIds[] = $propertyId;
             $this->dispatch('property-saved', message: 'Property saved successfully');
+        } else {
+            $this->savedPropertyIds = array_values(array_diff($this->savedPropertyIds, [$propertyId]));
+            $this->dispatch('property-unsaved', message: 'Property removed from saved list');
         }
     }
 
     public function isPropertySaved(int $propertyId): bool
     {
-        return in_array($propertyId, $this->savedPropertyIds);
+        return $this->wishlistService->isSaved(auth()->user(), $propertyId);
     }
 
     public function render()

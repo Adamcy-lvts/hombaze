@@ -21,20 +21,54 @@
         @stack('head')
 
         @stack('styles')
+
+        <style>
+            /* Critical Anti-FOUC & Smooth Page Load */
+            html { opacity: 0; transition: opacity 0.3s ease-out; }
+        </style>
+        <script>
+            // Immediately reveal if possible, or wait for DOM
+            function reveal() { 
+                requestAnimationFrame(() => {
+                    document.documentElement.style.opacity = '1';
+                });
+            }
+            if(document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', reveal);
+            } else {
+                reveal();
+            }
+        </script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">
             <!-- Guest Navigation -->
             @if (!($hideNav ?? false))
-            <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+            <nav x-data="{ open: false }" class="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300">
                 <!-- Primary Navigation Menu -->
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div class="flex justify-between h-16">
                         <div class="flex">
                             <!-- Logo -->
-                            <div class="shrink-0 flex items-center">
-                                <a href="{{ route('landing') }}" wire:navigate>
-                                    <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                            <div class="shrink-0 flex items-center relative z-50">
+                                <style>
+                                    @keyframes building-rise {
+                                        0% { transform: translateY(110%); opacity: 0; }
+                                        100% { transform: translateY(0); opacity: 1; }
+                                    }
+                                    .animate-building-rise {
+                                        opacity: 0; /* Star Hidden to prevent flash */
+                                        animation: building-rise 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Elastic fade-in */
+                                    }
+                                </style>
+                                <a href="{{ route('landing') }}" wire:navigate class="group relative overflow-hidden p-1">
+                                    <!-- Glow Effect -->
+                                    <div class="absolute -inset-2 bg-emerald-500/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                    
+                                    <!-- Animated Container -->
+                                    <div class="animate-building-rise">
+                                        <x-application-logo style="height: 2.5rem;" class="relative block h-10 w-auto fill-current text-emerald-600 transition-all duration-500 transform group-hover:scale-110 group-hover:text-emerald-500" />
+                                    </div>
                                 </a>
                             </div>
 
@@ -95,11 +129,11 @@
                                 </x-dropdown>
                             @else
                                 <!-- Guest Links -->
-                                <div class="flex items-center space-x-4">
-                                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-gray-900 px-3 py-2 text-sm font-medium">
+                                <div class="flex items-center space-x-1">
+                                    <a href="{{ route('login') }}" class="text-gray-600 hover:text-emerald-600 px-4 py-2.5 text-sm font-semibold transition-colors duration-200">
                                         Sign In
                                     </a>
-                                    <a href="{{ route('register') }}" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    <a href="{{ route('register') }}" class="inline-flex items-center justify-center bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg shadow-emerald-500/30 hover:shadow-emerald-500/40 transform hover:-translate-y-0.5 transition-all duration-200">
                                         Get Started
                                     </a>
                                 </div>

@@ -66,7 +66,7 @@
     {{-- Suggestions Dropdown --}}
     @if($showSuggestions && count($suggestions) > 0)
         <div
-            class="absolute w-full mt-2 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto z-100 text-left"
+            class="absolute w-full mt-2 bg-white/95 backdrop-blur-xl border border-gray-200 rounded-xl shadow-2xl max-h-80 overflow-y-auto z-50 text-left"
             @if($compact) style="min-width: 320px;" @endif
         >
             @php $currentCategory = null; @endphp

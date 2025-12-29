@@ -7,9 +7,9 @@
 <div class="min-h-screen bg-gray-50">
     <!-- Modern Hero Section -->
     <!-- Modern Hero Section -->
-    <section class="relative min-h-[85vh] flex flex-col justify-center items-center overflow-hidden">
+    <section class="relative z-20 min-h-[85vh] flex flex-col justify-center items-center">
         <!-- Background Image & Overlay -->
-        <div class="absolute inset-0 z-0">
+        <div class="absolute inset-0 z-0 overflow-hidden">
             <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2075&q=80" 
                  alt="Background" 
                  class="w-full h-full object-cover transform scale-105 hover:scale-100 transition-transform duration-[20s] ease-out">
@@ -208,17 +208,24 @@
                             data-price="₦{{ number_format($property->price) }}"
                             onmouseenter="switchVisual({{ $index }})"
                         >
-                            <div class="flex items-center gap-6 lg:gap-8 w-full">
-                                <span class="text-white/20 lg:text-slate-200 font-mono text-base group-hover:text-emerald-400 transition-colors duration-500">
+                            <div class="flex items-center gap-4 lg:gap-8 w-full">
+                                <span class="text-white/20 lg:text-slate-200 font-mono text-base group-hover:text-emerald-400 transition-colors duration-500 shrink-0">
                                     {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                                 </span>
-                                <div class="flex-1">
-                                    <h3 class="text-lg lg:text-xl font-bold text-white/40 lg:text-slate-400 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-500 leading-tight">
+                                <div class="flex-1 min-w-0">
+                                    <!-- Mobile Listing Type Badge -->
+                                    <div class="mb-1.5 lg:hidden">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest leading-none {{ $property->listing_type === 'sale' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/20' : 'bg-blue-500/20 text-blue-400 border border-blue-500/20' }}">
+                                            {{ $property->listing_type === 'sale' ? 'Sale' : ($property->listing_type === 'rent' ? 'Rent' : 'Short Let') }}
+                                        </span>
+                                    </div>
+
+                                    <h3 class="text-sm sm:text-lg lg:text-xl font-bold text-white/60 lg:text-slate-400 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-500 leading-tight line-clamp-2 lg:line-clamp-1 mb-1">
                                         {{ $property->title }}
                                     </h3>
-                                    <div class="mt-1 flex items-center gap-3">
-                                        <span class="text-emerald-500 font-bold text-sm">₦{{ number_format($property->price) }}</span>
-                                        <p class="text-white/30 lg:text-slate-500 text-[8px] uppercase tracking-[0.2em] font-bold">
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                                        <span class="text-emerald-500 font-extrabold text-xs sm:text-sm">₦{{ number_format($property->price) }}</span>
+                                        <p class="text-white/40 lg:text-slate-500 text-[8px] uppercase tracking-[0.2em] font-bold truncate">
                                             {{ $property->city->name ?? '' }}
                                         </p>
                                     </div>
@@ -229,9 +236,9 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                     </svg>
                                 </div>
-                                <!-- Mobile Action Link -->
-                                <a href="{{ route('property.show', $property->slug ?? $property->id) }}" class="lg:hidden p-3 bg-white/5 rounded-full text-white/50 group-hover:text-emerald-400 group-hover:bg-emerald-500/10 transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                <!-- Mobile Action Link (Obvious Button) -->
+                                <a href="{{ route('property.show', $property->slug ?? $property->id) }}" class="lg:hidden flex items-center justify-center px-3 py-1.5 bg-white/10 border border-white/10 rounded-lg text-white text-[10px] font-bold uppercase tracking-wider hover:bg-emerald-600 hover:border-emerald-600 transition-all duration-300 shrink-0">
+                                    View
                                 </a>
                             </div>
                         </div>

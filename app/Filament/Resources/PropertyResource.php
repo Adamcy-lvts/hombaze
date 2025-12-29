@@ -153,6 +153,7 @@ class PropertyResource extends Resource
                                     Textarea::make('description')
                                         ->required()
                                         ->rows(4)
+                                        ->live(onBlur: true)
                                         ->afterStateUpdated(function (Get $get, $livewire): void {
                                             if (!static::shouldAutoAdvanceBasics($get)) {
                                                 return;

@@ -173,6 +173,7 @@ class PropertyResource extends Resource
                                 ->required()
                                 ->rows(5)
                                 ->placeholder('Describe the property in detail. Include key features, condition, and any unique selling points.')
+                                ->live(onBlur: true)
                                 ->helperText('A good description helps attract more inquiries')
                                 ->columnSpanFull(),
                         ]),

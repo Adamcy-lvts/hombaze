@@ -57,6 +57,7 @@ use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
 use Filament\Actions\ReplicateAction;
 use App\Filament\Agency\Resources\PropertyResource\Pages;
 use App\Filament\Agency\Resources\PropertyResource\RelationManagers;
+use Filament\Infolists\Components\TextEntry;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Blade;
 use Filament\Tables\Columns\Layout\Split;
@@ -126,6 +127,7 @@ class PropertyResource extends Resource
                                 ->required()
                                 ->rows(5)
                                 ->placeholder('Describe the property in detail. Include key features, condition, and any unique selling points.')
+                                ->live(onBlur: true)
                                 ->helperText('A good description helps attract more inquiries')
                                 ->columnSpanFull(),
                         ]),
@@ -311,9 +313,9 @@ class PropertyResource extends Resource
                                                     }
                                                 }),
 
-                                            Placeholder::make('calculated_sqm')
+                                            TextEntry::make('calculated_sqm')
                                                 ->label('Calculated Size')
-                                                ->content(fn (Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated'),
+                                                ->state(fn (Get $get): string => $get('size_sqm') ? number_format($get('size_sqm'), 0) . ' sqm' : 'Not calculated'),
                                         ])
                                         ->visible(fn (Get $get): bool => in_array($get('property_type_id'), [3])),
 

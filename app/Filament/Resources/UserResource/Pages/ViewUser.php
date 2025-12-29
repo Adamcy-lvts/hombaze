@@ -55,7 +55,10 @@ class ViewUser extends ViewRecord
                 ->action(function ($record, array $data) {
                     $package = ListingPackage::find($data['package_id']);
                     if ($package) {
-                        ListingCreditService::grantPackage($record, $package, 'admin_grant');
+                        $owner = ListingCreditService::resolveOwner($record);
+                        if ($owner) {
+                            ListingCreditService::grantPackage($owner, $package, 'admin_grant');
+                        }
                     }
                 }),
             Action::make('grantListingAddon')
@@ -75,7 +78,10 @@ class ViewUser extends ViewRecord
                 ->action(function ($record, array $data) {
                     $addon = ListingAddon::find($data['addon_id']);
                     if ($addon) {
-                        ListingCreditService::grantAddon($record, $addon, 'admin_grant');
+                        $owner = ListingCreditService::resolveOwner($record);
+                        if ($owner) {
+                            ListingCreditService::grantAddon($owner, $addon, 'admin_grant');
+                        }
                     }
                 }),
             Action::make('grantSmartSearchPlan')

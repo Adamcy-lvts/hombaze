@@ -18,6 +18,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\Filter;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -28,6 +30,9 @@ use App\Filament\Resources\AgencyResource\Pages\EditAgency;
 use App\Filament\Resources\AgencyResource\Pages;
 use App\Filament\Resources\AgencyResource\RelationManagers;
 use App\Models\Agency;
+use App\Models\ListingAddon;
+use App\Models\ListingPackage;
+use App\Services\ListingCreditService;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -503,6 +508,49 @@ class AgencyResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
+                ActionGroup::make([
+                    Action::make('grantListingPackage')
+                        ->label('Grant Listing Package')
+                        ->icon('heroicon-o-briefcase')
+                        ->form([
+                            Select::make('package_id')
+                                ->label('Package')
+                                ->options(ListingPackage::query()
+                                    ->where('is_active', true)
+                                    ->orderBy('sort_order')
+                                    ->pluck('name', 'id')
+                                    ->toArray())
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $package = ListingPackage::find($data['package_id']);
+                            if ($package) {
+                                ListingCreditService::grantPackage($record, $package, 'admin_grant');
+                            }
+                        }),
+                    Action::make('grantListingAddon')
+                        ->label('Grant Listing Add-on')
+                        ->icon('heroicon-o-plus-circle')
+                        ->form([
+                            Select::make('addon_id')
+                                ->label('Add-on')
+                                ->options(ListingAddon::query()
+                                    ->where('is_active', true)
+                                    ->orderBy('sort_order')
+                                    ->pluck('name', 'id')
+                                    ->toArray())
+                                ->required(),
+                        ])
+                        ->action(function ($record, array $data) {
+                            $addon = ListingAddon::find($data['addon_id']);
+                            if ($addon) {
+                                ListingCreditService::grantAddon($record, $addon, 'admin_grant');
+                            }
+                        }),
+                ])
+                    ->label('Credits')
+                    ->icon('heroicon-o-credit-card')
+                    ->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

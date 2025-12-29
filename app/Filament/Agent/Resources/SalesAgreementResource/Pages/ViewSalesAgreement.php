@@ -20,10 +20,11 @@ class ViewSalesAgreement extends ViewRecord
 {
     protected static string $resource = SalesAgreementResource::class;
 
-    protected string $view = 'filament.pages.sales-agreement-view';
+    protected string $view = 'filament.agent.pages.sales-agreement-view';
 
     public ?array $data = [];
     public ?array $salesAgreementDocument = null;
+    public int $debugClicks = 0;
 
     public function getTitle(): string
     {
@@ -80,10 +81,12 @@ class ViewSalesAgreement extends ViewRecord
             }
 
             $this->salesAgreementDocument = [
-                'template' => $template,
+                'template_id' => $template?->id,
+                'template_name' => $template?->name,
+                'template_description' => $template?->description,
                 'content' => $content,
-                'agreement' => $agreement,
-                'generated_at' => now(),
+                'agreement_id' => $agreement->id,
+                'generated_at' => now()->format('M d, Y'),
             ];
 
             Notification::make()
@@ -157,33 +160,32 @@ class ViewSalesAgreement extends ViewRecord
 
     private function getDefaultSalesAgreementContent(): string
     {
-        return '
-<h3>Standard Sales Agreement Terms</h3>
-<ol>
-<li>The seller agrees to sell and the buyer agrees to purchase the property described above at the agreed sale price.</li>
-<li>The buyer shall pay the deposit amount on or before the agreed date and the balance on or before the closing date.</li>
-<li>The property shall be delivered to the buyer free of liens and encumbrances except as disclosed in this agreement.</li>
-<li>All applicable taxes, fees, and charges shall be settled in accordance with local regulations.</li>
-<li>Either party may terminate this agreement if the other party materially breaches its obligations.</li>
-</ol>
-        ';
+        return SalesAgreementTemplate::getDefaultContent();
     }
 
-    protected function getHeaderActions(): array
-    {
-        return [
-            Action::make('downloadPdf')
-                ->label('Download PDF')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->color('success')
-                ->visible(fn () => filled($this->salesAgreementDocument))
-                ->action('downloadPdf'),
-        ];
-    }
+    // protected function getHeaderActions(): array
+    // {
+    //     return [
+    //         Action::make('downloadPdf')
+    //             ->label('Download PDF')
+    //             ->icon('heroicon-o-arrow-down-tray')
+    //             ->color('success')
+    //             ->visible(fn () => filled($this->salesAgreementDocument))
+    //             ->action('downloadPdf'),
+    //     ];
+    // }
 
     public function downloadPdf()
     {
         if (! $this->salesAgreementDocument) {
+            Log::warning('Sales agreement download requested with no document (agent).', [
+                'agreement_id' => $this->record?->id,
+                'user_id' => Auth::id(),
+            ]);
+            Log::channel('single')->warning('Sales agreement download requested with no document (agent).', [
+                'agreement_id' => $this->record?->id,
+                'user_id' => Auth::id(),
+            ]);
             Notification::make()
                 ->warning()
                 ->title('No Document Generated')
@@ -191,10 +193,28 @@ class ViewSalesAgreement extends ViewRecord
                 ->send();
             return;
         }
+        
 
         try {
+            Log::info('Sales agreement download started (agent).', [
+                'agreement_id' => $this->record?->id,
+                'user_id' => Auth::id(),
+                'template_id' => $this->salesAgreementDocument['template_id'] ?? null,
+            ]);
+            Log::channel('single')->info('Sales agreement download started (agent).', [
+                'agreement_id' => $this->record?->id,
+                'user_id' => Auth::id(),
+                'template_id' => $this->salesAgreementDocument['template_id'] ?? null,
+            ]);
             $agreement = $this->record;
-            $template = $this->salesAgreementDocument['template'] ?? null;
+            $templateId = $this->salesAgreementDocument['template_id'] ?? null;
+            $template = null;
+            if ($templateId) {
+                $agentId = Auth::user()?->agentProfile?->id;
+                $template = SalesAgreementTemplate::where('id', $templateId)
+                    ->where('agent_id', $agentId)
+                    ->first();
+            }
 
             $fileName = sprintf(
                 'sales-agreement-%s-%s-%s.pdf',
@@ -246,12 +266,25 @@ class ViewSalesAgreement extends ViewRecord
                 throw new Exception("PDF file was not created at: {$filePath}");
             }
 
+            Log::info('Sales agreement PDF generated (agent).', [
+                'agreement_id' => $agreement->id ?? null,
+                'file_path' => $filePath,
+            ]);
+            Log::channel('single')->info('Sales agreement PDF generated (agent).', [
+                'agreement_id' => $agreement->id ?? null,
+                'file_path' => $filePath,
+            ]);
+
             return response()->download($filePath, $fileName, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
             ])->deleteFileAfterSend(true);
         } catch (Exception $e) {
             Log::error('Sales Agreement PDF Download Failed', [
+                'error' => $e->getMessage(),
+                'agreement_id' => $agreement->id ?? null,
+            ]);
+            Log::channel('single')->error('Sales Agreement PDF Download Failed', [
                 'error' => $e->getMessage(),
                 'agreement_id' => $agreement->id ?? null,
             ]);
@@ -262,5 +295,26 @@ class ViewSalesAgreement extends ViewRecord
                 ->body('An error occurred while generating the PDF.')
                 ->send();
         }
+    }
+
+    public function handleDownload(): mixed
+    {
+        Log::channel('single')->info('Sales agreement handleDownload clicked (agent).', [
+            'agreement_id' => $this->record?->id,
+            'user_id' => Auth::id(),
+        ]);
+
+        return $this->downloadPdf();
+    }
+
+    public function debugPing(): mixed
+    {
+        $this->debugClicks++;
+        Log::channel('single')->info('Sales agreement debug ping (agent).', [
+            'agreement_id' => $this->record?->id,
+            'user_id' => Auth::id(),
+            'count' => $this->debugClicks,
+        ]);
+        return $this->downloadPdf();
     }
 }

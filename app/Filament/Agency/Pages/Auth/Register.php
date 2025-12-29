@@ -30,6 +30,7 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\ListingPackage;
+use App\Models\SalesAgreementTemplate;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
@@ -102,6 +103,11 @@ class Register extends \Filament\Auth\Pages\Register
 
                 // Create agent profile for the agency owner
                 $agent = $this->createAgentProfile($user, $agency);
+
+                SalesAgreementTemplate::ensureDefaultForAgency($agency->id);
+                if ($agent?->id) {
+                    SalesAgreementTemplate::ensureDefaultForAgent($agent->id);
+                }
 
                 // Assign agency owner role
                 $this->assignAgencyOwnerRole($user, $agency);

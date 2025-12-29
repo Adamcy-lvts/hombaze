@@ -21,6 +21,7 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\ListingPackage;
+use App\Models\SalesAgreementTemplate;
 use App\Services\ListingCreditService;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -191,7 +192,7 @@ class UnifiedRegistrationController extends Controller
      */
     private function createAgentProfile(User $user, array $data): void
     {
-        Agent::create([
+        $agent = Agent::create([
             'user_id' => $user->id,
             'bio' => 'New agent on HomeBaze platform',
             'years_experience' => 0,
@@ -202,6 +203,8 @@ class UnifiedRegistrationController extends Controller
             'is_verified' => false,
             'accepts_new_clients' => true,
         ]);
+
+        SalesAgreementTemplate::ensureDefaultForAgent($agent->id);
 
         Log::info('Agent profile created', ['user_id' => $user->id]);
     }
@@ -221,6 +224,8 @@ class UnifiedRegistrationController extends Controller
             'email' => $user->email,
             'phone' => $user->phone,
         ]);
+
+        SalesAgreementTemplate::ensureDefaultForLandlord($user->id);
 
         Log::info('PropertyOwner profile created', ['user_id' => $user->id]);
     }
@@ -364,7 +369,12 @@ class UnifiedRegistrationController extends Controller
         ]);
 
         // Create agent profile for the agency owner
-        $this->createAgentProfileForOwner($user, $agency);
+        $agent = $this->createAgentProfileForOwner($user, $agency);
+
+        SalesAgreementTemplate::ensureDefaultForAgency($agency->id);
+        if ($agent?->id) {
+            SalesAgreementTemplate::ensureDefaultForAgent($agent->id);
+        }
 
         // Assign super-admin role with all permissions for the agency
         $this->assignAgencyOwnerRole($user, $agency);
@@ -382,11 +392,11 @@ class UnifiedRegistrationController extends Controller
     /**
      * Create agent profile for agency owner
      */
-    private function createAgentProfileForOwner(User $user, Agency $agency): void
+    private function createAgentProfileForOwner(User $user, Agency $agency): Agent
     {
         $nameParts = explode(' ', $user->name, 2);
 
-        Agent::create([
+        $agent = Agent::create([
             'user_id' => $user->id,
             'agency_id' => $agency->id,
             'first_name' => $nameParts[0],
@@ -410,6 +420,8 @@ class UnifiedRegistrationController extends Controller
             'user_id' => $user->id,
             'agency_id' => $agency->id,
         ]);
+
+        return $agent;
     }
 
     /**

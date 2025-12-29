@@ -11,6 +11,7 @@ use App\Models\PropertyOwner;
 use App\Models\Agent;
 use App\Filament\Agency\Resources\PropertyResource;
 use App\Models\Property;
+use App\Models\PropertyDraft;
 use App\Services\ListingCreditService;
 use App\Filament\Concerns\RedirectsToPricingOnCreditError;
 use Filament\Actions;
@@ -24,7 +25,30 @@ use Illuminate\Validation\ValidationException;
 class CreateProperty extends CreateRecord
 {
     use RedirectsToPricingOnCreditError;
+
     protected static string $resource = PropertyResource::class;
+    protected ?PropertyDraft $draft = null;
+    protected bool $isRestoringDraft = false;
+
+    public function mount(): void
+    {
+        parent::mount();
+
+        $this->isRestoringDraft = true;
+        $this->restoreDraft();
+        $this->isRestoringDraft = false;
+        $this->redirectToDraftStepIfNeeded();
+    }
+
+    public function updated($name, $value): void
+    {
+        if ($this->isRestoringDraft) {
+            return;
+        }
+
+        $this->saveDraft();
+        $this->resetErrorBag();
+    }
 
     /**
      * Handle the creation of a new property record with proper validation and defaults
@@ -96,6 +120,7 @@ class CreateProperty extends CreateRecord
 
         // Create the property
         $property = static::getModel()::create($data);
+        $this->deleteDraft();
 
         if ($shouldPublish) {
             ListingCreditService::consumeListingCredits($agency, $property);
@@ -211,5 +236,118 @@ class CreateProperty extends CreateRecord
         // This method is called before handleRecordCreation
         // We'll do minimal processing here and let handleRecordCreation handle the main logic
         return $data;
+    }
+
+    private function restoreDraft(): void
+    {
+        $userId = auth()->id();
+        if (!$userId) {
+            return;
+        }
+
+        $agencyId = Filament::getTenant()?->id;
+        $this->draft = PropertyDraft::query()
+            ->where('user_id', $userId)
+            ->where('agency_id', $agencyId)
+            ->first();
+
+        if (!$this->draft) {
+            return;
+        }
+
+        $state = array_replace_recursive(
+            $this->form->getRawState(),
+            $this->draft->form_data ?? []
+        );
+
+        $this->form->fill($state);
+    }
+
+    private function saveDraft(): void
+    {
+        $userId = auth()->id();
+        if (!$userId) {
+            return;
+        }
+
+        $agencyId = Filament::getTenant()?->id;
+        $state = $this->sanitizeDraftState($this->form->getRawState());
+
+        $this->draft = PropertyDraft::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'agency_id' => $agencyId,
+            ],
+            [
+                'form_data' => $state,
+                'wizard_step' => request()->query($this->getWizardStepQueryStringKey()),
+            ]
+        );
+    }
+
+    private function deleteDraft(): void
+    {
+        if ($this->draft) {
+            $this->draft->delete();
+            $this->draft = null;
+            return;
+        }
+
+        $userId = auth()->id();
+        if (!$userId) {
+            return;
+        }
+
+        PropertyDraft::query()
+            ->where('user_id', $userId)
+            ->where('agency_id', Filament::getTenant()?->id)
+            ->delete();
+    }
+
+    private function sanitizeDraftState(array $state): array
+    {
+        $sanitized = [];
+
+        foreach ($state as $key => $value) {
+            if (is_array($value)) {
+                $sanitized[$key] = $this->sanitizeDraftState($value);
+                continue;
+            }
+
+            if (is_object($value)) {
+                continue;
+            }
+
+            $sanitized[$key] = $value;
+        }
+
+        return $sanitized;
+    }
+
+    private function getWizardStepQueryStringKey(): string
+    {
+        return 'step';
+    }
+
+    private function redirectToDraftStepIfNeeded(): void
+    {
+        if (! $this->draft) {
+            return;
+        }
+
+        $key = $this->getWizardStepQueryStringKey();
+        if (filled(request()->query($key))) {
+            return;
+        }
+
+        $step = $this->draft->wizard_step;
+        if (blank($step)) {
+            return;
+        }
+
+        $query = request()->query();
+        $query[$key] = $step;
+
+        $this->redirect(url()->current() . '?' . http_build_query($query), navigate: true);
     }
 }

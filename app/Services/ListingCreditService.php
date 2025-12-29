@@ -23,7 +23,7 @@ class ListingCreditService
             return null;
         }
 
-        if (method_exists($user, 'user_type')) {
+        if (isset($user->user_type)) {
             if ($user->user_type === 'agent' && method_exists($user, 'firstAgency')) {
                 $agency = $user->firstAgency();
                 if ($agency) {

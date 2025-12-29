@@ -20,7 +20,7 @@ class ViewSalesAgreement extends ViewRecord
 {
     protected static string $resource = SalesAgreementResource::class;
 
-    protected string $view = 'filament.pages.sales-agreement-view';
+    protected string $view = 'filament.agency.pages.sales-agreement-view';
 
     public ?array $data = [];
     public ?array $salesAgreementDocument = null;
@@ -80,10 +80,12 @@ class ViewSalesAgreement extends ViewRecord
             }
 
             $this->salesAgreementDocument = [
-                'template' => $template,
+                'template_id' => $template?->id,
+                'template_name' => $template?->name,
+                'template_description' => $template?->description,
                 'content' => $content,
-                'agreement' => $agreement,
-                'generated_at' => now(),
+                'agreement_id' => $agreement->id,
+                'generated_at' => now()->format('M d, Y'),
             ];
 
             Notification::make()
@@ -157,16 +159,7 @@ class ViewSalesAgreement extends ViewRecord
 
     private function getDefaultSalesAgreementContent(): string
     {
-        return '
-<h3>Standard Sales Agreement Terms</h3>
-<ol>
-<li>The seller agrees to sell and the buyer agrees to purchase the property described above at the agreed sale price.</li>
-<li>The buyer shall pay the deposit amount on or before the agreed date and the balance on or before the closing date.</li>
-<li>The property shall be delivered to the buyer free of liens and encumbrances except as disclosed in this agreement.</li>
-<li>All applicable taxes, fees, and charges shall be settled in accordance with local regulations.</li>
-<li>Either party may terminate this agreement if the other party materially breaches its obligations.</li>
-</ol>
-        ';
+        return SalesAgreementTemplate::getDefaultContent();
     }
 
     protected function getHeaderActions(): array
@@ -184,6 +177,11 @@ class ViewSalesAgreement extends ViewRecord
     public function downloadPdf()
     {
         if (! $this->salesAgreementDocument) {
+            Log::warning('Sales agreement download requested with no document (agency).', [
+                'agreement_id' => $this->record?->id,
+                'user_id' => auth()->id(),
+                'agency_id' => Filament::getTenant()?->id,
+            ]);
             Notification::make()
                 ->warning()
                 ->title('No Document Generated')
@@ -193,8 +191,21 @@ class ViewSalesAgreement extends ViewRecord
         }
 
         try {
+            Log::info('Sales agreement download started (agency).', [
+                'agreement_id' => $this->record?->id,
+                'user_id' => auth()->id(),
+                'agency_id' => Filament::getTenant()?->id,
+                'template_id' => $this->salesAgreementDocument['template_id'] ?? null,
+            ]);
             $agreement = $this->record;
-            $template = $this->salesAgreementDocument['template'] ?? null;
+            $templateId = $this->salesAgreementDocument['template_id'] ?? null;
+            $template = null;
+            if ($templateId) {
+                $agency = Filament::getTenant();
+                $template = SalesAgreementTemplate::where('id', $templateId)
+                    ->where('agency_id', $agency?->id)
+                    ->first();
+            }
 
             $fileName = sprintf(
                 'sales-agreement-%s-%s-%s.pdf',
@@ -245,6 +256,11 @@ class ViewSalesAgreement extends ViewRecord
             if (! File::exists($filePath)) {
                 throw new Exception("PDF file was not created at: {$filePath}");
             }
+
+            Log::info('Sales agreement PDF generated (agency).', [
+                'agreement_id' => $agreement->id ?? null,
+                'file_path' => $filePath,
+            ]);
 
             return response()->download($filePath, $fileName, [
                 'Content-Type' => 'application/pdf',

@@ -17,6 +17,7 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\ListingPackage;
+use App\Models\SalesAgreementTemplate;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
@@ -234,6 +235,8 @@ class Register extends \Filament\Auth\Pages\Register
 
         // Create PropertyOwner record for the landlord
         $this->createPropertyOwnerRecord($user, $data);
+
+        SalesAgreementTemplate::ensureDefaultForLandlord($user->id);
 
         // Assign Landlord role and permissions
         $this->assignLandlordRole($user);

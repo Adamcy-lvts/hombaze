@@ -30,10 +30,8 @@
         </div>
     @else
         {{-- Full/Hero version with glassmorphism --}}
-        <div class="relative group">
-            <div class="absolute -inset-1 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full blur opacity-25 group-hover:opacity-60 transition duration-500"></div>
-            <div class="relative flex items-center bg-white/5 backdrop-blur-xl border border-white/10 rounded-full p-2 shadow-xl transition-all duration-300 hover:bg-white/10 ring-1 ring-white/20">
-                <div class="pl-5 text-emerald-400">
+            <div class="relative flex items-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-1.5 shadow-2xl transition-all duration-300 hover:bg-white/15 ring-1 ring-white/30">
+                <div class="pl-4 text-emerald-400 hidden sm:block">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -46,15 +44,21 @@
                     wire:keydown.arrow-down.prevent="navigateDown"
                     @focus="$wire.showSuggestionsDropdown()"
                     placeholder="{{ $placeholder }}"
-                    class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-gray-300/80 text-lg px-4 py-3 font-medium"
+                    class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-white/60 text-base sm:text-lg px-4 sm:px-4 py-2.5 sm:py-3 font-medium cursor-text"
                     autocomplete="off"
                     @if($autoFocus) autofocus @endif
                 >
                 <button
                     wire:click="search"
-                    class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white px-8 py-3 rounded-full font-bold text-base transition-all duration-200 shadow-lg hover:shadow-emerald-500/20 transform hover:-translate-y-0.5"
+                    class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-full font-bold shadow-lg hover:shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all duration-200
+                           p-2 sm:px-8 sm:py-3 shrink-0"
                 >
-                    Search
+                    <span class="hidden sm:inline text-base">Search</span>
+                    <span class="sm:hidden block p-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </span>
                 </button>
             </div>
         </div>

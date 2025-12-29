@@ -17,6 +17,7 @@ use App\Models\State;
 use App\Models\City;
 use App\Models\Area;
 use App\Models\ListingPackage;
+use App\Models\SalesAgreementTemplate;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
@@ -214,6 +215,8 @@ class Register extends \Filament\Auth\Pages\Register
             'is_verified' => false,
             'accepts_new_clients' => true,
         ]);
+
+        SalesAgreementTemplate::ensureDefaultForAgent($agent->id);
         
         Log::info('Agent profile created successfully', [
             'agent_id' => $agent->id,

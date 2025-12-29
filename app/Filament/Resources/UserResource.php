@@ -406,7 +406,10 @@ class UserResource extends Resource
                         ->action(function ($record, array $data) {
                             $package = ListingPackage::find($data['package_id']);
                             if ($package) {
-                                ListingCreditService::grantPackage($record, $package, 'admin_grant');
+                                $owner = ListingCreditService::resolveOwner($record);
+                                if ($owner) {
+                                    ListingCreditService::grantPackage($owner, $package, 'admin_grant');
+                                }
                             }
                         }),
                 ]),

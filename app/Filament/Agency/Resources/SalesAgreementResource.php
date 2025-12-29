@@ -82,7 +82,7 @@ class SalesAgreementResource extends Resource
                                         ->label('Manage Templates')
                                         ->icon('heroicon-o-cog-6-tooth')
                                         ->color('gray')
-                                        ->url(route('filament.agency.resources.sales-agreement-templates.index'))
+                                        ->url(SalesAgreementTemplateResource::getUrl('index'))
                                         ->openUrlInNewTab(),
                                 ])
                                     ->alignEnd(),

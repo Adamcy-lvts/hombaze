@@ -24,20 +24,37 @@
 
         <style>
             /* Critical Anti-FOUC & Smooth Page Load */
-            html { opacity: 0; transition: opacity 0.3s ease-out; }
+            .page-cloak { opacity: 0; }
+            html { transition: opacity 0.3s ease-out; }
         </style>
         <script>
-            // Immediately reveal if possible, or wait for DOM
+            // Add cloak class immediately to prevent splash
+            document.documentElement.classList.add('page-cloak');
+
+            let revealed = false;
             function reveal() { 
+                if (revealed) return;
+                revealed = true;
+                
                 requestAnimationFrame(() => {
+                    document.documentElement.classList.remove('page-cloak');
                     document.documentElement.style.opacity = '1';
                 });
             }
+
+            // Initial load
             if(document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', reveal);
             } else {
                 reveal();
             }
+
+            // Safety timeout (500ms)
+            setTimeout(reveal, 500);
+
+            // Livewire navigation support
+            document.addEventListener('livewire:navigated', reveal);
+            document.addEventListener('livewire:load', reveal);
         </script>
     </head>
     <body class="font-sans antialiased">

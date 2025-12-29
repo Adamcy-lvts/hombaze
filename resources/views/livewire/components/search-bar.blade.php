@@ -30,37 +30,36 @@
         </div>
     @else
         {{-- Full/Hero version with glassmorphism --}}
-            <div class="relative flex items-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-1.5 shadow-2xl transition-all duration-300 hover:bg-white/15 ring-1 ring-white/30">
-                <div class="pl-4 text-emerald-400 hidden sm:block">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </div>
-                <input
-                    type="text"
-                    wire:model.live.debounce.300ms="query"
-                    wire:keydown.enter.prevent="handleEnter"
-                    wire:keydown.arrow-up.prevent="navigateUp"
-                    wire:keydown.arrow-down.prevent="navigateDown"
-                    @focus="$wire.showSuggestionsDropdown()"
-                    placeholder="{{ $placeholder }}"
-                    class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-white/60 text-base sm:text-lg px-4 sm:px-4 py-2.5 sm:py-3 font-medium cursor-text"
-                    autocomplete="off"
-                    @if($autoFocus) autofocus @endif
-                >
-                <button
-                    wire:click="search"
-                    class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-full font-bold shadow-lg hover:shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all duration-200
-                           p-2 sm:px-8 sm:py-3 shrink-0"
-                >
-                    <span class="hidden sm:inline text-base">Search</span>
-                    <span class="sm:hidden block p-1">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </span>
-                </button>
+        <div class="relative flex items-center bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-1.5 shadow-2xl transition-all duration-300 hover:bg-white/15 ring-1 ring-white/30">
+            <div class="pl-4 text-emerald-400 hidden sm:block">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
             </div>
+            <input
+                type="text"
+                wire:model.live.debounce.300ms="query"
+                wire:keydown.enter.prevent="handleEnter"
+                wire:keydown.arrow-up.prevent="navigateUp"
+                wire:keydown.arrow-down.prevent="navigateDown"
+                @focus="$wire.showSuggestionsDropdown()"
+                placeholder="{{ $placeholder }}"
+                class="w-full bg-transparent border-none focus:ring-0 text-white placeholder-white/60 text-base sm:text-lg px-4 sm:px-4 py-2.5 sm:py-3 font-medium cursor-text"
+                autocomplete="off"
+                @if($autoFocus) autofocus @endif
+            >
+            <button
+                wire:click="search"
+                class="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-white rounded-full font-bold shadow-lg hover:shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all duration-200
+                       p-2 sm:px-8 sm:py-3 shrink-0"
+            >
+                <span class="hidden sm:inline text-base">Search</span>
+                <span class="sm:hidden block p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </span>
+            </button>
         </div>
     @endif
 

@@ -56,12 +56,14 @@
         },
 
         handleTouchStart(e) { 
+            if (this.zoomScale > 1) return;
             if (e.touches.length === 1) {
                 this.touchStartX = e.changedTouches[0].screenX; 
                 this.touchStartY = e.changedTouches[0].screenY;
             }
         },
         handleTouchEnd(e) { 
+            if (this.zoomScale > 1) return;
             if (e.changedTouches.length === 1) {
                 this.touchEndX = e.changedTouches[0].screenX; 
                 this.touchEndY = e.changedTouches[0].screenY;
@@ -286,16 +288,25 @@
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                             </button>
                         </div>
-                        
-                        <div class="relative w-full h-full flex items-center justify-center overflow-auto scrollbar-hide">
-                            <div class="h-full w-full flex items-center justify-center p-4 md:p-8"
-                                 @wheel.prevent="zoomScale = Math.max(1, Math.min(5, zoomScale + (event.deltaY < 0 ? 0.2 : -0.2)))"
-                                 @dblclick="rotateZoom()">
-                                <img :src="images[activeImage].src" 
-                                     class="transition-transform duration-300 ease-out cursor-zoom-in origin-center"
-                                     :class="zoomScale > 1 ? 'max-w-none cursor-grab active:cursor-grabbing' : 'max-w-full max-h-full object-contain'"
-                                     :style="`transform: scale(${zoomScale}); transform-origin: center;`"
-                                     @click.stop>
+                        <!-- Lightbox Slider Track -->
+                        <div class="relative w-full h-full overflow-hidden">
+                            <div class="absolute inset-0 flex transition-transform duration-500 ease-out"
+                                 :style="`transform: translateX(-${activeImage * 100}%);`"
+                                 @touchstart="handleTouchStart($event)"
+                                 @touchend="handleTouchEnd($event)">
+                                <template x-for="(image, index) in images" :key="index">
+                                    <div class="flex-shrink-0 w-full h-full flex items-center justify-center overflow-auto scrollbar-hide p-4 md:p-8">
+                                        <div class="h-full w-full flex items-center justify-center"
+                                             @wheel.prevent="if(activeImage === index) zoomScale = Math.max(1, Math.min(5, zoomScale + (event.deltaY < 0 ? 0.2 : -0.2)))"
+                                             @dblclick="if(activeImage === index) rotateZoom()">
+                                            <img :src="image.src" 
+                                                 class="transition-transform duration-300 ease-out cursor-zoom-in origin-center"
+                                                 :class="(zoomScale > 1 && activeImage === index) ? 'max-w-none cursor-grab active:cursor-grabbing' : 'max-w-full max-h-full object-contain'"
+                                                 :style="activeImage === index ? `transform: scale(${zoomScale}); transform-origin: center;` : ''"
+                                                 @click.stop>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                         

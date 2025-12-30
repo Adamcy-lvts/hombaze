@@ -72,6 +72,12 @@ class PropertyViewingResource extends Resource
         ];
     }
 
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('inquirer_id', Auth::id());
+    }
+
     public static function getPages(): array
     {
         return [

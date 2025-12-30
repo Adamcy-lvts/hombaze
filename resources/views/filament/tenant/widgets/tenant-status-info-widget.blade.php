@@ -6,93 +6,71 @@
     // Check for property from invitation if no active lease
     $invitationProperty = $this->getInvitationProperty();
     
-    // Determine lease status and configuration
+    // Determine status colors and labels
     if (!$lease) {
-        $status = 'no_lease';
-        $statusConfig = [
-            'text' => $invitationProperty ? 'Awaiting Lease' : 'No Active Lease',
-            'classes' => $invitationProperty ? 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:border-blue-600 dark:bg-blue-700 dark:bg-opacity-25 dark:text-blue-400' : 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:border-gray-600 dark:bg-gray-700 dark:bg-opacity-25 dark:text-gray-400',
-        ];
-        $statusMessage = $invitationProperty ? 'Invited to property. Awaiting lease creation by landlord.' : 'No active lease found. Contact your landlord for lease assignment.';
+        $statusLabel = $invitationProperty ? 'Awaiting Lease' : 'No Lease';
+        $statusColor = $invitationProperty ? 'info' : 'gray';
         $propertyName = $invitationProperty ? $invitationProperty->title : 'No Property Assigned';
     } else {
-        $now = now();
         $endDate = $lease->end_date;
-        $daysUntilExpiry = $now->diffInDays($endDate, false);
+        $daysUntilExpiry = now()->diffInDays($endDate, false);
         $propertyName = $lease->property->title ?? 'Property';
         
         if ($lease->status === 'active' && $endDate->isFuture()) {
-            if ($daysUntilExpiry <= 30) {
-                $status = 'expiring_soon';
-                $statusConfig = [
-                    'text' => 'Expiring Soon',
-                    'classes' => 'bg-yellow-50 text-yellow-700 ring-yellow-600/20 dark:border-yellow-600 dark:bg-yellow-700 dark:bg-opacity-25 dark:text-yellow-400',
-                ];
-                $statusMessage = "Expires on {$endDate->format('F j, Y')} ({$daysUntilExpiry} " . ($daysUntilExpiry === 1 ? 'day' : 'days') . " remaining)";
-            } else {
-                $status = 'active';
-                $statusConfig = [
-                    'text' => 'Active',
-                    'classes' => 'bg-green-50 text-green-700 ring-green-600/20 dark:border-green-600 dark:bg-green-700 dark:bg-opacity-25 dark:text-green-400',
-                ];
-                $statusMessage = "Expires on {$endDate->format('F j, Y')}";
-            }
+            $statusLabel = $daysUntilExpiry <= 30 ? 'Expiring Soon' : 'Active';
+            $statusColor = $daysUntilExpiry <= 30 ? 'warning' : 'success';
         } elseif ($lease->status === 'active' && $endDate->isPast()) {
-            $status = 'expired';
-            $statusConfig = [
-                'text' => 'Expired',
-                'classes' => 'bg-red-50 text-red-700 ring-red-600/20 dark:border-red-600 dark:bg-red-700 dark:bg-opacity-25 dark:text-red-400',
-            ];
-            $statusMessage = "Expired on {$endDate->format('F j, Y')}. Contact landlord for renewal.";
-        } elseif ($lease->status === 'terminated') {
-            $status = 'terminated';
-            $statusConfig = [
-                'text' => 'Terminated',
-                'classes' => 'bg-red-50 text-red-700 ring-red-600/20 dark:border-red-600 dark:bg-red-700 dark:bg-opacity-25 dark:text-red-400',
-            ];
-            $statusMessage = $lease->move_out_date ? "Terminated. Move-out: {$lease->move_out_date->format('F j, Y')}" : 'Lease terminated.';
-        } elseif ($lease->status === 'renewed') {
-            $status = 'renewed';
-            $statusConfig = [
-                'text' => 'Renewed',
-                'classes' => 'bg-blue-50 text-blue-700 ring-blue-600/20 dark:border-blue-600 dark:bg-blue-700 dark:bg-opacity-25 dark:text-blue-400',
-            ];
-            $statusMessage = "Renewed until {$endDate->format('F j, Y')}";
+            $statusLabel = 'Expired';
+            $statusColor = 'danger';
         } else {
-            $status = 'draft';
-            $statusConfig = [
-                'text' => 'Draft',
-                'classes' => 'bg-gray-50 text-gray-700 ring-gray-600/20 dark:border-gray-600 dark:bg-gray-700 dark:bg-opacity-25 dark:text-gray-400',
-            ];
-            $statusMessage = 'Draft status. Awaiting finalization.';
+            $statusLabel = ucfirst($lease->status);
+            $statusColor = match($lease->status) {
+                'terminated' => 'danger',
+                'renewed' => 'info',
+                default => 'gray',
+            };
         }
     }
-
-    $isActiveLease = $status === 'active' || $status === 'expiring_soon';
 @endphp
 
-<x-filament-widgets::widget class="fi-filament-info-widget">
-    <x-filament::section class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-        <div class="flex flex-col gap-0.5">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-gray-600 dark:text-gray-300 leading-5">
-                        {{ $isActiveLease ? 'Lease Status' : 'Tenant Status' }}:
-                    </span>
-                    <span class="text-sm font-semibold text-gray-800 dark:text-white">
-                        {{ $propertyName }}
-                    </span>
-                </div>
-                <div class="flex flex-col items-end gap-1">
-                    <span class="inline-flex items-center rounded-lg px-4 py-2 text-xs font-medium {{ $statusConfig['classes'] }} ring-1 ring-inset">
-                        {{ $statusConfig['text'] }}
-                    </span>
+<x-filament-widgets::widget class="fi-tenant-status-info-widget">
+    <x-filament::section>
+        <div class="flex items-center gap-x-3">
+            <div class="flex-none">
+                <div @class([
+                    'flex h-10 w-10 items-center justify-center rounded-full transition-colors',
+                    'bg-success-500/10 text-success-600 dark:text-success-400' => $statusColor === 'success',
+                    'bg-warning-500/10 text-warning-600 dark:text-warning-400' => $statusColor === 'warning',
+                    'bg-danger-500/10 text-danger-600 dark:text-danger-400' => $statusColor === 'danger',
+                    'bg-info-500/10 text-info-600 dark:text-info-400' => $statusColor === 'info',
+                    'bg-gray-500/10 text-gray-600 dark:text-gray-400' => $statusColor === 'gray',
+                ])>
+                    <x-heroicon-o-home-modern class="h-5 w-5" />
                 </div>
             </div>
 
-            <span class="text-xs text-gray-500 dark:text-gray-400">
-                {{ $statusMessage }}
-            </span>
+            <div class="flex-1 min-w-0">
+                <h2 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-tight">
+                    Lease Status
+                </h2>
+                <p class="text-sm font-bold text-gray-950 dark:text-white truncate">
+                    {{ $propertyName }}
+                </p>
+            </div>
+
+            <div class="flex-none flex items-center gap-x-2">
+                <x-filament::badge :color="$statusColor" size="sm">
+                    {{ $statusLabel }}
+                </x-filament::badge>
+                
+                @if($lease)
+                    <a href="{{ \App\Filament\Tenant\Resources\LeaseResource::getUrl('view', ['record' => $lease->id]) }}" 
+                       class="p-1 text-gray-400 hover:text-primary-600 transition-colors dark:hover:text-primary-400"
+                       title="View Lease Details">
+                        <x-heroicon-m-arrow-top-right-on-square class="h-4 w-4" />
+                    </a>
+                @endif
+            </div>
         </div>
     </x-filament::section>
 </x-filament-widgets::widget>

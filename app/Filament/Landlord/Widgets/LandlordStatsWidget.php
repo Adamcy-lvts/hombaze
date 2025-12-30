@@ -22,9 +22,9 @@ class LandlordStatsWidget extends BaseWidget
             $query->where('user_id', $landlordId);
         })->count();
 
-        $activeLeasesCount = Lease::where('landlord_id', $landlordId)
-            ->where('status', 'active')
-            ->count();
+        // $activeLeasesCount = Lease::where('landlord_id', $landlordId)
+        //     ->where('status', 'active')
+        //     ->count();
 
         $rentCollectedThisYear = RentPayment::where('landlord_id', $landlordId)
             ->where('status', 'paid')
@@ -35,10 +35,10 @@ class LandlordStatsWidget extends BaseWidget
             ->whereYear('due_date', $now->year)
             ->sum('amount');
 
-        $outstandingRentThisYear = RentPayment::where('landlord_id', $landlordId)
-            ->whereIn('status', ['pending', 'partial', 'overdue'])
-            ->whereYear('due_date', $now->year)
-            ->sum('amount');
+        // $outstandingRentThisYear = RentPayment::where('landlord_id', $landlordId)
+        //     ->whereIn('status', ['pending', 'partial', 'overdue'])
+        //     ->whereYear('due_date', $now->year)
+        //     ->sum('amount');
 
         $collectionRate = $expectedRentThisYear > 0
             ? round(($rentCollectedThisYear / $expectedRentThisYear) * 100, 1)
@@ -50,20 +50,20 @@ class LandlordStatsWidget extends BaseWidget
                 ->icon('heroicon-m-home')
                 ->color('primary'),
 
-            Stat::make('Active Leases', $activeLeasesCount)
-                ->description('Current rental agreements')
-                ->icon('heroicon-m-document-text')
-                ->color('success'),
+            // Stat::make('Active Leases', $activeLeasesCount)
+            //     ->description('Current rental agreements')
+            //     ->icon('heroicon-m-document-text')
+            //     ->color('success'),
 
             Stat::make('Rent Collected (YTD)', '₦' . number_format($rentCollectedThisYear, 0))
                 ->description($now->year . ' collections · ' . $collectionRate . '% of expected')
                 ->icon('heroicon-m-banknotes')
                 ->color('success'),
 
-            Stat::make('Outstanding Rent', '₦' . number_format($outstandingRentThisYear, 0))
-                ->description('Still due this year')
-                ->icon('heroicon-m-clock')
-                ->color($outstandingRentThisYear > 0 ? 'warning' : 'success'),
+            // Stat::make('Outstanding Rent', '₦' . number_format($outstandingRentThisYear, 0))
+            //     ->description('Still due this year')
+            //     ->icon('heroicon-m-clock')
+            //     ->color($outstandingRentThisYear > 0 ? 'warning' : 'success'),
         ];
     }
 }

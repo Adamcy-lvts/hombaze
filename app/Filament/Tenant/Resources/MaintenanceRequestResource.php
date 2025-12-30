@@ -72,6 +72,7 @@ class MaintenanceRequestResource extends Resource
                                         if ($tenant) {
                                             // Get properties from active leases for this tenant
                                             $propertyIds = Lease::where('tenant_id', $tenant->id)
+                                                ->where('landlord_id', $tenant->landlord_id)
                                                 ->where('status', 'active')
                                                 ->pluck('property_id');
 
@@ -91,6 +92,7 @@ class MaintenanceRequestResource extends Resource
                                         if ($tenant) {
                                             // Auto-select if tenant has only one active lease
                                             $activeLease = Lease::where('tenant_id', $tenant->id)
+                                                ->where('landlord_id', $tenant->landlord_id)
                                                 ->where('status', 'active')
                                                 ->first();
 
@@ -385,6 +387,7 @@ class MaintenanceRequestResource extends Resource
 
         return parent::getEloquentQuery()
             ->where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->with(['property', 'tenant']);
     }
 
@@ -424,6 +427,9 @@ class MaintenanceRequestResource extends Resource
         
         if ($tenant) {
             $data['tenant_id'] = $tenant->id;
+            if ($tenant->landlord_id) {
+                $data['landlord_id'] = $tenant->landlord_id;
+            }
         }
         
         // Set default status

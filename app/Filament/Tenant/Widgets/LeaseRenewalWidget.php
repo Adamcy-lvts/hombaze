@@ -26,6 +26,7 @@ class LeaseRenewalWidget extends Widget
 
         // Get current active lease
         $currentLease = Lease::where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->where('status', 'active')
             ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())
@@ -72,6 +73,7 @@ class LeaseRenewalWidget extends Widget
 
         // Get current active lease
         $currentLease = Lease::where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->where('status', 'active')
             ->first();
 

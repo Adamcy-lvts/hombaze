@@ -7,6 +7,7 @@ use App\Filament\Landlord\Pages\Dashboard;
 use App\Filament\Landlord\Widgets\LandlordAccountWidget;
 use App\Filament\Landlord\Widgets\PropertyOwnerProfileWidget;
 use App\Filament\Landlord\Widgets\LandlordInfoWidget;
+use App\Filament\Landlord\Widgets\LeaseProgressWidget;
 use App\Filament\Landlord\Pages\Auth\EditProfile;
 use App\Http\Middleware\RequireProfileCompletion;
 use Filament\Pages;
@@ -55,6 +56,7 @@ class LandlordPanelProvider extends PanelProvider
                 LandlordAccountWidget::class,
                 PropertyOwnerProfileWidget::class,
                 LandlordInfoWidget::class,
+                LeaseProgressWidget::class,
             ])
             ->profile(EditProfile::class)
             ->middleware([

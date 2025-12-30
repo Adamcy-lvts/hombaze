@@ -6,6 +6,7 @@ use App\Filament\Landlord\Widgets\LandlordAccountWidget;
 use App\Filament\Landlord\Widgets\LandlordInfoWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 use App\Filament\Landlord\Widgets\LandlordStatsWidget;
+use App\Filament\Landlord\Widgets\LeaseProgressWidget;
 use App\Filament\Landlord\Widgets\RecentPaymentsWidget;
 
 class Dashboard extends BaseDashboard
@@ -22,6 +23,7 @@ class Dashboard extends BaseDashboard
             LandlordAccountWidget::class,
             LandlordInfoWidget::class,
             LandlordStatsWidget::class,
+            LeaseProgressWidget::class,
             RecentPaymentsWidget::class,
         ];
     }

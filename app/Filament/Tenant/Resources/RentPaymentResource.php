@@ -255,6 +255,7 @@ class RentPaymentResource extends Resource
 
         return parent::getEloquentQuery()
             ->where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->with(['property', 'lease', 'tenant']);
     }
 

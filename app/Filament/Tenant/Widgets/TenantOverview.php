@@ -27,6 +27,7 @@ class TenantOverview extends BaseWidget
 
         // Get current active lease
         $currentLease = Lease::where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->where('status', 'active')
             ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())
@@ -54,15 +55,18 @@ class TenantOverview extends BaseWidget
 
         // Get payment statistics
         $pendingPayments = RentPayment::where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->whereIn('status', ['pending', 'overdue'])
             ->count();
 
         $totalPaid = RentPayment::where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->where('status', 'paid')
             ->sum('amount');
 
         // Get maintenance request statistics
         $openMaintenanceRequests = MaintenanceRequest::where('tenant_id', $tenant->id)
+            ->where('landlord_id', $tenant->landlord_id)
             ->whereIn('status', ['pending', 'in_progress', 'scheduled'])
             ->count();
 

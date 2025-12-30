@@ -18,6 +18,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
 use App\Filament\Tenant\Widgets\LeaseStatusWidget;
 use App\Filament\Tenant\Widgets\LeaseRenewalWidget;
+use App\Filament\Tenant\Widgets\LeaseProgressWidget;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Tenant\Widgets\TenantStatusInfoWidget;
@@ -51,6 +52,7 @@ class TenantPanelProvider extends PanelProvider
             ->widgets([
                 TenantStatusInfoWidget::class,
                 TenantOverview::class,
+                LeaseProgressWidget::class,
                 AccountWidget::class,
 
             ])

@@ -23,6 +23,7 @@ class TenantStatusInfoWidget extends Widget
         
         // Get the current active lease for this tenant
         $this->currentLease = $this->tenant?->leases()
+            ->where('landlord_id', $this->tenant?->landlord_id)
             ->where('status', 'active')
             ->where('start_date', '<=', now())
             ->where('end_date', '>=', now())

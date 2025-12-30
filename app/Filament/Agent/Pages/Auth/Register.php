@@ -23,6 +23,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
 use App\Services\ListingCreditService;
+use App\Services\AdminRegistrationNotifier;
 
 class Register extends \Filament\Auth\Pages\Register
 {
@@ -231,6 +232,8 @@ class Register extends \Filament\Auth\Pages\Register
 
         // Initialize profile completion tracking
         $user->initializeProfileCompletion();
+
+        AdminRegistrationNotifier::notify($user);
 
         Log::info('Agent registration completed successfully', [
             'user_id' => $user->id,

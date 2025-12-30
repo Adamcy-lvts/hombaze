@@ -10,7 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Filament\Notifications\Notification;
 use Illuminate\Validation\Rules;
+use App\Services\AdminRegistrationNotifier;
 
 class TenantInvitationController extends Controller
 {
@@ -123,6 +125,10 @@ class TenantInvitationController extends Controller
         // Auto-login the new tenant
         $tenant = User::where('phone', $invitation->phone)->first();
         Auth::login($tenant);
+
+        if ($tenant) {
+            AdminRegistrationNotifier::notify($tenant);
+        }
         
         return redirect()->route('filament.tenant.pages.dashboard')
             ->with('success', 'Welcome! Your tenant account has been created successfully.');
@@ -173,6 +179,8 @@ class TenantInvitationController extends Controller
             // Mark invitation as accepted
             $invitation->markAsAccepted($tenant, request()->ip());
         });
+
+        $this->notifyAdminsTenantAcceptedInvitation($tenant, $invitation);
         
         return view('invitation.existing-tenant-associated', compact('invitation', 'tenant'));
     }
@@ -249,6 +257,8 @@ class TenantInvitationController extends Controller
             
             $invitation->markAsAccepted($user, request()->ip());
         });
+
+        $this->notifyAdminsTenantAcceptedInvitation($user, $invitation);
         
         Auth::login($user);
         
@@ -286,5 +296,37 @@ class TenantInvitationController extends Controller
 
         // Activate lease to trigger LeaseObserver for RentPayment creation
         $lease->update(['status' => Lease::STATUS_ACTIVE]);
+    }
+
+    private function notifyAdminsTenantAcceptedInvitation(User $tenant, TenantInvitation $invitation): void
+    {
+        if (app()->runningInConsole()) {
+            return;
+        }
+
+        $admins = User::query()
+            ->whereIn('user_type', ['admin', 'super_admin'])
+            ->get();
+
+        if ($admins->isEmpty()) {
+            return;
+        }
+
+        $landlordName = $invitation->landlord?->name;
+        $agentName = $invitation->agent?->user?->name;
+
+        $contextParts = array_filter([
+            $landlordName ? "Landlord: {$landlordName}" : null,
+            $agentName ? "Agent: {$agentName}" : null,
+        ]);
+
+        $context = $contextParts ? ' (' . implode(', ', $contextParts) . ')' : '';
+
+        Notification::make()
+            ->title('Tenant invitation accepted')
+            ->body("{$tenant->name} accepted a tenant invitation{$context}.")
+            ->icon('heroicon-o-user-plus')
+            ->iconColor('success')
+            ->sendToDatabase($admins, isEventDispatched: true);
     }
 }

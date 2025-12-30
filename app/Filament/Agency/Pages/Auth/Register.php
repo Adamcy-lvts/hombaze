@@ -38,6 +38,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use DanHarrin\LivewireRateLimiting\WithRateLimiting;
+use App\Services\AdminRegistrationNotifier;
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
 use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
@@ -120,6 +121,7 @@ class Register extends \Filament\Auth\Pages\Register
 
                 // Handle post-registration tasks
                 event(new Registered($user));
+                AdminRegistrationNotifier::notify($user);
                 $this->sendEmailVerificationNotification($user);
                 
                 // Login user with tenant context

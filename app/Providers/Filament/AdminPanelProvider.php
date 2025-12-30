@@ -39,6 +39,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandLogo(asset('images/app-logo.svg'))
             ->darkModeBrandLogo(asset('images/app-logo.svg'))
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -59,6 +60,8 @@ class AdminPanelProvider extends PanelProvider
                 InquiryTrendsWidget::class,
                 RecentUsersWidget::class,
             ])
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

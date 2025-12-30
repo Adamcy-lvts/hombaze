@@ -131,9 +131,11 @@
     @endif
     --}}
 
-    <!-- The Featured Collection Interactive List (Minimalist Luxury) -->
+    <!-- The Featured Collection Interactive List (Minimalist Luxury Gallery) -->
     @if($this->featuredProperties->count() > 0)
-    <section class="relative bg-slate-950 h-screen lg:h-screen overflow-hidden group/dc flex flex-col lg:flex-row" id="directors-cut-section">
+    <section class="py-0 lg:py-24 bg-slate-950 lg:bg-gray-50 overflow-hidden" id="featured-gallery-wrapper">
+        <div class="max-w-none lg:max-w-[1550px] mx-auto px-0 lg:px-8">
+            <div class="relative bg-white h-screen lg:h-[800px] overflow-hidden group/dc flex flex-col lg:flex-row rounded-none lg:rounded-[3rem] shadow-none lg:shadow-[0_40px_80px_-20px_rgba(0,0,0,0.08)] border-0 lg:border lg:border-gray-200/50 transition-all duration-700" id="directors-cut-section">
         
         <!-- Background Visual Deck (Top on mobile, Right on desktop) -->
         <div class="relative w-full h-[45vh] lg:absolute lg:inset-0 lg:left-[40%] lg:w-[60%] lg:h-full z-10 lg:z-0 overflow-hidden shrink-0">
@@ -222,7 +224,7 @@
                             onmouseenter="switchVisual({{ $index }})"
                         >
                             <div class="flex items-center gap-4 lg:gap-8 w-full">
-                                <span class="text-white/10 lg:text-slate-200 font-black text-2xl lg:text-3xl tracking-tighter group-hover:text-emerald-500 transition-colors duration-500 shrink-0 w-12 lg:w-16">
+                                <span class="text-white/20 lg:text-white/10 font-mono lg:font-black text-base lg:text-3xl tracking-normal lg:tracking-tighter group-hover:text-emerald-500 transition-colors duration-500 shrink-0 w-8 lg:w-16">
                                     {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                                 </span>
                                 <div class="flex-1 min-w-0">
@@ -233,14 +235,14 @@
                                         </span>
                                     </div>
 
-                                    <h3 class="text-lg lg:text-2xl font-black text-white/40 lg:text-slate-300 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-700 leading-tight line-clamp-2 lg:line-clamp-1 mb-1.5 uppercase tracking-tighter">
+                                    <h3 class="text-sm sm:text-lg lg:text-2xl font-bold lg:font-black text-white/60 lg:text-slate-300 group-hover:text-white lg:group-hover:text-slate-900 transition-all duration-700 leading-tight line-clamp-2 lg:line-clamp-1 mb-1 lg:mb-1.5 lg:uppercase lg:tracking-tighter">
                                         {{ $property->title }}
                                     </h3>
-                                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1">
-                                        <span class="text-emerald-500 font-black text-sm lg:text-base tabular-nums">₦{{ number_format($property->price) }}</span>
+                                    <div class="flex flex-wrap items-center gap-x-3 lg:gap-x-4 gap-y-1">
+                                        <span class="text-emerald-500 font-extrabold lg:font-black text-xs sm:text-sm lg:text-base tabular-nums">₦{{ number_format($property->price) }}</span>
                                         <div class="flex items-center gap-2">
                                             <span class="w-1 h-1 rounded-full bg-slate-700 hidden lg:block"></span>
-                                            <p class="text-white/30 lg:text-slate-400 text-[10px] uppercase tracking-[0.3em] font-black truncate">
+                                            <p class="text-white/40 lg:text-slate-400 text-[8px] lg:text-[10px] uppercase tracking-[0.2em] lg:tracking-[0.3em] font-bold lg:font-black truncate">
                                                 {{ $property->city->name ?? '' }}
                                             </p>
                                         </div>
@@ -274,127 +276,288 @@
                 </a>
             </div>
         </div>
+    </div>
     </section>
     @endif
 
-    <!-- Floating Filters Section (Collapsible) -->
-    <section class="relative z-20 px-4 sm:px-6 lg:px-8 py-12 bg-gray-50" x-data="{ showFilters: false }">
-        <div class="max-w-7xl mx-auto">
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-4 backdrop-blur-sm bg-white/95">
-                
-                <!-- Top Row: Listing Types & Toggle -->
-                <div class="flex flex-col md:flex-row justify-between items-center gap-4">
-                    <!-- Listing Types (Always Visible) -->
-                    <div class="flex items-center bg-gray-100/80 p-1 rounded-lg">
+    <!-- Premium Search & Filter Hub -->
+    <section class="relative z-40 -mt-8 px-4 sm:px-6 lg:px-8 pb-12" x-data="{ showFilters: false }">
+        <div class="max-w-6xl mx-auto">
+            <!-- Main Filter Bar -->
+            <div class="relative bg-white/90 backdrop-blur-xl rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/20 p-3 sm:p-4 z-40">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    
+                    <!-- Listing Type Selector (Pill Style) -->
+                    <div class="relative flex bg-gray-100/50 p-1.5 rounded-full w-full md:w-auto">
                         @foreach($filterOptions['listing_types'] as $listingType)
                             <button
                                 wire:click="setListingType('{{ $listingType['value'] }}')"
-                                class="px-4 py-2 rounded-md text-sm font-semibold transition-all duration-200 {{ $selectedListingType === $listingType['value'] ? 'bg-white text-emerald-600 shadow-sm' : 'text-gray-600 hover:text-gray-900' }}"
+                                class="relative z-10 flex-1 md:flex-none px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest transition-all duration-300 {{ $selectedListingType === $listingType['value'] ? 'text-emerald-700' : 'text-gray-500 hover:text-gray-900' }}"
                             >
+                                @if($selectedListingType === $listingType['value'])
+                                    <div class="absolute inset-0 bg-white rounded-full shadow-sm -z-10"></div>
+                                @endif
                                 {{ $listingType['label'] }}
                             </button>
                         @endforeach
                     </div>
 
-                    <!-- Filter Toggle Button -->
-                    <button 
-                        @click="showFilters = !showFilters"
-                        class="flex items-center space-x-2 px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 hover:border-emerald-200 transition-all duration-200"
-                        :class="{ 'border-emerald-500 ring-1 ring-emerald-500 bg-emerald-50': showFilters }"
-                    >
-                        <svg class="w-5 h-5 text-gray-500" :class="{ 'text-emerald-600': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
-                        </svg>
-                        <span class="font-medium text-sm">Filters</span>
-                        <svg class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                        </svg>
-                    </button>
+                    <!-- Filter Actions -->
+                    <div class="flex items-center gap-3 w-full md:w-auto">
+                        <!-- Advanced Filter Toggle -->
+                        <button 
+                            @click="showFilters = !showFilters; if(showFilters) $dispatch('filter-revealed')"
+                            class="flex-1 md:flex-none flex items-center justify-center space-x-3 px-8 py-3.5 bg-slate-900 text-white rounded-full hover:bg-slate-800 transition-all duration-300 group shadow-lg shadow-slate-200"
+                        >
+                            <div class="relative w-5 h-5">
+                                <svg class="absolute inset-0 w-5 h-5 transition-all duration-300 transform" :class="{ 'opacity-0 rotate-90': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                </svg>
+                                <svg class="absolute inset-0 w-5 h-5 transition-all duration-300 transform opacity-0 scale-50" :class="{ 'opacity-100 scale-100 rotate-0': showFilters }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                </svg>
+                            </div>
+                            <span class="font-bold text-xs uppercase tracking-[0.2em]" x-text="showFilters ? 'Hide Options' : 'Refine Search'">Refine Search</span>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Advanced Filters Grid (Collapsible) -->
+                <!-- Advanced Filters Panel -->
                 <div 
                     x-show="showFilters" 
                     x-collapse
-                    x-transition:enter="transition ease-out duration-200"
-                    x-transition:enter-start="opacity-0 transform -translate-y-2"
-                    x-transition:enter-end="opacity-100 transform translate-y-0"
-                    class="mt-6 pt-6 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
-                    style="display: none;"
+                    class="relative z-50"
                 >
-                    <!-- Bedrooms -->
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center">
-                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                            Bedrooms
-                        </label>
-                        <select wire:model.live="selectedBedrooms" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">Any</option>
-                            @foreach($filterOptions['bedrooms'] as $bedroom)
-                                <option value="{{ $bedroom['value'] }}">{{ $bedroom['label'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <div class="mt-6 pt-8 border-t border-gray-100/50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 pb-4">
+                            <!-- Bedrooms Selection -->
+                            <div class="space-y-4">
+                                <label class="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                                    <span class="w-4 h-[1px] bg-emerald-500 mr-2"></span>
+                                    Bedrooms
+                                </label>
+                                <div class="relative group" x-data="{ 
+                                    open: false, 
+                                    selected: @entangle('selectedBedrooms'),
+                                    get label() {
+                                        if(!this.selected) return 'Any Capacity';
+                                        return this.selected === '5' ? '5+ Bedrooms' : (this.selected + (this.selected == 1 ? ' Bedroom' : ' Bedrooms'));
+                                    }
+                                }">
+                                    <button 
+                                        @click="open = !open" 
+                                        type="button"
+                                        class="w-full bg-gray-50/50 border-0 text-slate-900 text-sm font-bold py-4 px-5 rounded-2xl focus:ring-2 focus:ring-emerald-500 flex items-center justify-between transition-all hover:bg-gray-100/50"
+                                        :class="{ 'ring-2 ring-emerald-500 bg-white': open }"
+                                    >
+                                        <span x-text="label">Any Capacity</span>
+                                        <div class="text-slate-400 group-hover:text-emerald-500 transition-transform" :class="{ 'rotate-180': open }">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </button>
+                                    
+                                    <div 
+                                        x-show="open" 
+                                        @click.away="open = false"
+                                        x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        class="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden"
+                                        style="display: none;"
+                                    >
+                                        <div class="py-2 max-h-64 overflow-y-auto premium-scrollbar">
+                                            <button @click="selected = ''; open = false" class="w-full text-left px-5 py-3 text-sm font-bold transition-all flex items-center justify-between" :class="selected === '' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-600 hover:bg-gray-50 hover:text-emerald-600'">
+                                                <span>Any Capacity</span>
+                                                <template x-if="selected === ''">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </template>
+                                            </button>
+                                            @foreach($filterOptions['bedrooms'] as $bedroom)
+                                                <button 
+                                                    @click="selected = '{{ $bedroom['value'] }}'; open = false" 
+                                                    class="w-full text-left px-5 py-3 text-sm font-bold transition-all flex items-center justify-between"
+                                                    :class="selected == '{{ $bedroom['value'] }}' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-600 hover:bg-gray-50 hover:text-emerald-600'"
+                                                >
+                                                    <span>{{ $bedroom['label'] }} {{ $bedroom['value'] == 1 ? 'Bedroom' : 'Bedrooms' }}</span>
+                                                    <template x-if="selected == '{{ $bedroom['value'] }}'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                    </template>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Property Type -->
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center">
-                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            Type
-                        </label>
-                        <select wire:model.live="selectedPropertyType" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">All Types</option>
-                            @foreach($filterOptions['property_types'] as $type)
-                                <option value="{{ $type['value'] }}">{{ $type['label'] }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                            <!-- Property Type -->
+                            <div class="space-y-4">
+                                <label class="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                                    <span class="w-4 h-[1px] bg-emerald-500 mr-2"></span>
+                                    Property Style
+                                </label>
+                                <div class="relative group" x-data="{ 
+                                    open: false, 
+                                    selected: @entangle('selectedPropertyType'),
+                                    options: @js($filterOptions['property_types']),
+                                    get label() {
+                                        if(!this.selected) return 'All Categories';
+                                        const opt = this.options.find(o => o.value == this.selected);
+                                        return opt ? opt.label : 'All Categories';
+                                    }
+                                }">
+                                    <button 
+                                        @click="open = !open" 
+                                        type="button"
+                                        class="w-full bg-gray-50/50 border-0 text-slate-900 text-sm font-bold py-4 px-5 rounded-2xl focus:ring-2 focus:ring-emerald-500 flex items-center justify-between transition-all hover:bg-gray-100/50"
+                                        :class="{ 'ring-2 ring-emerald-500 bg-white': open }"
+                                    >
+                                        <span x-text="label">All Categories</span>
+                                        <div class="text-slate-400 group-hover:text-emerald-500 transition-transform" :class="{ 'rotate-180': open }">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </button>
+                                    
+                                    <div 
+                                        x-show="open" 
+                                        @click.away="open = false"
+                                        x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        class="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden"
+                                        style="display: none;"
+                                    >
+                                        <div class="py-2 max-h-64 overflow-y-auto premium-scrollbar">
+                                            <button @click="selected = ''; open = false" class="w-full text-left px-5 py-3 text-sm font-bold transition-all flex items-center justify-between" :class="selected === '' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-600 hover:bg-gray-50 hover:text-emerald-600'">
+                                                <span>All Categories</span>
+                                                <template x-if="selected === ''">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </template>
+                                            </button>
+                                            @foreach($filterOptions['property_types'] as $type)
+                                                <button 
+                                                    @click="selected = '{{ $type['value'] }}'; open = false" 
+                                                    class="w-full text-left px-5 py-3 text-sm font-bold transition-all flex items-center justify-between"
+                                                    :class="selected == '{{ $type['value'] }}' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-600 hover:bg-gray-50 hover:text-emerald-600'"
+                                                >
+                                                    <span>{{ $type['label'] }}</span>
+                                                    <template x-if="selected == '{{ $type['value'] }}'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                    </template>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Location -->
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center">
-                            <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                            State
-                        </label>
-                        <select wire:model.live="selectedState" class="w-full bg-gray-50 border border-gray-200 text-gray-700 text-sm py-2.5 px-3 rounded-lg focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="">All States</option>
-                            @foreach($locationOptions['states'] as $state)
-                                <option value="{{ $state->id }}">{{ $state->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                            <!-- State/Location -->
+                            <div class="space-y-4">
+                                <label class="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                                    <span class="w-4 h-[1px] bg-emerald-500 mr-2"></span>
+                                    Location
+                                </label>
+                                <div class="relative group" x-data="{ 
+                                    open: false, 
+                                    selected: @entangle('selectedState'),
+                                    options: @js($locationOptions['states']->map(fn($s) => ['id' => $s->id, 'name' => $s->name])),
+                                    get label() {
+                                        if(!this.selected) return 'Search Region';
+                                        const opt = this.options.find(o => o.id == this.selected);
+                                        return opt ? opt.name : 'Search Region';
+                                    }
+                                }">
+                                    <button 
+                                        @click="open = !open" 
+                                        type="button"
+                                        class="w-full bg-gray-50/50 border-0 text-slate-900 text-sm font-bold py-4 px-5 rounded-2xl focus:ring-2 focus:ring-emerald-500 flex items-center justify-between transition-all hover:bg-gray-100/50"
+                                        :class="{ 'ring-2 ring-emerald-500 bg-white': open }"
+                                    >
+                                        <span x-text="label">Search Region</span>
+                                        <div class="text-slate-400 group-hover:text-emerald-500 transition-transform" :class="{ 'rotate-180': open }">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </button>
+                                    
+                                    <div 
+                                        x-show="open" 
+                                        @click.away="open = false"
+                                        x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+                                        x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+                                        class="absolute z-50 mt-2 w-full bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden"
+                                        style="display: none;"
+                                    >
+                                        <div class="py-2 max-h-64 overflow-y-auto premium-scrollbar">
+                                            <button @click="selected = ''; open = false" class="w-full text-left px-5 py-3 text-sm font-bold transition-all flex items-center justify-between" :class="selected === '' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-600 hover:bg-gray-50 hover:text-emerald-600'">
+                                                <span>Search Region</span>
+                                                <template x-if="selected === ''">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                </template>
+                                            </button>
+                                            @foreach($locationOptions['states'] as $state)
+                                                <button 
+                                                    @click="selected = '{{ $state->id }}'; open = false" 
+                                                    class="w-full text-left px-5 py-3 text-sm font-bold transition-all flex items-center justify-between"
+                                                    :class="selected == '{{ $state->id }}' ? 'bg-emerald-50 text-emerald-600' : 'text-slate-600 hover:bg-gray-50 hover:text-emerald-600'"
+                                                >
+                                                    <span>{{ $state->name }}</span>
+                                                    <template x-if="selected == '{{ $state->id }}'">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                    </template>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
-                    <!-- Price Range -->
-                    <div class="space-y-1.5">
-                        <label class="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center justify-between">
-                            <span>Max Price</span>
-                            <span class="text-emerald-600">{{ $selectedPriceRange > 0 ? '₦' . number_format($selectedPriceRange / 1000000) . 'M' : 'Any' }}</span>
-                        </label>
-                        <input
-                            type="range"
-                            wire:model.live="selectedPriceRange"
-                            min="0"
-                            max="100000000"
-                            step="5000000"
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider accent-emerald-500 mt-2"
-                        >
+                            <!-- Price Dynamics -->
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <label class="flex items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+                                        <span class="w-4 h-[1px] bg-emerald-500 mr-2"></span>
+                                        Budget Cap
+                                    </label>
+                                    <span class="text-xs font-black text-emerald-600 tabular-nums">
+                                        {{ $selectedPriceRange > 0 ? '₦' . number_format($selectedPriceRange / 1000000) . 'M' : 'Unlimited' }}
+                                    </span>
+                                </div>
+                                <div class="pt-2 px-1">
+                                    <input
+                                        type="range"
+                                        wire:model.live="selectedPriceRange"
+                                        min="0"
+                                        max="100000000"
+                                        step="5000000"
+                                        class="premium-slider w-full h-1.5 bg-gray-100 rounded-full appearance-none cursor-pointer accent-emerald-500"
+                                    >
+                                    <div class="flex justify-between mt-2 text-[8px] font-bold text-slate-400 uppercase tracking-widest">
+                                        <span>Min</span>
+                                        <span>50M</span>
+                                        <span>100M+</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reset Action -->
+                        @if($selectedPropertyType || $selectedBedrooms || $selectedState || $selectedCity || $selectedArea || $selectedPriceRange || $searchQuery)
+                            <div class="flex justify-center pb-6">
+                                <button
+                                    wire:click="clearAllFilters"
+                                    class="group flex items-center gap-3 px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-red-500 transition-all"
+                                >
+                                    <div class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-red-50 group-hover:rotate-90 transition-all duration-500">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </div>
+                                    Reset Selection
+                                </button>
+                            </div>
+                        @endif
                     </div>
                 </div>
-
-                <!-- Active Filters & Clear -->
-                @if($selectedPropertyType || $selectedBedrooms || $selectedState || $selectedCity || $selectedArea || $selectedPriceRange || $searchQuery)
-                    <div class="mt-4 pt-3 border-t border-gray-100 flex justify-center">
-                        <button
-                            wire:click="clearAllFilters"
-                            class="group inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-red-500 bg-gray-50 hover:bg-red-50 rounded-lg transition-all duration-200"
-                        >
-                            <svg class="w-3.5 h-3.5 mr-1.5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                            Clear All Filters
-                        </button>
-                    </div>
-                @endif
             </div>
         </div>
     </section>
@@ -593,38 +756,45 @@
     overflow: hidden;
 }
 
-/* Custom Range Slider Styling */
-.slider::-webkit-slider-thumb {
+/* Premium Range Slider Styling */
+.premium-slider::-webkit-slider-thumb {
     appearance: none;
-    height: 16px;
-    width: 16px;
+    height: 20px;
+    width: 20px;
     border-radius: 50%;
-    background: #059669;
+    background: #ffffff;
+    border: 4px solid #10b981;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
 }
 
-.slider::-moz-range-thumb {
-    height: 16px;
-    width: 16px;
+.premium-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+}
+
+.premium-slider::-moz-range-thumb {
+    height: 18px;
+    width: 18px;
     border-radius: 50%;
-    background: #059669;
+    background: #ffffff;
+    border: 4px solid #10b981;
     cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3);
+    transition: all 0.3s ease;
 }
 
-.slider::-webkit-slider-track {
+.premium-slider::-webkit-slider-track {
     height: 6px;
-    background: #e5e7eb;
-    border-radius: 3px;
+    background: #f1f5f9;
+    border-radius: 10px;
 }
 
-.slider::-moz-range-track {
+.premium-slider::-moz-range-track {
     height: 6px;
-    background: #e5e7eb;
-    border-radius: 3px;
-    border: none;
+    background: #f1f5f9;
+    border-radius: 10px;
 }
 
 /* Scrollbar Hide Utility */
@@ -694,6 +864,20 @@
     color: #10b981 !important; /* emerald-500 */
 }
 
+.premium-scrollbar::-webkit-scrollbar {
+    width: 4px;
+}
+.premium-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.premium-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 20px;
+}
+.premium-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+}
+
 /* Kinetic Metadata Reveal */
 .char-reveal {
     display: inline-block;
@@ -714,6 +898,22 @@
 document.addEventListener('livewire:initialized', () => {
     // Register GSAP plugins
     gsap.registerPlugin(ScrollTrigger);
+
+    // Watch for Filter Toggle
+    document.addEventListener('filter-revealed', () => {
+        gsap.fromTo(".grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 > div", 
+            { opacity: 0, y: 30, filter: 'blur(10px)' },
+            { 
+                opacity: 1, 
+                y: 0, 
+                filter: 'blur(0px)', 
+                duration: 0.6, 
+                stagger: 0.08, 
+                ease: "back.out(1.2)", 
+                delay: 0.1 
+            }
+        );
+    });
 
     // Featured Collection Logic
     let currentIdx = -1;

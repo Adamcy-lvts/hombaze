@@ -23,6 +23,7 @@ use App\Models\Area;
 use App\Models\ListingPackage;
 use App\Models\SalesAgreementTemplate;
 use App\Services\ListingCreditService;
+use App\Services\AdminRegistrationNotifier;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Artisan;
@@ -139,6 +140,8 @@ class UnifiedRegistrationController extends Controller
             event(new Registered($user));
 
             DB::commit();
+
+            AdminRegistrationNotifier::notify($user);
 
             // Login the user
             Auth::login($user);

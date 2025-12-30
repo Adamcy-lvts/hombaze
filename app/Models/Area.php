@@ -258,7 +258,7 @@ class Area extends Model
     public function getFormattedAverageRentAttribute(): string
     {
         if (!$this->average_rent) return 'N/A';
-        return '₦' . number_format($this->average_rent, 0);
+        return '₦' . number_format((float) $this->average_rent, 0);
     }
     
     /**
@@ -280,13 +280,7 @@ class Area extends Model
      */
     public function getEducationFacilitiesAttribute($value)
     {
-        if (!$value) {
-            return [
-                ['name' => 'Green Valley Primary', 'distance' => '0.8km', 'type' => 'primary'],
-                ['name' => 'Excellence Secondary', 'distance' => '1.2km', 'type' => 'secondary']
-            ];
-        }
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : null;
     }
     
     /**
@@ -294,13 +288,7 @@ class Area extends Model
      */
     public function getHealthcareFacilitiesAttribute($value)
     {
-        if (!$value) {
-            return [
-                ['name' => 'General Hospital', 'distance' => '1.5km', 'type' => 'hospital'],
-                ['name' => 'MediCare Clinic', 'distance' => '0.4km', 'type' => 'clinic']
-            ];
-        }
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : null;
     }
     
     /**
@@ -308,13 +296,7 @@ class Area extends Model
      */
     public function getShoppingFacilitiesAttribute($value)
     {
-        if (!$value) {
-            return [
-                ['name' => 'City Mall', 'distance' => '2.1km', 'type' => 'mall'],
-                ['name' => 'Central Market', 'distance' => '0.5km', 'type' => 'market']
-            ];
-        }
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : null;
     }
     
     /**
@@ -322,13 +304,7 @@ class Area extends Model
      */
     public function getTransportFacilitiesAttribute($value)
     {
-        if (!$value) {
-            return [
-                ['name' => 'Express Road', 'distance' => '0.3km', 'type' => 'road'],
-                ['name' => 'BRT Station', 'distance' => '0.7km', 'type' => 'brt']
-            ];
-        }
-        return json_decode($value, true);
+        return $value ? json_decode($value, true) : null;
     }
 
     /**

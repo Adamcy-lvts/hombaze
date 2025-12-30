@@ -40,6 +40,7 @@
         touchEndX: 0,
         touchEndY: 0,
         minSwipeDistance: 50,
+        lastDistance: 0,
         
         next() { 
             if (this.zoomScale > 1) return;
@@ -56,13 +57,32 @@
         },
 
         handleTouchStart(e) { 
+            if (e.touches.length === 2) {
+                const dx = e.touches[0].screenX - e.touches[1].screenX;
+                const dy = e.touches[0].screenY - e.touches[1].screenY;
+                this.lastDistance = Math.sqrt(dx * dx + dy * dy);
+            }
             if (this.zoomScale > 1) return;
             if (e.touches.length === 1) {
                 this.touchStartX = e.changedTouches[0].screenX; 
                 this.touchStartY = e.changedTouches[0].screenY;
             }
         },
+        handleTouchMove(e) {
+            if (e.touches.length === 2 && this.lightboxOpen) {
+                const dx = e.touches[0].screenX - e.touches[1].screenX;
+                const dy = e.touches[0].screenY - e.touches[1].screenY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (this.lastDistance > 0) {
+                    const diff = (distance - this.lastDistance) / 50; // Sensitivity adjustment
+                    this.zoomScale = Math.max(1, Math.min(5, this.zoomScale + diff));
+                }
+                this.lastDistance = distance;
+            }
+        },
         handleTouchEnd(e) { 
+            this.lastDistance = 0;
             if (this.zoomScale > 1) return;
             if (e.changedTouches.length === 1) {
                 this.touchEndX = e.changedTouches[0].screenX; 
@@ -216,8 +236,8 @@
                         <!-- Main Image (with Swipe and Touch Support) -->
                         <div class="relative aspect-video rounded-3xl overflow-hidden shadow-2xl group cursor-pointer bg-gray-900" 
                              @click="lightboxOpen = true; resetZoom()"
-                             @touchstart="handleTouchStart($event)"
-                             @touchend="handleTouchEnd($event)">
+                             @touchstart.stop="handleTouchStart($event)"
+                             @touchend.stop="handleTouchEnd($event)">
                             
                             <!-- Slider Track -->
                             <div class="absolute inset-0 flex transition-transform duration-500 ease-out shadow-inner"
@@ -256,7 +276,7 @@
                         <!-- Thumbnails -->
                         <div class="flex gap-3 overflow-x-auto pb-2 scrollbar-hide snap-x">
                             <template x-for="(image, index) in images" :key="index">
-                                <button @click="activeImage = index" 
+                                <button @click="activeImage = index; resetZoom()" 
                                         class="relative flex-shrink-0 w-20 sm:w-24 aspect-square rounded-xl overflow-hidden ring-2 transition-all duration-300 snap-start"
                                         :class="activeImage === index ? 'ring-emerald-500 ring-offset-2 scale-95 shadow-lg' : 'ring-transparent opacity-60 hover:opacity-100'">
                                     <img :src="image.preview" class="w-full h-full object-cover">
@@ -270,8 +290,6 @@
                          x-transition.opacity
                          x-cloak
                          @keydown.escape.window="lightboxOpen = false"
-                         @touchstart="handleTouchStart($event)"
-                         @touchend="handleTouchEnd($event)"
                          class="fixed inset-0 z-[100] bg-black/98 p-0"
                          style="display: none;">
                         
@@ -292,8 +310,9 @@
                         <div class="relative w-full h-full overflow-hidden">
                             <div class="absolute inset-0 flex transition-transform duration-500 ease-out"
                                  :style="`transform: translateX(-${activeImage * 100}%);`"
-                                 @touchstart="handleTouchStart($event)"
-                                 @touchend="handleTouchEnd($event)">
+                                 @touchstart.stop="handleTouchStart($event)"
+                                 @touchmove.stop="handleTouchMove($event)"
+                                 @touchend.stop="handleTouchEnd($event)">
                                 <template x-for="(image, index) in images" :key="index">
                                     <div class="flex-shrink-0 w-full h-full flex items-center justify-center overflow-auto scrollbar-hide p-4 md:p-8">
                                         <div class="h-full w-full flex items-center justify-center"

@@ -41,6 +41,7 @@
         touchEndY: 0,
         minSwipeDistance: 50,
         lastDistance: 0,
+        initialZoomScale: 1,
         
         next() { 
             if (this.zoomScale > 1) return;
@@ -53,40 +54,39 @@
         
         rotateZoom() {
             if (this.zoomScale >= 4) this.zoomScale = 1;
-            else this.zoomScale = Math.min(4, this.zoomScale + 0.5);
+            else this.zoomScale = Math.round((Math.min(4, this.zoomScale + 0.25)) * 100) / 100;
         },
 
         handleTouchStart(e) { 
             if (e.touches.length === 2) {
-                const dx = e.touches[0].screenX - e.touches[1].screenX;
-                const dy = e.touches[0].screenY - e.touches[1].screenY;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
                 this.lastDistance = Math.sqrt(dx * dx + dy * dy);
+                this.initialZoomScale = this.zoomScale;
             }
             if (this.zoomScale > 1) return;
             if (e.touches.length === 1) {
-                this.touchStartX = e.changedTouches[0].screenX; 
-                this.touchStartY = e.changedTouches[0].screenY;
+                this.touchStartX = e.touches[0].clientX; 
+                this.touchStartY = e.touches[0].clientY;
             }
         },
         handleTouchMove(e) {
             if (e.touches.length === 2 && this.lightboxOpen) {
-                const dx = e.touches[0].screenX - e.touches[1].screenX;
-                const dy = e.touches[0].screenY - e.touches[1].screenY;
+                const dx = e.touches[0].clientX - e.touches[1].clientX;
+                const dy = e.touches[0].clientY - e.touches[1].clientY;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (this.lastDistance > 0) {
-                    const diff = (distance - this.lastDistance) / 100; // Even lower sensitivity
-                    this.zoomScale = Math.max(1, Math.min(4, this.zoomScale + diff));
+                    this.zoomScale = Math.max(1, Math.min(4, this.initialZoomScale * (distance / this.lastDistance)));
                 }
-                this.lastDistance = distance;
             }
         },
         handleTouchEnd(e) { 
             this.lastDistance = 0;
             if (this.zoomScale > 1) return;
             if (e.changedTouches.length === 1) {
-                this.touchEndX = e.changedTouches[0].screenX; 
-                this.touchEndY = e.changedTouches[0].screenY;
+                this.touchEndX = e.changedTouches[0].clientX; 
+                this.touchEndY = e.changedTouches[0].clientY;
                 
                 const dx = this.touchEndX - this.touchStartX;
                 const dy = this.touchEndY - this.touchStartY;
@@ -307,16 +307,16 @@
                             </button>
                         </div>
                         <!-- Lightbox Slider Track -->
-                        <div class="relative w-full h-full overflow-hidden">
+                        <div class="relative w-full h-full overflow-hidden touch-none">
                             <div class="absolute inset-0 flex transition-transform duration-500 ease-out"
                                  :style="`transform: translateX(-${activeImage * 100}%);`"
                                  @touchstart.stop="handleTouchStart($event)"
                                  @touchmove.stop="handleTouchMove($event)"
                                  @touchend.stop="handleTouchEnd($event)">
                                 <template x-for="(image, index) in images" :key="index">
-                                    <div class="flex-shrink-0 w-full h-full flex items-center justify-center overflow-auto scrollbar-hide p-4 md:p-8">
+                                    <div class="flex-shrink-0 w-full h-full flex items-center justify-center overflow-auto scrollbar-hide p-4 md:p-8 touch-none">
                                         <div class="h-full w-full flex items-center justify-center"
-                                             @wheel.prevent="if(activeImage === index) zoomScale = Math.max(1, Math.min(5, zoomScale + (event.deltaY < 0 ? 0.2 : -0.2)))"
+                                             @wheel.prevent="if(activeImage === index) zoomScale = Math.max(1, Math.min(4, zoomScale + (event.deltaY < 0 ? 0.1 : -0.1)))"
                                              @dblclick="if(activeImage === index) rotateZoom()">
                                             <img :src="image.src" 
                                                  class="transition-transform duration-300 ease-out cursor-zoom-in origin-center"

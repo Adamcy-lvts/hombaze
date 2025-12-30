@@ -213,7 +213,7 @@
                     <div class="space-y-4">
                         <!-- Main Image (with Swipe and Touch Support) -->
                         <div class="relative aspect-video rounded-3xl overflow-hidden shadow-2xl group cursor-pointer bg-gray-900" 
-                             @click="lightboxOpen = true"
+                             @click="lightboxOpen = true; resetZoom()"
                              @touchstart="handleTouchStart($event)"
                              @touchend="handleTouchEnd($event)">
                             
@@ -292,8 +292,8 @@
                                  @wheel.prevent="zoomScale = Math.max(1, Math.min(5, zoomScale + (event.deltaY < 0 ? 0.2 : -0.2)))"
                                  @dblclick="rotateZoom()">
                                 <img :src="images[activeImage].src" 
-                                     class="max-w-none transition-transform duration-300 ease-out cursor-zoom-in origin-center"
-                                     :class="zoomScale > 1 ? 'cursor-grab active:cursor-grabbing' : 'max-w-full max-h-full object-contain'"
+                                     class="transition-transform duration-300 ease-out cursor-zoom-in origin-center"
+                                     :class="zoomScale > 1 ? 'max-w-none cursor-grab active:cursor-grabbing' : 'max-w-full max-h-full object-contain'"
                                      :style="`transform: scale(${zoomScale}); transform-origin: center;`"
                                      @click.stop>
                             </div>

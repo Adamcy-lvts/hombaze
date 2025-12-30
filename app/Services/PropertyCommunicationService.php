@@ -14,8 +14,13 @@ class PropertyCommunicationService
     public static function getContactPhone(Property $property): ?string
     {
         // First try to get agent phone if property has an agent
-        if ($property->agent && $property->agent->phone) {
-            return $property->agent->phone;
+        if ($property->agent) {
+            if ($property->agent->phone) {
+                return $property->agent->phone;
+            }
+            if ($property->agent->user && $property->agent->user->phone) {
+                return $property->agent->user->phone;
+            }
         }
 
         // If no agent, try to get agency contact phone
@@ -24,8 +29,13 @@ class PropertyCommunicationService
         }
 
         // If no agency phone, try property owner phone
-        if ($property->owner && $property->owner->phone) {
-            return $property->owner->phone;
+        if ($property->owner) {
+            if ($property->owner->phone) {
+                return $property->owner->phone;
+            }
+            if ($property->owner->user && $property->owner->user->phone) {
+                return $property->owner->user->phone;
+            }
         }
 
         return null;
@@ -37,8 +47,13 @@ class PropertyCommunicationService
     public static function getContactEmail(Property $property): ?string
     {
         // First try to get agent email if property has an agent
-        if ($property->agent && $property->agent->email) {
-            return $property->agent->email;
+        if ($property->agent) {
+            if ($property->agent->email) {
+                return $property->agent->email;
+            }
+            if ($property->agent->user && $property->agent->user->email) {
+                return $property->agent->user->email;
+            }
         }
 
         // If no agent, try to get agency contact email
@@ -47,8 +62,13 @@ class PropertyCommunicationService
         }
 
         // If no agency email, try property owner email
-        if ($property->owner && $property->owner->email) {
-            return $property->owner->email;
+        if ($property->owner) {
+            if ($property->owner->email) {
+                return $property->owner->email;
+            }
+            if ($property->owner->user && $property->owner->user->email) {
+                return $property->owner->user->email;
+            }
         }
 
         return null;
@@ -141,7 +161,7 @@ class PropertyCommunicationService
         $propertyTypeName = $property->propertySubtype?->name ?? 'Unknown Type';
 
         $message .= "📍 *Location:* {$areaName}, {$cityName}\n";
-        $message .= "💰 *Price:* ₦" . number_format($property->price) . "\n";
+        $message .= "💰 *Price:* ₦" . number_format((float) $property->price) . "\n";
         $message .= "🏠 *Type:* {$propertyTypeName}\n\n";
         $message .= "🔗 *Property Details:* {$propertyUrl}\n\n";
         $message .= "Please let me know if it's still available and if I can schedule a viewing. Thank you! 😊\n\n";
@@ -156,7 +176,7 @@ class PropertyCommunicationService
     private static function getSMSMessage(Property $property): string
     {
         $areaName = $property->area?->name ?? 'Unknown Area';
-        $message = "Hi! I'm interested in your property: {$property->title} in {$areaName}. Price: ₦" . number_format($property->price) . ". Is it still available?";
+        $message = "Hi! I'm interested in your property: {$property->title} in {$areaName}. Price: ₦" . number_format((float) $property->price) . ". Is it still available?";
         return urlencode($message);
     }
 
@@ -181,7 +201,7 @@ class PropertyCommunicationService
         $message = "Hi,\n\nI am interested in your property listing:\n\n";
         $message .= "Property: {$property->title}\n";
         $message .= "Location: {$areaName}, {$cityName}\n";
-        $message .= "Price: ₦" . number_format($property->price) . "\n";
+        $message .= "Price: ₦" . number_format((float) $property->price) . "\n";
         $message .= "Property Type: {$propertyTypeName}\n\n";
         $message .= "Property Link: {$propertyUrl}\n\n";
         $message .= "Could you please provide more details and let me know if I can schedule a viewing?\n\n";
@@ -196,8 +216,13 @@ class PropertyCommunicationService
     public static function getContactName(Property $property): string
     {
         // First try to get agent name if property has an agent
-        if ($property->agent?->name) {
-            return $property->agent->name;
+        if ($property->agent) {
+            if ($property->agent->name) {
+                return $property->agent->name;
+            }
+            if ($property->agent->user && $property->agent->user->name) {
+                return $property->agent->user->name;
+            }
         }
 
         // If no agent, try to get agency name
@@ -206,8 +231,13 @@ class PropertyCommunicationService
         }
 
         // If no agency name, try property owner name
-        if ($property->owner?->name) {
-            return $property->owner->name;
+        if ($property->owner) {
+            if ($property->owner->name) {
+                return $property->owner->name;
+            }
+            if ($property->owner->user && $property->owner->user->name) {
+                return $property->owner->user->name;
+            }
         }
 
         return 'Property Contact';

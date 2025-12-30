@@ -52,8 +52,8 @@
         },
         
         rotateZoom() {
-            if (this.zoomScale >= 3) this.zoomScale = 1;
-            else this.zoomScale += 1;
+            if (this.zoomScale >= 4) this.zoomScale = 1;
+            else this.zoomScale = Math.min(4, this.zoomScale + 0.5);
         },
 
         handleTouchStart(e) { 
@@ -75,8 +75,8 @@
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
                 if (this.lastDistance > 0) {
-                    const diff = (distance - this.lastDistance) / 50; // Sensitivity adjustment
-                    this.zoomScale = Math.max(1, Math.min(5, this.zoomScale + diff));
+                    const diff = (distance - this.lastDistance) / 100; // Even lower sensitivity
+                    this.zoomScale = Math.max(1, Math.min(4, this.zoomScale + diff));
                 }
                 this.lastDistance = distance;
             }

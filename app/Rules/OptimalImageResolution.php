@@ -47,8 +47,11 @@ class OptimalImageResolution implements ValidationRule
             // Handle different value types.
             if ($value instanceof UploadedFile) {
                 $filesToCheck[] = ['path' => $value->getRealPath(), 'name' => $value->getClientOriginalName()];
-            } elseif (is_string($value) && file_exists($value)) {
-                $filesToCheck[] = ['path' => $value, 'name' => basename($value)];
+            } elseif (is_string($value)) {
+                $resolved = $this->resolveTemporaryFile($value);
+                if ($resolved) {
+                    $filesToCheck[] = $resolved;
+                }
             } elseif (is_array($value)) {
                 // Handle multiple files
                 foreach ($value as $file) {
@@ -57,8 +60,11 @@ class OptimalImageResolution implements ValidationRule
                     }
                     if ($file instanceof UploadedFile) {
                         $filesToCheck[] = ['path' => $file->getRealPath(), 'name' => $file->getClientOriginalName()];
-                    } elseif (is_string($file) && file_exists($file)) {
-                        $filesToCheck[] = ['path' => $file, 'name' => basename($file)];
+                    } elseif (is_string($file)) {
+                        $resolved = $this->resolveTemporaryFile($file);
+                        if ($resolved) {
+                            $filesToCheck[] = $resolved;
+                        }
                     }
                 }
             }
@@ -117,5 +123,27 @@ class OptimalImageResolution implements ValidationRule
             'image/webp',
             'image/jpg'
         ]);
+    }
+
+    private function resolveTemporaryFile(string $value): ?array
+    {
+        if (file_exists($value)) {
+            return ['path' => $value, 'name' => basename($value)];
+        }
+
+        try {
+            $tempFile = TemporaryUploadedFile::createFromLivewire($value);
+            $realPath = $tempFile->getRealPath();
+            if ($realPath && file_exists($realPath)) {
+                return [
+                    'path' => $realPath,
+                    'name' => $tempFile->getClientOriginalName() ?? basename($realPath),
+                ];
+            }
+        } catch (Exception $e) {
+            // Ignore when the value isn't a Livewire temporary file reference.
+        }
+
+        return null;
     }
 }

@@ -7,6 +7,7 @@ use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class OptimalImageResolution implements ValidationRule
@@ -33,12 +34,17 @@ class OptimalImageResolution implements ValidationRule
             return;
         }
 
-        // For SpatieMediaLibraryFileUpload, validation happens at form submission
-        // The $value might be a temporary file path, UploadedFile, or Media model
+        // For SpatieMediaLibraryFileUpload, validation happens at form submission.
+        // The $value might be a temporary file path, UploadedFile, or serialized Livewire temp file.
         $filesToCheck = [];
 
         try {
-            // Handle different value types
+            // Handle Livewire temporary upload serialization.
+            if (TemporaryUploadedFile::canUnserialize($value)) {
+                $value = TemporaryUploadedFile::unserializeFromLivewireRequest($value);
+            }
+
+            // Handle different value types.
             if ($value instanceof UploadedFile) {
                 $filesToCheck[] = ['path' => $value->getRealPath(), 'name' => $value->getClientOriginalName()];
             } elseif (is_string($value) && file_exists($value)) {
@@ -46,6 +52,9 @@ class OptimalImageResolution implements ValidationRule
             } elseif (is_array($value)) {
                 // Handle multiple files
                 foreach ($value as $file) {
+                    if (TemporaryUploadedFile::canUnserialize($file)) {
+                        $file = TemporaryUploadedFile::unserializeFromLivewireRequest($file);
+                    }
                     if ($file instanceof UploadedFile) {
                         $filesToCheck[] = ['path' => $file->getRealPath(), 'name' => $file->getClientOriginalName()];
                     } elseif (is_string($file) && file_exists($file)) {

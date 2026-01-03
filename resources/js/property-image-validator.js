@@ -69,31 +69,45 @@ class PropertyImageValidator {
         }
     }
 
-    validateFiles(files, input) {
+    async validateFiles(files, input) {
         const validFiles = [];
         const errors = [];
 
-        Array.from(files).forEach((file, index) => {
-            const validation = this.validateSingleFile(file, input);
+        const validations = Array.from(files).map((file, index) => {
+            return Promise.resolve(this.validateSingleFile(file)).then((result) => ({
+                result,
+                file,
+                index
+            }));
+        });
 
-            if (validation.valid) {
-                validFiles.push(file);
+        const results = await Promise.all(validations);
+
+        results.forEach(({ result, file, index }) => {
+            if (result.valid) {
+                validFiles.push({ file, meta: result });
             } else {
-                errors.push(`File ${index + 1}: ${validation.error}`);
+                errors.push(`File ${index + 1}: ${result.error}`);
             }
         });
 
         if (errors.length > 0) {
             this.showValidationErrors(errors, input);
-            // Clear the invalid files
+            // Clear invalid files to prevent failed uploads from being submitted.
             input.value = '';
-        } else {
-            this.clearValidationErrors(input);
-            this.showSuccessMessage(validFiles, input);
+            return;
+        }
+
+        this.clearValidationErrors(input);
+        this.showSuccessMessage(validFiles.map(({ file }) => file), input);
+
+        const firstMeta = validFiles[0]?.meta;
+        if (firstMeta?.width && firstMeta?.height) {
+            this.showDimensionInfo(firstMeta.width, firstMeta.height, firstMeta.sizeMB, input);
         }
     }
 
-    validateSingleFile(file, input) {
+    validateSingleFile(file) {
         // Check file type
         if (!this.config.allowedTypes.includes(file.type)) {
             return {
@@ -111,22 +125,18 @@ class PropertyImageValidator {
             };
         }
 
-        // For immediate feedback, we'll validate dimensions when the image loads
+        // For immediate feedback, validate dimensions when the image loads.
         return new Promise((resolve) => {
             const img = new Image();
 
             img.onload = () => {
                 const validation = this.validateDimensions(img.width, img.height, file.name);
-                resolve(validation);
-
-                // Update UI immediately with dimension validation
-                if (!validation.valid) {
-                    this.showValidationErrors([validation.error], input);
-                    input.value = '';
-                } else {
-                    this.clearValidationErrors(input);
-                    this.showDimensionInfo(img.width, img.height, fileSizeMB, input);
-                }
+                resolve({
+                    ...validation,
+                    width: img.width,
+                    height: img.height,
+                    sizeMB: fileSizeMB
+                });
             };
 
             img.onerror = () => {
@@ -135,8 +145,6 @@ class PropertyImageValidator {
                     error: '❌ Invalid image file - unable to read image dimensions'
                 };
                 resolve(errorValidation);
-                this.showValidationErrors([errorValidation.error], input);
-                input.value = '';
             };
 
             img.src = URL.createObjectURL(file);

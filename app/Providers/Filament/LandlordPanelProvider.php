@@ -77,6 +77,7 @@ class LandlordPanelProvider extends PanelProvider
             ->renderHook('panels::head.end', fn () => view('filament.pwa.head-meta'))
             ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
             ->renderHook('panels::body.end', fn () => view('filament.pwa.body-scripts'))
-            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'));
+            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'))
+            ->renderHook('panels::body.end', fn () => view('filament.components.mobile-bottom-nav'));
     }
 }

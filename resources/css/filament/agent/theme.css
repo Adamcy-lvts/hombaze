@@ -36,3 +36,10 @@
         font-size: 0.75rem;
     }
 }
+
+/* Add padding for mobile bottom nav */
+@media (max-width: 768px) {
+    .fi-main {
+        padding-bottom: 6rem;
+    }
+}

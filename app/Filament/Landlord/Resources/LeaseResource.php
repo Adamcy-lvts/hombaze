@@ -86,10 +86,18 @@ class LeaseResource extends Resource
                                                         'property_address' => $property->address,
                                                         'property_type' => $property->propertyType->name ?? '',
                                                         'property_subtype' => $property->propertySubtype->name ?? '',
+                                                        'property_bedrooms' => $property->bedrooms > 0 ? $property->bedrooms : '',
+                                                        'property_city' => $property->city->name ?? '',
+                                                        'property_state' => $property->state->name ?? '',
+                                                        'property_area' => $property->area->name ?? '',
                                                         'landlord_name' => Auth::user()->name,
                                                         'landlord_email' => Auth::user()->email,
+                                                        'landlord_phone' => Auth::user()->phone ?? '',
+                                                        'landlord_address' => Auth::user()->address ?? '',
                                                         'tenant_name' => $tenant->name,
                                                         'tenant_email' => $tenant->email,
+                                                        'tenant_phone' => $tenant->phone ?? '',
+                                                        'tenant_address' => $tenant->address ?? '',
                                                         'lease_start_date' => $get('start_date') ? Carbon::parse($get('start_date'))->format('F j, Y') : '',
                                                         'lease_end_date' => $get('end_date') ? Carbon::parse($get('end_date'))->format('F j, Y') : '',
                                                         'lease_duration_months' => $get('start_date') && $get('end_date') ? Carbon::parse($get('start_date'))->diffInMonths(Carbon::parse($get('end_date'))) : '',
@@ -240,38 +248,9 @@ class LeaseResource extends Resource
                                 'underline',
                                 'undo',
                             ])
-                            ->mergeTags([
-                                'property_title' => 'Property Title',
-                                'property_address' => 'Property Address',
-                                'property_type' => 'Property Type',
-                                'property_subtype' => 'Property Subtype',
-                                'landlord_name' => 'Landlord Name',
-                                'landlord_email' => 'Landlord Email',
-                                'tenant_name' => 'Tenant Name',
-                                'tenant_email' => 'Tenant Email',
-                                'lease_start_date' => 'Lease Start Date',
-                                'lease_end_date' => 'Lease End Date',
-                                'lease_duration_months' => 'Lease Duration (Months)',
-                                'rent_amount' => 'Rent Amount',
-                                'payment_frequency' => 'Payment Frequency',
-                                'renewal_option' => 'Renewal Option',
-                                'signed_date' => 'Date Signed',
-                                'current_date' => 'Current Date',
-                                'current_year' => 'Current Year',
-                            ])
-                            ->default('
-<h3>Standard Lease Terms</h3>
-<ol>
-<li>The tenant agrees to pay rent <strong>as specified</strong> in the financial terms above.</li>
-<li>The tenant shall use the premises <strong>solely for residential purposes</strong> and shall not conduct any business activities without prior written consent from the landlord.</li>
-<li>The tenant shall <strong>maintain the premises in good condition</strong> and shall be responsible for any damages beyond normal wear and tear.</li>
-<li>The tenant shall <strong>not sublease, assign, or transfer</strong> any rights under this agreement without written consent from the landlord.</li>
-<li>The tenant shall <strong>comply with all applicable laws, regulations, and community rules</strong> and shall not engage in any illegal activities on the premises.</li>
-<li>The landlord shall <strong>maintain the structural integrity</strong> of the property and ensure all major systems (plumbing, electrical, etc.) are in working order.</li>
-<li>Either party may <strong>terminate this agreement with 30 days written notice</strong>, subject to applicable local laws and regulations.</li>
-<li>This lease renewal option will be determined based on the renewal option setting for this specific lease agreement.</li>
-</ol>
-                            ')
+                            ->mergeTags(array_flip(LeaseTemplate::getAvailableVariables()))
+                            ->activePanel('mergeTags')
+                            ->default(LeaseTemplate::getDefaultContent())
                             ->helperText('Customize the terms and conditions for this lease agreement'),
 
                         Textarea::make('notes')

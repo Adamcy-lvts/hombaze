@@ -51,6 +51,7 @@ class LeaseTemplate extends Model
             'Property Address' => 'property_address',
             'Property Type' => 'property_type',
             'Property Subtype' => 'property_subtype',
+            'Property Bedrooms' => 'property_bedrooms',
             'Property City' => 'property_city',
             'Property State' => 'property_state',
             'Property Area' => 'property_area',
@@ -87,6 +88,83 @@ class LeaseTemplate extends Model
             'biannually' => 'Bi-annually',
             'annually' => 'Annually',
         ];
+    }
+
+    public static function getDefaultContent(): string
+    {
+        return '
+<div class="agreement-content" style="font-family: \'Inter\', sans-serif; line-height: 1.7; color: #111827;">
+    <div style="text-align: center; margin-bottom: 24px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px;">
+        <h1 style="font-size: 24px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; margin: 0;">Tenancy Agreement</h1>
+        <p style="font-size: 12px; color: #6b7280; margin: 6px 0 0 0;">Made on {{ Current Date }}</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <p>This tenancy agreement is made between:</p>
+        <p style="margin: 8px 0 0 0;"><strong>{{ Landlord Name }}</strong> of {{ Landlord Address }} (the "Landlord").</p>
+        <p style="margin: 6px 0 0 0;"><strong>{{ Tenant Name }}</strong> of {{ Tenant Address }} (the "Tenant").</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 8px 0;">1. Property</h3>
+        <p>The Property is a {{ Property Bedrooms }}-bedroom {{ Property Type }} located at {{ Property Address }}, {{ Property Area }}, {{ Property City }}, {{ Property State }}.</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 8px 0;">2. Rent & Term</h3>
+        <p>The Tenant agrees to rent the Property in consideration of {{ Rent Amount }}, payable {{ Payment Frequency }} in advance.</p>
+        <p>The tenancy runs from {{ Lease Start Date }} to {{ Lease End Date }}. Renewal option: {{ Renewal Option }}.</p>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 8px 0;">3. Tenant Obligations</h3>
+        <ol style="margin: 0; padding-left: 18px;">
+            <li>The Tenant shall give three (3) months notice of intention to renew the tenancy.</li>
+            <li>Either party may terminate the tenancy with one (1) month notice.</li>
+            <li>The Tenant shall pay electricity bills, water bills, and all other outgoings with respect to the Property.</li>
+            <li>The Tenant shall keep the premises, fittings, and conveniences in good repair (reasonable wear and tear expected).</li>
+            <li>The Tenant shall make good any stoppage or damage to the drains caused by the Tenant, family, or visitors.</li>
+            <li>The Tenant shall not carry on business, trade, or profession on the premises and will use it as a private dwelling only.</li>
+            <li>The Tenant shall not permit any act or thing that may be a nuisance to the Landlord or other tenants.</li>
+            <li>The Tenant shall not assign, underlet, or part with possession without the Landlord\'s written consent.</li>
+            <li>The Tenant shall allow the Landlord, caretaker, or their agents to enter the premises to view its condition.</li>
+            <li>The Tenant shall not alter or restructure any part of the Property without written consent.</li>
+        </ol>
+    </div>
+
+    <div style="margin-bottom: 18px;">
+        <p>If rent is in arrears for thirty (30) days, or the Tenant breaches any provisions, the Landlord may re-enter and terminate the tenancy.</p>
+        <p style="margin: 8px 0 0 0;">Provided the Tenant pays the agreed rent and performs obligations, the Tenant shall quietly enjoy the premises without unlawful interruption.</p>
+    </div>
+
+    <div style="margin-top: 26px; border-top: 1px dashed #e5e7eb; padding-top: 18px;">
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+                <td style="width: 50%; vertical-align: top; padding-right: 12px;">
+                    <p style="margin: 0 0 8px 0; font-weight: 600;">Signed by the Landlord</p>
+                    <p style="margin: 0 0 8px 0;">{{ Landlord Name }}</p>
+                    <p style="margin: 10px 0 0 0;">Signature: ........................................</p>
+                    <p style="margin: 12px 0 4px 0; font-weight: 600;">In the presence of:</p>
+                    <p style="margin: 0;">Name: ........................................</p>
+                    <p style="margin: 0;">Address: ........................................</p>
+                    <p style="margin: 0;">Occupation: ........................................</p>
+                    <p style="margin: 0;">Signature: ........................................</p>
+                </td>
+                <td style="width: 50%; vertical-align: top; padding-left: 12px;">
+                    <p style="margin: 0 0 8px 0; font-weight: 600;">Signed by the Tenant</p>
+                    <p style="margin: 0 0 8px 0;">{{ Tenant Name }}</p>
+                    <p style="margin: 10px 0 0 0;">Signature: ........................................</p>
+                    <p style="margin: 12px 0 4px 0; font-weight: 600;">In the presence of:</p>
+                    <p style="margin: 0;">Name: ........................................</p>
+                    <p style="margin: 0;">Address: ........................................</p>
+                    <p style="margin: 0;">Occupation: ........................................</p>
+                    <p style="margin: 0;">Signature: ........................................</p>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+        ';
     }
 
     /**
@@ -145,6 +223,7 @@ class LeaseTemplate extends Model
             'property_address' => $data['property_address'] ?? '',
             'property_type' => $data['property_type'] ?? '',
             'property_subtype' => $data['property_subtype'] ?? '',
+            'property_bedrooms' => $data['property_bedrooms'] ?? '',
             'property_city' => $data['property_city'] ?? '',
             'property_state' => $data['property_state'] ?? '',
             'property_area' => $data['property_area'] ?? '',
@@ -274,6 +353,27 @@ class LeaseTemplate extends Model
             ->where('is_default', true)
             ->where('is_active', true)
             ->first();
+    }
+
+    public static function ensureDefaultForLandlord(int $landlordId): self
+    {
+        $existing = self::getDefaultTemplate($landlordId);
+        if ($existing) {
+            return $existing;
+        }
+
+        $template = new self();
+        $template->terms_and_conditions = self::getDefaultContent();
+
+        return self::create([
+            'landlord_id' => $landlordId,
+            'name' => 'Standard Tenancy Agreement',
+            'description' => 'Default tenancy agreement template',
+            'terms_and_conditions' => $template->terms_and_conditions,
+            'available_variables' => $template->extractUsedVariables(),
+            'is_active' => true,
+            'is_default' => true,
+        ]);
     }
 
     /**

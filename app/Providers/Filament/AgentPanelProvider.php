@@ -48,6 +48,7 @@ class AgentPanelProvider extends PanelProvider
             ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
             ->renderHook('panels::body.end', fn () => view('filament.pwa.body-scripts'))
             ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'))
+            ->renderHook('panels::body.end', fn () => view('filament.components.mobile-bottom-nav'))
             ->discoverResources(in: app_path('Filament/Agent/Resources'), for: 'App\\Filament\\Agent\\Resources')
             ->discoverPages(in: app_path('Filament/Agent/Pages'), for: 'App\\Filament\\Agent\\Pages')
             ->pages([

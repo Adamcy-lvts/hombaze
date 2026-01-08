@@ -22,6 +22,7 @@ use App\Models\City;
 use App\Models\Area;
 use App\Models\ListingPackage;
 use App\Models\SalesAgreementTemplate;
+use App\Models\LeaseTemplate;
 use App\Services\ListingCreditService;
 use App\Services\AdminRegistrationNotifier;
 use Spatie\Permission\Models\Role;
@@ -229,6 +230,7 @@ class UnifiedRegistrationController extends Controller
         ]);
 
         SalesAgreementTemplate::ensureDefaultForLandlord($user->id);
+        LeaseTemplate::ensureDefaultForLandlord($user->id);
 
         Log::info('PropertyOwner profile created', ['user_id' => $user->id]);
     }

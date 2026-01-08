@@ -158,38 +158,9 @@ class LeaseTemplateResource extends Resource
                                 'underline',
                                 'undo',
                             ])
-                            ->mergeTags([
-                                'property_title' => 'Property Title',
-                                'property_address' => 'Property Address',
-                                'property_type' => 'Property Type',
-                                'property_subtype' => 'Property Subtype',
-                                'property_area' => 'Property Area',
-                                'property_city' => 'Property City',
-                                'property_state' => 'Property State',
-                                'landlord_name' => 'Landlord Name',
-                                'landlord_email' => 'Landlord Email',
-                                'landlord_phone' => 'Landlord Phone',
-                                'tenant_name' => 'Tenant Name',
-                                'tenant_email' => 'Tenant Email',
-                                'tenant_phone' => 'Tenant Phone',
-                                'lease_start_date' => 'Lease Start Date',
-                                'lease_end_date' => 'Lease End Date',
-                                'lease_duration_months' => 'Lease Duration (Months)',
-                                'yearly_rent' => 'Rent Amount',
-                                'payment_frequency' => 'Payment Frequency',
-                                'security_deposit' => 'Security Deposit',
-                                'service_charge' => 'Service Charge',
-                                'legal_fee' => 'Legal Fee',
-                                'agency_fee' => 'Agency Fee',
-                                'caution_deposit' => 'Caution Deposit',
-                                'grace_period_days' => 'Grace Period (Days)',
-                                'renewal_option' => 'Renewal Option',
-                                'signed_date' => 'Date Signed',
-                                'current_date' => 'Current Date',
-                                'current_year' => 'Current Year',
-                                'lease_status' => 'Lease Status',
-                            ])
+                            ->mergeTags(array_flip(LeaseTemplate::getAvailableVariables()))
                             ->activePanel('mergeTags')
+                            ->default(LeaseTemplate::getDefaultContent())
 
                     ]),
 

@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use Exception;
+use Filament\Notifications\Notification;
+use Illuminate\Validation\ValidationException;
 use App\Models\Property;
 use App\Models\SmartSearch;
 use App\Models\SmartSearchMatch;
@@ -13,6 +15,44 @@ use Illuminate\Support\Facades\Cache;
 
 class PropertyObserver
 {
+    /**
+     * Handle the Property "updating" event.
+     *
+     * @throws ValidationException
+     */
+    public function updating(Property $property): void
+    {
+        if ($property->isDirty('is_published') && $property->is_published) {
+            // Check if property has any images (gallery or featured)
+            if (!$property->hasGallery() && $property->getMedia('featured')->isEmpty()) {
+                throw ValidationException::withMessages([
+                    'is_published' => 'Property cannot be published to be visible until property images are uploaded.',
+                ]);
+            }
+        }
+    }
+    /**
+     * Handle the Property "creating" event.
+     */
+    public function creating(Property $property): void
+    {
+        // Enforce draft status on creation to ensure validation happens during publishing (updating).
+        if ($property->is_published) {
+            $property->is_published = false;
+
+            try {
+                Notification::make()
+                    ->title('Property Saved as Draft')
+                    ->body('Your property has been created but will not be visible until images are uploaded. Please upload images and then update the status to "Published".')
+                    ->warning()
+                    ->persistent()
+                    ->send();
+            } catch (Exception $e) {
+                // Fail silently if not in a context where notifications work
+            }
+        }
+    }
+
     /**
      * Handle the Property "created" event.
      */

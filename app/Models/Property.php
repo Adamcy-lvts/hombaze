@@ -431,7 +431,7 @@ class Property extends Model implements HasMedia
      */
     public function getFormattedPriceAttribute(): string
     {
-        return '₦' . number_format($this->price, 0);
+        return '₦' . number_format((float) $this->price, 0);
     }
 
     public static function applyListingPackageData(array $data, ?self $property = null): array
@@ -503,7 +503,7 @@ class Property extends Model implements HasMedia
         }
 
         if ($this->size_sqm) {
-            $parts[] = number_format($this->size_sqm) . ' sqm';
+            $parts[] = number_format((float) $this->size_sqm) . ' sqm';
         }
 
         return implode(' • ', $parts);
@@ -681,7 +681,7 @@ class Property extends Model implements HasMedia
         $media = $this->getFirstMedia('featured');
 
         if (!$media) {
-            return asset('images/property-placeholder.svg');
+            return asset('images/placeholder.jpg');
         }
 
         // If conversion is requested, check if it exists

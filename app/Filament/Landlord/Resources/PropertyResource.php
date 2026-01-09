@@ -393,14 +393,10 @@ class PropertyResource extends Resource
                                         ->collection('featured')
                                         ->image()
                                         ->imageEditor()
-                                        ->required()
                                         ->acceptedFileTypes(getOptimalImageResolution()['formats'])
                                         ->maxSize(getOptimalImageResolution()['max_file_size'])
                                         ->rules([
                                             new OptimalImageResolution(false)
-                                        ])
-                                        ->validationMessages([
-                                            'required' => 'A featured image is required to showcase your property.',
                                         ])
                                         ->helperText('Upload a high-quality image. ' . getOptimalImageResolution()['quality_note'])
                                         ->columnSpanFull(),
@@ -418,12 +414,8 @@ class PropertyResource extends Resource
                                         ->acceptedFileTypes(getOptimalImageResolution()['formats'])
                                         ->maxFiles(20)
                                         ->maxSize(getOptimalImageResolution()['max_file_size'])
-                                        ->minFiles(1)
                                         ->rules([
                                             new OptimalImageResolution(true)
-                                        ])
-                                        ->validationMessages([
-                                            'min' => 'Please add at least one gallery image.',
                                         ])
                                         ->helperText('Add multiple images from different angles. Drag to reorder.')
                                         ->columnSpanFull(),
@@ -453,7 +445,7 @@ class PropertyResource extends Resource
                     ->label('')
                     ->collection('featured')
                     ->circular()
-                    ->defaultImageUrl('/images/property-placeholder.svg'),
+                    ->defaultImageUrl('/images/placeholder.jpg'),
 
                 TextColumn::make('title')
                     ->label('Property')

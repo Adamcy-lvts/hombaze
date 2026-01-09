@@ -132,7 +132,7 @@
         </div>
 
         <!-- Right Side - Registration Form (Light Theme) -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50 overflow-y-auto h-screen">
+        <div class="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 bg-gray-50 lg:overflow-y-auto lg:h-screen min-h-screen">
             <div class="w-full max-w-md space-y-8">
                 <!-- Mobile Logo -->
                 <div class="lg:hidden text-center mb-8">

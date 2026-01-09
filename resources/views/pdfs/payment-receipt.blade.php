@@ -186,7 +186,7 @@
                                 $businessInfo = [
                                     'name' => $owner->company_name,
                                     'email' => $owner->email ?? $record->landlord->email ?? 'support@homebaze.live',
-                                    'phone' => $owner->phone ?? $record->landlord->phone ?? '+234 (0) 123-456-7890'
+                                    'phone' => $owner->phone ?? $record->landlord->phone ?? '+2347071940611'
                                 ];
                                 $showBusinessInfo = true;
                             }
@@ -198,7 +198,7 @@
                                     $businessInfo = [
                                         'name' => $agentUser->name . ' Real Estate',
                                         'email' => $agentUser->email,
-                                        'phone' => $agentUser->phone ?? '+234 (0) 123-456-7890'
+                                        'phone' => $agentUser->phone ?? '+2347071940611'
                                     ];
                                     $showBusinessInfo = true;
                                 }

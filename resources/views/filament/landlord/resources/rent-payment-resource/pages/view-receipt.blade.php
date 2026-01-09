@@ -116,7 +116,7 @@ elseif (
                                     'name' => $agentUser->name . ' Real Estate',
                                     'email' => $agentUser->email,
                                     'phone' => $agentUser->phone ?? '+234 (0) 123-456-7890',
-                                    'website' => 'www.homebaze.com',
+                                    'website' => 'www.homebaze.live',
                                     'tagline' => 'Independent Real Estate Agent',
                                 ];
                                 $businessInitials = strtoupper(substr($agentUser->name, 0, 2));
@@ -127,9 +127,9 @@ elseif (
                         if (!$businessInfo) {
                             $businessInfo = [
                                 'name' => 'HomeBaze Property',
-                                'email' => 'support@homebaze.com',
-                                'phone' => '+234 (0) 123-456-7890',
-                                'website' => 'www.homebaze.com',
+                                'email' => 'support@homebaze.live',
+                                'phone' => '+2347071940611',
+                                'website' => 'www.homebaze.live',
                                 'tagline' => 'Management System',
                             ];
                             $businessLogo = $inlineLogo('images/app-logo.svg');

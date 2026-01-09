@@ -15,22 +15,33 @@
                 'label' => 'Properties',
                 'icon' => 'heroicon-o-building-office-2',
                 'activeIcon' => 'heroicon-s-building-office-2',
-                'url' => route('filament.landlord.resources.properties.index'),
-                'active' => request()->routeIs('filament.landlord.resources.properties.*'),
+                // Link to custom mobile list page
+                'url' => route('filament.landlord.pages.my-properties'),
+                // Active if on custom list OR standard resource pages (like Edit)
+                'active' => request()->routeIs('filament.landlord.pages.my-properties') || request()->routeIs('filament.landlord.resources.properties.*'),
             ],
-            [
+            // Only show Create button if NOT on tenants list
+            ...(request()->routeIs('filament.landlord.pages.tenants-list') ? [] : [[
                 'route' => 'create',
                 'label' => 'Create',
                 'icon' => 'heroicon-s-plus',
                 'url' => route('filament.landlord.pages.create-property'),
                 'active' => request()->routeIs('filament.landlord.pages.create-property'),
-            ],
+            ]]),
             [
                 'label' => 'Tenants',
                 'icon' => 'heroicon-o-users',
                 'activeIcon' => 'heroicon-s-users',
-                'url' => route('filament.landlord.resources.tenants.index'),
-                'active' => request()->routeIs('filament.landlord.resources.tenants.*'),
+                // Link to custom mobile list page
+                'url' => route('filament.landlord.pages.tenants-list'),
+                'active' => request()->routeIs('filament.landlord.pages.tenants-list') || request()->routeIs('filament.landlord.resources.tenants.*'),
+            ],
+            [
+                'label' => 'Invitations',
+                'icon' => 'heroicon-o-paper-airplane',
+                'activeIcon' => 'heroicon-s-paper-airplane',
+                'url' => route('filament.landlord.pages.invite-tenant'),
+                'active' => request()->routeIs('filament.landlord.pages.invite-tenant'),
             ],
         ];
     } elseif ($panelId === 'agent') {
@@ -94,15 +105,7 @@
             @endif
         @endforeach
 
-        {{-- Menu Toggle --}}
-        <button x-on:click="document.dispatchEvent(new CustomEvent('open-sidebar', { bubbles: true }))" type="button" 
-                class="flex-1 flex flex-col items-center justify-center h-full py-2 space-y-1 text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-500">
-            <x-filament::icon
-                icon="heroicon-o-bars-3"
-                class="h-6 w-6"
-            />
-            <span class="text-[10px] font-medium leading-none">Menu</span>
-        </button>
+
 
     </div>
 </div>

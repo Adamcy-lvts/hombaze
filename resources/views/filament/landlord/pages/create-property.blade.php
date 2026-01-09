@@ -38,6 +38,18 @@
                         </div>
                     </div>
                 </button>
+
+                <button wire:click="selectCategory('land')" class="w-full max-w-sm p-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-all group">
+                    <div class="flex items-center space-x-4">
+                        <div class="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl text-green-600 dark:text-green-400 group-hover:scale-110 transition-transform">
+                            <x-heroicon-o-map class="w-8 h-8" />
+                        </div>
+                        <div class="text-left">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Land</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Plots, Acres, Farm Land</p>
+                        </div>
+                    </div>
+                </button>
             </div>
         @else
             {{-- Wizard Interface --}}
@@ -58,8 +70,8 @@
                 {{-- Steps Container --}}
                 <div class="flex-1 relative overflow-hidden px-6"> {{-- Added px-6 for page padding --}}
                     
-                    {{-- Step 1: Cover Image --}}
-                    <div x-show="step === 1" 
+                    {{-- Step 2: Cover Image --}}
+                    <div x-show="step === 2" 
                          {{-- ... existing transitions ... --}}
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-x-full"
@@ -67,45 +79,154 @@
                          x-transition:leave="transition ease-in duration-300 transform"
                          x-transition:leave-start="opacity-100 translate-x-0"
                          x-transition:leave-end="opacity-0 -translate-x-full"
-                         class="absolute inset-0 flex flex-col space-y-6"
+                         class="absolute inset-0 flex flex-col space-y-6 overflow-y-auto pb-32"
                     >
                         <div class="text-center space-y-2">
                             <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-600 dark:from-primary-400 dark:to-indigo-400">
-                                Captivate Buyers
+                                @if($listing_type === 'sale')
+                                    Captivate Buyers
+                                @elseif($listing_type === 'shortlet')
+                                    Captivate Guests
+                                @else
+                                    Captivate Tenants
+                                @endif
                             </h2>
                             <p class="text-gray-500 dark:text-gray-400 text-sm">Upload a stunning cover photo to grab attention immediately.</p>
                         </div>
 
-                        <div class="relative group cursor-pointer flex-1 min-h-[300px] border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors overflow-hidden">
+                        <div class="relative group cursor-pointer flex-1 min-h-[300px] border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-3xl flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors overflow-hidden"
+                             x-data="{
+                                isProcessing: false,
+                                uploadError: null,
+                                async handleImageUpload(e) {
+                                    this.uploadError = null;
+                                    const file = e.target.files[0];
+                                    if (!file) return;
+
+                                    this.isProcessing = true;
+
+                                    try {
+                                        // Use global validator function exposed in app.js
+                                        if (typeof window.validateAndProcessImage !== 'function') {
+                                            throw new Error('Image processor not loaded. Please refresh.');
+                                        }
+                                        
+                                        const processedFile = await window.validateAndProcessImage(file);
+                                        
+                                        // Manually upload the processed file to Livewire
+                                        $wire.upload('featured_image', processedFile, 
+                                            () => { this.isProcessing = false; }, 
+                                            (error) => { this.uploadError = 'Upload failed'; this.isProcessing = false; }
+                                        );
+                                    } catch (err) {
+                                        this.uploadError = err;
+                                        this.isProcessing = false;
+                                        e.target.value = ''; // Clear input
+                                    }
+                                }
+                             }"
+                        >
                             
-                            <input type="file" wire:model="featured_image" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                            {{-- Loading Overlay --}}
+                            <div x-show="isProcessing" class="absolute inset-0 z-20 bg-white/80 dark:bg-gray-900/80 flex flex-col items-center justify-center backdrop-blur-sm transition-opacity" style="display: none;">
+                                <svg class="animate-spin h-10 w-10 text-primary-600 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <p class="text-sm font-medium text-primary-600">Optimizing Image...</p>
+                            </div>
+
+                            {{-- Error Overlay --}}
+                             <div x-show="uploadError" class="absolute inset-0 z-20 bg-white/90 dark:bg-gray-900/90 flex flex-col items-center justify-center p-6 text-center" style="display: none;">
+                                <x-heroicon-o-exclamation-circle class="w-12 h-12 text-danger-500 mb-2"/>
+                                <p class="text-danger-600 font-medium mb-4" x-text="uploadError"></p>
+                                <button @click="uploadError = null" type="button" class="px-4 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-200">Try Again</button>
+                            </div>
+
+                            <input type="file" accept="image/*" @change="handleImageUpload" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
 
                             @if($featured_image)
                                 <img src="{{ $featured_image->temporaryUrl() }}" class="absolute inset-0 w-full h-full object-cover">
                                 <div class="absolute bottom-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-xs backdrop-blur-sm pointer-events-none">
                                     Tap to change
                                 </div>
-                            @else
+                            @elseif(!$featured_image) {{-- Show placeholder only if no image --}}
                                 <div class="flex flex-col items-center text-center p-6 space-y-3 pointer-events-none">
                                     <div class="p-4 bg-white dark:bg-gray-700 rounded-full shadow-lg text-primary-600 dark:text-primary-400">
                                         <x-heroicon-o-camera class="w-8 h-8" />
                                     </div>
                                     <p class="font-medium text-gray-900 dark:text-white">Take a Photo</p>
                                     <p class="text-xs text-gray-500">or upload from gallery</p>
+                                    <p class="text-[10px] text-gray-400">Min: 1024x768 • Max: 5MP</p>
                                 </div>
                             @endif
                         </div>
                         @error('featured_image') <span class="text-danger-600 dark:text-danger-400 text-sm block text-center">{{ $message }}</span> @enderror
                         
-                        <div class="pt-4">
-                            <button @click="next()" type="button" class="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium shadow-lg shadow-primary-500/30 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+
+                    {{-- Gallery Section --}}
+                    <div class="space-y-4 pt-6 border-t border-gray-100 dark:border-gray-800">
+                         <div class="flex items-center justify-between">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Property Gallery (Optional)
+                            </label>
+                            <span class="text-xs text-gray-500">Max 10MB per image</span>
+                        </div>
+
+                        {{-- Gallery Uploader --}}
+                        <div class="flex items-center justify-center w-full">
+                            <label for="gallery-upload" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-gray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 transition-colors">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <x-heroicon-o-photo class="w-8 h-8 mb-2 text-gray-500 dark:text-gray-400" />
+                                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span class="font-semibold">Click to upload</span> multiple images</p>
+                                </div>
+                                <input id="gallery-upload" type="file" multiple wire:model="gallery_images" accept="image/*" class="hidden" />
+                            </label>
+                        </div>
+                        @error('gallery_images.*') <span class="text-xs text-red-600 dark:text-red-400 block text-center">{{ $message }}</span> @enderror
+
+                        {{-- Gallery Preview Grid --}}
+                        @if($gallery_images)
+                            <div class="grid grid-cols-2 gap-4 mt-4">
+                                @foreach($gallery_images as $index => $image)
+                                    <div class="relative group bg-white dark:bg-gray-800 p-2 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                                        {{-- Image Preview --}}
+                                        <div class="relative aspect-video rounded-md overflow-hidden bg-gray-100 mb-2">
+                                            <img src="{{ $image->temporaryUrl() }}" class="object-cover w-full h-full">
+                                            
+                                            {{-- Remove Button --}}
+                                            <button type="button" wire:click="removeGalleryImage({{ $index }})" 
+                                                    class="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full shadow-lg hover:bg-red-600 transition-colors">
+                                                <x-heroicon-m-x-mark class="w-3 h-3" />
+                                            </button>
+                                        </div>
+
+                                        {{-- Caption Input --}}
+                                        <div>
+                                            <input type="text" 
+                                                   wire:model="gallery_captions.{{ $index }}" 
+                                                   placeholder="Caption (e.g. Kitchen)"
+                                                   class="w-full text-xs border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-white rounded-md focus:border-primary-500 focus:ring-primary-500 outline-none p-1.5"
+                                            >
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+                    </div>
+                        
+                        <div class="flex space-x-3 pt-4">
+                            <button @click="prev()" type="button" class="px-6 py-3.5 bg-white border border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"> Back </button>
+                            <button @click="next()" type="button" class="flex-1 py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium shadow-lg shadow-primary-500/30 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
                                 Continue
                             </button>
                         </div>
                     </div>
 
-                    {{-- Step 2: Essentials --}}
-                    <div x-show="step === 2" style="display: none;"
+
+
+                    {{-- Step 1: Essentials --}}
+                    <div x-show="step === 1" style="display: none;"
                          x-transition:enter="transition ease-out duration-300 transform"
                          x-transition:enter-start="opacity-0 translate-x-full"
                          x-transition:enter-end="opacity-100 translate-x-0"
@@ -117,6 +238,32 @@
                          <h2 class="text-xl font-bold text-gray-900 dark:text-white">The Essentials</h2>
 
                         <div class="space-y-5">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property Type</label>
+                                    <select wire:model.live="property_type_id" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 pr-10 outline-none">
+                                        <option value="">Select Type</option>
+                                        @foreach($this->propertyTypes as $type)
+                                            <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('property_type_id') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
+                                </div>
+
+                                @if($this->propertySubtypes->isNotEmpty())
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property Subtype</label>
+                                    <select wire:model="property_subtype_id" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 pr-10 outline-none">
+                                        <option value="">Select Subtype (Optional)</option>
+                                        @foreach($this->propertySubtypes as $subtype)
+                                            <option value="{{ $subtype->id }}">{{ $subtype->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('property_subtype_id') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
+                                </div>
+                                @endif
+                            </div>
+
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property Title</label>
                                 <input type="text" wire:model.live="propertyTitle" placeholder="e.g. Modern 3-Bed Apartment" 
@@ -152,9 +299,8 @@
                             </div>
                         </div>
 
-                        <div class="flex space-x-3 pt-4">
-                            <button @click="prev()" type="button" class="px-6 py-3.5 bg-white border border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"> Back </button>
-                            <button @click="next()" type="button" class="flex-1 py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium shadow-lg shadow-primary-500/30 transition-all active:scale-95"> Continue </button>
+                        <div class="pt-4">
+                            <button @click="next()" type="button" class="w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium shadow-lg shadow-primary-500/30 transition-all active:scale-95 text-center"> Continue </button>
                         </div>
                     </div>
 
@@ -172,6 +318,7 @@
                          <h2 class="text-xl font-bold text-gray-900 dark:text-white">Key Features</h2>
 
                         <div class="space-y-5">
+                            @if(!in_array($selectedCategory, ['land', 'commercial']))
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bedrooms</label>
                                 <div class="flex items-center space-x-4">
@@ -182,6 +329,47 @@
                                 <input type="hidden" wire:model="bedrooms"> {{-- Hidden bound input --}}
                                 @error('bedrooms') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
                             </div>
+                            @endif
+
+                            @if($selectedCategory === 'land')
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Plot Size</label>
+                                    <button type="button" @click="$wire.set('useCustomPlotSize', ! $wire.useCustomPlotSize)" class="text-xs text-primary-600 dark:text-primary-400 hover:underline">
+                                        {{ $useCustomPlotSize ? 'Select Standard Size' : 'Enter Custom Size' }}
+                                    </button>
+                                </div>
+                                
+                                <div x-show="!$wire.useCustomPlotSize">
+                                    <select wire:model="plot_size_id" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 pr-10 outline-none">
+                                        <option value="">Select Plot Size</option>
+                                        @foreach($this->plotSizes as $size)
+                                            <option value="{{ $size->id }}">{{ $size->display_text }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('plot_size_id') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div x-show="$wire.useCustomPlotSize" style="display: none;">
+                                    <div class="flex space-x-3">
+                                        <div class="flex-1">
+                                            <input type="number" wire:model="custom_plot_size" placeholder="Size" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 outline-none">
+                                            @error('custom_plot_size') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div class="w-1/3">
+                                            <select wire:model="custom_plot_unit" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 pr-10 outline-none">
+                                                <option value="sqm">sqm</option>
+                                                <option value="sqft">sqft</option>
+                                                <option value="acres">acres</option>
+                                                <option value="hectares">hectares</option>
+                                                <option value="plots">plots</option>
+                                            </select>
+                                            @error('custom_plot_unit') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @endif
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description (Optional)</label>
@@ -278,8 +466,115 @@
                         </div>
                     </div>
 
+                    {{-- Step 5: Success --}}
+                    <div x-show="step === 5" style="display: none;"
+                         x-transition:enter="transition ease-out duration-500 transform"
+                         x-transition:enter-start="opacity-0 scale-95"
+                         x-transition:enter-end="opacity-100 scale-100"
+                         class="absolute inset-0 flex flex-col items-center justify-center space-y-8 text-center"
+                    >
+                        <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4 animate-bounce">
+                            <x-heroicon-o-check-circle class="w-16 h-16 text-green-600 dark:text-green-400" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <h2 class="text-3xl font-bold text-gray-900 dark:text-white">Published!</h2>
+                            <p class="text-gray-500 dark:text-gray-400">Your property is now live and visible.</p>
+                        </div>
+
+                        <div class="w-full max-w-xs space-y-3 pt-6">
+                            <button wire:click="viewCreatedProperty" type="button" 
+                                class="block w-full py-3.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-medium shadow-lg shadow-primary-500/30 transition-all active:scale-95">
+                                View Property
+                            </button>
+
+                            <button wire:click="createAnother" type="button" class="w-full py-3.5 bg-white border border-gray-200 text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-200 rounded-xl font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                Create Another
+                            </button>
+
+                            <button wire:click="backToProperties" type="button" 
+                                class="block w-full py-3 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:underline">
+                                Back to Properties
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         @endif
     </div>
+    <script>
+        // Inline Image Processor to avoid cache issues with app.js
+        window.validateAndProcessImage = async function(file) {
+            const MIN_WIDTH = 1024;
+            const MIN_HEIGHT = 768;
+            const MAX_WIDTH = 2560;
+            const MAX_HEIGHT = 1920;
+            const QUALITY = 0.8;
+
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+                    const img = new Image();
+
+                    img.onload = () => {
+                        const width = img.naturalWidth;
+                        const height = img.naturalHeight;
+
+                        // 1. Minimum Resolution Check
+                        if (width < MIN_WIDTH || height < MIN_HEIGHT) {
+                            reject(`This photo is too small (low quality). Please select a clearer photo at least ${MIN_WIDTH}x${MIN_HEIGHT}px.`);
+                            return;
+                        }
+
+                        // 2. Processing Check (Resize if > Max or simply re-compress)
+                        let targetWidth = width;
+                        let targetHeight = height;
+
+                        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                            const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
+                            targetWidth = Math.round(width * ratio);
+                            targetHeight = Math.round(height * ratio);
+                        }
+
+                        // 3. Draw to Canvas
+                        const canvas = document.createElement('canvas');
+                        canvas.width = targetWidth;
+                        canvas.height = targetHeight;
+                        const ctx = canvas.getContext('2d');
+
+                        // Better quality resizing
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+
+                        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+
+                        // 4. Export Blob
+                        canvas.toBlob((blob) => {
+                            if (!blob) {
+                                reject("We couldn't process this image. Please try another one.");
+                                return;
+                            }
+
+                            // Create new File object with distinct safe name to avoid Livewire temp file issues
+                            const safeName = `property-upload-${Date.now()}.jpg`;
+                            const newFile = new File([blob], safeName, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+
+                            resolve(newFile);
+                        }, 'image/jpeg', QUALITY);
+                    };
+
+                    img.onerror = () => reject("This file doesn't look like a valid image.");
+                    img.src = e.target.result;
+                };
+
+                reader.onerror = () => reject("We couldn't read this file. Please try again.");
+                reader.readAsDataURL(file);
+            });
+        };
+    </script>
 </x-filament-panels::page>

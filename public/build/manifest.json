@@ -1,42 +1,45 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-CLIBYfTN.css",
+    "file": "assets/app-CqLcCj6X.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme--Knzg41r.css",
+    "file": "assets/theme-D8BHsHdc.css",
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },
   "resources/css/filament/agency/theme.css": {
-    "file": "assets/theme--Knzg41r.css",
+    "file": "assets/theme-D8BHsHdc.css",
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },
   "resources/css/filament/agent/theme.css": {
-    "file": "assets/theme-T8lOlzwy.css",
+    "file": "assets/theme-CHfmZsET.css",
     "src": "resources/css/filament/agent/theme.css",
     "isEntry": true
   },
   "resources/css/filament/landlord/theme.css": {
-    "file": "assets/theme-T8lOlzwy.css",
+    "file": "assets/theme-CHfmZsET.css",
     "src": "resources/css/filament/agent/theme.css",
     "isEntry": true
   },
   "resources/css/filament/tenant/theme.css": {
-    "file": "assets/theme-BhJDwQmw.css",
+    "file": "assets/theme-By6dj0xo.css",
     "src": "resources/css/filament/tenant/theme.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CEOlQqnw.js",
+    "file": "assets/app--4Hl6TXx.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "resources/js/property-image-validator.js"
+    ]
   },
   "resources/js/property-image-validator.js": {
-    "file": "assets/property-image-validator-CCzbCzXG.js",
+    "file": "assets/property-image-validator-kcyZSuAs.js",
     "name": "property-image-validator",
     "src": "resources/js/property-image-validator.js",
     "isEntry": true

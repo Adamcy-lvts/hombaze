@@ -121,7 +121,7 @@ document.addEventListener('alpine:init', () => {
 
             // Only allow numeric input
             const isNumeric = (event.keyCode >= 48 && event.keyCode <= 57) ||
-                             (event.keyCode >= 96 && event.keyCode <= 105);
+                (event.keyCode >= 96 && event.keyCode <= 105);
 
             if (!isNumeric) {
                 event.preventDefault();
@@ -129,6 +129,10 @@ document.addEventListener('alpine:init', () => {
         }
     }));
 });
+
+// Import and expose Image Validator
+import { validateAndProcessImage } from './property-image-validator';
+window.validateAndProcessImage = validateAndProcessImage;
 
 // GSAP Landing Page Animations and Interactions
 document.addEventListener('DOMContentLoaded', function () {

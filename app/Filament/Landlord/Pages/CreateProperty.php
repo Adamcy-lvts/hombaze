@@ -130,6 +130,28 @@ class CreateProperty extends Page
         ]);
     }
 
+    public function mount()
+    {
+        $user = Auth::user();
+        if ($user && $user->propertyOwnerProfile) {
+            $this->state_id = $user->propertyOwnerProfile->state_id;
+            $this->city_id = $user->propertyOwnerProfile->city_id;
+        }
+    }
+
+    public function updatedStateId()
+    {
+        $this->city_id = null;
+        $this->area_id = null;
+        $this->areaSearch = '';
+    }
+
+    public function updatedCityId()
+    {
+        $this->area_id = null;
+        $this->areaSearch = '';
+    }
+
     public function removeGalleryImage($index)
     {
         array_splice($this->gallery_images, $index, 1);
@@ -147,6 +169,17 @@ class CreateProperty extends Page
             ->when($this->areaSearch, fn($q) => $q->where('name', 'like', '%' . $this->areaSearch . '%'))
             ->limit(50)
             ->get();
+    }
+
+    public function getStatesProperty()
+    {
+        return State::orderBy('name')->get();
+    }
+
+    public function getCitiesProperty()
+    {
+        if (!$this->state_id) return collect();
+        return City::where('state_id', $this->state_id)->orderBy('name')->get();
     }
 
     public function getPropertyTypesProperty()

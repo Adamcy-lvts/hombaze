@@ -26,18 +26,40 @@ export async function validateAndProcessImage(file) {
                     return;
                 }
 
-                // 2. Processing Check (Resize if > Max or simply re-compress)
-                // We always process to ensure consistent JPEG format and removing metadata if needed
-                let targetWidth = width;
-                let targetHeight = height;
+                // 2. Enforce 4:3 Aspect Ratio (Center Crop)
+                const TARGET_RATIO = 4 / 3;
+                const sourceRatio = width / height;
 
-                if (width > MAX_WIDTH || height > MAX_HEIGHT) {
-                    const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
-                    targetWidth = Math.round(width * ratio);
-                    targetHeight = Math.round(height * ratio);
+                let srcX = 0;
+                let srcY = 0;
+                let srcW = width;
+                let srcH = height;
+
+                if (sourceRatio > TARGET_RATIO) {
+                    // Image is wider than 4:3 - Crop sides
+                    srcW = height * TARGET_RATIO;
+                    srcX = (width - srcW) / 2;
+                } else {
+                    // Image is taller than 4:3 - Crop top/bottom
+                    srcH = width / TARGET_RATIO;
+                    srcY = (height - srcH) / 2;
                 }
 
-                // 3. Draw to Canvas
+                // 3. Determine Final Output Size (Max 2560x1920)
+                // We keep the crop dimensions unless they exceed max, then scale down maintaining 4:3
+                let targetWidth = srcW;
+                let targetHeight = srcH;
+
+                if (targetWidth > MAX_WIDTH) {
+                    targetWidth = MAX_WIDTH;
+                    targetHeight = MAX_WIDTH / TARGET_RATIO;
+                }
+
+                // Ensure integers
+                targetWidth = Math.round(targetWidth);
+                targetHeight = Math.round(targetHeight);
+
+                // 4. Draw to Canvas
                 const canvas = document.createElement('canvas');
                 canvas.width = targetWidth;
                 canvas.height = targetHeight;
@@ -47,7 +69,8 @@ export async function validateAndProcessImage(file) {
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
 
-                ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                // drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight)
+                ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, targetWidth, targetHeight);
 
                 // 4. Export Blob
                 canvas.toBlob((blob) => {

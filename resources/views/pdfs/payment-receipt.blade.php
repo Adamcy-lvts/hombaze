@@ -173,8 +173,8 @@
                                 $agency = $record->lease->property->agency;
                                 $businessInfo = [
                                     'name' => $agency->name,
-                                    'email' => $agency->email ?? 'support@homebaze.com',
-                                    'phone' => $agency->phone ?? '+234 (0) 123-456-7890'
+                                    'email' => $agency->email ?? 'support@homebaze.live',
+                                    'phone' => $agency->phone ?? '+2347071940611'
                                 ];
                                 $showBusinessInfo = true;
                             }
@@ -185,7 +185,7 @@
                                 $owner = $record->lease->property->owner;
                                 $businessInfo = [
                                     'name' => $owner->company_name,
-                                    'email' => $owner->email ?? $record->landlord->email ?? 'support@homebaze.com',
+                                    'email' => $owner->email ?? $record->landlord->email ?? 'support@homebaze.live',
                                     'phone' => $owner->phone ?? $record->landlord->phone ?? '+234 (0) 123-456-7890'
                                 ];
                                 $showBusinessInfo = true;

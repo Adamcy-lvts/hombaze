@@ -398,15 +398,27 @@
 
                         <div class="space-y-5">
                             
-                            {{-- State & City Auto-filled visual --}}
-                            <div class="flex space-x-3 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-200 dark:border-gray-700">
-                                <x-heroicon-o-map-pin class="w-5 h-5 text-primary-500" />
-                                <div class="text-sm">
-                                    <p class="text-gray-900 dark:text-white font-medium">Auto-located in:</p>
-                                    <p class="text-gray-500 dark:text-gray-400">
-                                        {{ \App\Models\State::find($state_id)?->name ?? 'Unknown State' }}, 
-                                        {{ \App\Models\City::find($city_id)?->name ?? 'Unknown City' }}
-                                    </p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                                    <select wire:model.live="state_id" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 pr-10 outline-none">
+                                        <option value="">Select State</option>
+                                        @foreach($this->states as $state)
+                                            <option value="{{ $state->id }}">{{ $state->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('state_id') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
+                                    <select wire:model.live="city_id" class="w-full rounded-xl border-gray-300 bg-white text-gray-900 dark:border-gray-700 dark:bg-gray-900 dark:text-white focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-colors py-3.5 px-4 pr-10 outline-none" @if(!$state_id) disabled @endif>
+                                        <option value="">Select City</option>
+                                        @foreach($this->cities as $city)
+                                            <option value="{{ $city->id }}">{{ $city->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    @error('city_id') <span class="text-danger-600 text-xs block mt-1">{{ $message }}</span> @enderror
                                 </div>
                             </div>
 
@@ -528,17 +540,38 @@
                             return;
                         }
 
-                        // 2. Processing Check (Resize if > Max or simply re-compress)
-                        let targetWidth = width;
-                        let targetHeight = height;
+                        // 2. Enforce 4:3 Aspect Ratio (Center Crop)
+                        const TARGET_RATIO = 4 / 3;
+                        const sourceRatio = width / height;
 
-                        if (width > MAX_WIDTH || height > MAX_HEIGHT) {
-                            const ratio = Math.min(MAX_WIDTH / width, MAX_HEIGHT / height);
-                            targetWidth = Math.round(width * ratio);
-                            targetHeight = Math.round(height * ratio);
+                        let srcX = 0;
+                        let srcY = 0;
+                        let srcW = width;
+                        let srcH = height;
+
+                        if (sourceRatio > TARGET_RATIO) {
+                            // Image is wider than 4:3 - Crop sides
+                            srcW = height * TARGET_RATIO;
+                            srcX = (width - srcW) / 2;
+                        } else {
+                            // Image is taller than 4:3 - Crop top/bottom
+                            srcH = width / TARGET_RATIO;
+                            srcY = (height - srcH) / 2;
                         }
 
-                        // 3. Draw to Canvas
+                        // 3. Determine Final Output Size (Max 2560x1920)
+                        let targetWidth = srcW;
+                        let targetHeight = srcH;
+
+                        if (targetWidth > MAX_WIDTH) {
+                            targetWidth = MAX_WIDTH;
+                            targetHeight = MAX_WIDTH / TARGET_RATIO;
+                        }
+
+                        targetWidth = Math.round(targetWidth);
+                        targetHeight = Math.round(targetHeight);
+
+                        // 4. Draw to Canvas
                         const canvas = document.createElement('canvas');
                         canvas.width = targetWidth;
                         canvas.height = targetHeight;
@@ -548,7 +581,7 @@
                         ctx.imageSmoothingEnabled = true;
                         ctx.imageSmoothingQuality = 'high';
 
-                        ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+                        ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, targetWidth, targetHeight);
 
                         // 4. Export Blob
                         canvas.toBlob((blob) => {

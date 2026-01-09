@@ -138,30 +138,7 @@ class LeaseTemplate extends Model
     </div>
 
     <div style="margin-top: 26px; border-top: 1px dashed #e5e7eb; padding-top: 18px;">
-        <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-                <td style="width: 50%; vertical-align: top; padding-right: 12px;">
-                    <p style="margin: 0 0 8px 0; font-weight: 600;">Signed by the Landlord</p>
-                    <p style="margin: 0 0 8px 0;">{{ Landlord Name }}</p>
-                    <p style="margin: 10px 0 0 0;">Signature: ........................................</p>
-                    <p style="margin: 12px 0 4px 0; font-weight: 600;">In the presence of:</p>
-                    <p style="margin: 0;">Name: ........................................</p>
-                    <p style="margin: 0;">Address: ........................................</p>
-                    <p style="margin: 0;">Occupation: ........................................</p>
-                    <p style="margin: 0;">Signature: ........................................</p>
-                </td>
-                <td style="width: 50%; vertical-align: top; padding-left: 12px;">
-                    <p style="margin: 0 0 8px 0; font-weight: 600;">Signed by the Tenant</p>
-                    <p style="margin: 0 0 8px 0;">{{ Tenant Name }}</p>
-                    <p style="margin: 10px 0 0 0;">Signature: ........................................</p>
-                    <p style="margin: 12px 0 4px 0; font-weight: 600;">In the presence of:</p>
-                    <p style="margin: 0;">Name: ........................................</p>
-                    <p style="margin: 0;">Address: ........................................</p>
-                    <p style="margin: 0;">Occupation: ........................................</p>
-                    <p style="margin: 0;">Signature: ........................................</p>
-                </td>
-            </tr>
-        </table>
+       
     </div>
 </div>
         ';

@@ -1,3 +1,4 @@
+@auth
 @php
     $panelId = filament()->getCurrentPanel()->getId();
     $items = [];
@@ -20,14 +21,13 @@
                 // Active if on custom list OR standard resource pages (like Edit)
                 'active' => request()->routeIs('filament.landlord.pages.my-properties') || request()->routeIs('filament.landlord.resources.properties.*'),
             ],
-            // Only show Create button if NOT on tenants list
-            ...(request()->routeIs('filament.landlord.pages.tenants-list') ? [] : [[
+            [
                 'route' => 'create',
                 'label' => 'Create',
                 'icon' => 'heroicon-s-plus',
                 'url' => route('filament.landlord.pages.create-property'),
                 'active' => request()->routeIs('filament.landlord.pages.create-property'),
-            ]]),
+            ],
             [
                 'label' => 'Tenants',
                 'icon' => 'heroicon-o-users',
@@ -123,3 +123,4 @@
         animation: bounce-subtle 0.3s ease-in-out;
     }
 </style>
+@endauth

@@ -111,32 +111,54 @@
                 <h3 class="text-lg font-semibold text-white mb-4 px-1">Recent Invitations</h3>
                 <div class="space-y-3">
                     @foreach($this->recentInvitations as $invite)
-                        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between">
-                            <div>
-                                <p class="text-white font-medium">{{ $invite->phone }}</p>
-                                <p class="text-xs text-gray-500 mt-0.5">
-                                    {{ $invite->property ? $invite->property->title : 'No property specified' }}
-                                </p>
-                            </div>
-                            <div class="flex flex-col items-end gap-2">
-                                <span class="px-2 py-1 rounded-md text-xs font-medium 
+                        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4">
+                            <div class="flex items-start justify-between mb-3">
+                                <div>
+                                    @if($invite->tenantUser)
+                                        <p class="text-white font-bold text-sm">{{ $invite->tenantUser->name }}</p>
+                                        <p class="text-xs text-gray-500">{{ $invite->phone }}</p>
+                                    @else
+                                        <p class="text-white font-bold text-sm">{{ $invite->phone }}</p>
+                                        <p class="text-xs text-gray-500">Guest Tenant</p>
+                                    @endif
+                                    
+                                    <p class="text-xs text-primary-400 mt-1 font-medium">
+                                        {{ $invite->property ? $invite->property->title : 'No property specified' }}
+                                    </p>
+                                </div>
+                                <span class="px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider
                                     {{ $invite->status === 'pending' ? 'bg-yellow-500/10 text-yellow-500' : '' }}
                                     {{ $invite->status === 'accepted' ? 'bg-green-500/10 text-green-500' : '' }}
                                     {{ $invite->status === 'expired' ? 'bg-red-500/10 text-red-500' : '' }}
                                 ">
-                                    {{ ucfirst($invite->status) }}
+                                    {{ $invite->status }}
                                 </span>
-                                
-                                {{-- Copy Action for Pending --}}
-                                @if($invite->status === 'pending')
+                            </div>
+
+                            {{-- Actions for Pending --}}
+                            @if($invite->status === 'pending')
+                                <div class="flex items-center gap-3 mt-3 pt-3 border-t border-gray-800">
                                     <button x-data="{ copied: false }"
                                             @click="navigator.clipboard.writeText('{{ $invite->getInvitationUrl() }}'); copied = true; setTimeout(() => copied = false, 2000)"
-                                            class="text-primary-400 hover:text-primary-300 text-xs flex items-center">
-                                        <x-heroicon-o-link class="w-3 h-3 mr-1" />
+                                            class="flex-1 flex items-center justify-center text-xs font-medium py-2 rounded-lg bg-gray-800 text-gray-300 active:bg-gray-700 transition">
+                                        <x-heroicon-o-link class="w-3.5 h-3.5 mr-1.5" />
                                         <span x-text="copied ? 'Copied' : 'Copy Link'"></span>
                                     </button>
-                                @endif
-                            </div>
+
+                                    @php
+                                        $landlordName = auth()->user()->name;
+                                        $propTitle = $invite->property ? "*{$invite->property->title} at {$invite->property->address}*" : "a property";
+                                        $waMsg = "Hi! $landlordName has invited you register as his tenant for $propTitle. on hombaze platform, the best place to buy and sell or rent your property house, land etc.. Click here: " . $invite->getInvitationUrl();
+                                    @endphp
+
+                                    <a href="https://wa.me/?text={{ urlencode($waMsg) }}&phone={{ preg_replace('/[^0-9]/', '', $invite->phone) }}" 
+                                       target="_blank"
+                                       class="flex-1 flex items-center justify-center text-xs font-medium py-2 rounded-lg bg-[#25D366]/10 text-[#25D366] active:bg-[#25D366]/20 transition border border-[#25D366]/20">
+                                        <x-heroicon-o-chat-bubble-left-right class="w-3.5 h-3.5 mr-1.5" />
+                                        WhatsApp
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>

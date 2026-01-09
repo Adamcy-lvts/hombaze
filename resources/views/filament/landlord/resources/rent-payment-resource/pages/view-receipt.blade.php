@@ -76,9 +76,9 @@
                             $agency = $receipt->lease->property->agency;
                             $businessInfo = [
                                 'name' => $agency->name,
-                                'email' => $agency->email ?? 'support@homebaze.com',
-                                'phone' => $agency->phone ?? '+234 (0) 123-456-7890',
-                                'website' => $agency->website ?? 'www.homebaze.com',
+                                'email' => $agency->email ?? 'support@homebaze.live',
+                                'phone' => $agency->phone ?? '+2347071940611',
+                                'website' => $agency->website ?? 'www.homebaze.live',
                                 'tagline' => 'Real Estate Agency',
                             ];
                             $businessLogo = $inlineStorageLogo($agency->logo) ?? $inlineLogo('images/app-logo.svg');
@@ -95,8 +95,8 @@
                             $owner = $receipt->lease->property->owner;
                             $businessInfo = [
                                 'name' => $owner->company_name,
-                                'email' => $owner->email ?? ($receipt->landlord->email ?? 'support@homebaze.com'),
-                                'phone' => $owner->phone ?? ($receipt->landlord->phone ?? '+234 (0) 123-456-7890'),
+                                'email' => $owner->email ?? ($receipt->landlord->email ?? 'support@homebaze.live'),
+                                'phone' => $owner->phone ?? ($receipt->landlord->phone ?? '+2347071940611'),
                                 'website' => $owner->website ?? null,
                                 'tagline' => null, // No tagline for property owner companies
                             ];

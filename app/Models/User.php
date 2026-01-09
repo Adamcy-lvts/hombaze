@@ -713,9 +713,49 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     /**
      * Initialize basic profile completion steps after registration
      */
-    public function initializeProfileCompletion(): void
+    public function getPanelProfileUrl(): string
     {
-        // Add basic_info to existing steps if not already present
-        $this->markStepCompleted('basic_info');
+        try {
+            return match($this->user_type) {
+                'agent', 'independent_agent' => route('filament.agent.auth.profile'),
+                'property_owner' => route('filament.landlord.auth.profile'),
+                'agency_owner' => $this->getAgencyProfileUrl(),
+                'tenant' => route('filament.tenant.auth.profile'),
+                'admin' => route('filament.admin.auth.profile'),
+                default => route('profile'),
+            };
+        } catch (\Exception $e) {
+            // Fallback to default profile if route doesn't exist
+            return route('profile');
+        }
+    }
+
+    protected function getAgencyProfileUrl(): string
+    {
+         $agency = $this->ownedAgencies()->first();
+         return $agency ? route('filament.agency.auth.profile', ['tenant' => $agency]) : route('profile');
+    }
+
+    public function getPanelDashboardUrl(): string
+    {
+        try {
+            return match($this->user_type) {
+                'agent', 'independent_agent' => route('filament.agent.pages.dashboard'),
+                'property_owner' => route('filament.landlord.pages.dashboard'),
+                'agency_owner' => $this->getAgencyDashboardUrl(),
+                'tenant' => route('filament.tenant.pages.dashboard'),
+                'admin' => route('filament.admin.pages.dashboard'),
+                default => route('dashboard'),
+            };
+        } catch (\Exception $e) {
+            return route('dashboard');
+        }
+    }
+
+    protected function getAgencyDashboardUrl(): string
+    {
+        $agency = $this->ownedAgencies()->first();
+        // Assuming AgencyDashboard logic
+        return $agency ? route('filament.agency.pages.agency-dashboard', ['tenant' => $agency]) : route('dashboard');
     }
 }

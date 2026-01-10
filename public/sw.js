@@ -1,16 +1,18 @@
-// 🔥 Service Worker Kill Switch for Homebaze
+// SW KILL SWITCH — HomeBaze
 self.addEventListener('install', () => {
   self.skipWaiting();
 });
 
-self.addEventListener('activate', async () => {
-  // Delete ALL caches
-  const keys = await caches.keys();
-  await Promise.all(keys.map(key => caches.delete(key)));
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    (async () => {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
 
-  // Unregister THIS service worker
-  await self.registration.unregister();
-
-  // Release control immediately
-  self.clients.claim();
+      const clients = await self.clients.matchAll();
+      for (const client of clients) {
+        client.navigate(client.url);
+      }
+    })()
+  );
 });

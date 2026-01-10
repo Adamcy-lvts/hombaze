@@ -20,6 +20,9 @@ use App\Models\Area;
 use App\Models\PlotSize;
 use App\Models\PropertySubtype;
 use App\Filament\Landlord\Resources\PropertyResource;
+use App\Services\ListingCreditService;
+use Filament\Actions\Action;
+use Illuminate\Validation\ValidationException;
 
 class CreateProperty extends Page
 {
@@ -304,6 +307,36 @@ class CreateProperty extends Page
             throw $e;
         }
 
+        // Credit Checks
+        $user = Auth::user();
+        $shouldPublish = true; // Default to true as per standard resource
+
+        try {
+            if ($shouldPublish) {
+                ListingCreditService::assertHasListingCredits($user);
+            }
+            // Add feature credit check if feature toggle is added in future
+            // if (!empty($data['is_featured'])) {
+            //    ListingCreditService::assertHasFeaturedCredits($user);
+            // }
+        } catch (ValidationException $exception) {
+            $message = collect($exception->errors())->flatten()->first()
+                ?? 'Insufficient credits to publish this property.';
+
+            Notification::make()
+                ->title('Insufficient credits')
+                ->body($message)
+                ->actions([
+                    Action::make('viewPricing')
+                        ->label('View pricing')
+                        ->url(route('pricing')),
+                ])
+                ->warning()
+                ->send();
+            
+            return;
+        }
+
         $data = [
             'title' => $this->propertyTitle,
             'slug' => $this->propertySlug ?: Str::slug($this->propertyTitle),
@@ -349,6 +382,7 @@ class CreateProperty extends Page
                         'owner_id' => $propertyOwner->id,
                         'agency_id' => null,
                         'agent_id' => null,
+                        'is_published' => true, // Ensure published status is attempted (will be caught by observer if no images)
                     ]));
                     Log::info('CreateProperty: Property created', ['id' => $property->id, 'slug' => $property->slug]);
                 } catch (\Illuminate\Database\QueryException $e) {
@@ -417,6 +451,16 @@ class CreateProperty extends Page
             ->success()
             ->title('Property Created Successfully')
             ->send();
+
+        // Consume Credits
+        if ($shouldPublish) {
+            try {
+                ListingCreditService::consumeListingCredits($user, $property);
+            } catch (\Exception $e) {
+                // Log error but don't fail the request as property is already created
+                Log::error('CreateProperty: Failed to consume credits', ['error' => $e->getMessage()]);
+            }
+        }
 
         // Prevent "FileNotPreviewableException" by clearing the consumed image before re-render
         $this->reset(['featured_image', 'gallery_images']);

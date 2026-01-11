@@ -95,8 +95,24 @@ class ViewReceipt extends Page
                     // Set orientation to landscape
                     ->orientation(Orientation::Landscape)
                     ->withBrowsershot(function (Browsershot $browsershot) {
-                        $browsershot->setChromePath(resolveChromePath())
-                            ->setTemporaryDirectory(resolveBrowsershotTempDir())
+                        // Try to find installed browsers in the system
+                        $chromePaths = [
+                            config('app.chrome_path'), // First try the configured path
+                            '/usr/bin/chromium-browser',
+                            '/usr/bin/chromium',
+                            '/usr/bin/google-chrome',
+                            '/usr/bin/google-chrome-stable'
+                        ];
+
+                        $chromePath = null;
+                        foreach ($chromePaths as $path) {
+                            if ($path && file_exists($path) && is_executable($path)) {
+                                $chromePath = $path;
+                                break;
+                            }
+                        }
+
+                        $browsershot->setChromePath($chromePath)
                             ->format('A4')
                             ->landscape() // Ensure landscape mode is set
                             ->margins(5, 5, 5, 5) // Minimal margins to maximize content area
@@ -230,8 +246,7 @@ class ViewReceipt extends Page
 
                 // Configure Browsershot for PNG
                 $browsershot = Browsershot::html($html)
-                    ->setChromePath(resolveChromePath())
-                    ->setTemporaryDirectory(resolveBrowsershotTempDir())
+                    ->setChromePath(config('app.chrome_path'))
                     ->windowSize(900, 500) // Wider window for wider receipt
                     ->waitUntilNetworkIdle() // Wait for Tailwind to initialize
                     ->showBackground()

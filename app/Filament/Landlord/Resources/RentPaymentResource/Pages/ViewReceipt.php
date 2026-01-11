@@ -95,24 +95,7 @@ class ViewReceipt extends Page
                     // Set orientation to landscape
                     ->orientation(Orientation::Landscape)
                     ->withBrowsershot(function (Browsershot $browsershot) {
-                        // Try to find installed browsers in the system
-                        $chromePaths = [
-                            config('app.chrome_path'), // First try the configured path
-                            '/usr/bin/chromium-browser',
-                            '/usr/bin/chromium',
-                            '/usr/bin/google-chrome',
-                            '/usr/bin/google-chrome-stable'
-                        ];
-
-                        $chromePath = null;
-                        foreach ($chromePaths as $path) {
-                            if ($path && file_exists($path) && is_executable($path)) {
-                                $chromePath = $path;
-                                break;
-                            }
-                        }
-
-                        $browsershot->setChromePath($chromePath)
+                        $browsershot->setChromePath($this->resolveChromePath())
                             ->format('A4')
                             ->landscape() // Ensure landscape mode is set
                             ->margins(5, 5, 5, 5) // Minimal margins to maximize content area
@@ -246,7 +229,7 @@ class ViewReceipt extends Page
 
                 // Configure Browsershot for PNG
                 $browsershot = Browsershot::html($html)
-                    ->setChromePath(config('app.chrome_path'))
+                    ->setChromePath($this->resolveChromePath())
                     ->windowSize(900, 500) // Wider window for wider receipt
                     ->waitUntilNetworkIdle() // Wait for Tailwind to initialize
                     ->showBackground()
@@ -349,5 +332,24 @@ class ViewReceipt extends Page
         $amountInWords = str_replace('cents', 'Kobo', $amountInWords);
 
         return ucfirst($amountInWords);
+    }
+
+    private function resolveChromePath(): ?string
+    {
+        $chromePaths = [
+            config('app.chrome_path'),
+            '/usr/bin/chromium-browser',
+            '/usr/bin/chromium',
+            '/usr/bin/google-chrome',
+            '/usr/bin/google-chrome-stable',
+        ];
+
+        foreach ($chromePaths as $path) {
+            if ($path && file_exists($path) && is_executable($path)) {
+                return $path;
+            }
+        }
+
+        return null;
     }
 }

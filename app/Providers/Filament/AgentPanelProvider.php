@@ -43,12 +43,7 @@ class AgentPanelProvider extends PanelProvider
                 'primary' => Color::Orange,
             ])
             ->defaultThemeMode(ThemeMode::Light)
-            ->viteTheme('resources/css/filament/agent/theme.css')
-            ->renderHook('panels::head.end', fn () => view('filament.pwa.head-meta'))
-            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
-            ->renderHook('panels::body.end', fn () => view('filament.pwa.body-scripts'))
-            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'))
-            ->renderHook('panels::body.end', fn () => view('filament.components.mobile-bottom-nav'))
+           
             ->discoverResources(in: app_path('Filament/Agent/Resources'), for: 'App\\Filament\\Agent\\Resources')
             ->discoverPages(in: app_path('Filament/Agent/Pages'), for: 'App\\Filament\\Agent\\Pages')
             ->pages([
@@ -76,6 +71,12 @@ class AgentPanelProvider extends PanelProvider
                 Authenticate::class,
                 RequireProfileCompletion::class,
             ])
+            ->viteTheme('resources/css/filament/agent/theme.css')
+            ->renderHook('panels::head.end', fn () => view('filament.pwa.head-meta'))
+            ->renderHook('panels::body.end', fn () => view('filament.custom.property-validation-script'))
+            ->renderHook('panels::body.end', fn () => view('filament.pwa.body-scripts'))
+            ->renderHook('panels::global-search.after', fn () => view('filament.components.credit-summary'))
+            ->renderHook('panels::body.end', fn () => view('filament.agent.components.mobile-bottom-nav'))
             ;
     }
 

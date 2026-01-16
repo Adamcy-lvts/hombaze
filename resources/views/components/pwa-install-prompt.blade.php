@@ -23,7 +23,7 @@
     aria-labelledby="pwa-install-title"
 >
     <div class="max-w-lg mx-auto pointer-events-auto">
-        <div class="bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden">
+        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden">
             {{-- Header with app icon --}}
             <div class="flex items-start gap-4 p-4 sm:p-5">
                 {{-- App Icon --}}
@@ -38,10 +38,10 @@
 
                 {{-- Content --}}
                 <div class="flex-1 min-w-0">
-                    <h3 id="pwa-install-title" class="text-base sm:text-lg font-bold text-gray-900">
+                    <h3 id="pwa-install-title" class="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                         Install HomeBaze
                     </h3>
-                    <p class="mt-1 text-sm text-gray-600 leading-snug">
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400 leading-snug">
                         Add to your home screen for quick access to properties and faster browsing.
                     </p>
                 </div>
@@ -49,7 +49,7 @@
                 {{-- Close button --}}
                 <button
                     @click="dismiss()"
-                    class="flex-shrink-0 p-1.5 -mr-1 -mt-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    class="flex-shrink-0 p-1.5 -mr-1 -mt-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-gray-800 rounded-lg transition-colors"
                     aria-label="Dismiss"
                 >
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -62,7 +62,7 @@
             <div class="flex gap-3 px-4 pb-4 sm:px-5 sm:pb-5">
                 <button
                     @click="dismiss()"
-                    class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
+                    class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 bg-gray-100 hover:bg-gray-200 dark:text-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 rounded-xl transition-colors"
                 >
                     Not Now
                 </button>

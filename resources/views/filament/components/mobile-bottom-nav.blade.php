@@ -57,15 +57,15 @@
                 'label' => 'Properties',
                 'icon' => 'heroicon-o-building-office-2',
                 'activeIcon' => 'heroicon-s-building-office-2',
-                'url' => route('filament.agent.resources.properties.index'),
-                'active' => request()->routeIs('filament.agent.resources.properties.*'),
+                'url' => route('filament.agent.pages.my-properties'),
+                'active' => request()->routeIs('filament.agent.pages.my-properties') || request()->routeIs('filament.agent.pages.edit-property') || request()->routeIs('filament.agent.resources.properties.*'),
             ],
             [
                 'route' => 'create',
                 'label' => 'Create',
                 'icon' => 'heroicon-s-plus',
-                'url' => '#', // Placeholder or custom agent create page
-                'active' => false,
+                'url' => route('filament.agent.pages.create-property'),
+                'active' => request()->routeIs('filament.agent.pages.create-property'),
             ],
             [
                 'label' => 'Leads',
@@ -74,11 +74,18 @@
                 'url' => route('filament.agent.resources.property-inquiries.index'),
                 'active' => request()->routeIs('filament.agent.resources.property-inquiries.*'),
             ],
+            [
+                'label' => 'Leases',
+                'icon' => 'heroicon-o-document-text',
+                'activeIcon' => 'heroicon-s-document-text',
+                'url' => route('filament.agent.pages.mobile-leases'),
+                'active' => request()->routeIs('filament.agent.pages.mobile-leases'),
+            ],
         ];
     }
 @endphp
 
-<div class="fixed bottom-0 left-0 right-0 z-50 md:hidden pb-safe">
+<div class="fixed bottom-0 left-0 right-0 z-[9999] md:hidden pb-safe">
     <div class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] flex justify-between items-end px-2 h-16">
         
         @foreach($items as $item)

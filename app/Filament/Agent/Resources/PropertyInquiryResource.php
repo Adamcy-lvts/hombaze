@@ -52,8 +52,15 @@ class PropertyInquiryResource extends Resource
         
         return parent::getEloquentQuery()
             ->whereHas('property', function (Builder $query) use ($user) {
-                $query->where('agent_id', $user->id)
-                      ->whereNull('agency_id'); // Independent agent properties only
+                // Find agent record for current user
+                $agent = \App\Models\Agent::where('user_id', $user->id)->first();
+                
+                if ($agent) {
+                    $query->where('agent_id', $agent->id)
+                          ->whereNull('agency_id');
+                } else {
+                    $query->whereRaw('1 = 0');
+                }
             });
     }
 

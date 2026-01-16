@@ -2,7 +2,6 @@
     <div class="space-y-6 pb-20"> <!-- Padding for bottom nav -->
         
         <div class="flex items-center justify-between">
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">My Properties</h1>
             {{-- Optional: Top Add Button --}}
         </div>
 
@@ -13,25 +12,22 @@
                 </div>
                 <div>
                     <h3 class="text-lg font-medium text-gray-900 dark:text-white">No Properties Yet</h3>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto">Start building your portfolio by adding your first property.</p>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm max-w-xs mx-auto">Start building your agency portfolio by adding your first property.</p>
                 </div>
-                <a href="{{ route('filament.landlord.pages.create-property') }}" class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors">
+                <a href="{{ route('filament.agency.pages.create-property', ['tenant' => \Filament\Facades\Filament::getTenant()?->slug]) }}" class="px-6 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors">
                     Add Property
                 </a>
             </div>
         @else
             <div class="grid grid-cols-1 gap-4">
                 @foreach($properties as $property)
-                    {{-- Property Card with proper dark mode support --}}
-                    <div class="rounded-2xl shadow-sm border overflow-hidden flex flex-col
-                                bg-white border-gray-100
-                                dark:bg-gray-800 dark:border-gray-700">
+                    <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden flex flex-col">
                         {{-- Image --}}
-                        <div class="relative h-48 w-full bg-gray-200 dark:bg-gray-700">
+                        <div class="relative h-48 w-full bg-gray-200 dark:bg-gray-800">
                             @if($property->getFirstMediaUrl('featured'))
                                 <img src="{{ $property->getFirstMediaUrl('featured') }}" class="w-full h-full object-cover">
                             @else
-                                <div class="flex items-center justify-center h-full text-gray-400 dark:text-gray-500">
+                                <div class="flex items-center justify-center h-full text-gray-400">
                                     <x-heroicon-o-camera class="w-12 h-12" />
                                 </div>
                             @endif
@@ -40,17 +36,27 @@
                             <button wire:click="mountAction('changeStatus', { record: {{ $property->id }} })" 
                                     class="absolute top-3 right-3 shadow-sm hover:scale-105 transition-transform">
                                 <span class="px-2.5 py-1 rounded-full text-xs font-medium 
-                                    {{ $property->status === 'available' ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400' : '' }}
-                                    {{ $property->status === 'rented' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-400' : '' }}
-                                    {{ $property->status === 'sold' ? 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-400' : '' }}
+                                    {{ $property->status === 'available' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : '' }}
+                                    {{ $property->status === 'rented' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' : '' }}
+                                    {{ $property->status === 'sold' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : '' }}
                                 ">
                                     {{ ucfirst($property->status) }}
                                 </span>
                             </button>
+
+                            {{-- Agent Badge --}}
+                            @if($property->agent)
+                                <div class="absolute bottom-3 left-3">
+                                    <span class="px-2 py-1 rounded-lg text-xs font-medium bg-white/90 dark:bg-gray-800/90 text-gray-700 dark:text-gray-300 backdrop-blur-sm">
+                                        <x-heroicon-m-user class="w-3 h-3 inline mr-1" />
+                                        {{ $property->agent->user?->name ?? 'Unassigned' }}
+                                    </span>
+                                </div>
+                            @endif
                         </div>
 
                         {{-- Content --}}
-                        <div class="p-4 flex-1 flex flex-col bg-white dark:bg-gray-800">
+                        <div class="p-4 flex-1 flex flex-col">
                             <div class="flex-1 space-y-2">
                                 <div class="flex justify-between items-start">
                                     <div>
@@ -79,22 +85,21 @@
                             </div>
 
                             {{-- Actions --}}
-                            <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between">
-                                <!-- Edit Link -->
-                                <a href="{{ route('filament.landlord.pages.edit-property', ['record' => $property->id]) }}" 
-                                   class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between">
+                                <a href="{{ route('filament.agency.pages.edit-property', ['tenant' => \Filament\Facades\Filament::getTenant()?->slug, 'record' => $property->id]) }}" 
+                                   class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
                                     <x-heroicon-m-pencil-square class="w-4 h-4 mr-1.5" />
                                     Edit
                                 </a>
 
                                 <button wire:click="mountAction('changeStatus', { record: {{ $property->id }} })"
-                                        class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                        class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                     <x-heroicon-m-arrow-path class="w-4 h-4 mr-1.5" />
                                     Status
                                 </button>
                                 
                                 <button wire:click="mountAction('delete', { record: {{ $property->id }} })" 
-                                        class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-danger-600 dark:hover:text-danger-400 transition-colors">
+                                        class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-danger-600 dark:hover:text-danger-400 transition-colors">
                                     <x-heroicon-m-trash class="w-4 h-4 mr-1.5" />
                                     Delete
                                 </button>

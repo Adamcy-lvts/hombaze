@@ -13,6 +13,7 @@ class TenantInvitation extends Model
         'token',
         'status',
         'landlord_id',
+        'property_owner_id',
         'agent_id',
         'property_id',
         'message',
@@ -84,6 +85,14 @@ class TenantInvitation extends Model
     public function agent(): BelongsTo
     {
         return $this->belongsTo(Agent::class);
+    }
+
+    /**
+     * Property owner (for non-platform owners)
+     */
+    public function propertyOwner(): BelongsTo
+    {
+        return $this->belongsTo(PropertyOwner::class);
     }
 
     /**

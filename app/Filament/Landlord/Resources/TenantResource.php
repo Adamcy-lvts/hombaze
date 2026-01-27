@@ -232,8 +232,14 @@ class TenantResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+        $landlordId = Auth::id();
+        \Log::info('[TenantResource] getEloquentQuery called', [
+            'auth_user_id' => $landlordId,
+            'auth_check' => Auth::check(),
+        ]);
+        
         return parent::getEloquentQuery()
-            ->where('landlord_id', Auth::id());
+            ->where('landlord_id', $landlordId);
     }
 
     public static function getRelations(): array

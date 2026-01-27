@@ -22,7 +22,7 @@ class CreateRentPayment extends CreateRecord
         $deposit = (float) ($data['deposit'] ?? 0);
         
         $netAmount = $amount + $lateFee - $discount;
-        $balanceDue = max(0, $netAmount - $deposit);
+        $balanceDue = 0;
         
         // Only set if not already calculated by reactive callbacks
         $data['net_amount'] = $data['net_amount'] ?? $netAmount;

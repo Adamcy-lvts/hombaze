@@ -136,9 +136,12 @@ class RentPaymentResource extends Resource
                                         $discount = (float) ($get('discount') ?? 0);
                                         $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = $netAmount - $deposit;
+                                        // Specific to user request: Assume full payment is intended, so balance is 0 unless manually edited
+                                        // If we want to support partial payments, we'd need a separate "Amount Paid" field.
+                                        // Currently, 'Amount' serves as both Charge and Payment.
+                                        $balanceDue = 0; 
                                         $set('net_amount', $netAmount);
-                                        $set('balance_due', max(0, $balanceDue));
+                                        $set('balance_due', $balanceDue);
                                     }),
 
                                 TextInput::make('late_fee')
@@ -153,9 +156,9 @@ class RentPaymentResource extends Resource
                                         $discount = (float) ($get('discount') ?? 0);
                                         $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = $netAmount - $deposit;
+                                        $balanceDue = 0;
                                         $set('net_amount', $netAmount);
-                                        $set('balance_due', max(0, $balanceDue));
+                                        $set('balance_due', $balanceDue);
                                     }),
 
                                 TextInput::make('discount')
@@ -170,9 +173,9 @@ class RentPaymentResource extends Resource
                                         $discount = (float) $state;
                                         $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = $netAmount - $deposit;
+                                        $balanceDue = 0;
                                         $set('net_amount', $netAmount);
-                                        $set('balance_due', max(0, $balanceDue));
+                                        $set('balance_due', $balanceDue);
                                     }),
                             ]),
 
@@ -190,8 +193,8 @@ class RentPaymentResource extends Resource
                                         $discount = (float) ($get('discount') ?? 0);
                                         $deposit = (float) $state;
                                         $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = $netAmount - $deposit;
-                                        $set('balance_due', max(0, $balanceDue));
+                                        $balanceDue = 0;
+                                        $set('balance_due', $balanceDue);
                                     }),
 
                                 TextInput::make('balance_due')

@@ -4,7 +4,7 @@
         <div class="mb-6 space-y-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold tracking-tight text-white">Tenants</h1>
-                <a href="{{ route('filament.landlord.resources.tenants.create') }}" 
+                <a href="{{ route('filament.landlord.pages.create-tenant') }}" 
                    class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white transition-colors border border-transparent rounded-lg shadow-sm bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
                     New tenant
                 </a>

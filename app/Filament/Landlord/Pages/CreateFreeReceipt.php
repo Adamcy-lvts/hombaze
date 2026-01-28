@@ -14,6 +14,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Actions\Action;
 use Illuminate\Support\Facades\Auth;
@@ -137,16 +138,21 @@ class CreateFreeReceipt extends Page implements HasForms
                             ->default(fn () => 'RCP-' . strtoupper(Str::random(8))),
                     ]),
 
-                // Optional Period Dates - Collapsible
-                Section::make('Period Dates (Optional)')
-                    ->icon('heroicon-o-calendar')
+                // Optional Period Dates & Notes - Collapsible
+                Section::make('Additional Details (Optional)')
+                    ->icon('heroicon-o-document-text')
                     ->collapsed()
                     ->columns(2)
                     ->schema([
                         DatePicker::make('custom_start_date')
-                            ->label('Start Date'),
+                            ->label('Period Start Date'),
                         DatePicker::make('custom_end_date')
-                            ->label('End Date'),
+                            ->label('Period End Date'),
+                        Textarea::make('notes')
+                            ->label('Notes')
+                            ->placeholder('Any additional notes for this receipt...')
+                            ->rows(2)
+                            ->columnSpanFull(),
                     ]),
             ])
             ->statePath('data');
@@ -173,6 +179,7 @@ class CreateFreeReceipt extends Page implements HasForms
                 'payment_for' => $data['payment_for'] ?? null,
                 'custom_start_date' => $data['custom_start_date'] ?? null,
                 'custom_end_date' => $data['custom_end_date'] ?? null,
+                'notes' => $data['notes'] ?? null,
                 'receipt_number' => $data['receipt_number'],
                 'status' => 'paid',
                 'processed_by' => Auth::id(),

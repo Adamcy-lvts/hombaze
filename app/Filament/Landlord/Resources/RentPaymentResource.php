@@ -56,54 +56,27 @@ class RentPaymentResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Payment Details')
+                // Recipient & Property Section
+                Section::make('Recipient & Property')
                     ->schema([
+                        Forms\Components\Toggle::make('is_manual_entry')
+                            ->label('Manual Entry (Free-form Receipt)')
+                            ->live()
+                            ->columnSpanFull()
+                            ->helperText('Enable to enter tenant/property details manually instead of selecting from existing records'),
+
+                        // Existing tenant/property selection (when NOT manual entry)
                         Grid::make(2)
                             ->schema([
-                                Select::make('lease_id')
-                                    ->label('Lease')
-                                    ->relationship('lease', 'id', function (Builder $query) {
-                                        return $query->where('landlord_id', Auth::id());
-                                    })
-                                    ->getOptionLabelFromRecordUsing(fn ($record) => 
-                                        $record->property->title . ' - ' . $record->tenant->name
-                                    )
-                                    ->required()
-                                    ->searchable()
-                                    ->preload()
-                                    ->live()
-                                    ->afterStateUpdated(function ($state, Set $set) {
-                                        if ($state) {
-                                            $lease = Lease::find($state);
-                                            if ($lease) {
-                                                $set('tenant_id', $lease->tenant_id);
-                                                $set('property_id', $lease->property_id);
-                                                $set('landlord_id', Auth::id());
-                                                $set('amount', $lease->yearly_rent);
-                                            }
-                                        }
-                                    }),
-
-                                Hidden::make('landlord_id')
-                                    ->default(Auth::id())
-                                    ->required(),
-
-                                Hidden::make('processed_by')
-                                    ->default(Auth::id()),
-
                                 Select::make('tenant_id')
                                     ->label('Tenant')
                                     ->relationship('tenant', 'first_name', function (Builder $query) {
                                         return $query->where('landlord_id', Auth::id());
                                     })
                                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->name)
-                                    ->required()
                                     ->searchable()
                                     ->preload(),
-                            ]),
 
-                        Grid::make(2)
-                            ->schema([
                                 Select::make('property_id')
                                     ->label('Property')
                                     ->relationship('property', 'title', function (Builder $query) {
@@ -111,21 +84,69 @@ class RentPaymentResource extends Resource
                                             $query->where('user_id', Auth::id());
                                         });
                                     })
-                                    ->required()
                                     ->searchable()
                                     ->preload(),
+                            ])
+                            ->visible(fn ($get) => !$get('is_manual_entry')),
 
-                                TextInput::make('receipt_number')
-                                    ->label('Receipt Number')
-                                    ->default(fn () => 'RCP-' . strtoupper(Str::random(8)))
-                                    ->required()
-                                    ->unique(ignoreRecord: true),
-                            ]),
+                        Select::make('lease_id')
+                            ->label('Lease (Optional)')
+                            ->relationship('lease', 'id', function (Builder $query) {
+                                return $query->where('landlord_id', Auth::id());
+                            })
+                            ->getOptionLabelFromRecordUsing(fn ($record) => 
+                                $record->property->title . ' - ' . $record->tenant->name
+                            )
+                            ->searchable()
+                            ->preload()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set) {
+                                if ($state) {
+                                    $lease = Lease::find($state);
+                                    if ($lease) {
+                                        $set('tenant_id', $lease->tenant_id);
+                                        $set('property_id', $lease->property_id);
+                                        $set('landlord_id', Auth::id());
+                                        $set('amount', $lease->yearly_rent);
+                                    }
+                                }
+                            })
+                            ->visible(fn ($get) => !$get('is_manual_entry')),
 
+                        // Manual entry fields (when IS manual entry)
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('manual_tenant_name')
+                                    ->label('Recipient Name')
+                                    ->required(fn ($get) => $get('is_manual_entry')),
+
+                                TextInput::make('manual_tenant_phone')
+                                    ->label('Phone')
+                                    ->tel(),
+                            ])
+                            ->visible(fn ($get) => $get('is_manual_entry')),
+
+                        TextInput::make('manual_property_title')
+                            ->label('Property / Description')
+                            ->placeholder('e.g., 3BR Flat at Lekki')
+                            ->visible(fn ($get) => $get('is_manual_entry'))
+                            ->columnSpanFull(),
+
+                        Hidden::make('landlord_id')
+                            ->default(Auth::id())
+                            ->required(),
+
+                        Hidden::make('processed_by')
+                            ->default(Auth::id()),
+                    ]),
+
+                // Payment Details Section
+                Section::make('Payment Details')
+                    ->schema([
                         Grid::make(3)
                             ->schema([
                                 TextInput::make('amount')
-                                    ->label('Payment Amount')
+                                    ->label('Amount')
                                     ->required()
                                     ->numeric()
                                     ->prefix('₦')
@@ -134,16 +155,56 @@ class RentPaymentResource extends Resource
                                         $amount = (float) $state;
                                         $lateFee = (float) ($get('late_fee') ?? 0);
                                         $discount = (float) ($get('discount') ?? 0);
-                                        $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
-                                        // Specific to user request: Assume full payment is intended, so balance is 0 unless manually edited
-                                        // If we want to support partial payments, we'd need a separate "Amount Paid" field.
-                                        // Currently, 'Amount' serves as both Charge and Payment.
-                                        $balanceDue = 0; 
                                         $set('net_amount', $netAmount);
-                                        $set('balance_due', $balanceDue);
+                                        $set('balance_due', 0);
                                     }),
 
+                                Select::make('payment_method')
+                                    ->options(RentPayment::getPaymentMethods())
+                                    ->required()
+                                    ->default('transfer'),
+
+                                Select::make('status')
+                                    ->options(RentPayment::getStatuses())
+                                    ->required()
+                                    ->default('paid'),
+                            ]),
+
+                        Grid::make(3)
+                            ->schema([
+                                DatePicker::make('payment_date')
+                                    ->required()
+                                    ->default(now()),
+
+                                DatePicker::make('due_date')
+                                    ->default(now()),
+
+                                TextInput::make('receipt_number')
+                                    ->label('Receipt #')
+                                    ->default(fn () => 'RCP-' . strtoupper(Str::random(8)))
+                                    ->required()
+                                    ->unique(ignoreRecord: true),
+                            ]),
+
+                        Grid::make(2)
+                            ->schema([
+                                TextInput::make('payment_for')
+                                    ->label('Payment For')
+                                    ->placeholder('e.g., Rent Payment, Service Charge, Deposit'),
+
+                                TextInput::make('payment_for_period')
+                                    ->label('Payment Period')
+                                    ->placeholder('e.g., January 2026, Q1 2026'),
+                            ]),
+                    ]),
+
+                // Financial Adjustments (Collapsible)
+                Section::make('Financial Adjustments')
+                    ->collapsed()
+                    ->schema([
+                        Grid::make(4)
+                            ->schema([
                                 TextInput::make('late_fee')
                                     ->label('Late Fee')
                                     ->numeric()
@@ -154,11 +215,8 @@ class RentPaymentResource extends Resource
                                         $amount = (float) ($get('amount') ?? 0);
                                         $lateFee = (float) $state;
                                         $discount = (float) ($get('discount') ?? 0);
-                                        $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = 0;
                                         $set('net_amount', $netAmount);
-                                        $set('balance_due', $balanceDue);
                                     }),
 
                                 TextInput::make('discount')
@@ -171,113 +229,50 @@ class RentPaymentResource extends Resource
                                         $amount = (float) ($get('amount') ?? 0);
                                         $lateFee = (float) ($get('late_fee') ?? 0);
                                         $discount = (float) $state;
-                                        $deposit = (float) ($get('deposit') ?? 0);
                                         $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = 0;
                                         $set('net_amount', $netAmount);
-                                        $set('balance_due', $balanceDue);
                                     }),
-                            ]),
 
-                        Grid::make(2)
-                            ->schema([
                                 TextInput::make('deposit')
                                     ->label('Deposit')
                                     ->numeric()
                                     ->prefix('₦')
-                                    ->default(0)
-                                    ->reactive()
-                                    ->afterStateUpdated(function ($state, $get, $set) {
-                                        $amount = (float) ($get('amount') ?? 0);
-                                        $lateFee = (float) ($get('late_fee') ?? 0);
-                                        $discount = (float) ($get('discount') ?? 0);
-                                        $deposit = (float) $state;
-                                        $netAmount = $amount + $lateFee - $discount;
-                                        $balanceDue = 0;
-                                        $set('balance_due', $balanceDue);
-                                    }),
+                                    ->default(0),
 
                                 TextInput::make('balance_due')
                                     ->label('Balance Due')
                                     ->numeric()
                                     ->prefix('₦')
-                                    ->readonly()
-                                    ->dehydrated(),
+                                    ->default(0),
                             ]),
 
-                        Grid::make(1)
-                            ->schema([
-                                TextInput::make('net_amount')
-                                    ->label('Net Amount')
-                                    ->numeric()
-                                    ->prefix('₦')
-                                    ->readonly()
-                                    ->dehydrated(),
-                            ]),
+                        TextInput::make('net_amount')
+                            ->label('Net Amount')
+                            ->numeric()
+                            ->prefix('₦')
+                            ->readonly()
+                            ->dehydrated(),
                     ]),
 
-                Section::make('Payment Information')
-                    ->schema([
-                        Grid::make(3)
-                            ->schema([
-                                DatePicker::make('payment_date')
-                                    ->required()
-                                    ->default(now()),
-
-                                DatePicker::make('due_date')
-                                    ->required(),
-
-                                TextInput::make('payment_for_period')
-                                    ->label('Payment For Period')
-                                    ->placeholder('e.g., January 2024, Q1 2024'),
-                            ]),
-
-                        Grid::make(3)
-                            ->schema([
-                                Select::make('payment_method')
-                                    ->options(RentPayment::getPaymentMethods())
-                                    ->required(),
-
-                                Select::make('status')
-                                    ->options(RentPayment::getStatuses())
-                                    ->required()
-                                    ->default('pending'),
-
-                            ]),
-                    ]),
-
-                Section::make('Transaction Details')
+                // Period Dates & Notes (Collapsible)
+                Section::make('Additional Details')
+                    ->collapsed()
                     ->schema([
                         Grid::make(2)
                             ->schema([
-                                TextInput::make('transaction_reference')
-                                    ->maxLength(255),
+                                DatePicker::make('custom_start_date')
+                                    ->label('Period Start Date')
+                                    ->helperText('For free-form receipts without a lease'),
 
-                                TextInput::make('payment_reference')
-                                    ->maxLength(255),
+                                DatePicker::make('custom_end_date')
+                                    ->label('Period End Date')
+                                    ->helperText('For free-form receipts without a lease'),
                             ]),
 
-                        Grid::make(2)
-                            ->schema([
-                                DateTimePicker::make('processed_at'),
-
-                                Select::make('processed_by')
-                                    ->relationship('processedBy', 'name')
-                                    ->searchable()
-                                    ->preload(),
-                            ]),
-                    ]),
-
-                Section::make('Additional Information')
-                    ->schema([
                         Textarea::make('notes')
+                            ->label('Notes')
                             ->rows(3)
-                            ->maxLength(1000),
-
-                        Textarea::make('payment_proof')
-                            ->label('Payment Proof/Details')
-                            ->rows(2)
-                            ->maxLength(500),
+                            ->columnSpanFull(),
                     ]),
             ]);
     }
@@ -292,25 +287,35 @@ class RentPaymentResource extends Resource
                     ->sortable()
                     ->copyable(),
 
-                TextColumn::make('lease.property.title')
+                TextColumn::make('property_title')
                     ->label('Property')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn (RentPayment $record) => $record->is_manual_entry ? 'Manual Entry' : null),
 
-                TextColumn::make('tenant.name')
+                TextColumn::make('tenant_name')
                     ->label('Tenant')
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('payment_for')
+                    ->label('Payment For')
+                    ->placeholder('Rent Payment')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
                 TextColumn::make('lease_period')
-                    ->label('Lease Period')
+                    ->label('Period')
                     ->formatStateUsing(function (RentPayment $record) {
+                        // Priority: custom dates > lease dates
+                        if ($record->custom_start_date && $record->custom_end_date) {
+                            return $record->custom_start_date->format('M d, Y') . ' - ' . $record->custom_end_date->format('M d, Y');
+                        }
                         if ($record->lease && $record->lease->start_date && $record->lease->end_date) {
                             return $record->lease->start_date->format('M d, Y') . ' - ' . $record->lease->end_date->format('M d, Y');
                         }
                         return 'N/A';
                     })
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('amount')
                     ->money('NGN')

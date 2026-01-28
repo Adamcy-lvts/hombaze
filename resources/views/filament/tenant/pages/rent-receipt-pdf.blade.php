@@ -781,6 +781,14 @@
             </div>
         </div>
 
+        <!-- Notes Section (if exists) -->
+        @if($receipt->notes)
+        <div style="background-color: #fffbeb; border-radius: 4px; padding: 10px; margin-bottom: 12px; border: 1px solid #fcd34d;">
+            <p style="font-size: 10px; color: #b45309; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Notes</p>
+            <p style="font-size: 11px; color: #374151; line-height: 1.5;">{{ $receipt->notes }}</p>
+        </div>
+        @endif
+
         <!-- Fourth Row: Amount in Words & Payment Method -->
         <div class="grid grid-cols-4 gap-3 mb-3">
             <!-- Amount in Words (spans 2 columns) -->

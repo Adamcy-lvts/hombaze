@@ -266,6 +266,19 @@
                 </div>
             </div>
 
+            <!-- Notes Section (if exists) -->
+            @if($receipt->notes)
+            <div class="bg-amber-50/80 rounded-lg p-3 mt-3 border border-amber-200">
+                <div class="flex items-start space-x-2">
+                    <x-heroicon-o-document-text class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                        <p class="text-[10px] text-amber-700 font-semibold uppercase mb-1">Notes</p>
+                        <p class="text-xs text-gray-700 leading-relaxed">{{ $receipt->notes }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Footer Row -->
             <div class="flex items-end justify-between mt-auto pt-4 border-t border-gray-200">
                  <div class="w-2/3">

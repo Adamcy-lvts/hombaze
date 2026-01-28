@@ -196,6 +196,14 @@
             </div>
         </div>
 
+        <!-- Notes Section (if exists) -->
+        @if($record->notes)
+        <div class="bg-amber-50 rounded-lg p-4 mt-4 border border-amber-200">
+            <p class="text-xs text-amber-700 uppercase font-bold mb-1">Notes</p>
+            <p class="text-sm text-gray-700 leading-relaxed">{{ $record->notes }}</p>
+        </div>
+        @endif
+
         <!-- Footer Info -->
         <div class="border-t border-gray-100 pt-6 flex justify-between items-end">
              <div class="max-w-md">

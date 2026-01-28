@@ -268,6 +268,14 @@
             </div>
         </div>
 
+        <!-- Notes Section (if exists) -->
+        @if($receipt->notes)
+        <div style="background-color: #fffbeb; border-radius: 8px; padding: 12px; margin-top: 12px; border: 1px solid #fcd34d;">
+            <p style="font-size: 10px; color: #b45309; font-weight: 600; text-transform: uppercase; margin-bottom: 4px;">Notes</p>
+            <p style="font-size: 11px; color: #374151; line-height: 1.5;">{{ $receipt->notes }}</p>
+        </div>
+        @endif
+
         <!-- Footer Row -->
         <div class="flex items-end justify-between mt-auto pt-4 border-t border-gray-100">
              <div class="w-2/3">

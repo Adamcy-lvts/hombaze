@@ -295,6 +295,19 @@
                 </div>
             </div>
 
+            <!-- Notes Section (if exists) -->
+            @if($receipt->notes)
+            <div class="bg-amber-50 p-4 rounded-lg mb-6 border border-amber-200">
+                <div class="flex items-start space-x-3">
+                    <x-heroicon-o-document-text class="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                        <p class="text-sm font-semibold text-amber-700 mb-1">Notes</p>
+                        <p class="text-sm text-gray-700 leading-relaxed">{{ $receipt->notes }}</p>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Fourth Row: Amount in Words & Payment Method -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
                 <!-- Amount in Words (spans 2 columns) -->

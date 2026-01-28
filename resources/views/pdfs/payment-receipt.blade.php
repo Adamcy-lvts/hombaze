@@ -107,9 +107,9 @@
                 <div>
                     <h3 class="text-xs uppercase tracking-wider text-gray-400 font-bold mb-2">Paid By</h3>
                     <div class="bg-gray-50 rounded-lg p-4 border border-gray-100">
-                        <p class="font-bold text-gray-900">{{ $record->tenant->name ?? 'Tenant Name' }}</p>
-                        <p class="text-xs text-gray-500 mt-1">{{ $record->tenant->email ?? '' }}</p>
-                        <p class="text-xs text-gray-500">{{ $record->tenant->phone ?? '' }}</p>
+                        <p class="font-bold text-gray-900">{{ $record->tenant_name ?? 'Tenant Name' }}</p>
+                        <p class="text-xs text-gray-500 mt-1">{{ $record->tenant_email ?? '' }}</p>
+                        <p class="text-xs text-gray-500">{{ $record->tenant_phone ?? '' }}</p>
                     </div>
                 </div>
 
@@ -132,17 +132,17 @@
                         <div class="flex">
                             <span class="w-24 text-gray-500 text-xs shrink-0 pt-0.5">Property</span>
                             <div>
-                                <p class="font-semibold text-gray-900">{{ $record->lease->property->title ?? 'Property Title' }}</p>
-                                <p class="text-xs text-gray-500">{{ $record->lease->property->address ?? '' }}</p>
+                                <p class="font-semibold text-gray-900">{{ $record->property_title ?? 'Property Title' }}</p>
+                                <p class="text-xs text-gray-500">{{ $record->property_address ?? '' }}</p>
                             </div>
                         </div>
 
                         <!-- Period -->
-                        @if ($record->lease)
+                        @if ($record->payment_for || $record->payment_for_period || $record->lease)
                         <div class="flex items-center">
                             <span class="w-24 text-gray-500 text-xs shrink-0">For Period</span>
                             <span class="text-gray-900 font-medium">
-                                {{ $record->payment_for_period ?? 'Rent' }}
+                                {{ $record->payment_for ?? $record->payment_for_period ?? 'Rent' }}
                             </span>
                         </div>
                         @endif

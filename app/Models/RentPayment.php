@@ -30,7 +30,17 @@ class RentPayment extends Model
         'notes',
         'receipt_number',
         'processed_by',
-        'landlord_id',
+        // Manual entry fields
+        'manual_tenant_name',
+        'manual_tenant_email',
+        'manual_tenant_phone',
+        'manual_property_title',
+        'manual_property_address',
+        'is_manual_entry',
+        // Custom dates for free-form receipts
+        'custom_start_date',
+        'custom_end_date',
+        'payment_for',
     ];
 
     protected $casts = [
@@ -42,6 +52,9 @@ class RentPayment extends Model
         'deposit' => 'decimal:2',
         'balance_due' => 'decimal:2',
         'net_amount' => 'decimal:2',
+        'is_manual_entry' => 'boolean',
+        'custom_start_date' => 'date',
+        'custom_end_date' => 'date',
     ];
 
     // Payment statuses
@@ -134,5 +147,60 @@ class RentPayment extends Model
     public function getTotalAmountAttribute(): float
     {
         return $this->amount + ($this->late_fee ?? 0) - ($this->discount ?? 0);
+    }
+
+    /**
+     * Get tenant name from relation or manual entry
+     */
+    public function getTenantNameAttribute(): ?string
+    {
+        if ($this->tenant) {
+            return $this->tenant->name;
+        }
+        return $this->manual_tenant_name;
+    }
+
+    /**
+     * Get tenant email from relation or manual entry
+     */
+    public function getTenantEmailAttribute(): ?string
+    {
+        if ($this->tenant) {
+            return $this->tenant->email;
+        }
+        return $this->manual_tenant_email;
+    }
+
+    /**
+     * Get tenant phone from relation or manual entry
+     */
+    public function getTenantPhoneAttribute(): ?string
+    {
+        if ($this->tenant) {
+            return $this->tenant->phone;
+        }
+        return $this->manual_tenant_phone;
+    }
+
+    /**
+     * Get property title from relation or manual entry
+     */
+    public function getPropertyTitleAttribute(): ?string
+    {
+        if ($this->property) {
+            return $this->property->title;
+        }
+        return $this->manual_property_title;
+    }
+
+    /**
+     * Get property address from relation or manual entry
+     */
+    public function getPropertyAddressAttribute(): ?string
+    {
+        if ($this->property) {
+            return $this->property->address;
+        }
+        return $this->manual_property_address;
     }
 }

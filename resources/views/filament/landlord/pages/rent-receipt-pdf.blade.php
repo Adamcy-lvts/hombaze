@@ -135,10 +135,10 @@
                 <div>
                     <h3 class="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-2">Received From</h3>
                     <div class="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                        <p class="text-sm font-bold text-gray-900">{{ $receipt->tenant->name ?? 'N/A' }}</p>
+                        <p class="text-sm font-bold text-gray-900">{{ $receipt->tenant_name ?? 'N/A' }}</p>
                         <div class="mt-1 text-xs text-gray-500 space-y-0.5">
-                            <p>{{ $receipt->tenant->email ?? '' }}</p>
-                            <p>{{ $receipt->tenant->phone ?? '' }}</p>
+                            <p>{{ $receipt->tenant_email ?? '' }}</p>
+                            <p>{{ $receipt->tenant_phone ?? '' }}</p>
                         </div>
                     </div>
                 </div>
@@ -160,15 +160,15 @@
                     
                     <div class="space-y-3">
                         <!-- Property (Blue Accent) -->
-                        @if ($receipt->lease && $receipt->lease->property)
+                        @if ($receipt->property_title)
                         <div class="bg-blue-50/50 p-2.5 rounded-lg border-l-4 border-blue-500 shadow-xs">
                              <div class="flex items-start text-xs">
                                  <div class="w-4 h-4 mr-2 mt-0.5 text-blue-400">
                                     <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                                  </div>
                                  <div class="flex-1">
-                                     <p class="font-semibold text-gray-800">{{ $receipt->lease->property->title }}</p>
-                                     <p class="text-gray-500 text-xs mt-0.5">{{ $receipt->lease->property->address }}</p>
+                                     <p class="font-semibold text-gray-800">{{ $receipt->property_title }}</p>
+                                     <p class="text-gray-500 text-xs mt-0.5">{{ $receipt->property_address ?? '' }}</p>
                                  </div>
                              </div>
                         </div>
@@ -179,24 +179,44 @@
                              <div class="w-4 h-4 mr-2 text-gray-400">
                                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" /></svg>
                              </div>
-                             <p class="text-gray-700"><span class="font-medium text-gray-900">Payment For:</span> {{ $receipt->payment_period ?? 'Rent Payment' }}</p>
+                             <p class="text-gray-700"><span class="font-medium text-gray-900">Payment For:</span> {{ $receipt->payment_for ?? $receipt->payment_period ?? 'Rent Payment' }}</p>
                         </div>
                         
-                        <!-- Dates (Green/Red Accents) -->
-                        @if ($receipt->lease)
+                        <!-- Dates (Green/Red Accents) - Show lease dates OR custom dates -->
+                        @php
+                            $startDate = null;
+                            $endDate = null;
+                            $dateLabel = 'Period';
+                            
+                            if ($receipt->lease) {
+                                $startDate = $receipt->lease->start_date;
+                                $endDate = $receipt->lease->end_date;
+                                $dateLabel = 'Lease';
+                            } elseif ($receipt->custom_start_date || $receipt->custom_end_date) {
+                                $startDate = $receipt->custom_start_date;
+                                $endDate = $receipt->custom_end_date;
+                                $dateLabel = 'Period';
+                            }
+                        @endphp
+                        
+                        @if ($startDate || $endDate)
                         <div class="grid grid-cols-2 gap-2 text-xs">
+                            @if ($startDate)
                             <div class="bg-green-50 p-2 rounded border-l-2 border-green-500">
-                                <p class="text-[10px] text-green-700 font-semibold uppercase">Lease Start</p>
+                                <p class="text-[10px] text-green-700 font-semibold uppercase">{{ $dateLabel }} Start</p>
                                 <p class="font-medium text-gray-700">
-                                    {{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M d, Y') : 'N/A' }} 
+                                    {{ \Carbon\Carbon::parse($startDate)->format('M d, Y') }} 
                                 </p>
                             </div>
+                            @endif
+                            @if ($endDate)
                             <div class="bg-red-50 p-2 rounded border-l-2 border-red-500">
-                                <p class="text-[10px] text-red-700 font-semibold uppercase">Lease End</p>
+                                <p class="text-[10px] text-red-700 font-semibold uppercase">{{ $dateLabel }} End</p>
                                 <p class="font-medium text-gray-700">
-                                    {{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M d, Y') : 'N/A' }}
+                                    {{ \Carbon\Carbon::parse($endDate)->format('M d, Y') }}
                                 </p>
                             </div>
+                            @endif
                         </div>
                         @endif
                     </div>

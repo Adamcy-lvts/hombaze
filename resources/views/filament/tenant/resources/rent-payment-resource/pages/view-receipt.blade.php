@@ -187,7 +187,7 @@
                 </div>
                 <div class="bg-white p-4 rounded-lg shadow-xs border border-gray-200">
                     <p class="text-sm font-semibold text-gray-600 mb-2">Payment For:</p>
-                    <p class="text-lg text-gray-800 font-medium">{{ $receipt->payment_period ?? 'Rent Payment' }}</p>
+                    <p class="text-lg text-gray-800 font-medium">{{ $receipt->payment_for ?? $receipt->payment_period ?? 'Rent Payment' }}</p>
                 </div>
                 <div class="bg-linear-to-r from-indigo-50 to-blue-50 p-4 rounded-lg shadow-xs border-2 border-indigo-200">
                     <p class="text-sm font-semibold text-indigo-700 mb-2">Total Amount</p>
@@ -242,17 +242,34 @@
 
             <!-- Third Row: Lease Dates & Payment Information -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                <!-- Lease Start Date -->
-                @if($receipt->lease)
+                <!-- Dates - Show lease dates OR custom dates -->
+                @php
+                    $startDate = null;
+                    $endDate = null;
+                    $dateLabel = 'Period';
+                    
+                    if ($receipt->lease) {
+                        $startDate = $receipt->lease->start_date;
+                        $endDate = $receipt->lease->end_date;
+                        $dateLabel = 'Lease';
+                    } elseif ($receipt->custom_start_date || $receipt->custom_end_date) {
+                        $startDate = $receipt->custom_start_date;
+                        $endDate = $receipt->custom_end_date;
+                        $dateLabel = 'Period';
+                    }
+                @endphp
+                
+                @if($startDate)
                 <div class="bg-green-50 p-4 rounded-lg border-l-4 border-green-500 shadow-xs">
-                    <p class="font-semibold text-green-700 mb-2">Lease Start</p>
-                    <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->start_date ? \Carbon\Carbon::parse($receipt->lease->start_date)->format('M j, Y') : 'N/A' }}</p>
+                    <p class="font-semibold text-green-700 mb-2">{{ $dateLabel }} Start</p>
+                    <p class="text-lg font-medium text-gray-800">{{ \Carbon\Carbon::parse($startDate)->format('M j, Y') }}</p>
                 </div>
+                @endif
 
-                <!-- Lease End Date -->
+                @if($endDate)
                 <div class="bg-red-50 p-4 rounded-lg border-l-4 border-red-500 shadow-xs">
-                    <p class="font-semibold text-red-700 mb-2">Lease End</p>
-                    <p class="text-lg font-medium text-gray-800">{{ $receipt->lease->end_date ? \Carbon\Carbon::parse($receipt->lease->end_date)->format('M j, Y') : 'N/A' }}</p>
+                    <p class="font-semibold text-red-700 mb-2">{{ $dateLabel }} End</p>
+                    <p class="text-lg font-medium text-gray-800">{{ \Carbon\Carbon::parse($endDate)->format('M j, Y') }}</p>
                 </div>
                 @endif
 

@@ -349,6 +349,21 @@ class UserResource extends Resource
                 ViewAction::make(),
                 EditAction::make(),
                 ActionGroup::make([
+                    Action::make('view_profile')
+                        ->label('View Profile')
+                        ->icon('heroicon-o-user-circle')
+                        ->color('info')
+                        ->url(function (User $record): ?string {
+                            if ($record->user_type === 'agent' && $record->agentProfile) {
+                                return \App\Filament\Resources\AgentResource::getUrl('edit', ['record' => $record->agentProfile]);
+                            }
+                            if ($record->user_type === 'agency_owner' && $record->ownedAgencies()->exists()) {
+                                return \App\Filament\Resources\AgencyResource::getUrl('edit', ['record' => $record->ownedAgencies->first()]);
+                            }
+                            return null;
+                        })
+                        ->hidden(fn (User $record): bool => !in_array($record->user_type, ['agent', 'agency_owner'])),
+
                     Action::make('grantSmartSearchPlan')
                         ->label('Grant SmartSearch Plan')
                         ->icon('heroicon-o-magnifying-glass')

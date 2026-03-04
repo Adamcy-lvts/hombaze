@@ -13,6 +13,7 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body class="font-sans antialiased bg-gray-50">
     <div class="min-h-screen flex">
@@ -127,7 +128,7 @@
 
                 <!-- Form -->
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 sm:p-8">
-                    <form method="POST" action="{{ route('unified.register') }}" class="space-y-5">
+                    <form method="POST" action="{{ route('unified.register') }}" class="space-y-5" x-data="{ userType: '{{ old('user_type', 'customer') }}' }">
                         @csrf
 
                         <!-- User Type Selection -->
@@ -136,7 +137,7 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 @foreach($userTypes as $type => $config)
                                 <label class="relative cursor-pointer group">
-                                    <input type="radio" name="user_type" value="{{ $type }}" class="peer sr-only" {{ old('user_type') === $type || ($type === 'customer' && !old('user_type')) ? 'checked' : '' }}>
+                                    <input type="radio" name="user_type" value="{{ $type }}" class="peer sr-only" x-model="userType" {{ old('user_type') === $type || ($type === 'customer' && !old('user_type')) ? 'checked' : '' }}>
                                     <div class="p-3 rounded-xl border border-gray-200 bg-gray-50 hover:bg-white hover:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:border-emerald-500 peer-checked:ring-1 peer-checked:ring-emerald-500 transition-all duration-200 flex flex-col items-center text-center h-full">
                                         <div class="text-sm font-bold text-gray-900 peer-checked:text-emerald-700 leading-tight">{{ $config['label'] }}</div>
                                         <div class="text-[10px] text-gray-500 mt-1 peer-checked:text-emerald-600/80 leading-snug">{{ $config['description'] }}</div>
@@ -154,6 +155,15 @@
                             <label for="name" class="block text-sm font-semibold text-gray-700 mb-1.5">Full Name</label>
                             <input id="name" name="name" type="text" required value="{{ old('name') }}" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-gray-900 placeholder-gray-400" placeholder="John Doe">
                             @error('name')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <!-- Agency Name -->
+                        <div x-show="userType === 'agency_owner'" x-transition class="bg-emerald-50/50 p-4 rounded-xl border border-emerald-100">
+                            <label for="agency_name" class="block text-sm font-semibold text-emerald-800 mb-1.5">Agency Name</label>
+                            <input id="agency_name" name="agency_name" type="text" value="{{ old('agency_name') }}" class="w-full px-4 py-3 bg-white border border-emerald-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors text-gray-900 placeholder-gray-400" placeholder="e.g. Dream Homes Realty">
+                            @error('agency_name')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
@@ -232,5 +242,6 @@
             }
         }
     </script>
+    @livewireScripts
 </body>
 </html>

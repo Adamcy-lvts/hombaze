@@ -15,9 +15,9 @@ class AboutPage extends Component
         return [
             'total_users' => User::count(),
             'total_agencies' => Agency::where('is_active', true)->count(),
-            'total_properties' => Property::where('is_active', true)->count(),
+            'total_properties' => Property::published()->count(),
             'total_locations' => State::withCount(['properties' => function ($q) {
-                $q->where('is_active', true);
+                $q->published();
             }])->having('properties_count', '>', 0)->count(),
             'verified_agencies' => Agency::where('is_verified', true)->count(),
             'total_agents' => User::whereHas('agentProfile', function ($q) {

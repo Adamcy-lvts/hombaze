@@ -39,6 +39,11 @@ class Agent extends Model implements HasMedia
         'last_active_at',
         'user_id',
         'agency_id',
+        // Verification fields
+        'nin_number',
+        'verification_status',
+        'verification_submitted_at',
+        'verification_notes',
     ];
 
     protected $casts = [
@@ -53,6 +58,7 @@ class Agent extends Model implements HasMedia
         'verified_at' => 'datetime',
         'last_active_at' => 'datetime',
         'license_expiry_date' => 'date',
+        'verification_submitted_at' => 'datetime',
     ];
 
     /**
@@ -276,6 +282,14 @@ class Agent extends Model implements HasMedia
     {
         $this->addMediaCollection('certifications')
             ->acceptsMimeTypes(['application/pdf', 'image/jpeg', 'image/png']);
+        
+        $this->addMediaCollection('id_document')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'application/pdf']);
+        
+        $this->addMediaCollection('proof_of_address')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'application/pdf']);
     }
 
     /**

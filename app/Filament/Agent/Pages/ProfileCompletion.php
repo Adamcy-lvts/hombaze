@@ -55,6 +55,7 @@ class ProfileCompletion extends Page implements HasForms, HasActions
             'profile_photo' => $user->avatar,
             'phone' => $user->phone,
             'email' => $user->email,
+            'nin_number' => $agent?->nin_number ?? '',
         ]);
     }
 
@@ -142,6 +143,37 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                                 ]),
                         ]),
                     
+                    Step::make('Identity Verification')
+                        ->icon('heroicon-o-identification')
+                        ->afterValidation(fn () => $this->markProfileStepCompleted('identity_verification'))
+                        ->schema([
+                            Section::make('Identity Verification')
+                                ->description('Verify your identity to build trust with clients. This information is securely stored and only reviewed by our team.')
+                                ->schema([
+                                    TextInput::make('nin_number')
+                                        ->label('National Identification Number (NIN)')
+                                        ->placeholder('Enter your 11-digit NIN')
+                                        ->maxLength(11)
+                                        ->helperText('Your NIN will be securely stored and used for verification purposes only.'),
+                                    
+                                    SpatieMediaLibraryFileUpload::make('id_document')
+                                        ->label('ID Document')
+                                        ->required()
+                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'application/pdf'])
+                                        ->maxSize(5120)
+                                        ->collection('id_document')
+                                        ->helperText('Upload a clear photo of your NIN card, National ID, Driver\'s License, or International Passport (Max 5MB)'),
+                                    
+                                    SpatieMediaLibraryFileUpload::make('proof_of_address')
+                                        ->label('Proof of Address')
+                                        ->required()
+                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'application/pdf'])
+                                        ->maxSize(5120)
+                                        ->collection('proof_of_address')
+                                        ->helperText('Upload a utility bill, bank statement, or official letter showing your address (dated within the last 3 months, Max 5MB)'),
+                                ]),
+                        ]),
+                    
                     Step::make('Profile Photo')
                         ->icon('heroicon-o-camera')
                         ->afterValidation(fn () => $this->markProfileStepCompleted('profile_photo'))
@@ -190,15 +222,16 @@ class ProfileCompletion extends Page implements HasForms, HasActions
             if (!empty($data['profile_photo'])) {
                 // Save to user's avatar field
                 $user->update([
-                    'avatar' => $data['profile_photo']
+                    'avatar' => collect($data['profile_photo'])->first()
                 ]);
                 $user->markStepCompleted('profile_photo');
             }
 
             // Check completion steps
+            $user->markStepCompleted('basic_info');
             $user->markStepCompleted('professional_details');
             $user->markStepCompleted('service_areas');
-            Log::info('Marked professional_details and service_areas as completed');
+            Log::info('Marked basic_info, professional_details and service_areas as completed');
 
             // Check if certifications were uploaded (handled automatically by SpatieMediaLibraryFileUpload)
             if ($agent->fresh()->hasCertifications()) {
@@ -206,6 +239,17 @@ class ProfileCompletion extends Page implements HasForms, HasActions
                 Log::info('Marked certifications as completed');
             } else {
                 Log::info('No certifications found, step not marked');
+            }
+
+            // Handle verification documents
+            if (!empty($data['nin_number'])) {
+                $agent->update([
+                    'nin_number' => $data['nin_number'],
+                    'verification_status' => 'submitted',
+                    'verification_submitted_at' => now(),
+                ]);
+                $user->markStepCompleted('identity_verification');
+                Log::info('Marked identity_verification as submitted');
             }
 
             Notification::make()

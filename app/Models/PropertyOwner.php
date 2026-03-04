@@ -39,6 +39,7 @@ class PropertyOwner extends Model implements HasMedia
         'profile_photo',
         'id_document',
         'proof_of_address',
+        'nin_number',
         'is_verified',
         'verified_at',
     ];
@@ -87,6 +88,79 @@ class PropertyOwner extends Model implements HasMedia
         $typeLabel = self::getTypes()[$this->type] ?? 'Unknown';
         
         return "{$name} ({$typeLabel})";
+    }
+
+    /**
+     * Helper to get public URL for a path
+     */
+    protected function getPublicUrl(?string $path): ?string
+    {
+        if (empty($path)) {
+            return null;
+        }
+
+        // Return if already a URL
+        if (filter_var($path, FILTER_VALIDATE_URL) || str_starts_with($path, 'http')) {
+            return $path;
+        }
+
+        // If using public driver, ensure /storage/ prefix
+        // Storage::disk('public')->url($path) usually returns /storage/$path if configured correctly
+        // But if config is weird, we can force it.
+        // Let's trust Storage facade but strip double /storage if it happens
+        $url = \Illuminate\Support\Facades\Storage::disk('public')->url($path);
+        
+        // Fix for potentially double storage prefix if logic adds it manually elsewhere
+        // (though Storage::url should handle it based on config)
+        return $url;
+    }
+
+    /**
+     * Get profile photo URL (supports Media Library, legacy column, and User fallback)
+     */
+    public function getProfilePhotoUrlAttribute(): ?string
+    {
+        // 1. Spatie Media Library
+        if ($this->hasMedia('profile_photo')) {
+            return $this->getFirstMediaUrl('profile_photo');
+        }
+        
+        // 2. Legacy Column in PropertyOwners table
+        if (!empty($this->attributes['profile_photo'])) {
+            return $this->getPublicUrl($this->attributes['profile_photo']);
+        }
+
+        // 3. Fallback to User Avatar
+        if ($this->user && !empty($this->user->avatar)) {
+            return $this->getPublicUrl($this->user->avatar);
+        }
+
+        // 4. Fallback to UI Avatars
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->getDisplayNameAttribute()) . '&color=7F9CF5&background=EBF4FF';
+    }
+
+    /**
+     * Get ID document URL (supports Media Library and legacy column)
+     */
+    public function getIdDocumentUrlAttribute(): ?string
+    {
+        if ($this->hasMedia('id_document')) {
+            return $this->getFirstMediaUrl('id_document');
+        }
+
+        return $this->getPublicUrl($this->attributes['id_document'] ?? null);
+    }
+
+    /**
+     * Get Proof of Address URL (supports Media Library and legacy column)
+     */
+    public function getProofOfAddressUrlAttribute(): ?string
+    {
+        if ($this->hasMedia('proof_of_address')) {
+            return $this->getFirstMediaUrl('proof_of_address');
+        }
+
+        return $this->getPublicUrl($this->attributes['proof_of_address'] ?? null);
     }
 
     /**

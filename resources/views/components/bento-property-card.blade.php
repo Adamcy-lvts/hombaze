@@ -56,9 +56,21 @@
             <span class="px-4 py-2 bg-white/10 backdrop-blur-2xl border border-white/10 rounded-2xl text-[10px] md:text-xs font-black text-white uppercase tracking-[0.2em]">
                 {{ $property->propertyType->name ?? 'Residential' }}
             </span>
-            @if($property->is_verified)
-                <div class="w-8 h-8 rounded-full bg-emerald-500/90 backdrop-blur-md flex items-center justify-center text-white border border-white/20">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            @php
+                // Check if the property owner (agent, agency, or property owner) is verified
+                $isOwnerVerified = false;
+                if ($property->agent && $property->agent->is_verified) {
+                    $isOwnerVerified = true;
+                } elseif ($property->agency && $property->agency->is_verified) {
+                    $isOwnerVerified = true;
+                } elseif ($property->owner && $property->owner->is_verified) {
+                    $isOwnerVerified = true;
+                }
+            @endphp
+            @if($isOwnerVerified)
+                <div class="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/90 backdrop-blur-md rounded-xl text-white border border-white/20" title="Verified Seller">
+                    <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">Verified</span>
                 </div>
             @endif
         </div>

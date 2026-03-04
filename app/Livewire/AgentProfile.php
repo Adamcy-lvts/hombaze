@@ -38,7 +38,7 @@ class AgentProfile extends Component
         $this->agentProfile = $agent->agentProfile()
             ->with('user') // Eager load the user relationship
             ->withCount(['properties' => function($query) {
-                $query->where('is_published', true);
+                $query->published();
             }])
             ->first();
     }
@@ -106,8 +106,8 @@ class AgentProfile extends Component
     public function getRecentPropertiesProperty()
     {
         return Property::where('agent_id', $this->agentProfile->id)
-            ->where('is_published', true)
-            ->with(['propertyType', 'city', 'state'])
+            ->published()
+            ->with(['propertyType', 'city', 'state', 'agent', 'agency', 'owner'])
             ->orderBy('created_at', 'desc')
             ->limit(6)
             ->get();

@@ -198,6 +198,10 @@ class PropertySearchEngine
             $filters[] = "is_verified = true";
         }
 
+        // Always filter by moderation status and published status
+        $filters[] = "moderation_status = 'approved'";
+        $filters[] = "is_published = true";
+        
         return $filters;
     }
 
@@ -378,6 +382,7 @@ class PropertySearchEngine
     {
         try {
             $results = Property::search($term)
+                ->query(fn ($query) => $query->published())
                 ->take($limit)
                 ->get();
 

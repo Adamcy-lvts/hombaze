@@ -59,7 +59,7 @@
 
             <div class="space-y-3">
                 @if($existingUser->user_type === 'landlord')
-                    <a href="{{ route('filament.landlord.auth.login') }}" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 inline-block">
+                    <a href="{{ route('filament.property-owner.auth.login') }}" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 inline-block">
                         Login to Landlord Dashboard
                     </a>
                 @elseif($existingUser->user_type === 'agent')

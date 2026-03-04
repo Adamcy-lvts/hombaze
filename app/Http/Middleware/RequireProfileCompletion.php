@@ -36,19 +36,32 @@ class RequireProfileCompletion
             }
         }
 
-        // Check if user requires profile completion
         if ($user->requiresProfileCompletion()) {
-            // Redirect to appropriate profile completion wizard
-            $completionRoute = match($user->user_type) {
-                'agent' => 'filament.agent.pages.profile-completion',
-                'property_owner' => 'filament.landlord.pages.profile-completion',
-                'agency_owner' => 'filament.agency.pages.profile-completion',
-                'tenant' => 'filament.tenant.pages.profile-completion',
-                default => null,
-            };
+            $completionRoute = null;
+            $parameters = [];
+
+            switch ($user->user_type) {
+                case 'agent':
+                    $completionRoute = 'filament.agent.pages.profile-completion';
+                    break;
+                case 'property_owner':
+                    $completionRoute = 'filament.property-owner.pages.profile-completion';
+                    break;
+                case 'agency_owner':
+                    $completionRoute = 'filament.agency.pages.profile-completion';
+                    // Agency panel is multi-tenant, so we must provide the tenant parameter
+                    $agency = $user->ownedAgencies()->first();
+                    if ($agency) {
+                        $parameters = ['tenant' => $agency];
+                    }
+                    break;
+                case 'tenant':
+                    $completionRoute = 'filament.tenant.pages.profile-completion';
+                    break;
+            }
 
             if ($completionRoute && !$request->routeIs($completionRoute)) {
-                return redirect()->route($completionRoute);
+                return redirect()->route($completionRoute, $parameters);
             }
         }
 

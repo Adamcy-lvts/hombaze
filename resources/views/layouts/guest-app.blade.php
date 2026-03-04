@@ -75,7 +75,7 @@
             document.addEventListener('livewire:load', reveal);
         </script>
     </head>
-    <body class="font-sans antialiased">
+    <body class="font-sans antialiased pb-20 sm:pb-0">
         <div class="min-h-screen bg-gray-100">
             <!-- Guest Navigation -->
             @if (!($hideNav ?? false))
@@ -132,6 +132,14 @@
 
                         <!-- Authentication Links -->
                         <div class="hidden sm:flex sm:items-center sm:ms-6">
+                            <!-- List Property CTA -->
+                            <a href="{{ route('listing.create') }}" class="mr-6 group flex items-center gap-3 bg-emerald-600 hover:bg-emerald-700 text-white pl-4 pr-1.5 py-1.5 rounded-2xl transition-all shadow-lg shadow-emerald-600/20 hover:shadow-xl hover:shadow-emerald-600/30 hover:-translate-y-0.5">
+                                <span class="font-bold text-sm">List Property</span>
+                                <div class="bg-white/20 rounded-xl p-1.5 group-hover:bg-white/30 transition-colors">
+                                    <x-heroicon-m-plus class="w-4 h-4" />
+                                </div>
+                            </a>
+
                             @auth
                                 <x-dropdown align="right" width="48">
                                     <x-slot name="trigger">
@@ -206,6 +214,16 @@
                         <x-responsive-nav-link :href="route('pricing')" :active="request()->routeIs('pricing')" wire:navigate>
                             {{ __('Pricing') }}
                         </x-responsive-nav-link>
+                        
+                        <x-responsive-nav-link :href="route('listing.create')" :active="request()->routeIs('listing.create')" wire:navigate class="text-emerald-600 font-semibold">
+                            List Property
+                        </x-responsive-nav-link>
+                        
+                        @auth
+                        <x-responsive-nav-link :href="route('listing.my-listings')" :active="request()->routeIs('listing.my-listings')" wire:navigate>
+                            My Listings
+                        </x-responsive-nav-link>
+                        @endauth
                         {{-- <x-responsive-nav-link :href="route('about')" :active="request()->routeIs('about')" wire:navigate>
                             {{ __('About') }}
                         </x-responsive-nav-link>
@@ -280,6 +298,45 @@
 
         <!-- PWA Install Prompt -->
         <x-pwa-install-prompt />
+        
+        <!-- Mobile Bottom Navigation Bar -->
+        <div class="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-100 sm:hidden">
+            <div class="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+                <a href="{{ route('landing') }}" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group transition-colors">
+                    <x-heroicon-o-home class="w-6 h-6 mb-1 {{ request()->routeIs('landing') ? 'text-emerald-600' : 'text-gray-400 group-hover:text-emerald-600' }}" />
+                    <span class="text-[10px] {{ request()->routeIs('landing') ? 'text-emerald-600' : 'text-gray-500 group-hover:text-emerald-600' }}">Home</span>
+                </a>
+                
+                <a href="{{ route('properties.search') }}" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group transition-colors">
+                    <x-heroicon-o-magnifying-glass class="w-6 h-6 mb-1 {{ request()->routeIs('properties.search') ? 'text-emerald-600' : 'text-gray-400 group-hover:text-emerald-600' }}" />
+                    <span class="text-[10px] {{ request()->routeIs('properties.search') ? 'text-emerald-600' : 'text-gray-500 group-hover:text-emerald-600' }}">Search</span>
+                </a>
+                
+                <div class="flex items-center justify-center">
+                    <a href="{{ route('listing.create') }}" class="inline-flex items-center justify-center w-12 h-12 text-white bg-emerald-600 rounded-full hover:bg-emerald-700 shadow-lg shadow-emerald-500/30 transform -translate-y-4 group transition-all duration-300 ring-4 ring-gray-50">
+                        <x-heroicon-m-plus class="w-6 h-6" />
+                        <span class="sr-only">List Property</span>
+                    </a>
+                </div>
+                
+                <a href="{{ route('feed') }}" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group transition-colors">
+                    <x-heroicon-o-film class="w-6 h-6 mb-1 {{ request()->routeIs('feed') ? 'text-emerald-600' : 'text-gray-400 group-hover:text-emerald-600' }}" />
+                    <span class="text-[10px] {{ request()->routeIs('feed') ? 'text-emerald-600' : 'text-gray-500 group-hover:text-emerald-600' }}">Feed</span>
+                </a>
+
+                @auth
+                    <a href="{{ auth()->user()->getPanelDashboardUrl() }}" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group transition-colors">
+                        <x-heroicon-o-user class="w-6 h-6 mb-1 text-gray-400 group-hover:text-emerald-600" />
+                        <span class="text-[10px] text-gray-500 group-hover:text-emerald-600">Dashboard</span>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 group transition-colors">
+                        <x-heroicon-o-user class="w-6 h-6 mb-1 text-gray-400 group-hover:text-emerald-600" />
+                        <span class="text-[10px] text-gray-500 group-hover:text-emerald-600">Sign In</span>
+                    </a>
+                @endauth
+            </div>
+        </div>
 
         @stack('scripts')
     </body>

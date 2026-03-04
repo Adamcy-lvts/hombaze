@@ -42,6 +42,7 @@ use App\Models\City;
 use App\Models\Area;
 use App\Models\PropertyFeature;
 use App\Models\PropertySubtype;
+use App\Models\PropertyType;
 use App\Rules\OptimalImageResolution;
 use Filament\Forms;
 use Filament\Resources\Resource;

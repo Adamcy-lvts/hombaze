@@ -103,8 +103,7 @@ class UnifiedRegistrationController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'phone' => 'required|string|max:20',
             'password' => 'required|string|min:8|confirmed',
-
-            // No additional customer fields required during registration
+            'agency_name' => 'required_if:user_type,agency_owner|nullable|string|max:255',
         ]);
 
         DB::beginTransaction();
@@ -130,7 +129,7 @@ class UnifiedRegistrationController extends Controller
             // Create user type specific records and assign roles
             $this->createUserTypeSpecificData($user, $request->all());
 
-            if (in_array($user->user_type, ['agent', 'property_owner'], true)) {
+            if (in_array($user->user_type, ['agent', 'property_owner', 'agency_owner'], true)) {
                 $this->grantStarterPackage($user);
             }
 
@@ -293,7 +292,7 @@ class UnifiedRegistrationController extends Controller
         return match($user->user_type) {
             'customer' => redirect()->route('dashboard')->with('success', 'Welcome to HomeBaze! Let\'s complete your profile to find perfect properties.'),
             'agent' => $this->redirectAgentToDashboard($user),
-            'property_owner' => redirect()->route('filament.landlord.pages.dashboard'),
+            'property_owner' => redirect()->route('filament.property-owner.pages.dashboard'),
             'agency_owner' => $this->redirectToAgencyDashboard($user),
             default => redirect()->route('dashboard')
         };
@@ -337,10 +336,13 @@ class UnifiedRegistrationController extends Controller
      */
     private function createAgencyForOwner(User $user, array $data): void
     {
+        // Use provided agency name or fall back to user's name if missing (should be caught by validation)
+        $agencyName = $data['agency_name'] ?? $user->name . "'s Agency";
+        
         // Create basic agency with minimal data - location can be set later
         $agency = Agency::create([
-            'name' => $user->name . "'s Agency",
-            'slug' => Str::slug($user->name . '-agency'),
+            'name' => $agencyName,
+            'slug' => Str::slug($agencyName),
             'description' => 'Real estate agency managed by ' . $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
@@ -412,7 +414,7 @@ class UnifiedRegistrationController extends Controller
             'specializations' => $agency->specializations,
             'years_experience' => 0,
             'languages' => 'English',
-            'is_verified' => true,
+            'is_verified' => false,
             'is_featured' => true,
             'is_active' => true,
             'accepts_new_clients' => true,
@@ -529,6 +531,17 @@ class UnifiedRegistrationController extends Controller
             return;
         }
 
-        ListingCreditService::grantPackage($user, $starterPackage, 'self_service_free');
+        $recipient = $user;
+        
+        // If agency owner, grant to the agency instead
+        if ($user->user_type === 'agency_owner') {
+             $recipient = $user->ownedAgencies()->first() ?? $user;
+             Log::info('Redirecting starter package to Agency', [
+                 'user_id' => $user->id,
+                 'agency_id' => $recipient instanceof Agency ? $recipient->id : null
+             ]);
+        }
+
+        ListingCreditService::grantPackage($recipient, $starterPackage, 'self_service_free');
     }
 }

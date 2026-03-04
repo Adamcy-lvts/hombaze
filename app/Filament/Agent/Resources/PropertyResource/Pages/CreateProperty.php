@@ -158,19 +158,65 @@ class CreateProperty extends CreateRecord
             'property_agent_id' => $property->agent_id,
             'property_agency_id' => $property->agency_id,
             'property_slug' => $property->slug,
+            'moderation_status' => $property->moderation_status,
         ]);
 
         // SavedSearch matching is now handled automatically by PropertyObserver
 
-        // Send success notification
-        Notification::make()
-            ->title('Property created successfully')
-            ->success()
-            ->body("Property '{$property->title}' has been created and assigned to you as the listing agent.")
-            ->send();
+        // Send appropriate notification based on moderation status
+        if ($property->moderation_status === 'pending') {
+            Notification::make()
+                ->title('Property submitted for review')
+                ->warning()
+                ->body("Property '{$property->title}' has been submitted and is pending approval. It will be visible once reviewed by our team.")
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Property created successfully')
+                ->success()
+                ->body("Property '{$property->title}' is now live and assigned to you as the listing agent.")
+                ->send();
+        }
 
         return $property;
     }
+
+    /**
+     * After Filament finishes processing the form (including SpatieMediaLibrary attachments),
+     * check if images were uploaded and update is_published accordingly.
+     * 
+     * This is called AFTER handleRecordCreation AND after Filament's form components
+     * (like SpatieMediaLibraryFileUpload) have finished their work.
+     */
+    protected function afterCreate(): void
+    {
+        // Refresh the property to get the latest state including media attachments
+        $property = $this->record->fresh();
+        
+        // Check if the property now has images
+        $hasFeaturedImage = $property->getMedia('featured')->isNotEmpty();
+        $hasGalleryImages = $property->hasGallery();
+        
+        Log::info('afterCreate: Checking for images', [
+            'property_id' => $property->id,
+            'has_featured' => $hasFeaturedImage,
+            'has_gallery' => $hasGalleryImages,
+            'current_is_published' => $property->is_published,
+        ]);
+        
+        if (($hasFeaturedImage || $hasGalleryImages) && !$property->is_published) {
+            // Property has images but was saved as draft - publish it now
+            $property->update([
+                'is_published' => true,
+                'published_at' => now(),
+            ]);
+            
+            Log::info('afterCreate: Property published after image detection', [
+                'property_id' => $property->id,
+            ]);
+        }
+    }
+
 
     /**
      * Generate a unique slug for the property
@@ -199,7 +245,9 @@ class CreateProperty extends CreateRecord
             $data['status'] = 'available';
         }
 
-        // Set default published status
+        // Always default to published = true so credits are consumed
+        // The observer will temporarily set is_published = false during creation,
+        // and afterCreate() will set it back to true if images are attached
         if (!isset($data['is_published'])) {
             $data['is_published'] = true;
             $data['published_at'] = now();
@@ -214,6 +262,24 @@ class CreateProperty extends CreateRecord
         if (!isset($data['is_featured'])) {
             $data['is_featured'] = false;
         }
+
+        // Determine moderation status based on agent/agency verification
+        $user = auth()->user();
+        $agentProfile = $user->agentProfile;
+        
+        $isVerified = false;
+        if ($agentProfile) {
+            // Check if agent is verified
+            if ($agentProfile->is_verified) {
+                $isVerified = true;
+            }
+            // Or if agent belongs to a verified agency
+            elseif ($agentProfile->agency && $agentProfile->agency->is_verified) {
+                $isVerified = true;
+            }
+        }
+        
+        $data['moderation_status'] = $isVerified ? 'approved' : 'pending';
 
         // Initialize counters
         $data['view_count'] = 0;

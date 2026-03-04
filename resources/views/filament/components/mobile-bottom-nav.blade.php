@@ -9,39 +9,39 @@
                 'label' => 'Home',
                 'icon' => 'heroicon-o-home',
                 'activeIcon' => 'heroicon-s-home',
-                'url' => route('filament.landlord.pages.dashboard'),
-                'active' => request()->routeIs('filament.landlord.pages.dashboard'),
+                'url' => route('filament.property-owner.pages.dashboard'),
+                'active' => request()->routeIs('filament.property-owner.pages.dashboard'),
             ],
             [
                 'label' => 'Properties',
                 'icon' => 'heroicon-o-building-office-2',
                 'activeIcon' => 'heroicon-s-building-office-2',
                 // Link to custom mobile list page
-                'url' => route('filament.landlord.pages.my-properties'),
+                'url' => route('filament.property-owner.pages.my-properties'),
                 // Active if on custom list OR standard resource pages (like Edit)
-                'active' => request()->routeIs('filament.landlord.pages.my-properties') || request()->routeIs('filament.landlord.resources.properties.*'),
+                'active' => request()->routeIs('filament.property-owner.pages.my-properties') || request()->routeIs('filament.property-owner.resources.properties.*'),
             ],
             [
                 'route' => 'create',
                 'label' => 'Create',
                 'icon' => 'heroicon-s-plus',
-                'url' => route('filament.landlord.pages.create-property'),
-                'active' => request()->routeIs('filament.landlord.pages.create-property'),
+                'url' => route('filament.property-owner.pages.create-property'),
+                'active' => request()->routeIs('filament.property-owner.pages.create-property'),
             ],
             [
                 'label' => 'Tenants',
                 'icon' => 'heroicon-o-users',
                 'activeIcon' => 'heroicon-s-users',
                 // Link to custom mobile list page
-                'url' => route('filament.landlord.pages.tenants-list'),
-                'active' => request()->routeIs('filament.landlord.pages.tenants-list') || request()->routeIs('filament.landlord.resources.tenants.*'),
+                'url' => route('filament.property-owner.pages.tenants-list'),
+                'active' => request()->routeIs('filament.property-owner.pages.tenants-list') || request()->routeIs('filament.property-owner.resources.tenants.*'),
             ],
             [
                 'label' => 'Invitations',
                 'icon' => 'heroicon-o-paper-airplane',
                 'activeIcon' => 'heroicon-s-paper-airplane',
-                'url' => route('filament.landlord.pages.invite-tenant'),
-                'active' => request()->routeIs('filament.landlord.pages.invite-tenant'),
+                'url' => route('filament.property-owner.pages.invite-tenant'),
+                'active' => request()->routeIs('filament.property-owner.pages.invite-tenant'),
             ],
         ];
     } elseif ($panelId === 'agent') {

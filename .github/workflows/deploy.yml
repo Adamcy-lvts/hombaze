@@ -23,7 +23,7 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE_DEVCENTRIC }}
           port: 22
           script: |
-            cd /home/forge/homebaze.live
+            cd /home/forge/homebaze.live/current
             git stash
             git pull origin main
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev

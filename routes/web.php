@@ -11,6 +11,7 @@ use App\Http\Controllers\SmartSearchPaymentController;
 use App\Http\Controllers\PaystackUniversalCallbackController;
 
 Route::get('/', App\Livewire\LandingPage::class)->name('landing');
+Route::get('/feed', App\Livewire\PropertyFeed::class)->name('feed');
 Route::get('/properties', App\Livewire\PropertySearch::class)->name('properties.search');
 Route::get('/property/{property:slug}', App\Livewire\PropertyDetails::class)->name('property.show');
 Route::get('/pricing', App\Livewire\PricingPage::class)->name('pricing');
@@ -55,9 +56,9 @@ Route::get('/receipt/{receiptId}', [ReceiptViewController::class, 'view'])->name
 
 // PDF download routes
 Route::middleware(['auth'])->group(function () {
-    Route::get('/landlord/lease/{lease}/download-pdf', [App\Http\Controllers\PdfDownloadController::class, 'downloadLeasePdf'])->name('landlord.lease.download-pdf');
-    Route::get('/landlord/lease/{lease}/view-with-template', [App\Http\Controllers\PdfDownloadController::class, 'viewLeaseWithTemplate'])->name('landlord.lease.view-with-template');
-    Route::get('/landlord/payment/{payment}/download-receipt', [App\Http\Controllers\PdfDownloadController::class, 'downloadReceiptPdf'])->name('landlord.payment.download-receipt');
+    Route::get('/owner/lease/{lease}/download-pdf', [App\Http\Controllers\PdfDownloadController::class, 'downloadLeasePdf'])->name('owner.lease.download-pdf');
+    Route::get('/owner/lease/{lease}/view-with-template', [App\Http\Controllers\PdfDownloadController::class, 'viewLeaseWithTemplate'])->name('owner.lease.view-with-template');
+    Route::get('/owner/payment/{payment}/download-receipt', [App\Http\Controllers\PdfDownloadController::class, 'downloadReceiptPdf'])->name('owner.payment.download-receipt');
 });
 
 Route::middleware(['auth', 'verified', 'customer'])->group(function () {
@@ -121,6 +122,12 @@ Route::prefix('smartsearch')->name('smartsearch.')->group(function () {
         Route::post('/purchase/{tier}', [SmartSearchPaymentController::class, 'purchase'])->name('purchase');
         Route::post('/extend/{search}', [SmartSearchPaymentController::class, 'extendForNoMatch'])->name('extend');
     });
+});
+
+// Public listing routes - any authenticated user
+Route::middleware(['auth'])->prefix('listing')->name('listing.')->group(function () {
+    Route::get('/create', \App\Livewire\Listing\CreateListing::class)->name('create');
+    Route::get('/my-listings', \App\Livewire\Listing\MyListings::class)->name('my-listings');
 });
 
 require __DIR__.'/auth.php';

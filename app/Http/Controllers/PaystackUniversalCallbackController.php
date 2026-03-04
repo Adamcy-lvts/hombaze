@@ -172,7 +172,7 @@ class PaystackUniversalCallbackController extends Controller
             'super_admin', 'admin' => redirect()->route('filament.admin.pages.dashboard'),
             'agency_owner' => $this->redirectToAgencyDashboard($user),
             'agent' => $this->redirectAgentToDashboard($user),
-            'property_owner' => redirect()->route('filament.landlord.pages.dashboard'),
+            'property_owner' => redirect()->route('filament.property-owner.pages.dashboard'),
             'tenant' => redirect()->route('filament.tenant.pages.dashboard'),
             'customer' => redirect('/dashboard'),
             default => redirect()->route('pricing'),

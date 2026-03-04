@@ -135,7 +135,7 @@ class PdfDownloadController extends Controller
             ]);
         } else {
             // Use original default view (just redirect to the main lease view)
-            return redirect()->route('filament.landlord.resources.leases.view', $lease);
+            return redirect()->route('filament.property-owner.resources.leases.view', $lease);
         }
     }
 

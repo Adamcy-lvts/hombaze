@@ -82,6 +82,10 @@ class Property extends Model implements HasMedia
         'contact_email',
         'viewing_instructions',
         'is_active',
+        'moderation_status',
+        'moderated_at',
+        'moderated_by',
+        'moderation_notes',
     ];
 
     protected $casts = [
@@ -98,6 +102,7 @@ class Property extends Model implements HasMedia
         'is_featured' => 'boolean',
         'is_verified' => 'boolean',
         'is_published' => 'boolean',
+        'moderated_at' => 'datetime',
         'is_active' => 'boolean',
         'price_negotiable' => 'boolean',
         'last_viewed_at' => 'datetime',
@@ -307,7 +312,8 @@ class Property extends Model implements HasMedia
     {
         return $query->where('is_published', true)
             ->whereNotNull('published_at')
-            ->whereIn('listing_fee_status', [self::LISTING_FEE_PAID, self::LISTING_FEE_WAIVED]);
+            ->whereIn('listing_fee_status', [self::LISTING_FEE_PAID, self::LISTING_FEE_WAIVED])
+            ->where('moderation_status', 'approved');
     }
 
     /**
@@ -337,6 +343,55 @@ class Property extends Model implements HasMedia
     public function scopeVerified($query)
     {
         return $query->where('is_verified', true);
+    }
+
+    /**
+     * Scope for properties pending moderation
+     */
+    public function scopePendingModeration($query)
+    {
+        return $query->where('moderation_status', 'pending')
+            ->where('is_published', true);
+    }
+
+    /**
+     * Scope for approved properties
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('moderation_status', 'approved');
+    }
+
+    /**
+     * Check if property requires moderation based on owner/agent verification
+     */
+    public function requiresModeration(): bool
+    {
+        // No moderation if belongs to verified agent
+        if ($this->agent && $this->agent->is_verified) {
+            return false;
+        }
+        
+        // No moderation if belongs to verified agency
+        if ($this->agency && $this->agency->is_verified) {
+            return false;
+        }
+        
+        // No moderation if owner is verified
+        if ($this->owner && $this->owner->is_verified) {
+            return false;
+        }
+        
+        // Unverified users require moderation
+        return true;
+    }
+
+    /**
+     * Get the moderator who approved/rejected this property
+     */
+    public function moderator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     /**
@@ -402,6 +457,8 @@ class Property extends Model implements HasMedia
             'is_featured_active' => $this->isFeaturedActive(),
             'featured_until' => $this->featured_until?->timestamp,
             'is_verified' => $this->is_verified,
+            'is_published' => (bool) $this->is_published,
+            'moderation_status' => $this->moderation_status,
             'view_count' => $this->view_count ?? 0,
             'created_at' => $this->created_at?->timestamp,
 
@@ -421,8 +478,11 @@ class Property extends Model implements HasMedia
     {
         return $this->is_published
             && $this->status === 'available'
+            && $this->moderation_status === 'approved'
             && in_array($this->listing_fee_status, [self::LISTING_FEE_PAID, self::LISTING_FEE_WAIVED]);
     }
+
+
 
     // Accessors & Mutators
 

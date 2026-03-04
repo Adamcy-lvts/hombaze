@@ -45,6 +45,10 @@ class UnifiedLoginController extends Controller
             // Update last login timestamp
             $user->update(['last_login_at' => now()]);
 
+            if (session()->has('url.intended')) {
+                return redirect()->intended();
+            }
+
             // Redirect to appropriate dashboard based on user type
             return $this->redirectToDashboard($user);
         }
@@ -84,7 +88,7 @@ class UnifiedLoginController extends Controller
             'super_admin', 'admin' => redirect()->route('filament.admin.pages.dashboard'),
             'agency_owner' => $this->redirectToAgencyDashboard($user),
             'agent' => $this->redirectAgentToDashboard($user),
-            'property_owner' => redirect()->route('filament.landlord.pages.dashboard'),
+            'property_owner' => redirect()->route('filament.property-owner.pages.dashboard'),
             'tenant' => redirect()->route('filament.tenant.pages.dashboard'),
             'customer' => redirect('/dashboard'),
             default => redirect()->route('filament.tenant.pages.dashboard') // Default fallback

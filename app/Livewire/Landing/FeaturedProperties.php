@@ -11,9 +11,9 @@ class FeaturedProperties extends Component
 
     public function mount()
     {
-        $this->properties = Property::where('is_published', true)
-            ->where('is_featured', true)
-            ->with(['propertyType', 'city.state'])
+        $this->properties = Property::published()
+            ->featured()
+            ->with(['propertyType', 'city.state', 'agent', 'agency', 'owner'])
             ->take(6)
             ->get();
     }

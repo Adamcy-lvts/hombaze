@@ -18,6 +18,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
 use App\Http\Middleware\EnsureUserBelongsToAgency;
+use App\Http\Middleware\RequireProfileCompletion;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -88,6 +89,7 @@ class AgencyPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 ApplyAgencyScopes::class,
+                RequireProfileCompletion::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

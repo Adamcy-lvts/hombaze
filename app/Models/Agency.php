@@ -13,10 +13,13 @@ use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Auth;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class Agency extends Model implements HasTenants
+class Agency extends Model implements HasTenants, HasMedia
 {
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -355,5 +358,46 @@ class Agency extends Model implements HasTenants
 
         // Fallback to agency owner_id relationship
         return $this->owner;
+    }
+
+    /**
+     * Register media collections for agency files
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('logo')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/svg+xml']);
+        
+        $this->addMediaCollection('cac_document')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'application/pdf']);
+        
+        $this->addMediaCollection('license_document')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'application/pdf']);
+
+        $this->addMediaCollection('certificate')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png', 'application/pdf']);
+    }
+
+    /**
+     * Get logo URL
+     */
+    public function getLogoUrlAttribute(): ?string
+    {
+        if ($this->hasMedia('logo')) {
+            return $this->getFirstMediaUrl('logo');
+        }
+
+        if ($this->logo) {
+            if (filter_var($this->logo, FILTER_VALIDATE_URL)) {
+                return $this->logo;
+            }
+            return \Illuminate\Support\Facades\Storage::disk('public')->url($this->logo);
+        }
+
+        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? 'A') . '&color=7F9CF5&background=EBF4FF';
     }
 }

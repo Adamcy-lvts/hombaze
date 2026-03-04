@@ -129,15 +129,46 @@ class CreateProperty extends CreateRecord
             ListingCreditService::consumeFeaturedCredits($agency, $property);
         }
 
-        // Send success notification
-        Notification::make()
-            ->title('Property created successfully')
-            ->success()
-            ->body("Property '{$property->title}' has been created and assigned to the agency.")
-            ->send();
+        // Send appropriate notification based on moderation status
+        if ($property->moderation_status === 'pending') {
+            Notification::make()
+                ->title('Property submitted for review')
+                ->warning()
+                ->body("Property '{$property->title}' has been submitted and is pending approval. It will be visible once reviewed by our team.")
+                ->send();
+        } else {
+            Notification::make()
+                ->title('Property created successfully')
+                ->success()
+                ->body("Property '{$property->title}' is now live and assigned to the agency.")
+                ->send();
+        }
 
         return $property;
     }
+
+    /**
+     * After Filament finishes processing the form (including SpatieMediaLibrary attachments),
+     * check if images were uploaded and update is_published accordingly.
+     */
+    protected function afterCreate(): void
+    {
+        // Refresh the property to get the latest state including media attachments
+        $property = $this->record->fresh();
+        
+        // Check if the property now has images
+        $hasFeaturedImage = $property->getMedia('featured')->isNotEmpty();
+        $hasGalleryImages = $property->hasGallery();
+        
+        if (($hasFeaturedImage || $hasGalleryImages) && !$property->is_published) {
+            // Property has images but was saved as draft - publish it now
+            $property->update([
+                'is_published' => true,
+                'published_at' => now(),
+            ]);
+        }
+    }
+
 
     /**
      * Generate a unique slug for the property
@@ -166,7 +197,9 @@ class CreateProperty extends CreateRecord
             $data['status'] = 'available';
         }
 
-        // Set default published status
+        // Always default to published = true so credits are consumed
+        // The observer will temporarily set is_published = false during creation,
+        // and afterCreate() will set it back to true if images are attached
         if (!isset($data['is_published'])) {
             $data['is_published'] = true;
             $data['published_at'] = now();
@@ -181,6 +214,10 @@ class CreateProperty extends CreateRecord
         if (!isset($data['is_featured'])) {
             $data['is_featured'] = false;
         }
+
+        // Determine moderation status based on agency verification
+        $agency = Filament::getTenant();
+        $data['moderation_status'] = ($agency && $agency->is_verified) ? 'approved' : 'pending';
 
         // Initialize counters
         $data['view_count'] = 0;

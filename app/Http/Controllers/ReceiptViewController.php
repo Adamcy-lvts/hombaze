@@ -28,7 +28,7 @@ class ReceiptViewController extends Controller
         if ($user->hasRole('landlord') || $user->hasRole('property_owner')) {
             // Check if user owns this receipt
             if ($receipt->landlord_id === $user->id) {
-                return redirect()->route('filament.landlord.resources.rent-payments.view-receipt', $receipt);
+                return redirect()->route('filament.property-owner.resources.rent-payments.view-receipt', $receipt);
             }
         }
 
@@ -45,7 +45,7 @@ class ReceiptViewController extends Controller
                 ($receipt->lease->property->agent_id === $user->id ||
                  ($receipt->lease->property->agency_id && $user->agency_id === $receipt->lease->property->agency_id))) {
                 // For now, redirect agents to landlord view (can be updated when agent panel has receipts)
-                return redirect()->route('filament.landlord.resources.rent-payments.view-receipt', $receipt);
+                return redirect()->route('filament.property-owner.resources.rent-payments.view-receipt', $receipt);
             }
         }
 
@@ -54,13 +54,13 @@ class ReceiptViewController extends Controller
             if ($receipt->lease && $receipt->lease->property &&
                 $receipt->lease->property->agency_id === $user->agency_id) {
                 // For now, redirect agency owners to landlord view (can be updated when agency panel has receipts)
-                return redirect()->route('filament.landlord.resources.rent-payments.view-receipt', $receipt);
+                return redirect()->route('filament.property-owner.resources.rent-payments.view-receipt', $receipt);
             }
         }
 
         if ($user->hasRole('admin') || $user->hasRole('super_admin')) {
             // Admins can view any receipt - redirect to landlord view for now
-            return redirect()->route('filament.landlord.resources.rent-payments.view-receipt', $receipt);
+            return redirect()->route('filament.property-owner.resources.rent-payments.view-receipt', $receipt);
         }
 
         // If no access found, show unauthorized

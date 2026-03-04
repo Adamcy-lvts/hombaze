@@ -1,0 +1,26 @@
+<?php
+
+namespace App\Filament\PropertyOwner\Resources\TenantInvitationResource\Pages;
+
+use App\Filament\PropertyOwner\Resources\TenantInvitationResource;
+use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
+
+class CreateTenantInvitation extends CreateRecord
+{
+    protected static string $resource = TenantInvitationResource::class;
+    
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $data['landlord_id'] = Auth::id();
+        $data['invited_from_ip'] = request()->ip();
+        $data['status'] = 'pending'; // Ensure status is set to pending
+
+        return $data;
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

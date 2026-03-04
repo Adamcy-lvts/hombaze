@@ -123,6 +123,28 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     }
 
     /**
+     * Get existing PropertyOwner profile or create a minimal one
+     */
+    public function getOrCreatePropertyOwnerProfile(): ?PropertyOwner
+    {
+        if ($this->propertyOwnerProfile) {
+            return $this->propertyOwnerProfile;
+        }
+
+        $nameParts = explode(' ', $this->name, 2);
+        
+        return PropertyOwner::create([
+            'user_id' => $this->id,
+            'type' => 'individual',
+            'first_name' => $nameParts[0],
+            'last_name' => $nameParts[1] ?? '',
+            'email' => $this->email,
+            'phone' => $this->phone,
+            'is_verified' => false,
+        ]);
+    }
+
+    /**
      * Relationship: User's customer profile
      */
     public function customerProfile(): HasOne
@@ -511,7 +533,7 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
             'admin' => in_array($this->user_type, ['super_admin', 'admin']),
             'agency' => in_array($this->user_type, ['agency_owner', 'agent']) && $this->agencies()->exists(),
             'agent' => $this->user_type === 'agent',
-            'landlord' => $this->user_type === 'property_owner',
+            'property-owner' => $this->user_type === 'property_owner',
             'tenant' => $this->user_type === 'tenant',
             default => false,
         };
@@ -522,6 +544,25 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
      */
     public function getFilamentAvatarUrl(): ?string
     {
+        // 1. Check Property Owner Profile Photo
+        if ($this->user_type === 'property_owner' && $this->propertyOwnerProfile) {
+            if ($photoUrl = $this->propertyOwnerProfile->profile_photo_url) {
+                return $photoUrl;
+            }
+        }
+
+        // 2. Check Agent Profile Photo
+        if (($this->user_type === 'agent' || $this->user_type === 'independent_agent') && $this->agentProfile) {
+            if ($this->agentProfile->profile_photo_path) {
+                // If stored as path/url in column
+                if (filter_var($this->agentProfile->profile_photo_path, FILTER_VALIDATE_URL)) {
+                    return $this->agentProfile->profile_photo_path;
+                }
+                return Storage::disk('public')->url($this->agentProfile->profile_photo_path);
+            }
+        }
+
+        // 3. Fallback to default User avatar logic
         if (!$this->avatar) {
             return null;
         }
@@ -713,12 +754,26 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
     /**
      * Initialize basic profile completion steps after registration
      */
+    public function initializeProfileCompletion(): void
+    {
+        // Set profile as incomplete for new users
+        // This triggers the profile completion flow on first panel access
+        if (!$this->profile_completed) {
+            $this->update([
+                'profile_completed' => false,
+            ]);
+        }
+    }
+
+    /**
+     * Get the URL to the user's profile page in their panel
+     */
     public function getPanelProfileUrl(): string
     {
         try {
             return match($this->user_type) {
                 'agent', 'independent_agent' => route('filament.agent.auth.profile'),
-                'property_owner' => route('filament.landlord.auth.profile'),
+                'property_owner' => route('filament.property-owner.auth.profile'),
                 'agency_owner' => $this->getAgencyProfileUrl(),
                 'tenant' => route('filament.tenant.auth.profile'),
                 'admin' => route('filament.admin.auth.profile'),
@@ -741,7 +796,7 @@ class User extends Authenticatable implements HasTenants, HasName, FilamentUser,
         try {
             return match($this->user_type) {
                 'agent', 'independent_agent' => route('filament.agent.pages.dashboard'),
-                'property_owner' => route('filament.landlord.pages.dashboard'),
+                'property_owner' => route('filament.property-owner.pages.dashboard'),
                 'agency_owner' => $this->getAgencyDashboardUrl(),
                 'tenant' => route('filament.tenant.pages.dashboard'),
                 'admin' => route('filament.admin.pages.dashboard'),

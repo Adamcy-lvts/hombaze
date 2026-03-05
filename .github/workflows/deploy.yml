@@ -25,7 +25,10 @@ jobs:
           script: |
             cd /home/forge/homebaze.live/current
             git fetch origin main
+            STORAGE_REAL=$([ -L storage ] && readlink storage || echo "")
+            [ -n "$STORAGE_REAL" ] && rm storage
             git reset --hard origin/main
+            [ -n "$STORAGE_REAL" ] && ln -sfn "$STORAGE_REAL" storage || true
             composer install --no-interaction --prefer-dist --optimize-autoloader --no-dev
             php artisan migrate --force
             php artisan config:cache
